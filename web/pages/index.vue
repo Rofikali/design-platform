@@ -29,6 +29,7 @@ const fileInput = ref<HTMLInputElement | null>(null);
 const dragState = ref<{ id: string; pointerId: number; startClientX: number; startClientY: number; originX: number; originY: number } | null>(null);
 let historyReady = false;
 let historyTimer: ReturnType<typeof setTimeout> | undefined;
+let autosaveTimer: ReturnType<typeof setTimeout> | undefined;
 let lastStableSnapshot = "";
 
 const selectedElement = computed(() => elements.value.find((element) => element.id === selectedId.value) ?? null);
@@ -172,17 +173,20 @@ watch(elements, () => {
       lastStableSnapshot = current;
     }
   }, 300);
-  try {
-    const current = snapshot();
-    if (current.length <= MAX_FILE_CHARS) {
-      localStorage.setItem(STORAGE_KEY, current);
-      statusMessage.value = "Auto-saved locally in this browser.";
-    } else {
-      statusMessage.value = "Local autosave skipped: document is too large.";
+  if (autosaveTimer) clearTimeout(autosaveTimer);
+  autosaveTimer = setTimeout(() => {
+    try {
+      const current = snapshot();
+      if (current.length <= MAX_FILE_CHARS) {
+        localStorage.setItem(STORAGE_KEY, current);
+        statusMessage.value = "Auto-saved locally in this browser.";
+      } else {
+        statusMessage.value = "Local autosave skipped: document is too large.";
+      }
+    } catch {
+      statusMessage.value = "Local autosave unavailable (browser storage may be full or disabled).";
     }
-  } catch {
-    statusMessage.value = "Local autosave unavailable (browser storage may be full or disabled).";
-  }
+  }, 300);
 }, { deep: true, flush: "sync" });
 onMounted(() => {
   try {
