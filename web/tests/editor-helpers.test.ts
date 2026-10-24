@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { nextElementId } from "../utils/editor-helpers";
+import { clampElementPosition, nextElementId } from "../utils/editor-helpers";
 
 describe("nextElementId", () => {
   it("returns the requested sequence number when it is unused", () => {
@@ -21,5 +21,20 @@ describe("nextElementId", () => {
       id: "rect-2",
       nextNumber: 3,
     });
+  });
+});
+
+describe("clampElementPosition", () => {
+  it("keeps an element inside the page without changing valid coordinates", () => {
+    expect(clampElementPosition(30, 40, 100, 80, 800, 600)).toEqual({ x: 30, y: 40 });
+  });
+
+  it("clamps positions at every page edge", () => {
+    expect(clampElementPosition(-20, -5, 100, 80, 800, 600)).toEqual({ x: 0, y: 0 });
+    expect(clampElementPosition(900, 700, 100, 80, 800, 600)).toEqual({ x: 700, y: 520 });
+  });
+
+  it("handles elements larger than the page and non-finite pointer values safely", () => {
+    expect(clampElementPosition(Number.NaN, Number.POSITIVE_INFINITY, 900, 700, 800, 600)).toEqual({ x: 0, y: 0 });
   });
 });

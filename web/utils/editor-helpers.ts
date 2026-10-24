@@ -20,3 +20,29 @@ export function nextElementId(
 
   return { id: `${prefix}-${candidate}`, nextNumber: candidate + 1 };
 }
+
+
+export type ElementPosition = { x: number; y: number };
+
+/**
+ * Keep an element fully inside the logical page bounds.
+ * Inputs are normalized so accidental non-finite pointer values cannot poison document state.
+ */
+export function clampElementPosition(
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  pageWidth: number,
+  pageHeight: number,
+): ElementPosition {
+  const safeWidth = Number.isFinite(width) ? Math.max(0, Math.min(width, pageWidth)) : 0;
+  const safeHeight = Number.isFinite(height) ? Math.max(0, Math.min(height, pageHeight)) : 0;
+  const safeX = Number.isFinite(x) ? x : 0;
+  const safeY = Number.isFinite(y) ? y : 0;
+
+  return {
+    x: Math.max(0, Math.min(pageWidth - safeWidth, safeX)),
+    y: Math.max(0, Math.min(pageHeight - safeHeight, safeY)),
+  };
+}

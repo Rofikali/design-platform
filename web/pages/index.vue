@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
-import { nextElementId } from "~/utils/editor-helpers";
+import { clampElementPosition, nextElementId } from "~/utils/editor-helpers";
 
 import {
   MAX_ELEMENTS,
@@ -26,8 +26,10 @@ const elements = ref<DesignElement[]>([
 const undoStack = ref<string[]>([]);
 const redoStack = ref<string[]>([]);
 const fileInput = ref<HTMLInputElement | null>(null);
+const dragState = ref<{ id: string; pointerId: number; startClientX: number; startClientY: number; originX: number; originY: number } | null>(null);
 let historyReady = false;
 let historyTimer: ReturnType<typeof setTimeout> | undefined;
+let autosaveTimer: ReturnType<typeof setTimeout> | undefined;
 let lastStableSnapshot = "";
 
 const selectedElement = computed(() => elements.value.find((element) => element.id === selectedId.value) ?? null);
@@ -63,8 +65,43 @@ function addRectangle() {
 function moveSelected(dx: number, dy: number) {
   const element = selectedElement.value;
   if (!element) return;
-  element.x = Math.max(0, Math.min(pageWidth - element.width, element.x + dx));
-  element.y = Math.max(0, Math.min(pageHeight - element.height, element.y + dy));
+  const position = clampElementPosition(element.x + dx, element.y + dy, element.width, element.height, pageWidth, pageHeight);
+  element.x = position.x;
+  element.y = position.y;
+}
+function onElementPointerDown(event: PointerEvent, element: DesignElement) {
+  if (event.button !== 0) return;
+  event.preventDefault();
+  selectedId.value = element.id;
+  dragState.value = {
+    id: element.id,
+    pointerId: event.pointerId,
+    startClientX: event.clientX,
+    startClientY: event.clientY,
+    originX: element.x,
+    originY: element.y,
+  };
+  (event.currentTarget as HTMLButtonElement).setPointerCapture(event.pointerId);
+}
+function onElementPointerMove(event: PointerEvent) {
+  const drag = dragState.value;
+  if (!drag || drag.pointerId !== event.pointerId) return;
+  const element = elements.value.find((candidate) => candidate.id === drag.id);
+  if (!element) { dragState.value = null; return; }
+  const position = clampElementPosition(
+    drag.originX + event.clientX - drag.startClientX,
+    drag.originY + event.clientY - drag.startClientY,
+    element.width,
+    element.height,
+    pageWidth,
+    pageHeight,
+  );
+  element.x = position.x;
+  element.y = position.y;
+}
+function onElementPointerEnd(event: PointerEvent) {
+  if (dragState.value?.pointerId !== event.pointerId) return;
+  dragState.value = null;
 }
 function exportJson() {
   const blob = new Blob([JSON.stringify(toDocument(elements.value), null, 2)], { type: "application/json" });
@@ -136,17 +173,20 @@ watch(elements, () => {
       lastStableSnapshot = current;
     }
   }, 300);
-  try {
-    const current = snapshot();
-    if (current.length <= MAX_FILE_CHARS) {
-      localStorage.setItem(STORAGE_KEY, current);
-      statusMessage.value = "Auto-saved locally in this browser.";
-    } else {
-      statusMessage.value = "Local autosave skipped: document is too large.";
+  if (autosaveTimer) clearTimeout(autosaveTimer);
+  autosaveTimer = setTimeout(() => {
+    try {
+      const current = snapshot();
+      if (current.length <= MAX_FILE_CHARS) {
+        localStorage.setItem(STORAGE_KEY, current);
+        statusMessage.value = "Auto-saved locally in this browser.";
+      } else {
+        statusMessage.value = "Local autosave skipped: document is too large.";
+      }
+    } catch {
+      statusMessage.value = "Local autosave unavailable (browser storage may be full or disabled).";
     }
-  } catch {
-    statusMessage.value = "Local autosave unavailable (browser storage may be full or disabled).";
-  }
+  }, 300);
 }, { deep: true, flush: "sync" });
 onMounted(() => {
   try {
@@ -240,6 +280,10 @@ onMounted(() => {
               type="button"
               :aria-label="'Select ' + element.type + ' element'"
               :aria-pressed="selectedId === element.id"
+              @pointerdown="onElementPointerDown($event, element)"
+              @pointermove="onElementPointerMove"
+              @pointerup="onElementPointerEnd"
+              @pointercancel="onElementPointerEnd"
               @click="selectedId = element.id"
             >
               <span v-if="element.type === 'text'">{{ element.text }}</span>
@@ -288,7 +332,8 @@ hr { margin: 20px 0; border: 0; border-top: 1px solid #e6eaf1; }
 .canvas-heading p, .canvas-heading > span { margin: 0; color: #6c778b; font-size: 12px; }
 .canvas-scroller { overflow: auto; padding: 10px 0 16px; background: #f3f5f9; border-radius: 10px; }
 .design-page { position: relative; margin: 0 auto; overflow: hidden; background: white; box-shadow: 0 4px 20px #18274414; }
-.design-element { position: absolute; display: flex; align-items: flex-start; justify-content: flex-start; padding: 2px; border: 1px solid transparent; border-radius: 2px; text-align: left; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.25; }
+.design-element { position: absolute; display: flex; align-items: flex-start; justify-content: flex-start; padding: 2px; border: 1px solid transparent; border-radius: 2px; text-align: left; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.25; touch-action: none; cursor: grab; user-select: none; }
+.design-element:active { cursor: grabbing; }
 .design-element.selected { border: 1px dashed #234bd6; outline: 1px solid #234bd6; }
 .design-element.rectangle { border-radius: 0; }
 .canvas-note { margin: 12px 0 0; color: #6c778b; font-size: 12px; line-height: 1.5; }
