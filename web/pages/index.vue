@@ -59,8 +59,8 @@ function parseDocument(input: unknown): { elements: DesignElement[]; width: numb
   const doc = input as Partial<DesignDocument>;
   if (doc.schema_version !== SCHEMA_VERSION) throw new Error("Unsupported document schema version. This editor supports version 1.");
   if (!doc.page || !Number.isFinite(doc.page.width) || !Number.isFinite(doc.page.height) ||
-      doc.page.width! <= 0 || doc.page.height! <= 0 || doc.page.width! > 10000 || doc.page.height! > 10000 ||
-      !validColor(doc.page.background)) throw new Error("Invalid page dimensions or background color.");
+      doc.page.width !== 800 || doc.page.height !== 600 ||
+      !validColor(doc.page.background)) throw new Error("This editor currently supports an 800 × 600 page and a valid hexadecimal background color.");
   if (!Array.isArray(doc.elements) || doc.elements.length > MAX_ELEMENTS) throw new Error("The document must have at most 1,000 elements.");
   const ids = new Set<string>();
   const parsed = doc.elements.map((item) => {
