@@ -205,10 +205,7 @@ mod tests {
     fn rejects_css_like_color_values() {
         let mut document = valid_document();
         document.page.background = "url(https://example.invalid)".into();
-        assert_eq!(
-            document.validate(),
-            Err(ValidationError::InvalidBackground)
-        );
+        assert_eq!(document.validate(), Err(ValidationError::InvalidBackground));
     }
 
     #[test]
