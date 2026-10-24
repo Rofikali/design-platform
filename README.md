@@ -20,7 +20,7 @@ The current prototype contains:
 
 Requirements for native development:
 - Rust toolchain with `rustfmt` and `clippy`
-- Node.js 22.14.0 and npm
+- Node.js 22.14.0 with Corepack and pnpm 10.11.0
 
 Rust core:
 
@@ -34,10 +34,11 @@ Frontend:
 
 ```sh
 cd web
-npm install
-npm run typecheck
-npm run build
-npm run dev
+corepack pnpm install
+corepack pnpm run typecheck
+corepack pnpm test
+corepack pnpm run build
+corepack pnpm run dev
 ```
 
 Open http://localhost:3000 for the local editor.
