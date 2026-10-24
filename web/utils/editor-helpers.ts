@@ -46,3 +46,23 @@ export function clampElementPosition(
     y: Math.max(0, Math.min(pageHeight - safeHeight, safeY)),
   };
 }
+
+
+export type ElementSize = { width: number; height: number };
+
+/**
+ * Resize from a fixed top-left anchor while keeping dimensions inside the page.
+ * The minimum prevents handles from collapsing an element to an unusable size.
+ */
+export function clampElementSize(width: number, height: number, x: number, y: number, pageWidth: number, pageHeight: number, minSize = 8): ElementSize {
+  const safePageWidth = Number.isFinite(pageWidth) ? Math.max(minSize, pageWidth) : minSize;
+  const safePageHeight = Number.isFinite(pageHeight) ? Math.max(minSize, pageHeight) : minSize;
+  const safeMin = Number.isFinite(minSize) ? Math.max(1, Math.min(minSize, safePageWidth, safePageHeight)) : 8;
+  const safeX = Number.isFinite(x) ? Math.max(0, Math.min(safePageWidth - safeMin, x)) : 0;
+  const safeY = Number.isFinite(y) ? Math.max(0, Math.min(safePageHeight - safeMin, y)) : 0;
+  const maxWidth = Math.max(safeMin, safePageWidth - safeX);
+  const maxHeight = Math.max(safeMin, safePageHeight - safeY);
+  const safeWidth = Number.isFinite(width) ? width : safeMin;
+  const safeHeight = Number.isFinite(height) ? height : safeMin;
+  return { width: Math.max(safeMin, Math.min(maxWidth, safeWidth)), height: Math.max(safeMin, Math.min(maxHeight, safeHeight)) };
+}

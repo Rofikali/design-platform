@@ -9,6 +9,7 @@ This index explains where project knowledge belongs. Keep each document focused 
 - [Architecture decision records](../adr/ADR-0001-architecture.md): current foundational architecture decision.
 - [Security threat model](../security/threat-model.md): assets, threats, controls, and risks to revisit.
 - [Engineering standards](standards.md): SOLID, DRY, design-pattern selection, HLD/LLD, and definition of done.
+- [Editor geometry](editor-geometry.md): coordinate model, resize invariants, algorithm complexity, and verification requirements.
 - [Testing strategy](../testing/strategy.md): test layers and MVP release gates.
 
 ## Delivery and operations

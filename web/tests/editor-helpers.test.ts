@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { clampElementPosition, nextElementId } from "../utils/editor-helpers";
+import { clampElementPosition, clampElementSize, nextElementId } from "../utils/editor-helpers";
 
 describe("nextElementId", () => {
   it("returns the requested sequence number when it is unused", () => {
@@ -36,5 +36,25 @@ describe("clampElementPosition", () => {
 
   it("handles elements larger than the page and non-finite pointer values safely", () => {
     expect(clampElementPosition(Number.NaN, Number.POSITIVE_INFINITY, 900, 700, 800, 600)).toEqual({ x: 0, y: 0 });
+  });
+});
+
+
+describe("clampElementSize", () => {
+  it("preserves valid dimensions that fit inside the page", () => {
+    expect(clampElementSize(120, 80, 40, 50, 800, 600)).toEqual({ width: 120, height: 80 });
+  });
+
+  it("limits dimensions at the right and bottom edges", () => {
+    expect(clampElementSize(200, 200, 750, 550, 800, 600)).toEqual({ width: 50, height: 50 });
+  });
+
+  it("enforces a minimum and normalizes non-finite dimensions", () => {
+    expect(clampElementSize(Number.NaN, Number.POSITIVE_INFINITY, 20, 30, 800, 600)).toEqual({ width: 8, height: 8 });
+    expect(clampElementSize(0, -10, 20, 30, 800, 600)).toEqual({ width: 8, height: 8 });
+  });
+
+  it("keeps available space within page bounds", () => {
+    expect(clampElementSize(500, 500, 790, 590, 800, 600)).toEqual({ width: 10, height: 10 });
   });
 });
