@@ -8,6 +8,8 @@ web/.nuxt/
 web/.output/
 web/dist/
 npm-debug.log*
+pnpm-debug.log*
+.pnpm-debug.log*
 
 # Local environment and editor files
 .env

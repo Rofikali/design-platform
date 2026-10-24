@@ -41,11 +41,23 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22.14.0"
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
+          run_install: false
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: pnpm install --no-frozen-lockfile
+      - name: Publish generated lockfile for migration review
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: pnpm-lockfile-candidate
+          path: web/pnpm-lock.yaml
+          if-no-files-found: error
+          retention-days: 1
       - name: Type check
-        run: npm run typecheck
+        run: pnpm run typecheck
       - name: Run frontend tests
-        run: npm test
+        run: pnpm test
       - name: Build
-        run: npm run build
+        run: pnpm run build
