@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
+import { nextElementId } from "~/utils/editor-helpers";
 
 import {
   MAX_ELEMENTS,
@@ -45,13 +46,17 @@ function applySnapshot(json: string) {
 }
 function addText() {
   if (elements.value.length >= MAX_ELEMENTS) { statusMessage.value = "Element limit reached (1,000)."; return; }
-  const id = `text-${nextId.value++}`;
+  const generated = nextElementId("text", elements.value, nextId.value);
+  const id = generated.id;
+  nextId.value = generated.nextNumber;
   elements.value.push({ id, type: "text", text: "New text", x: 80, y: 100 + elements.value.length * 18, width: 240, height: 48, fontSize: 24, color: "#172033" });
   selectedId.value = id;
 }
 function addRectangle() {
   if (elements.value.length >= MAX_ELEMENTS) { statusMessage.value = "Element limit reached (1,000)."; return; }
-  const id = `rect-${nextId.value++}`;
+  const generated = nextElementId("rect", elements.value, nextId.value);
+  const id = generated.id;
+  nextId.value = generated.nextNumber;
   elements.value.push({ id, type: "rect", x: 100 + elements.value.length * 12, y: 220 + elements.value.length * 12, width: 180, height: 90, color: "#dbeafe" });
   selectedId.value = id;
 }
@@ -68,7 +73,7 @@ function exportJson() {
   anchor.href = url;
   anchor.download = "design-platform-document.json";
   anchor.click();
-  URL.revokeObjectURL(url);
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
   statusMessage.value = "JSON design file downloaded.";
 }
 function importJson() { fileInput.value?.click(); }
@@ -107,7 +112,13 @@ function redo() {
   if (historyTimer) clearTimeout(historyTimer);
   historyTimer = undefined;
   const current = snapshot();
-  if (current !== lastStableSnapshot) pushBounded(undoStack.value, lastStableSnapshot);
+  if (current !== lastStableSnapshot) {
+    pushBounded(undoStack.value, lastStableSnapshot);
+    lastStableSnapshot = current;
+    redoStack.value = [];
+    statusMessage.value = "New changes recorded; redo cleared.";
+    return;
+  }
   const next = redoStack.value.pop();
   if (!next) { statusMessage.value = "Nothing to redo."; return; }
   pushBounded(undoStack.value, current);
