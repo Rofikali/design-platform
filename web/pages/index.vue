@@ -1,95 +1,203 @@
 <script setup lang="ts">
-type TextElement = {
-  id: string;
-  type: "text";
-  text: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  fontSize: number;
-  color: string;
-};
+import { computed, onMounted, ref, watch } from "vue";
 
-type RectElement = {
-  id: string;
-  type: "rect";
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  color: string;
-};
-
+type TextElement = { id: string; type: "text"; text: string; x: number; y: number; width: number; height: number; fontSize: number; color: string };
+type RectElement = { id: string; type: "rect"; x: number; y: number; width: number; height: number; color: string };
 type DesignElement = TextElement | RectElement;
+type DesignDocument = {
+  schema_version: number;
+  page: { width: number; height: number; background: string };
+  elements: Array<{ id: string; x: number; y: number; width: number; height: number; kind: { type: "text"; text: string; font_size: number; color: string } | { type: "rect"; color: string } }>;
+};
 
+const SCHEMA_VERSION = 1;
+const MAX_ELEMENTS = 1000;
+const MAX_TEXT_CHARS = 10000;
+const MAX_FILE_CHARS = 2_000_000;
+const HISTORY_LIMIT = 50;
+const STORAGE_KEY = "design-platform:document:v1";
 const pageWidth = 800;
 const pageHeight = 600;
 const nextId = ref(3);
 const selectedId = ref<string | null>("heading-1");
+const statusMessage = ref("Changes are saved in this browser only.");
 const elements = ref<DesignElement[]>([
-  {
-    id: "heading-1",
-    type: "text",
-    text: "Your design starts here",
-    x: 48,
-    y: 56,
-    width: 500,
-    height: 70,
-    fontSize: 32,
-    color: "#172033",
-  },
-  {
-    id: "rect-2",
-    type: "rect",
-    x: 48,
-    y: 160,
-    width: 250,
-    height: 110,
-    color: "#dbeafe",
-  },
+  { id: "heading-1", type: "text", text: "Your design starts here", x: 48, y: 56, width: 500, height: 70, fontSize: 32, color: "#172033" },
+  { id: "rect-2", type: "rect", x: 48, y: 160, width: 250, height: 110, color: "#dbeafe" },
 ]);
+const undoStack = ref<string[]>([]);
+const redoStack = ref<string[]>([]);
+const fileInput = ref<HTMLInputElement | null>(null);
+let historyReady = false;
+let historyTimer: ReturnType<typeof setTimeout> | undefined;
+let lastStableSnapshot = "";
 
-const selectedElement = computed(
-  () => elements.value.find((element) => element.id === selectedId.value) ?? null,
-);
+const selectedElement = computed(() => elements.value.find((element) => element.id === selectedId.value) ?? null);
 
+function toDocument(source: DesignElement[] = elements.value): DesignDocument {
+  return {
+    schema_version: SCHEMA_VERSION,
+    page: { width: pageWidth, height: pageHeight, background: "#ffffff" },
+    elements: source.map((element) => ({
+      id: element.id, x: element.x, y: element.y, width: element.width, height: element.height,
+      kind: element.type === "text"
+        ? { type: "text" as const, text: element.text, font_size: element.fontSize, color: element.color }
+        : { type: "rect" as const, color: element.color },
+    })),
+  };
+}
+function snapshot(): string { return JSON.stringify(toDocument()); }
+function pushBounded(stack: string[], value: string) {
+  stack.push(value);
+  if (stack.length > HISTORY_LIMIT) stack.shift();
+}
+function validColor(value: unknown): value is string {
+  return typeof value === "string" && /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(value);
+}
+function parseDocument(input: unknown): { elements: DesignElement[]; width: number; height: number } {
+  if (!input || typeof input !== "object" || Array.isArray(input)) throw new Error("The file must contain a JSON document object.");
+  const doc = input as Partial<DesignDocument>;
+  if (doc.schema_version !== SCHEMA_VERSION) throw new Error("Unsupported document schema version. This editor supports version 1.");
+  if (!doc.page || !Number.isFinite(doc.page.width) || !Number.isFinite(doc.page.height) ||
+      doc.page.width! <= 0 || doc.page.height! <= 0 || doc.page.width! > 10000 || doc.page.height! > 10000 ||
+      !validColor(doc.page.background)) throw new Error("Invalid page dimensions or background color.");
+  if (!Array.isArray(doc.elements) || doc.elements.length > MAX_ELEMENTS) throw new Error("The document must have at most 1,000 elements.");
+  const ids = new Set<string>();
+  const parsed = doc.elements.map((item) => {
+    if (!item || typeof item !== "object" || typeof item.id !== "string" || item.id.length < 1 || item.id.length > 128)
+      throw new Error("An element has an invalid ID.");
+    if (ids.has(item.id)) throw new Error("Duplicate element IDs are not allowed.");
+    ids.add(item.id);
+    const values = [item.x, item.y, item.width, item.height];
+    if (!values.every((n) => typeof n === "number" && Number.isFinite(n)) ||
+        Math.abs(item.x) > 100000 || Math.abs(item.y) > 100000 ||
+        item.width <= 0 || item.height <= 0 || item.width > 10000 || item.height > 10000)
+      throw new Error("An element has invalid or out-of-range geometry.");
+    const kind = item.kind;
+    if (!kind || typeof kind !== "object" || !validColor(kind.color)) throw new Error("An element has an invalid color.");
+    if (kind.type === "text") {
+      if (typeof kind.text !== "string" || [...kind.text].length > MAX_TEXT_CHARS) throw new Error("Text must be 10,000 characters or fewer.");
+      if (typeof kind.font_size !== "number" || !Number.isFinite(kind.font_size) || kind.font_size < 1 || kind.font_size > 512)
+        throw new Error("Font size must be between 1 and 512.");
+      return { id: item.id, type: "text" as const, text: kind.text, x: item.x, y: item.y, width: item.width, height: item.height, fontSize: kind.font_size, color: kind.color };
+    }
+    if (kind.type === "rect") return { id: item.id, type: "rect" as const, x: item.x, y: item.y, width: item.width, height: item.height, color: kind.color };
+    throw new Error("Unsupported element type.");
+  });
+  return { elements: parsed, width: doc.page.width, height: doc.page.height };
+}
+function applySnapshot(json: string) {
+  const parsed = parseDocument(JSON.parse(json));
+  elements.value = parsed.elements;
+  selectedId.value = parsed.elements[0]?.id ?? null;
+  nextId.value = parsed.elements.length + 1;
+  lastStableSnapshot = snapshot();
+}
 function addText() {
+  if (elements.value.length >= MAX_ELEMENTS) { statusMessage.value = "Element limit reached (1,000)."; return; }
   const id = `text-${nextId.value++}`;
-  elements.value.push({
-    id,
-    type: "text",
-    text: "New text",
-    x: 80,
-    y: 100 + elements.value.length * 18,
-    width: 240,
-    height: 48,
-    fontSize: 24,
-    color: "#172033",
-  });
+  elements.value.push({ id, type: "text", text: "New text", x: 80, y: 100 + elements.value.length * 18, width: 240, height: 48, fontSize: 24, color: "#172033" });
   selectedId.value = id;
 }
-
 function addRectangle() {
+  if (elements.value.length >= MAX_ELEMENTS) { statusMessage.value = "Element limit reached (1,000)."; return; }
   const id = `rect-${nextId.value++}`;
-  elements.value.push({
-    id,
-    type: "rect",
-    x: 100 + elements.value.length * 12,
-    y: 220 + elements.value.length * 12,
-    width: 180,
-    height: 90,
-    color: "#dbeafe",
-  });
+  elements.value.push({ id, type: "rect", x: 100 + elements.value.length * 12, y: 220 + elements.value.length * 12, width: 180, height: 90, color: "#dbeafe" });
   selectedId.value = id;
 }
-
 function moveSelected(dx: number, dy: number) {
   const element = selectedElement.value;
   if (!element) return;
   element.x = Math.max(0, Math.min(pageWidth - element.width, element.x + dx));
   element.y = Math.max(0, Math.min(pageHeight - element.height, element.y + dy));
 }
+function exportJson() {
+  const blob = new Blob([JSON.stringify(toDocument(), null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = "design-platform-document.json";
+  anchor.click();
+  URL.revokeObjectURL(url);
+  statusMessage.value = "JSON design file downloaded.";
+}
+function importJson() { fileInput.value?.click(); }
+async function onFileSelected(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+  input.value = "";
+  if (!file) return;
+  if (file.size > MAX_FILE_CHARS) { statusMessage.value = "Import rejected: file exceeds the 2 MB limit."; return; }
+  try {
+    const text = await file.text();
+    const parsed = parseDocument(JSON.parse(text));
+    elements.value = parsed.elements;
+    selectedId.value = parsed.elements[0]?.id ?? null;
+    nextId.value = parsed.elements.length + 1;
+    undoStack.value = [];
+    redoStack.value = [];
+    lastStableSnapshot = snapshot();
+    statusMessage.value = "Document imported and validated. It is stored only in this browser.";
+  } catch (error) {
+    statusMessage.value = `Import failed: ${error instanceof Error ? error.message : "invalid document"}`;
+  }
+}
+function undo() {
+  if (historyTimer) clearTimeout(historyTimer);
+  historyTimer = undefined;
+  const current = snapshot();
+  if (current !== lastStableSnapshot) pushBounded(undoStack.value, lastStableSnapshot);
+  const previous = undoStack.value.pop();
+  if (!previous) { statusMessage.value = "Nothing to undo."; return; }
+  pushBounded(redoStack.value, current);
+  applySnapshot(previous);
+  statusMessage.value = "Undo applied.";
+}
+function redo() {
+  if (historyTimer) clearTimeout(historyTimer);
+  historyTimer = undefined;
+  const current = snapshot();
+  if (current !== lastStableSnapshot) pushBounded(undoStack.value, lastStableSnapshot);
+  const next = redoStack.value.pop();
+  if (!next) { statusMessage.value = "Nothing to redo."; return; }
+  pushBounded(undoStack.value, current);
+  applySnapshot(next);
+  statusMessage.value = "Redo applied.";
+}
+watch(elements, () => {
+  if (!historyReady) return;
+  if (historyTimer) clearTimeout(historyTimer);
+  historyTimer = setTimeout(() => {
+    const current = snapshot();
+    if (current !== lastStableSnapshot) {
+      pushBounded(undoStack.value, lastStableSnapshot);
+      redoStack.value = [];
+      lastStableSnapshot = current;
+    }
+  }, 300);
+  try {
+    const current = snapshot();
+    if (current.length <= MAX_FILE_CHARS) {
+      localStorage.setItem(STORAGE_KEY, current);
+      statusMessage.value = "Auto-saved locally in this browser.";
+    } else {
+      statusMessage.value = "Local autosave skipped: document is too large.";
+    }
+  } catch {
+    statusMessage.value = "Local autosave unavailable (browser storage may be full or disabled).";
+  }
+}, { deep: true, flush: "sync" });
+onMounted(() => {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try { applySnapshot(saved); statusMessage.value = "Restored the last locally saved design."; }
+      catch { statusMessage.value = "Saved browser data was invalid; starting with a fresh design."; }
+    }
+  } catch { statusMessage.value = "Browser storage is unavailable; use JSON download to keep a copy."; }
+  lastStableSnapshot = snapshot();
+  historyReady = true;
+});
 </script>
 
 <template>
@@ -107,6 +215,11 @@ function moveSelected(dx: number, dy: number) {
         <h2>Elements</h2>
         <button class="primary" type="button" @click="addText">＋ Add text</button>
         <button type="button" @click="addRectangle">＋ Add rectangle</button>
+        <button type="button" @click="exportJson">Download JSON</button>
+        <button type="button" @click="importJson">Open JSON</button>
+        <input ref="fileInput" class="visually-hidden" type="file" accept="application/json,.json" @change="onFileSelected" />
+        <div class="history-actions"><button type="button" :disabled="undoStack.length === 0" @click="undo">Undo</button><button type="button" :disabled="redoStack.length === 0" @click="redo">Redo</button></div>
+        <p class="hint" role="status">{{ statusMessage }}</p>
         <p class="hint">Select an element on the page to edit it.</p>
         <hr />
         <h2>Selection</h2>
@@ -172,7 +285,7 @@ function moveSelected(dx: number, dy: number) {
             </button>
           </div>
         </div>
-        <p class="canvas-note">Prototype note: changes live in this browser session only. Saving, reopening, dragging, undo/redo and export are not implemented yet.</p>
+        <p class="canvas-note">Designs auto-save in this browser. Download JSON for a portable copy. Imported files are validated in the browser; Rust/WASM validation is not connected yet.</p>
       </section>
     </section>
   </main>
@@ -194,6 +307,10 @@ h1 { margin: 0; font-size: 24px; }
 .tools-panel { padding: 18px; align-self: start; }
 .tools-panel > button { display: block; width: 100%; margin: 8px 0; padding: 10px 12px; border: 1px solid #d7deea; border-radius: 8px; background: white; text-align: left; color: #172033; }
 .tools-panel > button.primary { border-color: #234bd6; background: #234bd6; color: white; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.history-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+.history-actions button { padding: 8px; border: 1px solid #d7deea; border-radius: 7px; background: white; }
+.history-actions button:disabled { cursor: not-allowed; opacity: .45; }
 .hint { color: #6c778b; font-size: 12px; line-height: 1.5; }
 hr { margin: 20px 0; border: 0; border-top: 1px solid #e6eaf1; }
 .selected-name { color: #52617a; font-size: 12px; }
