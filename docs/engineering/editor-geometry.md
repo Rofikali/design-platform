@@ -4,6 +4,10 @@
 
 Implemented in the browser prototype. The Rust core does not yet own or execute these interactions, so frontend geometry helpers are not a cross-platform source of truth yet.
 
+## Component boundary
+
+`web/components/editor/EditorCanvas.vue` owns canvas rendering and forwards selection/pointer events. The page currently owns the document state and interaction orchestration; this keeps the visual canvas separate without introducing a second source of truth. Future extraction of interaction state should happen only with focused tests and a clear ownership boundary.
+
 ## Coordinate model
 
 - The editable page uses logical coordinates with an origin at the top-left.
