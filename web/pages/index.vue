@@ -2,6 +2,7 @@
 import { computed, onMounted, ref, watch } from "vue";
 import EditorCanvas from "~/components/editor/EditorCanvas.vue";
 import { clampElementPosition, clampElementSize, nextElementId } from "~/utils/editor-helpers";
+import { loadLocalDocument, saveLocalDocument } from "~/utils/local-document-storage";
 
 import {
   MAX_ELEMENTS,
@@ -221,27 +222,24 @@ watch(elements, () => {
   }, 300);
   if (autosaveTimer) clearTimeout(autosaveTimer);
   autosaveTimer = setTimeout(() => {
-    try {
-      const current = snapshot();
-      if (current.length <= MAX_FILE_CHARS) {
-        localStorage.setItem(STORAGE_KEY, current);
-        statusMessage.value = "Auto-saved locally in this browser.";
-      } else {
-        statusMessage.value = "Local autosave skipped: document is too large.";
-      }
-    } catch {
+    const result = saveLocalDocument(STORAGE_KEY, snapshot(), MAX_FILE_CHARS);
+    if (result.status === "saved") {
+      statusMessage.value = "Auto-saved locally in this browser.";
+    } else if (result.status === "too-large") {
+      statusMessage.value = "Local autosave skipped: document is too large.";
+    } else {
       statusMessage.value = "Local autosave unavailable (browser storage may be full or disabled).";
     }
   }, 300);
 }, { deep: true, flush: "sync" });
 onMounted(() => {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try { applySnapshot(saved); statusMessage.value = "Restored the last locally saved design."; }
-      catch { statusMessage.value = "Saved browser data was invalid; starting with a fresh design."; }
-    }
-  } catch { statusMessage.value = "Browser storage is unavailable; use JSON download to keep a copy."; }
+  const result = loadLocalDocument(STORAGE_KEY);
+  if (result.status === "loaded") {
+    try { applySnapshot(result.value); statusMessage.value = "Restored the last locally saved design."; }
+    catch { statusMessage.value = "Saved browser data was invalid; starting with a fresh design."; }
+  } else if (result.status === "unavailable") {
+    statusMessage.value = "Browser storage is unavailable; use JSON download to keep a copy.";
+  }
   lastStableSnapshot = snapshot();
   historyReady = true;
 });
