@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
+import EditorCanvas from "~/components/editor/EditorCanvas.vue";
 import { clampElementPosition, clampElementSize, nextElementId } from "~/utils/editor-helpers";
 
 import {
