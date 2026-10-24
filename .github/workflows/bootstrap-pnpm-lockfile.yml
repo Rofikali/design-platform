@@ -1,9 +1,9 @@
 name: Bootstrap pnpm lockfile (temporary)
 
 on:
-  push:
+  pull_request:
     branches:
-      - codex/bootstrap-pnpm-lockfile
+      - main
 
 permissions:
   contents: write
