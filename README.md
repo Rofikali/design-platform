@@ -4,15 +4,17 @@ A template-driven design editor, built incrementally with security, export fidel
 
 ## Current milestone
 
-The first prototype contains:
-- A Nuxt/Vue/TypeScript browser UI.
-- A page with selectable text and rectangle elements.
-- Basic text/color/font-size editing and position controls.
+The current prototype contains:
+- A Nuxt/Vue/TypeScript browser UI with selectable text and rectangle elements.
+- Basic text/color/font-size editing and bounded position controls.
 - A framework-independent Rust document model with schema version 1 and validation.
+- Browser-local autosave and restore using localStorage.
+- JSON document download and import with frontend-side structural and resource-limit validation.
+- Bounded undo/redo history (up to 50 snapshots).
 - A GitHub Actions workflow for Rust checks and frontend type-check/build.
 - A Docker-based frontend development path and a multi-stage frontend image.
 
-**Prototype limitations:** the browser editor is local-only. It does not yet save or reopen documents, support undo/redo or dragging/resizing, integrate Rust/WASM into the browser, export PDF, authenticate users, or persist data. Do not treat this as production-ready.
+**Prototype limitations:** the editor currently supports an 800 × 600 page, has no drag/resize, does not yet integrate Rust/WASM into the browser, and does not export PDF, authenticate users, or sync designs across devices. Browser-side validation is a separate implementation and is not a substitute for validating with the Rust core at trusted service boundaries. Local browser storage is not a backup. Do not treat this as production-ready.
 
 ## Development
 
