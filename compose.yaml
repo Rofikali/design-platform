@@ -1,0 +1,17 @@
+services:
+  web:
+    image: node:22.14.0-bookworm-slim
+    working_dir: /workspace/web
+    command: sh -lc "npm install --no-audit --no-fund && npm run dev"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./web:/workspace/web
+      - web_node_modules:/workspace/web/node_modules
+    environment:
+      NODE_ENV: development
+      NUXT_TELEMETRY_DISABLED: "1"
+    init: true
+
+volumes:
+  web_node_modules:

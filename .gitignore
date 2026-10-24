@@ -1,0 +1,18 @@
+# Rust
+/target/
+
+# Node / Nuxt
+node_modules/
+web/node_modules/
+web/.nuxt/
+web/.output/
+web/dist/
+npm-debug.log*
+
+# Local environment and editor files
+.env
+.env.*
+!.env.example
+.vscode/
+.idea/
+.DS_Store
