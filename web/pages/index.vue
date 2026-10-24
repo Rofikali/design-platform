@@ -294,50 +294,17 @@ onMounted(() => {
         <p v-else class="hint">Nothing selected.</p>
       </aside>
 
-      <section class="canvas-area" aria-label="Design canvas">
-        <div class="canvas-heading">
-          <div>
-            <h2>Untitled design</h2>
-            <p>800 × 600 logical pixels</p>
-          </div>
-          <span>{{ elements.length }} elements</span>
-        </div>
-        <div class="canvas-scroller">
-          <div
-            class="design-page"
-            :style="{ width: pageWidth + 'px', height: pageHeight + 'px' }"
-            aria-label="Editable design page"
-          >
-            <button
-              v-for="element in elements"
-              :key="element.id"
-              class="design-element"
-              :class="{ selected: selectedId === element.id, rectangle: element.type === 'rect' }"
-              :style="{
-                left: element.x + 'px',
-                top: element.y + 'px',
-                width: element.width + 'px',
-                height: element.height + 'px',
-                color: element.type === 'text' ? element.color : undefined,
-                backgroundColor: element.type === 'rect' ? element.color : 'transparent',
-                fontSize: element.type === 'text' ? element.fontSize + 'px' : undefined,
-              }"
-              type="button"
-              :aria-label="'Select ' + element.type + ' element'"
-              :aria-pressed="selectedId === element.id"
-              @pointerdown="onElementPointerDown($event, element)"
-              @pointermove="onElementPointerMove"
-              @pointerup="onElementPointerEnd"
-              @pointercancel="onElementPointerEnd"
-              @click="selectedId = element.id"
-            >
-              <span v-if="element.type === 'text'">{{ element.text }}</span>
-              <span v-if="selectedId === element.id" class="resize-handle" aria-hidden="true" @pointerdown="onResizePointerDown($event, element)" />
-            </button>
-          </div>
-        </div>
-        <p class="canvas-note">Designs auto-save in this browser. Download JSON for a portable copy. Imported files are validated in the browser; Rust/WASM validation is not connected yet.</p>
-      </section>
+      <EditorCanvas
+        :elements="elements"
+        :selected-id="selectedId"
+        :page-width="pageWidth"
+        :page-height="pageHeight"
+        @select="selectedId = $event"
+        @element-pointer-down="onElementPointerDown"
+        @element-pointer-move="onElementPointerMove"
+        @element-pointer-end="onElementPointerEnd"
+        @resize-pointer-down="onResizePointerDown"
+      />
     </section>
   </main>
 </template>
@@ -354,7 +321,7 @@ button { cursor: pointer; }
 h1 { margin: 0; font-size: 24px; }
 .status { padding: 7px 10px; border-radius: 999px; background: #fff4d6; color: #805b00; font-size: 12px; font-weight: 650; }
 .workspace { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 20px; padding: 20px; }
-.panel, .canvas-area { min-width: 0; border: 1px solid #e1e6ef; border-radius: 14px; background: white; }
+.panel { min-width: 0; border: 1px solid #e1e6ef; border-radius: 14px; background: white; }
 .tools-panel { padding: 18px; align-self: start; }
 .tools-panel > button { display: block; width: 100%; margin: 8px 0; padding: 10px 12px; border: 1px solid #d7deea; border-radius: 8px; background: white; text-align: left; color: #172033; }
 .tools-panel > button.primary { border-color: #234bd6; background: #234bd6; color: white; }
@@ -372,17 +339,5 @@ hr { margin: 20px 0; border: 0; border-top: 1px solid #e6eaf1; }
 .field-label { margin: 16px 0 8px; color: #52617a; font-size: 12px; font-weight: 650; }
 .move-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
 .move-grid button { min-height: 34px; border: 1px solid #d7deea; border-radius: 7px; background: white; }
-.canvas-area { padding: 18px; overflow: hidden; }
-.canvas-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
-.canvas-heading h2 { margin: 0 0 4px; }
-.canvas-heading p, .canvas-heading > span { margin: 0; color: #6c778b; font-size: 12px; }
-.canvas-scroller { overflow: auto; padding: 10px 0 16px; background: #f3f5f9; border-radius: 10px; }
-.design-page { position: relative; margin: 0 auto; overflow: hidden; background: white; box-shadow: 0 4px 20px #18274414; }
-.design-element { position: absolute; display: flex; align-items: flex-start; justify-content: flex-start; padding: 2px; border: 1px solid transparent; border-radius: 2px; text-align: left; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.25; touch-action: none; cursor: grab; user-select: none; }
-.design-element:active { cursor: grabbing; }
-.design-element.selected { border: 1px dashed #234bd6; outline: 1px solid #234bd6; }
-.resize-handle { position: absolute; right: -1px; bottom: -1px; width: 12px; height: 12px; border: 2px solid white; border-radius: 2px; background: #234bd6; box-shadow: 0 0 0 1px #234bd6; cursor: nwse-resize; touch-action: none; }
-.design-element.rectangle { border-radius: 0; }
-.canvas-note { margin: 12px 0 0; color: #6c778b; font-size: 12px; line-height: 1.5; }
 @media (max-width: 760px) { .topbar { padding: 18px; } .workspace { grid-template-columns: 1fr; padding: 12px; gap: 12px; } .tools-panel { order: 2; } .canvas-area { order: 1; padding: 12px; } }
 </style>
