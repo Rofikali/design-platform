@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
-import { clampElementPosition, nextElementId } from "~/utils/editor-helpers";
+import { clampElementPosition, clampElementSize, nextElementId } from "~/utils/editor-helpers";
 
 import {
   MAX_ELEMENTS,
@@ -27,6 +27,7 @@ const undoStack = ref<string[]>([]);
 const redoStack = ref<string[]>([]);
 const fileInput = ref<HTMLInputElement | null>(null);
 const dragState = ref<{ id: string; pointerId: number; startClientX: number; startClientY: number; originX: number; originY: number } | null>(null);
+const resizeState = ref<{ id: string; pointerId: number; startClientX: number; startClientY: number; originWidth: number; originHeight: number } | null>(null);
 let historyReady = false;
 let historyTimer: ReturnType<typeof setTimeout> | undefined;
 let autosaveTimer: ReturnType<typeof setTimeout> | undefined;
@@ -69,6 +70,22 @@ function moveSelected(dx: number, dy: number) {
   element.x = position.x;
   element.y = position.y;
 }
+function onResizePointerDown(event: PointerEvent, element: DesignElement) {
+  if (event.button !== 0) return;
+  event.preventDefault();
+  event.stopPropagation();
+  selectedId.value = element.id;
+  dragState.value = null;
+  resizeState.value = {
+    id: element.id,
+    pointerId: event.pointerId,
+    startClientX: event.clientX,
+    startClientY: event.clientY,
+    originWidth: element.width,
+    originHeight: element.height,
+  };
+  (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+}
 function onElementPointerDown(event: PointerEvent, element: DesignElement) {
   if (event.button !== 0) return;
   event.preventDefault();
@@ -84,6 +101,22 @@ function onElementPointerDown(event: PointerEvent, element: DesignElement) {
   (event.currentTarget as HTMLButtonElement).setPointerCapture(event.pointerId);
 }
 function onElementPointerMove(event: PointerEvent) {
+  const resize = resizeState.value;
+  if (resize && resize.pointerId === event.pointerId) {
+    const element = elements.value.find((candidate) => candidate.id === resize.id);
+    if (!element) { resizeState.value = null; return; }
+    const size = clampElementSize(
+      resize.originWidth + event.clientX - resize.startClientX,
+      resize.originHeight + event.clientY - resize.startClientY,
+      element.x,
+      element.y,
+      pageWidth,
+      pageHeight,
+    );
+    element.width = size.width;
+    element.height = size.height;
+    return;
+  }
   const drag = dragState.value;
   if (!drag || drag.pointerId !== event.pointerId) return;
   const element = elements.value.find((candidate) => candidate.id === drag.id);
@@ -100,8 +133,8 @@ function onElementPointerMove(event: PointerEvent) {
   element.y = position.y;
 }
 function onElementPointerEnd(event: PointerEvent) {
-  if (dragState.value?.pointerId !== event.pointerId) return;
-  dragState.value = null;
+  if (dragState.value?.pointerId === event.pointerId) dragState.value = null;
+  if (resizeState.value?.pointerId === event.pointerId) resizeState.value = null;
 }
 function exportJson() {
   const blob = new Blob([JSON.stringify(toDocument(elements.value), null, 2)], { type: "application/json" });
@@ -287,6 +320,7 @@ onMounted(() => {
               @click="selectedId = element.id"
             >
               <span v-if="element.type === 'text'">{{ element.text }}</span>
+              <span v-if="selectedId === element.id" class="resize-handle" aria-hidden="true" @pointerdown="onResizePointerDown($event, element)" />
             </button>
           </div>
         </div>
@@ -335,6 +369,7 @@ hr { margin: 20px 0; border: 0; border-top: 1px solid #e6eaf1; }
 .design-element { position: absolute; display: flex; align-items: flex-start; justify-content: flex-start; padding: 2px; border: 1px solid transparent; border-radius: 2px; text-align: left; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.25; touch-action: none; cursor: grab; user-select: none; }
 .design-element:active { cursor: grabbing; }
 .design-element.selected { border: 1px dashed #234bd6; outline: 1px solid #234bd6; }
+.resize-handle { position: absolute; right: -1px; bottom: -1px; width: 12px; height: 12px; border: 2px solid white; border-radius: 2px; background: #234bd6; box-shadow: 0 0 0 1px #234bd6; cursor: nwse-resize; touch-action: none; }
 .design-element.rectangle { border-radius: 0; }
 .canvas-note { margin: 12px 0 0; color: #6c778b; font-size: 12px; line-height: 1.5; }
 @media (max-width: 760px) { .topbar { padding: 18px; } .workspace { grid-template-columns: 1fr; padding: 12px; gap: 12px; } .tools-panel { order: 2; } .canvas-area { order: 1; padding: 12px; } }
