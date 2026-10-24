@@ -133,6 +133,18 @@ function onElementPointerMove(event: PointerEvent) {
   element.y = position.y;
 }
 function onElementPointerEnd(event: PointerEvent) {
+  if (event.type === "pointercancel") {
+    const drag = dragState.value;
+    if (drag?.pointerId === event.pointerId) {
+      const element = elements.value.find((candidate) => candidate.id === drag.id);
+      if (element) { element.x = drag.originX; element.y = drag.originY; }
+    }
+    const resize = resizeState.value;
+    if (resize?.pointerId === event.pointerId) {
+      const element = elements.value.find((candidate) => candidate.id === resize.id);
+      if (element) { element.width = resize.originWidth; element.height = resize.originHeight; }
+    }
+  }
   if (dragState.value?.pointerId === event.pointerId) dragState.value = null;
   if (resizeState.value?.pointerId === event.pointerId) resizeState.value = null;
 }
