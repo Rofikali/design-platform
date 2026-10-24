@@ -40,8 +40,14 @@ pub struct Element {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum ElementKind {
-    Text { text: String, font_size: f64, color: String },
-    Rect { color: String },
+    Text {
+        text: String,
+        font_size: f64,
+        color: String,
+    },
+    Rect {
+        color: String,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -91,7 +97,11 @@ impl DesignDocument {
             }
 
             match &element.kind {
-                ElementKind::Text { text, font_size, color } => {
+                ElementKind::Text {
+                    text,
+                    font_size,
+                    color,
+                } => {
                     if text.chars().count() > MAX_TEXT_CHARS {
                         return Err(ValidationError::InvalidTextLength);
                     }
@@ -134,7 +144,11 @@ mod tests {
     fn valid_document() -> DesignDocument {
         DesignDocument {
             schema_version: CURRENT_SCHEMA_VERSION,
-            page: Page { width: 800.0, height: 600.0, background: "#fff".into() },
+            page: Page {
+                width: 800.0,
+                height: 600.0,
+                background: "#fff".into(),
+            },
             elements: vec![Element {
                 id: "heading-1".into(),
                 x: 20.0,
@@ -159,7 +173,10 @@ mod tests {
     fn rejects_unknown_schema_version() {
         let mut document = valid_document();
         document.schema_version = CURRENT_SCHEMA_VERSION + 1;
-        assert_eq!(document.validate(), Err(ValidationError::UnsupportedSchemaVersion));
+        assert_eq!(
+            document.validate(),
+            Err(ValidationError::UnsupportedSchemaVersion)
+        );
     }
 
     #[test]
@@ -168,21 +185,30 @@ mod tests {
         let mut duplicate = document.elements[0].clone();
         duplicate.x = 50.0;
         document.elements.push(duplicate);
-        assert_eq!(document.validate(), Err(ValidationError::DuplicateElementId));
+        assert_eq!(
+            document.validate(),
+            Err(ValidationError::DuplicateElementId)
+        );
     }
 
     #[test]
     fn rejects_non_finite_geometry() {
         let mut document = valid_document();
         document.elements[0].x = f64::NAN;
-        assert_eq!(document.validate(), Err(ValidationError::InvalidElementGeometry));
+        assert_eq!(
+            document.validate(),
+            Err(ValidationError::InvalidElementGeometry)
+        );
     }
 
     #[test]
     fn rejects_css_like_color_values() {
         let mut document = valid_document();
         document.page.background = "url(https://example.invalid)".into();
-        assert_eq!(document.validate(), Err(ValidationError::InvalidBackground));
+        assert_eq!(
+            document.validate(),
+            Err(ValidationError::InvalidBackground)
+        );
     }
 
     #[test]
