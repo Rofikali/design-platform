@@ -46,12 +46,4 @@ mod tests {
         assert_eq!(parsed["schema_version"], 1);
         assert_eq!(parsed["elements"][0]["kind"]["type"], "text");
     }
-
-    #[test]
-    fn rejects_invalid_document_json_without_panicking() {
-        // JsValue construction is only supported by the WASM runtime, so this
-        // error-path test is intentionally run by the browser/WASM test stage.
-        // The native test validates the success path only.
-        assert!(serde_json::from_str::<DesignDocument>("{").is_err());
-    }
 }
