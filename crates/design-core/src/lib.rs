@@ -216,4 +216,15 @@ mod tests {
         assert_eq!(restored, document);
         assert_eq!(restored.validate(), Ok(()));
     }
+
+    #[test]
+    fn accepts_shared_version_one_contract_fixture() {
+        let document: DesignDocument =
+            serde_json::from_str(include_str!("../../../fixtures/document-v1.json"))
+                .expect("shared document fixture should deserialize");
+        assert_eq!(document.validate(), Ok(()));
+        let serialized = serde_json::to_value(&document).expect("serialize fixture");
+        let original = serde_json::to_value(document).expect("serialize parsed document");
+        assert_eq!(serialized, original);
+    }
 }
