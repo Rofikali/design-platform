@@ -7,10 +7,12 @@ This index explains where project knowledge belongs. Keep each document focused 
 - [MVP scope](../product/mvp.md): initial users, outcomes, and explicit non-goals.
 - [System overview](../architecture/system-overview.md): HLD, responsibilities, trust boundaries, and target component flow.
 - [Architecture decision records](../adr/ADR-0001-architecture.md): current foundational architecture decision.
+- [ADR-0002: WebAssembly adapter](../adr/ADR-0002-wasm-adapter.md): thin Rust-to-JavaScript boundary and staged integration decision.
 - [Security threat model](../security/threat-model.md): assets, threats, controls, and risks to revisit.
 - [Engineering standards](standards.md): SOLID, DRY, design-pattern selection, HLD/LLD, and definition of done.
 - [Editor geometry](editor-geometry.md): coordinate model, resize invariants, algorithm complexity, and verification requirements.
 - [Document history](document-history.md): undo/redo state machine, bounded snapshots, branch invalidation, and verification.
+- [WebAssembly boundary](wasm-boundary.md): adapter responsibilities, input bounds, CI evidence, and browser-integration acceptance criteria.
 - [Local document persistence](local-document-persistence.md): browser-storage boundary, size limit, failure handling, and verification.
 - [Testing strategy](../testing/strategy.md): test layers and MVP release gates.
 
