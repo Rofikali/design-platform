@@ -25,7 +25,7 @@ The JSON-string boundary is intentional: it avoids exposing Rust struct layout o
 
 CI runs the native Rust workspace tests and Clippy, then installs `wasm32-unknown-unknown` and checks that `design-wasm` compiles for the target. A target compile proves the adapter can build; it does not prove that Nuxt loads it, that browser calls work, or that Rust and TypeScript behavior is equivalent.
 
-The next integration step should generate/load the WASM package through a reproducible build, exercise valid and invalid fixtures in a real browser test, and compare Rust/TypeScript behavior for shared valid and invalid cases. Keep the TypeScript fallback until those checks pass.
+The build script uses wasm-pack to generate an ignored package at `web/generated/design-wasm`; do not commit generated output. CI installs wasm-pack and runs the build through the frontend lifecycle scripts. Current unit tests cover the TypeScript fallback path, not a real browser runtime. A dedicated browser smoke/parity test remains a release gate before treating WASM as production-verified.
 
 ## Performance and cost
 
