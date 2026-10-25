@@ -5,6 +5,12 @@ Documentation describes intended tests; it is not evidence that they have run. R
 
 ## Test layers
 
+### Shared document contract
+- Keep a representative versioned JSON fixture under `fixtures/`.
+- Parse and validate the same fixture in both the Rust core and TypeScript frontend.
+- Assert Rust serialization and TypeScript serialization preserve the fixture's field names and values.
+- Treat differences that are intentional for the current MVP (such as the frontend's fixed 800 × 600 page) as documented compatibility constraints, not accidental parity.
+
 ### Rust core
 - Unit tests for schema validation, geometry, IDs, styles, and invalid values.
 - Command tests for insert, update, move, resize, delete, undo, and redo.
