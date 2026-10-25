@@ -22,6 +22,12 @@ Documentation describes intended tests; it is not evidence that they have run. R
 - Editor interaction tests for add/select/move/resize and undo/redo.
 - Verify untrusted text is rendered as text, not executable markup.
 
+### Browser/WASM smoke
+- Generate the WASM package with `pnpm run build:wasm`.
+- Run `pnpm run test:wasm-browser` with Chrome available on `PATH` or `CHROME_BIN`.
+- Verify a shared valid fixture, malformed JSON, unsupported schema, and the 2,000,000-byte limit in a real browser runtime.
+- Keep this distinct from an end-to-end test of the Nuxt import/export controls; do not claim UI-level coverage until that exists.
+
 ### Persistence and API (when introduced)
 - Schema version and migration tests.
 - Authentication, ownership, and cross-account authorization tests.

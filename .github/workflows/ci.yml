@@ -51,11 +51,18 @@ jobs:
           run_install: false
       - name: Install wasm-pack
         uses: jetli/wasm-pack-action@v0.4.0
+      - name: Install Chrome
+        id: setup-chrome
+        uses: browser-actions/setup-chrome@v1
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Type check
         run: pnpm run typecheck
       - name: Run frontend tests
         run: pnpm test
+      - name: Run real-browser WASM smoke test
+        env:
+          CHROME_BIN: ${{ steps.setup-chrome.outputs.chrome-path }}
+        run: pnpm run test:wasm-browser
       - name: Build
         run: pnpm run build

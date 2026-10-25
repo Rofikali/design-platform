@@ -2,7 +2,7 @@
 
 ## Status
 
-The `design-wasm` adapter is implemented in this change, and CI is configured to compile it for `wasm32-unknown-unknown`. The target compile is not yet verified for this PR, and the adapter is not generated as a JavaScript package or called by the Nuxt editor. The TypeScript parser remains the active browser validation path until a follow-up integration change proves parity and failure handling.
+The `design-wasm` adapter is integrated into the frontend JSON import/export validation path. CI compiles the adapter, generates the JavaScript package, and runs a real Chrome smoke test against the generated package. The smoke test proves module initialization and direct validation behavior; it is not yet a full end-to-end test of the Nuxt editor's import/export buttons.
 
 ## Responsibility boundary
 
@@ -23,9 +23,15 @@ The JSON-string boundary is intentional: it avoids exposing Rust struct layout o
 
 ## Build and verification
 
-CI runs the native Rust workspace tests and Clippy, then installs `wasm32-unknown-unknown` and checks that `design-wasm` compiles for the target. A target compile proves the adapter can build; it does not prove that Nuxt loads it, that browser calls work, or that Rust and TypeScript behavior is equivalent.
+From `web/`, run `pnpm run build:wasm` to generate the ignored package at `web/generated/design-wasm`; do not commit generated output. CI installs wasm-pack and Chrome, then runs `pnpm run test:wasm-browser` after the generated package is built by the frontend lifecycle scripts.
 
-The build script uses wasm-pack to generate an ignored package at `web/generated/design-wasm`; do not commit generated output. CI installs wasm-pack and runs the build through the frontend lifecycle scripts. Current unit tests cover the TypeScript fallback path, not a real browser runtime. A dedicated browser smoke/parity test remains a release gate before treating WASM as production-verified.
+The browser smoke test loads the generated package over HTTP in headless Chrome and checks:
+- the shared valid fixture initializes and validates;
+- malformed JSON is rejected;
+- an unsupported schema version is rejected;
+- input larger than 2,000,000 bytes is rejected.
+
+This verifies the generated WASM runtime directly. It does not yet exercise the editor's visible import/export controls, prove complete Rust/TypeScript parity, or measure performance. Those remain separate release gates.
 
 ## Performance and cost
 
