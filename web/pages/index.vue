@@ -14,6 +14,7 @@ import {
   toDocument,
   type DesignElement,
 } from "~/utils/document";
+import { validateDocumentJson } from "~/utils/document-validation";
 
 const STORAGE_KEY = "design-platform:document:v1";
 const pageWidth = PAGE_WIDTH;
@@ -145,15 +146,23 @@ function onElementPointerEnd(event: PointerEvent) {
   if (dragState.value?.pointerId === event.pointerId) dragState.value = null;
   if (resizeState.value?.pointerId === event.pointerId) resizeState.value = null;
 }
-function exportJson() {
-  const blob = new Blob([JSON.stringify(toDocument(elements.value), null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = "design-platform-document.json";
-  anchor.click();
-  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-  statusMessage.value = "JSON design file downloaded.";
+async function exportJson() {
+  try {
+    const validation = await validateDocumentJson(snapshot());
+    const prettyJson = JSON.stringify(JSON.parse(validation.json) as unknown, null, 2);
+    const blob = new Blob([prettyJson], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "design-platform-document.json";
+    anchor.click();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    statusMessage.value = validation.engine === "wasm"
+      ? "JSON design file validated with WebAssembly and downloaded."
+      : "JSON design file downloaded using TypeScript fallback validation.";
+  } catch (error) {
+    statusMessage.value = `Export failed: ${error instanceof Error ? error.message : "invalid document"}`;
+  }
 }
 function importJson() { fileInput.value?.click(); }
 async function onFileSelected(event: Event) {
@@ -164,14 +173,17 @@ async function onFileSelected(event: Event) {
   if (file.size > MAX_FILE_CHARS) { statusMessage.value = "Import rejected: file exceeds the 2 MB limit."; return; }
   try {
     const text = await file.text();
-    const parsed = parseDocumentJson(text);
+    const validation = await validateDocumentJson(text);
+    const parsed = parseDocumentJson(validation.json);
     if (historyTimer) clearTimeout(historyTimer);
     historyTimer = undefined;
     elements.value = parsed.elements;
     selectedId.value = parsed.elements[0]?.id ?? null;
     nextId.value = parsed.elements.length + 1;
     history.value = createHistory(snapshot());
-    statusMessage.value = "Document imported and validated. It is stored only in this browser.";
+    statusMessage.value = validation.engine === "wasm"
+      ? "Document imported and validated with WebAssembly. It is stored only in this browser."
+      : "Document imported with TypeScript fallback validation. It is stored only in this browser.";
   } catch (error) {
     statusMessage.value = `Import failed: ${error instanceof Error ? error.message : "invalid document"}`;
   }
