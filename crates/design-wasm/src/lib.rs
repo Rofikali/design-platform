@@ -18,7 +18,9 @@ const MAX_DOCUMENT_JSON_BYTES: usize = 2_000_000;
 #[wasm_bindgen]
 pub fn validate_document_json(input: &str) -> Result<String, JsValue> {
     if input.len() > MAX_DOCUMENT_JSON_BYTES {
-        return Err(JsValue::from_str("Document JSON exceeds the 2,000,000-byte limit"));
+        return Err(JsValue::from_str(
+            "Document JSON exceeds the 2,000,000-byte limit",
+        ));
     }
 
     let document: DesignDocument = serde_json::from_str(input)
@@ -49,7 +51,8 @@ mod tests {
     #[test]
     fn returns_a_validated_versioned_document() {
         let result = validate_document_json(VALID_DOCUMENT).expect("valid document");
-        let parsed: serde_json::Value = serde_json::from_str(&result).expect("valid output JSON");
+        let parsed: serde_json::Value =
+            serde_json::from_str(&result).expect("valid output JSON");
         assert_eq!(parsed["schema_version"], 1);
         assert_eq!(parsed["elements"][0]["kind"]["type"], "text");
     }
