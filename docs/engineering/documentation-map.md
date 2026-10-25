@@ -10,6 +10,7 @@ This index explains where project knowledge belongs. Keep each document focused 
 - [Security threat model](../security/threat-model.md): assets, threats, controls, and risks to revisit.
 - [Engineering standards](standards.md): SOLID, DRY, design-pattern selection, HLD/LLD, and definition of done.
 - [Editor geometry](editor-geometry.md): coordinate model, resize invariants, algorithm complexity, and verification requirements.
+- [Document history](document-history.md): undo/redo state machine, bounded snapshots, branch invalidation, and verification.
 - [Local document persistence](local-document-persistence.md): browser-storage boundary, size limit, failure handling, and verification.
 - [Testing strategy](../testing/strategy.md): test layers and MVP release gates.
 
