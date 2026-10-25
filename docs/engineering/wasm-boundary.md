@@ -31,7 +31,7 @@ Run `pnpm run test:wasm-browser` with Chrome available on `PATH` or `CHROME_BIN`
 
 ### Actual Nuxt editor import/export
 
-Run `pnpm run test:editor-browser` with Chrome available on `PATH` or `CHROME_BIN`. The runner starts the Nuxt app, drives its real page in headless Chrome through the DevTools protocol, and verifies:
+Run `pnpm run test:editor-browser` with Chrome available on `PATH` or `CHROME_BIN`. The runner builds the Nuxt app, starts its production preview server, drives the real page in headless Chrome through the DevTools protocol, and verifies:
 - JSON export reports the WASM engine and produces a downloaded, parseable version-1 document.
 - Importing `fixtures/document-v1.json` reports WASM validation and renders the imported text on the visible canvas.
 - Importing an unsupported schema is rejected and leaves the previously loaded valid document unchanged.
