@@ -207,7 +207,15 @@ async function main() {
 
     // Export must report WASM, not the TypeScript fallback.
     await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.includes('Download JSON'))?.click(); true");
-    await waitForPage("WASM-backed JSON export", "document.querySelector('[role=status]')?.textContent || ''", value => value.includes("validated with WebAssembly and downloaded"));
+    const exportStatus = await waitForPage(
+      "JSON export status",
+      "document.querySelector('[role=status]')?.textContent || ''",
+      value => value.includes("validated with WebAssembly and downloaded") || value.includes("TypeScript fallback validation") || value.startsWith("Export failed:"),
+    );
+    if (!exportStatus.includes("validated with WebAssembly and downloaded")) {
+      const diagnostics = await evaluate("JSON.stringify({ status: document.querySelector('[role=status]')?.textContent || '', wasmResources: performance.getEntriesByType('resource').map(entry => entry.name).filter(name => name.includes('design_wasm') || name.endsWith('.wasm')) })");
+      throw new Error(`JSON export did not use WASM. Browser diagnostics: ${diagnostics}`);
+    }
     const exportedPath = await waitFor("downloaded JSON file", async () => {
       const names = await readdir(downloads);
       const name = names.find(item => item === "design-platform-document.json");
