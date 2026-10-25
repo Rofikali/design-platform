@@ -10,7 +10,7 @@ Documentation describes intended tests; it is not evidence that they have run. R
 - Parse and validate the same fixture in both the Rust core and TypeScript frontend.
 - Assert Rust serialization and TypeScript serialization preserve the fixture's field names and values.
 - Treat differences that are intentional for the current MVP (such as the frontend's fixed 800 × 600 page) as documented compatibility constraints, not accidental parity.
-- Maintain `fixtures/validation-cases-v1.json` as a small shared accept/reject corpus. Rust integration tests, TypeScript tests, and the browser/WASM smoke suite must consume the same cases.
+- Maintain `fixtures/validation-cases-v1.json` as a shared accept/reject corpus consumed by Rust, TypeScript, and browser/WASM tests.
 - Shared cases are a regression corpus, not proof of exhaustive equivalence; add a case whenever validation behavior changes.
 
 ### Rust core
@@ -28,10 +28,16 @@ Documentation describes intended tests; it is not evidence that they have run. R
 ### Browser/WASM smoke
 - Generate the WASM package with `pnpm run build:wasm`.
 - Run `pnpm run test:wasm-browser` with Chrome available on `PATH` or `CHROME_BIN`.
-- Verify that WASM initializes, accepts the shared valid case, and rejects each shared invalid case.
-- Reject malformed JSON and non-ASCII input whose UTF-8 byte length exceeds 2,000,000.
-- Call the WASM adapter directly in this test so domain validation errors cannot be masked by the TypeScript fallback.
-- Keep this distinct from an end-to-end test of the Nuxt import/export controls; do not claim UI-level coverage until that exists.
+- Verify WASM initializes, accepts/rejects the shared validation cases as expected, rejects malformed JSON, and enforces the 2,000,000-byte UTF-8 input limit.
+- Call the WASM adapter directly so domain validation errors cannot be masked by TypeScript fallback.
+
+### Actual Nuxt editor browser test
+- Run `pnpm run test:editor-browser` with Chrome available on `PATH` or `CHROME_BIN`.
+- Start the real Nuxt editor and use headless Chrome to exercise its visible file input, import handler, export button, download, and status messages.
+- Require export/import success messages to explicitly identify WASM validation, not the TypeScript fallback.
+- Verify the downloaded JSON is parseable and versioned, valid imported content appears on the canvas, and a rejected import does not replace the current valid document.
+- Keep temporary browser profiles/downloads isolated and clean them after the test.
+- This is focused UI coverage; it does not replace broader interaction, accessibility, PDF export, or performance testing.
 
 ### Persistence and API (when introduced)
 - Schema version and migration tests.
@@ -59,6 +65,7 @@ CI should install pinned toolchains, run formatting and lint checks, execute tes
 - [ ] Core tests pass.
 - [ ] Frontend tests pass.
 - [ ] Shared native/TypeScript/WASM validation cases pass.
+- [ ] Real Nuxt import/export browser test passes.
 - [ ] Both template export fixtures pass.
 - [ ] Resource-limit and cleanup tests pass.
 - [ ] Dependency/security checks have been reviewed.
