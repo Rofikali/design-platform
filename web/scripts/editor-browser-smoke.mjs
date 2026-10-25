@@ -118,7 +118,6 @@ async function main() {
   try {
     nuxt = startProcess("pnpm", ["exec", "nuxt", "dev", "--host", "127.0.0.1", "--port", String(port)], {
       cwd: webRoot,
-      env: { ...process.env, NODE_ENV: "test" },
     });
     await waitFor("Nuxt dev server", async () => {
       if (nuxt.exitCode !== null) throw new Error(`Nuxt exited early: ${nuxt.output().stderr.slice(-2000)}`);
