@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watch } from "vue";
 import EditorCanvas from "~/components/editor/EditorCanvas.vue";
 import { clampElementPosition, clampElementSize, nextElementId } from "~/utils/editor-helpers";
 import { loadLocalDocument, saveLocalDocument } from "~/utils/local-document-storage";
+import { createHistory, recordHistory, redoHistory, undoHistory } from "~/utils/document-history";
 
 import {
   MAX_ELEMENTS,
@@ -14,7 +15,6 @@ import {
   type DesignElement,
 } from "~/utils/document";
 
-const HISTORY_LIMIT = 50;
 const STORAGE_KEY = "design-platform:document:v1";
 const pageWidth = PAGE_WIDTH;
 const pageHeight = PAGE_HEIGHT;
@@ -25,29 +25,24 @@ const elements = ref<DesignElement[]>([
   { id: "heading-1", type: "text", text: "Your design starts here", x: 48, y: 56, width: 500, height: 70, fontSize: 32, color: "#172033" },
   { id: "rect-2", type: "rect", x: 48, y: 160, width: 250, height: 110, color: "#dbeafe" },
 ]);
-const undoStack = ref<string[]>([]);
-const redoStack = ref<string[]>([]);
 const fileInput = ref<HTMLInputElement | null>(null);
 const dragState = ref<{ id: string; pointerId: number; startClientX: number; startClientY: number; originX: number; originY: number } | null>(null);
 const resizeState = ref<{ id: string; pointerId: number; startClientX: number; startClientY: number; originWidth: number; originHeight: number } | null>(null);
 let historyReady = false;
 let historyTimer: ReturnType<typeof setTimeout> | undefined;
 let autosaveTimer: ReturnType<typeof setTimeout> | undefined;
-let lastStableSnapshot = "";
 
 const selectedElement = computed(() => elements.value.find((element) => element.id === selectedId.value) ?? null);
 
 function snapshot(): string { return JSON.stringify(toDocument(elements.value)); }
-function pushBounded(stack: string[], value: string) {
-  stack.push(value);
-  if (stack.length > HISTORY_LIMIT) stack.shift();
-}
+const history = ref(createHistory(snapshot()));
+const undoStack = computed(() => history.value.undoStack);
+const redoStack = computed(() => history.value.redoStack);
 function applySnapshot(json: string) {
   const parsed = parseDocumentJson(json);
   elements.value = parsed.elements;
   selectedId.value = parsed.elements[0]?.id ?? null;
   nextId.value = parsed.elements.length + 1;
-  lastStableSnapshot = snapshot();
 }
 function addText() {
   if (elements.value.length >= MAX_ELEMENTS) { statusMessage.value = "Element limit reached (1,000)."; return; }
@@ -170,12 +165,12 @@ async function onFileSelected(event: Event) {
   try {
     const text = await file.text();
     const parsed = parseDocumentJson(text);
+    if (historyTimer) clearTimeout(historyTimer);
+    historyTimer = undefined;
     elements.value = parsed.elements;
     selectedId.value = parsed.elements[0]?.id ?? null;
     nextId.value = parsed.elements.length + 1;
-    undoStack.value = [];
-    redoStack.value = [];
-    lastStableSnapshot = snapshot();
+    history.value = createHistory(snapshot());
     statusMessage.value = "Document imported and validated. It is stored only in this browser.";
   } catch (error) {
     statusMessage.value = `Import failed: ${error instanceof Error ? error.message : "invalid document"}`;
@@ -184,29 +179,29 @@ async function onFileSelected(event: Event) {
 function undo() {
   if (historyTimer) clearTimeout(historyTimer);
   historyTimer = undefined;
-  const current = snapshot();
-  if (current !== lastStableSnapshot) pushBounded(undoStack.value, lastStableSnapshot);
-  const previous = undoStack.value.pop();
-  if (!previous) { statusMessage.value = "Nothing to undo."; return; }
-  pushBounded(redoStack.value, current);
-  applySnapshot(previous);
+  const transition = undoHistory(history.value, snapshot());
+  history.value = transition.history;
+  if (transition.snapshot === null) {
+    statusMessage.value = "Nothing to undo.";
+    return;
+  }
+  applySnapshot(transition.snapshot);
   statusMessage.value = "Undo applied.";
 }
 function redo() {
   if (historyTimer) clearTimeout(historyTimer);
   historyTimer = undefined;
-  const current = snapshot();
-  if (current !== lastStableSnapshot) {
-    pushBounded(undoStack.value, lastStableSnapshot);
-    lastStableSnapshot = current;
-    redoStack.value = [];
+  const transition = redoHistory(history.value, snapshot());
+  history.value = transition.history;
+  if (transition.status === "recorded-new-changes") {
     statusMessage.value = "New changes recorded; redo cleared.";
     return;
   }
-  const next = redoStack.value.pop();
-  if (!next) { statusMessage.value = "Nothing to redo."; return; }
-  pushBounded(undoStack.value, current);
-  applySnapshot(next);
+  if (transition.snapshot === null) {
+    statusMessage.value = "Nothing to redo.";
+    return;
+  }
+  applySnapshot(transition.snapshot);
   statusMessage.value = "Redo applied.";
 }
 watch(elements, () => {
@@ -214,11 +209,7 @@ watch(elements, () => {
   if (historyTimer) clearTimeout(historyTimer);
   historyTimer = setTimeout(() => {
     const current = snapshot();
-    if (current !== lastStableSnapshot) {
-      pushBounded(undoStack.value, lastStableSnapshot);
-      redoStack.value = [];
-      lastStableSnapshot = current;
-    }
+    history.value = recordHistory(history.value, current);
   }, 300);
   if (autosaveTimer) clearTimeout(autosaveTimer);
   autosaveTimer = setTimeout(() => {
@@ -240,7 +231,7 @@ onMounted(() => {
   } else if (result.status === "unavailable") {
     statusMessage.value = "Browser storage is unavailable; use JSON download to keep a copy.";
   }
-  lastStableSnapshot = snapshot();
+  history.value = createHistory(snapshot());
   historyReady = true;
 });
 </script>
