@@ -120,9 +120,23 @@ async function main() {
       cwd: webRoot,
     });
     await waitFor("Nuxt dev server", async () => {
-      if (nuxt.exitCode !== null) throw new Error(`Nuxt exited early: ${nuxt.output().stderr.slice(-2000)}`);
-      const response = await fetch(baseUrl);
-      return response.ok;
+      if (nuxt.exitCode !== null) {
+        const output = nuxt.output();
+        throw new Error(`Nuxt exited early (code ${nuxt.exitCode}): ${output.stdout.slice(-2000)} ${output.stderr.slice(-3000)}`);
+      }
+      try {
+        const response = await fetch(baseUrl);
+        return response.ok;
+      } catch (error) {
+        if (nuxt.exitCode !== null) {
+          const output = nuxt.output();
+          throw new Error(`Nuxt exited early (code ${nuxt.exitCode}): ${output.stdout.slice(-2000)} ${output.stderr.slice(-3000)}`);
+        }
+        return null;
+      }
+    }).catch(error => {
+      const output = nuxt?.output?.() ?? { stdout: "", stderr: "" };
+      throw new Error(`${error.message}\nNuxt stdout:\n${output.stdout.slice(-5000)}\nNuxt stderr:\n${output.stderr.slice(-5000)}`);
     });
 
     browser = startProcess(chrome, [
