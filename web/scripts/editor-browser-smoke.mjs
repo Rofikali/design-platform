@@ -134,6 +134,7 @@ async function main() {
       "--no-first-run",
       "--no-default-browser-check",
       `--remote-debugging-port=${chromeDebugPort}`,
+      "--remote-allow-origins=*",
       `--user-data-dir=${resolve(tempRoot, "chrome-profile")}`,
       baseUrl,
     ]);
