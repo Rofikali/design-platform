@@ -9,30 +9,38 @@
       const wasm = await import("/web/generated/design-wasm/design_wasm.js");
       await wasm.default();
 
-      const fixtureResponse = await fetch("/fixtures/document-v1.json");
-      if (!fixtureResponse.ok) throw new Error("Could not load shared document fixture");
-      const fixture = await fixtureResponse.text();
-      const canonical = wasm.validate_document_json(fixture);
-      const parsed = JSON.parse(canonical);
-      if (parsed.schema_version !== 1 || !Array.isArray(parsed.elements) || parsed.elements.length !== 2) {
-        throw new Error("Valid fixture did not produce the expected canonical document");
+      const casesResponse = await fetch("/fixtures/validation-cases-v1.json");
+      if (!casesResponse.ok) throw new Error("Could not load shared validation cases");
+      const casesFixture = await casesResponse.json();
+      if (casesFixture.schema_version !== 1 || !Array.isArray(casesFixture.cases)) {
+        throw new Error("Shared validation cases have an unsupported fixture version");
+      }
+
+      for (const testCase of casesFixture.cases) {
+        let accepted = true;
+        try {
+          const canonical = wasm.validate_document_json(JSON.stringify(testCase.document));
+          JSON.parse(canonical);
+        } catch {
+          accepted = false;
+        }
+        if (accepted !== testCase.valid) {
+          throw new Error("WASM validation outcome differed for shared case: " + testCase.name);
+        }
       }
 
       let malformedRejected = false;
       try { wasm.validate_document_json("{broken"); } catch { malformedRejected = true; }
       if (!malformedRejected) throw new Error("Malformed JSON was accepted");
 
-      const invalidDocument = JSON.stringify({ ...parsed, schema_version: 999 });
-      let invalidRejected = false;
-      try { wasm.validate_document_json(invalidDocument); } catch { invalidRejected = true; }
-      if (!invalidRejected) throw new Error("Unsupported schema version was accepted");
-
-      let oversizedRejected = false;
-      try { wasm.validate_document_json(" ".repeat(2_000_001)); } catch { oversizedRejected = true; }
-      if (!oversizedRejected) throw new Error("Oversized UTF-8 input was accepted");
+      // 1,000,001 copies of é exceed the limit in UTF-8 bytes (2,000,002 bytes),
+      // while remaining below the same limit when counted as JavaScript characters.
+      let oversizedUtf8Rejected = false;
+      try { wasm.validate_document_json("é".repeat(1_000_001)); } catch { oversizedUtf8Rejected = true; }
+      if (!oversizedUtf8Rejected) throw new Error("Oversized UTF-8 input was accepted");
 
       result.dataset.status = "passed";
-      result.textContent = "PASS: WASM initialized; valid fixture canonicalized; malformed, invalid-schema, and oversized inputs rejected.";
+      result.textContent = "PASS: WASM initialized; shared valid/invalid cases matched expectations; malformed JSON and oversized UTF-8 input rejected.";
     } catch (error) {
       result.dataset.status = "failed";
       result.textContent = "FAIL: " + (error instanceof Error ? error.message : String(error));
