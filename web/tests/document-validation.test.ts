@@ -19,6 +19,6 @@ describe("document validation adapter", () => {
   });
 
   it("rejects inputs beyond the UTF-8 byte limit before parsing", async () => {
-    await expect(validateDocumentJson('"😀"'.padEnd(1_000_002, "x"))).rejects.toThrow(/2 MB limit/);
+    await expect(validateDocumentJson('"😀"'.padEnd(2_000_000, "x"))).rejects.toThrow(/2 MB limit/);
   });
 });
