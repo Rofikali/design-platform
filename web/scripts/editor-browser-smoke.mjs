@@ -65,6 +65,19 @@ function stopProcess(child) {
   } catch {}
 }
 
+async function waitForSuccessfulExit(child, description, timeout = 120_000) {
+  const deadline = Date.now() + timeout;
+  while (Date.now() < deadline && child.exitCode === null) await delay(250);
+  if (child.exitCode === null) {
+    stopProcess(child);
+    throw new Error(`${description} timed out after ${timeout}ms`);
+  }
+  if (child.exitCode !== 0) {
+    const output = child.output();
+    throw new Error(`${description} failed with exit code ${child.exitCode}\\nstdout:\\n${output.stdout.slice(-5000)}\\nstderr:\\n${output.stderr.slice(-5000)}`);
+  }
+}
+
 function connectCdp(url) {
   return new Promise((resolveConnect, rejectConnect) => {
     const socket = new WebSocket(url);
@@ -116,10 +129,16 @@ async function main() {
   let cdp;
 
   try {
-    nuxt = startProcess("pnpm", ["exec", "nuxt", "dev", "--host", "127.0.0.1", "--port", String(port)], {
+    // Exercise the built application. Nuxt's Vite dev SSR module loader can
+    // reject internal pnpm paths in headless CI, which is unrelated to editor UI.
+    const build = startProcess("pnpm", ["exec", "nuxt", "build"], { cwd: webRoot });
+    await waitForSuccessfulExit(build, "Nuxt production build");
+
+    nuxt = startProcess("pnpm", ["exec", "nuxt", "preview", "--host", "127.0.0.1", "--port", String(port)], {
       cwd: webRoot,
+      env: { ...process.env, NODE_ENV: "production" },
     });
-    await waitFor("Nuxt dev server", async () => {
+    await waitFor("Nuxt production preview", async () => {
       if (nuxt.exitCode !== null) {
         const output = nuxt.output();
         throw new Error(`Nuxt exited early (code ${nuxt.exitCode}): ${output.stdout.slice(-2000)} ${output.stderr.slice(-3000)}`);
