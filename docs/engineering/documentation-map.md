@@ -12,7 +12,7 @@ This index explains where project knowledge belongs. Keep each document focused 
 - [Engineering standards](standards.md): SOLID, DRY, design-pattern selection, HLD/LLD, and definition of done.
 - [Editor geometry](editor-geometry.md): coordinate model, resize invariants, algorithm complexity, and verification requirements.
 - [Document history](document-history.md): undo/redo state machine, bounded snapshots, branch invalidation, and verification.
-- [WebAssembly boundary](wasm-boundary.md): adapter responsibilities, input bounds, CI evidence, and browser-integration acceptance criteria.
+- [WebAssembly boundary](wasm-boundary.md): adapter responsibilities, generated package workflow, input bounds, fallback behavior, and remaining browser-integration gates.
 - [Local document persistence](local-document-persistence.md): browser-storage boundary, size limit, failure handling, and verification.
 - [Testing strategy](../testing/strategy.md): test layers and MVP release gates.
 
