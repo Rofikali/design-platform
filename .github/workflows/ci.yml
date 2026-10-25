@@ -64,5 +64,9 @@ jobs:
         env:
           CHROME_BIN: ${{ steps.setup-chrome.outputs.chrome-path }}
         run: pnpm run test:wasm-browser
+      - name: Run real Nuxt editor import/export browser test
+        env:
+          CHROME_BIN: ${{ steps.setup-chrome.outputs.chrome-path }}
+        run: pnpm run test:editor-browser
       - name: Build
         run: pnpm run build
