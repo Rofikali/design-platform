@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "name": "valid-shared-document",
+      "valid": true,
+      "document": {
+        "schema_version": 1,
+        "page": { "width": 800, "height": 600, "background": "#ffffff" },
+        "elements": [
+          {
+            "id": "title-1",
+            "x": 10,
+            "y": 20,
+            "width": 300,
+            "height": 60,
+            "kind": { "type": "text", "text": "Exam Paper", "font_size": 28, "color": "#123456" }
+          },
+          {
+            "id": "rect-2",
+            "x": 50,
+            "y": 100,
+            "width": 200,
+            "height": 80,
+            "kind": { "type": "rect", "color": "#abc" }
+          }
+        ]
+      }
+    },
+    {
+      "name": "unsupported-schema",
+      "valid": false,
+      "document": {
+        "schema_version": 999,
+        "page": { "width": 800, "height": 600, "background": "#ffffff" },
+        "elements": []
+      }
+    },
+    {
+      "name": "duplicate-element-id",
+      "valid": false,
+      "document": {
+        "schema_version": 1,
+        "page": { "width": 800, "height": 600, "background": "#ffffff" },
+        "elements": [
+          { "id": "same", "x": 0, "y": 0, "width": 10, "height": 10, "kind": { "type": "rect", "color": "#abc" } },
+          { "id": "same", "x": 20, "y": 20, "width": 10, "height": 10, "kind": { "type": "rect", "color": "#abc" } }
+        ]
+      }
+    },
+    {
+      "name": "invalid-geometry",
+      "valid": false,
+      "document": {
+        "schema_version": 1,
+        "page": { "width": 800, "height": 600, "background": "#ffffff" },
+        "elements": [
+          { "id": "bad-geometry", "x": 0, "y": 0, "width": 0, "height": 10, "kind": { "type": "rect", "color": "#abc" } }
+        ]
+      }
+    },
+    {
+      "name": "invalid-color",
+      "valid": false,
+      "document": {
+        "schema_version": 1,
+        "page": { "width": 800, "height": 600, "background": "#ffffff" },
+        "elements": [
+          { "id": "bad-color", "x": 0, "y": 0, "width": 10, "height": 10, "kind": { "type": "rect", "color": "url(javascript:alert(1))" } }
+        ]
+      }
+    }
+  ]
+}
