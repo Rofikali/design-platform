@@ -51,8 +51,7 @@ mod tests {
     #[test]
     fn returns_a_validated_versioned_document() {
         let result = validate_document_json(VALID_DOCUMENT).expect("valid document");
-        let parsed: serde_json::Value =
-            serde_json::from_str(&result).expect("valid output JSON");
+        let parsed: serde_json::Value = serde_json::from_str(&result).expect("valid output JSON");
         assert_eq!(parsed["schema_version"], 1);
         assert_eq!(parsed["elements"][0]["kind"]["type"], "text");
     }
