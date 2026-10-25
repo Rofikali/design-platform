@@ -2,7 +2,7 @@
 
 ## Status
 
-The `design-wasm` adapter is integrated into the frontend JSON import/export validation path. CI compiles the adapter, generates the JavaScript package, and runs a real Chrome smoke test against the generated package. The smoke test proves module initialization and direct validation behavior; it is not yet a full end-to-end test of the Nuxt editor's import/export buttons.
+The `design-wasm` adapter is integrated into the frontend JSON import/export validation path. CI compiles the adapter, generates the JavaScript package, and runs a real Chrome smoke test against the generated package. The browser suite now checks shared valid/invalid validation cases in addition to module initialization and resource-boundary behavior. It is not yet a full end-to-end test of the Nuxt editor's visible import/export buttons.
 
 ## Responsibility boundary
 
@@ -25,13 +25,14 @@ The JSON-string boundary is intentional: it avoids exposing Rust struct layout o
 
 From `web/`, run `pnpm run build:wasm` to generate the ignored package at `web/generated/design-wasm`; do not commit generated output. CI installs wasm-pack and Chrome, then runs `pnpm run test:wasm-browser` after the generated package is built by the frontend lifecycle scripts.
 
-The browser smoke test loads the generated package over HTTP in headless Chrome and checks:
-- the shared valid fixture initializes and validates;
-- malformed JSON is rejected;
-- an unsupported schema version is rejected;
-- input larger than 2,000,000 bytes is rejected.
+The versioned `fixtures/validation-cases-v1.json` cases are consumed by:
+- Rust integration tests for the `design-core` validator.
+- TypeScript Vitest tests for the editor's fallback parser.
+- The real Chrome smoke harness, which invokes the generated WASM adapter and checks each case against its expected accept/reject outcome.
 
-This verifies the generated WASM runtime directly. It does not yet exercise the editor's visible import/export controls, prove complete Rust/TypeScript parity, or measure performance. Those remain separate release gates.
+The browser test also rejects malformed JSON and verifies the 2,000,000-byte limit with non-ASCII UTF-8 input. The adapter is called directly, so domain validation failures are not hidden by the TypeScript fallback in this test.
+
+These tests establish agreement for the representative shared cases, not exhaustive semantic parity across every possible input. The suite still does not exercise the editor's visible import/export controls or measure performance; those remain separate release gates.
 
 ## Performance and cost
 
