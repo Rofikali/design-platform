@@ -134,7 +134,7 @@ async function main() {
     const build = startProcess("pnpm", ["exec", "nuxt", "build"], { cwd: webRoot });
     await waitForSuccessfulExit(build, "Nuxt production build");
 
-    nuxt = startProcess("pnpm", ["exec", "nuxt", "preview", "--host", "127.0.0.1", "--port", String(port)], {
+    nuxt = startProcess("pnpm", ["exec", "nuxt", "preview", "--host=127.0.0.1", `--port=${port}`], {
       cwd: webRoot,
       env: { ...process.env, NODE_ENV: "production" },
     });
