@@ -18,3 +18,6 @@ pnpm-debug.log*
 .vscode/
 .idea/
 .DS_Store
+
+# Generated Rust/WASM package (rebuild with pnpm run build:wasm)
+/web/generated/design-wasm/
