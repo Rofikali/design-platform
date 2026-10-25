@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import sharedDocumentFixture from "../../fixtures/document-v1.json";
 import {
   MAX_ELEMENTS,
   MAX_FILE_CHARS,
@@ -38,6 +39,14 @@ function validDocument(): DesignDocument {
 }
 
 describe("document parsing and validation", () => {
+  it("accepts the shared version-1 contract fixture", () => {
+    const parsed = parseDocument(sharedDocumentFixture);
+    expect(parsed.width).toBe(PAGE_WIDTH);
+    expect(parsed.height).toBe(PAGE_HEIGHT);
+    expect(parsed.elements).toHaveLength(2);
+    expect(toDocument(parsed.elements)).toEqual(sharedDocumentFixture);
+  });
+
   it("accepts valid text and rectangle elements and converts them to editor elements", () => {
     const parsed = parseDocument(validDocument());
     expect(parsed.width).toBe(PAGE_WIDTH);
