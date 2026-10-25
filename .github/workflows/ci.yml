@@ -29,6 +29,10 @@ jobs:
         run: cargo test --workspace
       - name: Run Clippy
         run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: Install WebAssembly target
+        run: rustup target add wasm32-unknown-unknown
+      - name: Check WebAssembly adapter
+        run: cargo check -p design-wasm --target wasm32-unknown-unknown
 
   frontend:
     name: Nuxt frontend
