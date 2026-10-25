@@ -6,6 +6,9 @@
 use design_core::DesignDocument;
 use wasm_bindgen::prelude::*;
 
+/// Bound parsing work and allocation for untrusted JSON crossing the JS boundary.
+const MAX_DOCUMENT_JSON_BYTES: usize = 2_000_000;
+
 /// Validate a versioned JSON document using the shared Rust domain rules.
 ///
 /// Returns the same JSON structure in canonical serde field order when valid.
@@ -14,6 +17,10 @@ use wasm_bindgen::prelude::*;
 /// large object graphs directly across the WASM boundary.
 #[wasm_bindgen]
 pub fn validate_document_json(input: &str) -> Result<String, JsValue> {
+    if input.len() > MAX_DOCUMENT_JSON_BYTES {
+        return Err(JsValue::from_str("Document JSON exceeds the 2,000,000-byte limit"));
+    }
+
     let document: DesignDocument = serde_json::from_str(input)
         .map_err(|error| JsValue::from_str(&format!("Invalid document JSON: {error}")))?;
 
