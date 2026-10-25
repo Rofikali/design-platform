@@ -2,7 +2,7 @@
 
 ## Status
 
-The `design-wasm` adapter is implemented and CI-compiles for `wasm32-unknown-unknown`. It is not yet generated as a JavaScript package or called by the Nuxt editor. The TypeScript parser remains the active browser validation path until a follow-up integration change proves parity and failure handling.
+The `design-wasm` adapter is implemented in this change, and CI is configured to compile it for `wasm32-unknown-unknown`. The target compile is not yet verified for this PR, and the adapter is not generated as a JavaScript package or called by the Nuxt editor. The TypeScript parser remains the active browser validation path until a follow-up integration change proves parity and failure handling.
 
 ## Responsibility boundary
 
