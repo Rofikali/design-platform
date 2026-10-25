@@ -204,14 +204,23 @@ async function main() {
     await waitForPage("editor canvas to mount", "document.querySelector('.design-page') !== null");
     await evaluate("localStorage.clear(); location.reload(); true");
     await waitForPage("fresh editor after reload", "document.querySelector('.design-page')?.innerText || ''", value => value.includes("Your design starts here"));
-
+    // SSR markup can exist before Vue attaches click handlers. Wait for Vue's
+    // component instance on a real button before exercising the UI.
+    await waitForPage("Vue editor hydration", "Boolean(document.querySelector('button')?.__vueParentComponent)");
+    
     // Export must report WASM, not the TypeScript fallback.
     await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.includes('Download JSON'))?.click(); true");
-    const exportStatus = await waitForPage(
-      "JSON export status",
-      "document.querySelector('[role=status]')?.textContent || ''",
-      value => value.includes("validated with WebAssembly and downloaded") || value.includes("TypeScript fallback validation") || value.startsWith("Export failed:"),
-    );
+    let exportStatus;
+    try {
+      exportStatus = await waitForPage(
+        "JSON export status",
+        "document.querySelector('[role=status]')?.textContent || ''",
+        value => value.includes("validated with WebAssembly and downloaded") || value.includes("TypeScript fallback validation") || value.startsWith("Export failed:"),
+      );
+    } catch (error) {
+      const diagnostics = await evaluate("JSON.stringify({ status: document.querySelector('[role=status]')?.textContent || '', buttons: Array.from(document.querySelectorAll('button')).map(button => ({ text: button.textContent.trim(), hasVueComponent: Boolean(button.__vueParentComponent) })), wasmResources: performance.getEntriesByType('resource').map(entry => entry.name).filter(name => name.includes('design_wasm') || name.endsWith('.wasm')) })");
+      throw new Error(`JSON export status never reached a terminal state: ${error.message}. Browser diagnostics: ${diagnostics}`);
+    }
     if (!exportStatus.includes("validated with WebAssembly and downloaded")) {
       const diagnostics = await evaluate("JSON.stringify({ status: document.querySelector('[role=status]')?.textContent || '', wasmResources: performance.getEntriesByType('resource').map(entry => entry.name).filter(name => name.includes('design_wasm') || name.endsWith('.wasm')) })");
       throw new Error(`JSON export did not use WASM. Browser diagnostics: ${diagnostics}`);
