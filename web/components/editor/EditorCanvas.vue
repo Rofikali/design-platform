@@ -6,6 +6,7 @@ defineProps<{
   selectedId: string | null;
   pageWidth: number;
   pageHeight: number;
+  pageBackground: string;
 }>();
 
 const emit = defineEmits<{
@@ -22,14 +23,14 @@ const emit = defineEmits<{
         <div class="canvas-heading">
           <div>
             <h2>Untitled design</h2>
-            <p>800 × 600 logical pixels</p>
+            <p>{{ pageWidth }} × {{ pageHeight }} logical units</p>
           </div>
           <span>{{ elements.length }} elements</span>
         </div>
         <div class="canvas-scroller">
           <div
             class="design-page"
-            :style="{ width: pageWidth + 'px', height: pageHeight + 'px' }"
+             :style="{ width: pageWidth + 'px', height: pageHeight + 'px', backgroundColor: pageBackground }"
             aria-label="Editable design page"
           >
             <button
