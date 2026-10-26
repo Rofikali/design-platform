@@ -331,6 +331,19 @@ async function main() {
       throw new Error(`Pointer drag did not apply expected delta: ${JSON.stringify({ before: geometry, after: afterDrag })}`);
     }
 
+    await delay(500);
+    await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.trim() === 'Undo')?.click(); true");
+    await waitFor("undo restores pointer drag origin", async () => {
+      const value = await selectedTextGeometry();
+      return value.left === geometry.left && value.top === geometry.top ? value : null;
+    });
+    await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.trim() === 'Redo')?.click(); true");
+    await waitFor("redo restores pointer drag result", async () => {
+      const value = await selectedTextGeometry();
+      return value.left === afterDrag.left && value.top === afterDrag.top ? value : null;
+    });
+    await evaluate("Array.from(document.querySelectorAll('.design-element')).find(element => element.textContent.includes('Browser interaction proof'))?.click(); true");
+
     // Resize from the visible bottom-right handle, preserving the top-left anchor.
     const handle = await evaluate("(() => { const element = Array.from(document.querySelectorAll('.design-element')).find(node => node.textContent.includes('Browser interaction proof')); const rect = element.querySelector('.resize-handle').getBoundingClientRect(); return { x: rect.left + Math.min(rect.width / 2, 5), y: rect.top + Math.min(rect.height / 2, 5) }; })()");
     await mouse("mouseMoved", handle.x, handle.y);
@@ -341,6 +354,19 @@ async function main() {
     if (afterResize.width !== afterDrag.width + 40 || afterResize.height !== afterDrag.height + 30) {
       throw new Error(`Pointer resize did not apply expected delta: ${JSON.stringify({ afterDrag, afterResize })}`);
     }
+
+    await delay(500);
+    await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.trim() === 'Undo')?.click(); true");
+    await waitFor("undo restores pointer resize origin", async () => {
+      const value = await selectedTextGeometry();
+      return value.width === afterDrag.width && value.height === afterDrag.height ? value : null;
+    });
+    await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.trim() === 'Redo')?.click(); true");
+    await waitFor("redo restores pointer resize result", async () => {
+      const value = await selectedTextGeometry();
+      return value.width === afterResize.width && value.height === afterResize.height ? value : null;
+    });
+    await evaluate("Array.from(document.querySelectorAll('.design-element')).find(element => element.textContent.includes('Browser interaction proof'))?.click(); true");
 
     // Drag to the maximum legal position using coordinates calculated from the
     // rendered page. The target remains inside the viewport, not beyond the screen.
@@ -368,7 +394,17 @@ async function main() {
       throw new Error(`Resize escaped page bounds: ${JSON.stringify({ atBoundary, edgeResize })}`);
     }
 
-    process.stdout.write("PASS: Chrome covered WASM import/export, invalid-import safety, add/edit/style/move/undo/redo, autosave/restore, real pointer drag/resize, and page-boundary limits.\\n");
+    // Keyboard-accessible movement controls must also remain bounded at the
+    // right/bottom edge, even when repeatedly activated.
+    await evaluate("(() => { const buttons = Array.from(document.querySelectorAll('button[aria-label]')); const right = buttons.find(button => button.getAttribute('aria-label') === 'Move right'); const down = buttons.find(button => button.getAttribute('aria-label') === 'Move down'); for (let index = 0; index < 20; index += 1) { right.click(); down.click(); } return true; })()");
+    const afterKeyboardBoundary = await selectedTextGeometry();
+    if (afterKeyboardBoundary.left !== edgeResize.left || afterKeyboardBoundary.top !== edgeResize.top ||
+        afterKeyboardBoundary.left + afterKeyboardBoundary.width > 800 ||
+        afterKeyboardBoundary.top + afterKeyboardBoundary.height > 600) {
+      throw new Error(`Directional movement escaped page bounds: ${JSON.stringify({ edgeResize, afterKeyboardBoundary })}`);
+    }
+
+    process.stdout.write("PASS: Chrome covered WASM import/export, invalid-import safety, add/edit/style/move/undo/redo, autosave/restore, real pointer drag/resize with undo/redo, keyboard movement limits, and page-boundary limits.\\n");
   } finally {
     cdp?.close();
     stopProcess(browser);
