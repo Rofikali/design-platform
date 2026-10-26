@@ -1,6 +1,6 @@
 # ADR-0003: Configurable Page Geometry and Print-Size Metadata
 
-- **Status:** Proposed for review
+- **Status:** Accepted for incremental implementation
 - **Date:** 2026-10-26
 - **Related issue:** [#26](https://github.com/Rofikali/design-platform/issues/26)
 
