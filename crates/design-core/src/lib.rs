@@ -190,39 +190,89 @@ mod tests {
     fn valid_document() -> DesignDocument {
         DesignDocument {
             schema_version: CURRENT_SCHEMA_VERSION,
-            page: Page { width: 800.0, height: 600.0, background: "#fff".into() },
-            elements: vec![Element { id: "heading-1".into(), x: 20.0, y: 30.0, width: 300.0, height: 60.0,
-                kind: ElementKind::Text { text: "Hello".into(), font_size: 32.0, color: "#111111".into() } }],
+            page: Page {
+                width: 800.0,
+                height: 600.0,
+                background: "#fff".into(),
+            },
+            elements: vec![Element {
+                id: "heading-1".into(),
+                x: 20.0,
+                y: 30.0,
+                width: 300.0,
+                height: 60.0,
+                kind: ElementKind::Text {
+                    text: "Hello".into(),
+                    font_size: 32.0,
+                    color: "#111111".into(),
+                },
+            }],
             output_size_mm: None,
             template: None,
         }
     }
 
-    #[test] fn accepts_valid_document() { assert_eq!(valid_document().validate(), Ok(())); }
-    #[test] fn rejects_unknown_schema_version() {
-        let mut document = valid_document(); document.schema_version = 999;
-        assert_eq!(document.validate(), Err(ValidationError::UnsupportedSchemaVersion));
+    #[test]
+    fn accepts_valid_document() {
+        assert_eq!(valid_document().validate(), Ok(()));
     }
-    #[test] fn rejects_duplicate_ids() {
-        let mut document = valid_document(); let mut duplicate = document.elements[0].clone();
-        duplicate.x = 50.0; document.elements.push(duplicate);
-        assert_eq!(document.validate(), Err(ValidationError::DuplicateElementId));
+
+    #[test]
+    fn rejects_unknown_schema_version() {
+        let mut document = valid_document();
+        document.schema_version = 999;
+        assert_eq!(
+            document.validate(),
+            Err(ValidationError::UnsupportedSchemaVersion)
+        );
     }
-    #[test] fn rejects_non_finite_geometry() {
-        let mut document = valid_document(); document.elements[0].x = f64::NAN;
-        assert_eq!(document.validate(), Err(ValidationError::InvalidElementGeometry));
+
+    #[test]
+    fn rejects_duplicate_ids() {
+        let mut document = valid_document();
+        let mut duplicate = document.elements[0].clone();
+        duplicate.x = 50.0;
+        document.elements.push(duplicate);
+        assert_eq!(
+            document.validate(),
+            Err(ValidationError::DuplicateElementId)
+        );
     }
-    #[test] fn rejects_css_like_color_values() {
-        let mut document = valid_document(); document.page.background = "url(https://example.invalid)".into();
-        assert_eq!(document.validate(), Err(ValidationError::InvalidBackground));
+
+    #[test]
+    fn rejects_non_finite_geometry() {
+        let mut document = valid_document();
+        document.elements[0].x = f64::NAN;
+        assert_eq!(
+            document.validate(),
+            Err(ValidationError::InvalidElementGeometry)
+        );
     }
-    #[test] fn round_trips_json_document() {
-        let document = valid_document(); let json = serde_json::to_string(&document).expect("serialize");
+
+    #[test]
+    fn rejects_css_like_color_values() {
+        let mut document = valid_document();
+        document.page.background = "url(https://example.invalid)".into();
+        assert_eq!(
+            document.validate(),
+            Err(ValidationError::InvalidBackground)
+        );
+    }
+
+    #[test]
+    fn round_trips_json_document() {
+        let document = valid_document();
+        let json = serde_json::to_string(&document).expect("serialize");
         let restored: DesignDocument = serde_json::from_str(&json).expect("deserialize");
-        assert_eq!(restored, document); assert_eq!(restored.validate(), Ok(()));
+        assert_eq!(restored, document);
+        assert_eq!(restored.validate(), Ok(()));
     }
-    #[test] fn migrates_shared_v1_fixture_without_inventing_print_size() {
-        let fixture: serde_json::Value = serde_json::from_str(include_str!("../../../fixtures/document-v1.json")).expect("fixture");
+
+    #[test]
+    fn migrates_shared_v1_fixture_without_inventing_print_size() {
+        let fixture: serde_json::Value =
+            serde_json::from_str(include_str!("../../../fixtures/document-v1.json"))
+                .expect("fixture");
         let document: DesignDocument = serde_json::from_value(fixture).expect("deserialize v1");
         let migrated = migrate_to_current(document).expect("migration");
         assert_eq!(migrated.schema_version, 2);
@@ -232,36 +282,71 @@ mod tests {
         assert_eq!(migrated.template, None);
         assert_eq!(migrated.elements.len(), 2);
     }
+
     #[test]
     fn accepts_shared_schema_v2_a4_fixture() {
         let fixture: serde_json::Value =
-            serde_json::from_str(include_str!("../../../fixtures/document-v2-a4.json")).expect("v2 fixture");
+            serde_json::from_str(include_str!("../../../fixtures/document-v2-a4.json"))
+                .expect("v2 fixture");
         let document: DesignDocument = serde_json::from_value(fixture).expect("deserialize v2");
         assert_eq!(document.validate(), Ok(()));
     }
-    #[test] fn accepts_a4_geometry_and_matching_print_size() {
+
+    #[test]
+    fn accepts_a4_geometry_and_matching_print_size() {
         let mut document = valid_document();
-        document.page.width = 794.0; document.page.height = 1123.0;
-        document.output_size_mm = Some(OutputSizeMm { width: 210.0, height: 297.0 });
+        document.page.width = 794.0;
+        document.page.height = 1123.0;
+        document.output_size_mm = Some(OutputSizeMm {
+            width: 210.0,
+            height: 297.0,
+        });
         assert_eq!(document.validate(), Ok(()));
     }
-    #[test] fn accepts_banner_geometry_and_matching_print_size() {
+
+    #[test]
+    fn accepts_banner_geometry_and_matching_print_size() {
         let mut document = valid_document();
-        document.page.width = 1200.0; document.page.height = 600.0;
-        document.output_size_mm = Some(OutputSizeMm { width: 600.0, height: 300.0 });
+        document.page.width = 1200.0;
+        document.page.height = 600.0;
+        document.output_size_mm = Some(OutputSizeMm {
+            width: 600.0,
+            height: 300.0,
+        });
         assert_eq!(document.validate(), Ok(()));
     }
-    #[test] fn rejects_print_size_aspect_ratio_mismatch() {
+
+    #[test]
+    fn rejects_print_size_aspect_ratio_mismatch() {
         let mut document = valid_document();
-        document.output_size_mm = Some(OutputSizeMm { width: 210.0, height: 297.0 });
-        assert_eq!(document.validate(), Err(ValidationError::OutputAspectRatioMismatch));
+        document.output_size_mm = Some(OutputSizeMm {
+            width: 210.0,
+            height: 297.0,
+        });
+        assert_eq!(
+            document.validate(),
+            Err(ValidationError::OutputAspectRatioMismatch)
+        );
     }
-    #[test] fn rejects_page_area_limit() {
-        let mut document = valid_document(); document.page.width = 10_000.0; document.page.height = 3_000.0;
+
+    #[test]
+    fn rejects_page_area_limit() {
+        let mut document = valid_document();
+        document.page.width = 10_000.0;
+        document.page.height = 3_000.0;
         assert_eq!(document.validate(), Err(ValidationError::InvalidPageArea));
     }
-    #[test] fn rejects_invalid_template_metadata() {
-        let mut document = valid_document(); document.template = Some(TemplateMetadata { id: "".into(), version: 1 });
-        assert_eq!(document.validate(), Err(ValidationError::InvalidTemplateMetadata));
+
+    #[test]
+    fn rejects_invalid_template_metadata() {
+        let mut document = valid_document();
+        document.template = Some(TemplateMetadata {
+            id: "".into(),
+            version: 1,
+        });
+        assert_eq!(
+            document.validate(),
+            Err(ValidationError::InvalidTemplateMetadata)
+        );
     }
 }
