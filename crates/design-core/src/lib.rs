@@ -159,7 +159,9 @@ impl DesignDocument {
                     }
                 }
                 ElementKind::Rect { color } => {
-                    if !valid_color(color) { return Err(ValidationError::InvalidColor); }
+                    if !valid_color(color) {
+                        return Err(ValidationError::InvalidColor);
+                    }
                 }
             }
         }
