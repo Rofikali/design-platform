@@ -232,6 +232,13 @@ mod tests {
         assert_eq!(migrated.template, None);
         assert_eq!(migrated.elements.len(), 2);
     }
+    #[test]
+    fn accepts_shared_schema_v2_a4_fixture() {
+        let fixture: serde_json::Value =
+            serde_json::from_str(include_str!("../../../fixtures/document-v2-a4.json")).expect("v2 fixture");
+        let document: DesignDocument = serde_json::from_value(fixture).expect("deserialize v2");
+        assert_eq!(document.validate(), Ok(()));
+    }
     #[test] fn accepts_a4_geometry_and_matching_print_size() {
         let mut document = valid_document();
         document.page.width = 794.0; document.page.height = 1123.0;
