@@ -1,0 +1,31 @@
+{
+  "schema_version": 2,
+  "page": {
+    "width": 794,
+    "height": 1123,
+    "background": "#ffffff"
+  },
+  "output_size_mm": {
+    "width": 210,
+    "height": 297
+  },
+  "template": {
+    "id": "exam-paper-a4",
+    "version": 1
+  },
+  "elements": [
+    {
+      "id": "title-1",
+      "x": 40,
+      "y": 40,
+      "width": 500,
+      "height": 60,
+      "kind": {
+        "type": "text",
+        "text": "Exam Paper",
+        "font_size": 28,
+        "color": "#123456"
+      }
+    }
+  ]
+}
