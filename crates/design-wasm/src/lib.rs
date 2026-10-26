@@ -8,7 +8,9 @@ const MAX_DOCUMENT_JSON_BYTES: usize = 2_000_000;
 #[wasm_bindgen]
 pub fn validate_document_json(input: &str) -> Result<String, JsValue> {
     if input.len() > MAX_DOCUMENT_JSON_BYTES {
-        return Err(JsValue::from_str("Document JSON exceeds the 2,000,000-byte limit"));
+        return Err(JsValue::from_str(
+            "Document JSON exceeds the 2,000,000-byte limit",
+        ));
     }
     let document: DesignDocument = serde_json::from_str(input)
         .map_err(|error| JsValue::from_str(&format!("Invalid document JSON: {error}")))?;
