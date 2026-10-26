@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import sharedDocumentFixture from "../../fixtures/document-v1.json";
+import schemaV2Fixture from "../../fixtures/document-v2-a4.json";
 import {
   MAX_ELEMENTS,
   MAX_FILE_CHARS,
@@ -45,6 +46,14 @@ describe("document parsing and validation", () => {
     expect(parsed.height).toBe(PAGE_HEIGHT);
     expect(parsed.elements).toHaveLength(2);
     expect(toDocument(parsed.elements)).toMatchObject({ schema_version: 2, page: sharedDocumentFixture.page, elements: sharedDocumentFixture.elements });
+  });
+
+  it("accepts the shared schema-v2 A4 fixture including physical output metadata", () => {
+    const parsed = parseDocument(schemaV2Fixture);
+    expect(parsed.width).toBe(794);
+    expect(parsed.height).toBe(1123);
+    expect(parsed.outputSizeMm).toEqual({ width: 210, height: 297 });
+    expect(parsed.template).toEqual({ id: "exam-paper-a4", version: 1 });
   });
 
   it("accepts valid text and rectangle elements and converts them to editor elements", () => {
