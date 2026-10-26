@@ -204,15 +204,10 @@ async function main() {
     await waitForPage("editor canvas to mount", "document.querySelector('.design-page') !== null");
     await evaluate("localStorage.clear(); location.reload(); true");
     await waitForPage("fresh editor after reload", "document.querySelector('.design-page')?.innerText || ''", value => value.includes("Your design starts here"));
-    // Do not rely on Vue's private DOM expando in a production build; it is
-    // not a stable hydration signal. Check that Nuxt's client entry points are
-    // present and loaded, and retain useful diagnostics if interaction fails.
-    await waitForPage("Nuxt client runtime", "JSON.stringify({ ready: document.readyState, nuxt: Boolean(document.querySelector('#__nuxt')), scripts: Array.from(document.scripts).map(script => ({ src: script.src, loaded: script.dataset.loaded || null })), runtimeResources: performance.getEntriesByType('resource').map(entry => entry.name).filter(name => name.includes('/_nuxt/')).length })", value => {
-      try {
-        const state = JSON.parse(value);
-        return state.ready === "complete" && state.nuxt && state.runtimeResources > 0;
-      } catch { return false; }
-    });
+    // Vue attaches the app instance to its mount container after client
+    // startup. Wait for that public-ish runtime marker rather than matching
+    // SSR text, which can exist before the event handlers are active.
+    await waitForPage("Vue app mount", "Boolean(document.querySelector('#__nuxt')?.__vue_app__)");
     
     // Export must report WASM, not the TypeScript fallback.
     await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.includes('Download JSON'))?.click(); true");
