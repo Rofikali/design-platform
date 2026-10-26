@@ -268,7 +268,45 @@ async function main() {
     const preserved = await evaluate("document.querySelector('.design-page')?.innerText || ''");
     if (!preserved.includes("Exam Paper")) throw new Error("Invalid import changed the existing canvas document");
 
-    process.stdout.write("PASS: real Nuxt editor in headless Chrome exported and imported through WASM; invalid import was rejected without replacing the current document.\n");
+    // Exercise core editing controls through the rendered UI. Use accessible
+    // labels and visible canvas state rather than Vue internals.
+    const fixtureCount = Number.parseInt(await evaluate("document.querySelector('.canvas-heading > span')?.textContent || '0'"), 10);
+    await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.includes('＋ Add text'))?.click(); true");
+    await waitForPage("new text element", "document.querySelector('textarea')?.value || ''", value => value === "New text");
+    await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.includes('＋ Add rectangle'))?.click(); true");
+    await waitForPage("rectangle added", "document.querySelector('.canvas-heading > span')?.textContent || ''", value => value.trim() === `${fixtureCount + 2} elements`);
+
+    await evaluate("Array.from(document.querySelectorAll('.design-element')).find(element => element.textContent.includes('New text'))?.click(); true");
+    const editTextExpression = `(() => {
+      const field = document.querySelector('textarea');
+      const setter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set;
+      setter.call(field, 'Browser interaction proof');
+      field.dispatchEvent(new Event('input', { bubbles: true }));
+      return true;
+    })()`;
+    await evaluate(editTextExpression);
+    await waitForPage("text edit visible", "document.querySelector('.design-page')?.innerText || ''", value => value.includes("Browser interaction proof"));
+
+    const initialPosition = await evaluate("(() => { const item = Array.from(document.querySelectorAll('.design-element')).find(element => element.textContent.includes('Browser interaction proof')); return { left: parseFloat(item.style.left), top: parseFloat(item.style.top) }; })()");
+    await evaluate("(() => { const field = document.querySelector('input[type=color]'); field.value = '#ff0000'; field.dispatchEvent(new Event('input', { bubbles: true })); field.dispatchEvent(new Event('change', { bubbles: true })); const size = document.querySelector('input[type=number]'); size.value = '36'; size.dispatchEvent(new Event('input', { bubbles: true })); size.dispatchEvent(new Event('change', { bubbles: true })); document.querySelector('button[aria-label=\"Move right\"]')?.click(); return true; })()");
+    const changed = await evaluate("(() => { const item = Array.from(document.querySelectorAll('.design-element')).find(element => element.textContent.includes('Browser interaction proof')); return { left: parseFloat(item.style.left), color: getComputedStyle(item).color, fontSize: getComputedStyle(item).fontSize }; })()");
+    if (changed.left !== initialPosition.left + 10 || changed.color !== "rgb(255, 0, 0)" || changed.fontSize !== "36px") {
+      throw new Error(`Text/style/movement controls did not apply expected changes: ${JSON.stringify({ initialPosition, changed })}`);
+    }
+
+    // Wait for debounced history, then prove undo/redo and browser-local restore.
+    await delay(500);
+    await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.trim() === 'Undo')?.click(); true");
+    await waitForPage("undo restores prior text", "document.querySelector('.design-page')?.innerText || ''", value => !value.includes("Browser interaction proof"));
+    await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.trim() === 'Redo')?.click(); true");
+    await waitForPage("redo restores edited text", "document.querySelector('.design-page')?.innerText || ''", value => value.includes("Browser interaction proof"));
+    await delay(500);
+    await evaluate("location.reload(); true");
+    await waitForPage("locally saved document restored after reload", "document.querySelector('.design-page')?.innerText || ''", value => value.includes("Browser interaction proof"));
+    const restoredCount = await evaluate("document.querySelector('.canvas-heading > span')?.textContent?.trim() || ''");
+    if (restoredCount !== `${fixtureCount + 2} elements`) throw new Error(`Autosave did not restore added elements: ${restoredCount}`);
+
+    process.stdout.write("PASS: Chrome covered WASM import/export, invalid-import safety, add/edit/style/move/undo/redo, and local autosave/restore.\\n");
   } finally {
     cdp?.close();
     stopProcess(browser);
