@@ -6,7 +6,7 @@ A template-driven design editor, built incrementally with security, export fidel
 
 The current prototype includes:
 
-- A Nuxt/Vue/TypeScript browser editor with text and rectangle elements on a fixed 800 × 600 logical-pixel page.
+- A Nuxt/Vue/TypeScript browser editor with text and rectangle elements; schema v2 supports configurable logical page dimensions.
 - Add/select elements, edit text/color/font size, bounded directional movement, pointer drag, and resize handles.
 - Bounded undo/redo history (up to 50 snapshots).
 - Browser-local autosave and restore using localStorage.
@@ -23,7 +23,7 @@ This is still a prototype, **not production-ready**.
 - The UI does not yet provide a template picker or finished Exam Paper / Shop Banner workflows.
 - PDF/PNG export is not implemented.
 - There is no account system, server-side persistence, cross-device synchronization, billing, or collaboration.
-- The editor uses a fixed logical page size and currently supports only text and rectangles.
+- Schema-v1 documents migrate to v2 with their original 800 × 600 geometry. New documents can use bounded configurable page dimensions and optional physical output-size metadata; template selection and rendering are not implemented. The editor currently supports only text and rectangles.
 - The real-browser suite covers WASM-backed JSON import/export, rejection safety, adding text/rectangles, text/style editing, directional movement, undo/redo, local autosave/restore, pointer drag/resize, and page-boundary limits. Export fidelity, accessibility, and performance gates remain open work.
 - Browser-side validation improves feedback and data consistency; it is not an authorization boundary. A future trusted API must validate documents independently.
 - Local browser storage is not a backup. Users should download a JSON copy if they need a portable copy.
