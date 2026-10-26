@@ -396,7 +396,7 @@ async function main() {
 
     // Keyboard-accessible movement controls must also remain bounded at the
     // right/bottom edge, even when repeatedly activated.
-    await evaluate("(() => { const right = document.querySelector('button[aria-label=\\"Move right\\"]'); const down = document.querySelector('button[aria-label=\\"Move down\\"]'); for (let index = 0; index < 20; index += 1) { right.click(); down.click(); } return true; })()");
+    await evaluate("(() => { const buttons = Array.from(document.querySelectorAll('button[aria-label]')); const right = buttons.find(button => button.getAttribute('aria-label') === 'Move right'); const down = buttons.find(button => button.getAttribute('aria-label') === 'Move down'); for (let index = 0; index < 20; index += 1) { right.click(); down.click(); } return true; })()");
     const afterKeyboardBoundary = await selectedTextGeometry();
     if (afterKeyboardBoundary.left !== edgeResize.left || afterKeyboardBoundary.top !== edgeResize.top ||
         afterKeyboardBoundary.left + afterKeyboardBoundary.width > 800 ||
