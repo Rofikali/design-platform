@@ -314,6 +314,7 @@ onMounted(() => {
         :selected-id="selectedId"
         :page-width="pageWidth"
         :page-height="pageHeight"
+        :page-background="pageBackground"
         @select="selectedId = $event"
         @element-pointer-down="onElementPointerDown"
         @element-pointer-move="onElementPointerMove"
