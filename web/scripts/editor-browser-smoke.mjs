@@ -204,9 +204,15 @@ async function main() {
     await waitForPage("editor canvas to mount", "document.querySelector('.design-page') !== null");
     await evaluate("localStorage.clear(); location.reload(); true");
     await waitForPage("fresh editor after reload", "document.querySelector('.design-page')?.innerText || ''", value => value.includes("Your design starts here"));
-    // SSR markup can exist before Vue attaches click handlers. Wait for Vue's
-    // component instance on a real button before exercising the UI.
-    await waitForPage("Vue editor hydration", "Boolean(document.querySelector('button')?.__vueParentComponent)");
+    // Do not rely on Vue's private DOM expando in a production build; it is
+    // not a stable hydration signal. Check that Nuxt's client entry points are
+    // present and loaded, and retain useful diagnostics if interaction fails.
+    await waitForPage("Nuxt client runtime", "JSON.stringify({ ready: document.readyState, nuxt: Boolean(document.querySelector('#__nuxt')), scripts: Array.from(document.scripts).map(script => ({ src: script.src, loaded: script.dataset.loaded || null })), runtimeResources: performance.getEntriesByType('resource').map(entry => entry.name).filter(name => name.includes('/_nuxt/')).length })", value => {
+      try {
+        const state = JSON.parse(value);
+        return state.ready === "complete" && state.nuxt && state.runtimeResources > 0;
+      } catch { return false; }
+    });
     
     // Export must report WASM, not the TypeScript fallback.
     await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.includes('Download JSON'))?.click(); true");
