@@ -59,8 +59,14 @@ pub struct Element {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum ElementKind {
-    Text { text: String, font_size: f64, color: String },
-    Rect { color: String },
+    Text {
+        text: String,
+        font_size: f64,
+        color: String,
+    },
+    Rect {
+        color: String,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -129,17 +135,28 @@ impl DesignDocument {
             if !ids.insert(&element.id) {
                 return Err(ValidationError::DuplicateElementId);
             }
-            if !valid_coordinate(element.x) || !valid_coordinate(element.y)
-                || !valid_dimension(element.width) || !valid_dimension(element.height) {
+            if !valid_coordinate(element.x)
+                || !valid_coordinate(element.y)
+                || !valid_dimension(element.width)
+                || !valid_dimension(element.height)
+            {
                 return Err(ValidationError::InvalidElementGeometry);
             }
             match &element.kind {
-                ElementKind::Text { text, font_size, color } => {
-                    if text.chars().count() > MAX_TEXT_CHARS { return Err(ValidationError::InvalidTextLength); }
+                ElementKind::Text {
+                    text,
+                    font_size,
+                    color,
+                } => {
+                    if text.chars().count() > MAX_TEXT_CHARS {
+                        return Err(ValidationError::InvalidTextLength);
+                    }
                     if !font_size.is_finite() || !(1.0..=512.0).contains(font_size) {
                         return Err(ValidationError::InvalidFontSize);
                     }
-                    if !valid_color(color) { return Err(ValidationError::InvalidColor); }
+                    if !valid_color(color) {
+                        return Err(ValidationError::InvalidColor);
+                    }
                 }
                 ElementKind::Rect { color } => {
                     if !valid_color(color) { return Err(ValidationError::InvalidColor); }
@@ -253,10 +270,7 @@ mod tests {
     fn rejects_css_like_color_values() {
         let mut document = valid_document();
         document.page.background = "url(https://example.invalid)".into();
-        assert_eq!(
-            document.validate(),
-            Err(ValidationError::InvalidBackground)
-        );
+        assert_eq!(document.validate(), Err(ValidationError::InvalidBackground));
     }
 
     #[test]
