@@ -306,7 +306,69 @@ async function main() {
     const restoredCount = await evaluate("document.querySelector('.canvas-heading > span')?.textContent?.trim() || ''");
     if (restoredCount !== `${fixtureCount + 2} elements`) throw new Error(`Autosave did not restore added elements: ${restoredCount}`);
 
-    process.stdout.write("PASS: Chrome covered WASM import/export, invalid-import safety, add/edit/style/move/undo/redo, and local autosave/restore.\\n");
+    // Real mouse input through Chrome DevTools exercises actual pointer capture.
+    // Widen the viewport so the full 800x600 logical page and its edge handles are reachable.
+    await cdp.send("Emulation.setDeviceMetricsOverride", { width: 1600, height: 1000, deviceScaleFactor: 1, mobile: false });
+    await delay(100);
+    async function mouse(type, x, y, buttons = 0) {
+      await cdp.send("Input.dispatchMouseEvent", {
+        type, x, y, button: type === "mouseReleased" ? "left" : "left",
+        buttons, clickCount: type === "mousePressed" ? 1 : 0,
+      });
+    }
+    async function selectedTextGeometry() {
+      return evaluate("(() => { const element = Array.from(document.querySelectorAll('.design-element')).find(node => node.textContent.includes('Browser interaction proof')); if (!element) throw new Error('Edited text element not found'); const rect = element.getBoundingClientRect(); const page = document.querySelector('.design-page').getBoundingClientRect(); const style = getComputedStyle(element); return { left: parseFloat(style.left), top: parseFloat(style.top), width: parseFloat(style.width), height: parseFloat(style.height), clientLeft: rect.left, clientTop: rect.top, pageLeft: page.left, pageTop: page.top }; })()");
+    }
+
+    let geometry = await selectedTextGeometry();
+    // Drag by a modest delta and verify the actual pointer-driven position change.
+    await mouse("mouseMoved", geometry.clientLeft + 30, geometry.clientTop + 20);
+    await mouse("mousePressed", geometry.clientLeft + 30, geometry.clientTop + 20, 1);
+    await mouse("mouseMoved", geometry.clientLeft + 70, geometry.clientTop + 50, 1);
+    await mouse("mouseReleased", geometry.clientLeft + 70, geometry.clientTop + 50);
+    let afterDrag = await selectedTextGeometry();
+    if (afterDrag.left !== geometry.left + 40 || afterDrag.top !== geometry.top + 30) {
+      throw new Error(`Pointer drag did not apply expected delta: ${JSON.stringify({ before: geometry, after: afterDrag })}`);
+    }
+
+    // Resize from the visible bottom-right handle, preserving the top-left anchor.
+    const handle = await evaluate("(() => { const element = Array.from(document.querySelectorAll('.design-element')).find(node => node.textContent.includes('Browser interaction proof')); const rect = element.querySelector('.resize-handle').getBoundingClientRect(); return { x: rect.left + Math.min(rect.width / 2, 5), y: rect.top + Math.min(rect.height / 2, 5) }; })()");
+    await mouse("mouseMoved", handle.x, handle.y);
+    await mouse("mousePressed", handle.x, handle.y, 1);
+    await mouse("mouseMoved", handle.x + 40, handle.y + 30, 1);
+    await mouse("mouseReleased", handle.x + 40, handle.y + 30);
+    const afterResize = await selectedTextGeometry();
+    if (afterResize.width !== afterDrag.width + 40 || afterResize.height !== afterDrag.height + 30) {
+      throw new Error(`Pointer resize did not apply expected delta: ${JSON.stringify({ afterDrag, afterResize })}`);
+    }
+
+    // Drag to the maximum legal position using coordinates calculated from the
+    // rendered page. The target remains inside the viewport, not beyond the screen.
+    const boundaryTarget = await evaluate("(() => { const page = document.querySelector('.design-page').getBoundingClientRect(); const element = Array.from(document.querySelectorAll('.design-element')).find(node => node.textContent.includes('Browser interaction proof')); const style = getComputedStyle(element); const width = parseFloat(style.width); const height = parseFloat(style.height); const left = parseFloat(style.left); const top = parseFloat(style.top); const rect = element.getBoundingClientRect(); return { startX: rect.left + 30, startY: rect.top + 20, targetX: page.left + 800 - width + 30, targetY: page.top + 600 - height + 20, maxLeft: 800 - width, maxTop: 600 - height }; })()");
+    await mouse("mouseMoved", boundaryTarget.startX, boundaryTarget.startY);
+    await mouse("mousePressed", boundaryTarget.startX, boundaryTarget.startY, 1);
+    await mouse("mouseMoved", boundaryTarget.targetX, boundaryTarget.targetY, 1);
+    await mouse("mouseReleased", boundaryTarget.targetX, boundaryTarget.targetY);
+    const atBoundary = await selectedTextGeometry();
+    if (atBoundary.left !== boundaryTarget.maxLeft || atBoundary.top !== boundaryTarget.maxTop ||
+        atBoundary.left + atBoundary.width > 800 || atBoundary.top + atBoundary.height > 600) {
+      throw new Error(`Drag escaped logical page bounds: ${JSON.stringify({ boundaryTarget, atBoundary })}`);
+    }
+
+    // The handle is still visible at the page edge. Attempt to grow beyond both
+    // boundaries and assert that the geometry remains bounded.
+    const edgeHandle = await evaluate("(() => { const element = Array.from(document.querySelectorAll('.design-element')).find(node => node.textContent.includes('Browser interaction proof')); const rect = element.querySelector('.resize-handle').getBoundingClientRect(); return { x: rect.left + 4, y: rect.top + 4 }; })()");
+    await mouse("mouseMoved", edgeHandle.x, edgeHandle.y);
+    await mouse("mousePressed", edgeHandle.x, edgeHandle.y, 1);
+    await mouse("mouseMoved", edgeHandle.x + 100, edgeHandle.y + 100, 1);
+    await mouse("mouseReleased", edgeHandle.x + 100, edgeHandle.y + 100);
+    const edgeResize = await selectedTextGeometry();
+    if (edgeResize.left + edgeResize.width > 800 || edgeResize.top + edgeResize.height > 600 ||
+        edgeResize.width !== atBoundary.width || edgeResize.height !== atBoundary.height) {
+      throw new Error(`Resize escaped page bounds: ${JSON.stringify({ atBoundary, edgeResize })}`);
+    }
+
+    process.stdout.write("PASS: Chrome covered WASM import/export, invalid-import safety, add/edit/style/move/undo/redo, autosave/restore, real pointer drag/resize, and page-boundary limits.\\n");
   } finally {
     cdp?.close();
     stopProcess(browser);
