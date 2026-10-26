@@ -60,7 +60,7 @@ const emit = defineEmits<{
             </button>
           </div>
         </div>
-        <p class="canvas-note">Designs auto-save in this browser. Download JSON for a portable copy. Imported files are validated in the browser; Rust/WASM validation is not connected yet.</p>
+        <p class="canvas-note">Designs auto-save in this browser. Download JSON for a portable copy. JSON import and export use Rust/WASM validation when available, with a TypeScript fallback if the WASM runtime cannot initialize.</p>
       </section>
 </template>
 

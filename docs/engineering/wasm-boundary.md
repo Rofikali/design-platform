@@ -2,7 +2,7 @@
 
 ## Status
 
-The `design-wasm` adapter is integrated into the frontend JSON import/export validation path. CI compiles the adapter, generates the JavaScript package, and runs a real Chrome smoke test against the generated package. The browser suite now checks shared valid/invalid validation cases in addition to module initialization and resource-boundary behavior. It is not yet a full end-to-end test of the Nuxt editor's visible import/export buttons.
+The `design-wasm` adapter is integrated into the frontend JSON import/export validation path. CI compiles the adapter, generates the JavaScript package, and runs both a direct real-Chrome WASM smoke test and a browser test against the actual Nuxt editor.
 
 ## Responsibility boundary
 
@@ -23,17 +23,29 @@ The JSON-string boundary is intentional: it avoids exposing Rust struct layout o
 
 ## Build and verification
 
-From `web/`, run `pnpm run build:wasm` to generate the ignored package at `web/generated/design-wasm`; do not commit generated output. CI installs wasm-pack and Chrome, then runs `pnpm run test:wasm-browser` after the generated package is built by the frontend lifecycle scripts.
+From `web/`, run `pnpm run build:wasm` to generate the ignored package at `web/generated/design-wasm`; do not commit generated output. CI installs wasm-pack and Chrome. `pnpm test` builds the WASM package through the pnpm lifecycle before browser checks run.
 
-The versioned `fixtures/validation-cases-v1.json` cases are consumed by:
-- Rust integration tests for the `design-core` validator.
-- TypeScript Vitest tests for the editor's fallback parser.
-- The real Chrome smoke harness, which invokes the generated WASM adapter and checks each case against its expected accept/reject outcome.
+### Direct WASM smoke
 
-The browser test also rejects malformed JSON and verifies the 2,000,000-byte limit with non-ASCII UTF-8 input. The adapter is called directly, so domain validation failures are not hidden by the TypeScript fallback in this test.
+Run `pnpm run test:wasm-browser` with Chrome available on `PATH` or `CHROME_BIN`. It loads the generated module over HTTP in headless Chrome, consumes `fixtures/validation-cases-v1.json`, rejects malformed JSON, and verifies the 2,000,000-byte limit using non-ASCII UTF-8 input. This calls WASM directly so validation errors cannot be hidden by TypeScript fallback.
 
-These tests establish agreement for the representative shared cases, not exhaustive semantic parity across every possible input. The suite still does not exercise the editor's visible import/export controls or measure performance; those remain separate release gates.
+### Actual Nuxt editor import/export
+
+Run `pnpm run test:editor-browser` with Chrome available on `PATH` or `CHROME_BIN`. The runner builds the Nuxt app, starts its production preview server, drives the real page in headless Chrome through the DevTools protocol, and verifies:
+- JSON export reports the WASM engine and produces a downloaded, parseable version-1 document.
+- Importing `fixtures/document-v1.json` reports WASM validation and renders the imported text on the visible canvas.
+- Importing an unsupported schema is rejected and leaves the previously loaded valid document unchanged.
+
+The runner uses a temporary Chrome profile and download directory and removes them when the test finishes. It does not add a browser automation package or change the pnpm lockfile.
+
+### Shared validation corpus
+
+The versioned `fixtures/validation-cases-v1.json` cases are consumed by Rust integration tests, TypeScript Vitest tests, and the direct WASM browser smoke. This establishes agreement for representative cases, not exhaustive semantic equivalence across every possible input.
+
+## Remaining release gates
+
+These tests exercise the current JSON import/export path, not all pointer/keyboard editor interactions, PDF export, accessibility, or performance. Measure initialization cost, serialization time, bundle size, and latency on representative documents before claiming a performance benefit or production readiness.
 
 ## Performance and cost
 
-Do not call into WASM for every pointer-move frame or individual property read. Start with coarse-grained document validation/normalization at import and before persistence/export. Measure initialization cost, transfer/serialization time, bundle size, and latency before deciding where WASM adds value.
+Do not call into WASM for every pointer-move frame or individual property read. Keep the cross-language boundary coarse-grained around document validation/normalization. Measure initialization cost, transfer/serialization time, bundle size, and latency before deciding where WASM adds value.

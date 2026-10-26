@@ -12,6 +12,7 @@
     "test": "vitest run",
     "build:wasm": "cd ../crates/design-wasm && wasm-pack build --target web --out-dir ../../web/generated/design-wasm --out-name design_wasm --release",
     "test:wasm-browser": "node scripts/wasm-browser-smoke.mjs",
+    "test:editor-browser": "node scripts/editor-browser-smoke.mjs",
     "predev": "pnpm run build:wasm",
     "prebuild": "pnpm run build:wasm",
     "pretypecheck": "pnpm run build:wasm",
