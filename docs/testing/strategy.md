@@ -37,7 +37,8 @@ Documentation describes intended tests; it is not evidence that they have run. R
 - Require export/import success messages to explicitly identify WASM validation, not the TypeScript fallback.
 - Verify the downloaded JSON is parseable and versioned, valid imported content appears on the canvas, and a rejected import does not replace the current valid document.
 - Exercise add-text/add-rectangle, text editing, color/font-size controls, directional movement, undo/redo, and local autosave/restore using visible UI state and accessible labels.
-- Use Chrome DevTools mouse input to exercise pointer drag and resize, including attempts to move or grow elements beyond the 800 × 600 page boundary.
+- Use Chrome DevTools mouse input to exercise pointer drag and resize, verify undo/redo restores those geometry changes, and attempt to move or grow elements beyond the 800 × 600 page boundary.
+- Verify repeated directional movement controls cannot move an element beyond the right or bottom page edges.
 - Keep temporary browser profiles/downloads isolated and clean them after the test.
 - Accessibility auditing, PDF/PNG export fidelity, and performance testing remain separate open gates.
 
