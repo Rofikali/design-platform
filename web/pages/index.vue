@@ -132,8 +132,8 @@ function onElementPointerMove(event: PointerEvent) {
     drag.originY + event.clientY - drag.startClientY,
     element.width,
     element.height,
-    pageWidth,
-    pageHeight,
+    pageWidth.value,
+    pageHeight.value,
   );
   element.x = position.x;
   element.y = position.y;
