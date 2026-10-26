@@ -74,6 +74,7 @@ describe("document parsing and validation", () => {
     expect(() => parseDocument(wrongVersion)).toThrow(/schema version/);
 
     const wrongPage = validDocument();
+    wrongPage.schema_version = 1;
     wrongPage.page.width = 1000;
     expect(() => parseDocument(wrongPage)).toThrow(/800 × 600/);
   });
