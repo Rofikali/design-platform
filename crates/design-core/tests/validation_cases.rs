@@ -1,4 +1,4 @@
-use design_core::DesignDocument;
+use design_core::{migrate_to_current, DesignDocument};
 use serde::Deserialize;
 use serde_json::Value;
 
@@ -27,7 +27,7 @@ fn shared_validation_cases_match_rust_core_expectations() {
     for case in fixture.cases {
         let result = serde_json::from_value::<DesignDocument>(case.document)
             .map_err(|_| ())
-            .and_then(|document| document.validate().map_err(|_| ()));
+            .and_then(|document| migrate_to_current(document).map_err(|_| ()));
         assert_eq!(
             result.is_ok(),
             case.valid,
