@@ -33,11 +33,12 @@ Documentation describes intended tests; it is not evidence that they have run. R
 
 ### Actual Nuxt editor browser test
 - Run `pnpm run test:editor-browser` with Chrome available on `PATH` or `CHROME_BIN`.
-- Build the Nuxt app and start its production preview; use headless Chrome to exercise the visible file input, import handler, export button, download, and status messages.
+- Build the Nuxt app and start its production preview; use headless Chrome to exercise the rendered UI.
 - Require export/import success messages to explicitly identify WASM validation, not the TypeScript fallback.
 - Verify the downloaded JSON is parseable and versioned, valid imported content appears on the canvas, and a rejected import does not replace the current valid document.
+- Exercise add-text/add-rectangle, text editing, color/font-size controls, directional movement, undo/redo, and local autosave/restore using visible UI state and accessible labels.
 - Keep temporary browser profiles/downloads isolated and clean them after the test.
-- This is focused UI coverage; it does not replace broader interaction, accessibility, PDF export, or performance testing.
+- Pointer drag/resize boundary coverage, accessibility auditing, PDF/PNG export fidelity, and performance testing remain separate open gates.
 
 ### Persistence and API (when introduced)
 - Schema version and migration tests.
