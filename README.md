@@ -24,7 +24,7 @@ This is still a prototype, **not production-ready**.
 - PDF/PNG export is not implemented.
 - There is no account system, server-side persistence, cross-device synchronization, billing, or collaboration.
 - The editor uses a fixed logical page size and currently supports only text and rectangles.
-- The real-browser suite currently focuses on WASM validation and JSON import/export. Full editor interaction coverage, export fidelity, accessibility, and performance gates remain open work.
+- The real-browser suite covers WASM-backed JSON import/export, rejection safety, adding text/rectangles, text/style editing, directional movement, undo/redo, and local autosave/restore. Pointer drag/resize boundary coverage, export fidelity, accessibility, and performance gates remain open work.
 - Browser-side validation improves feedback and data consistency; it is not an authorization boundary. A future trusted API must validate documents independently.
 - Local browser storage is not a backup. Users should download a JSON copy if they need a portable copy.
 
