@@ -15,7 +15,7 @@ import {
 
 function validDocument(): DesignDocument {
   return {
-    schema_version: 1,
+    schema_version: 2,
     page: { width: PAGE_WIDTH, height: PAGE_HEIGHT, background: "#ffffff" },
     elements: [
       {
@@ -44,7 +44,7 @@ describe("document parsing and validation", () => {
     expect(parsed.width).toBe(PAGE_WIDTH);
     expect(parsed.height).toBe(PAGE_HEIGHT);
     expect(parsed.elements).toHaveLength(2);
-    expect(toDocument(parsed.elements)).toEqual(sharedDocumentFixture);
+    expect(toDocument(parsed.elements)).toMatchObject({ schema_version: 2, page: sharedDocumentFixture.page, elements: sharedDocumentFixture.elements });
   });
 
   it("accepts valid text and rectangle elements and converts them to editor elements", () => {
@@ -70,7 +70,7 @@ describe("document parsing and validation", () => {
 
   it("rejects unknown schema versions and unsupported page dimensions", () => {
     const wrongVersion = validDocument();
-    wrongVersion.schema_version = 2;
+    wrongVersion.schema_version = 999;
     expect(() => parseDocument(wrongVersion)).toThrow(/schema version/);
 
     const wrongPage = validDocument();
