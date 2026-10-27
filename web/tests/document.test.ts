@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import sharedDocumentFixture from "../../fixtures/document-v1.json";
+import schemaV2Fixture from "../../fixtures/document-v2-a4.json";
 import {
   MAX_ELEMENTS,
   MAX_FILE_CHARS,
@@ -15,7 +16,7 @@ import {
 
 function validDocument(): DesignDocument {
   return {
-    schema_version: 1,
+    schema_version: 2,
     page: { width: PAGE_WIDTH, height: PAGE_HEIGHT, background: "#ffffff" },
     elements: [
       {
@@ -44,7 +45,26 @@ describe("document parsing and validation", () => {
     expect(parsed.width).toBe(PAGE_WIDTH);
     expect(parsed.height).toBe(PAGE_HEIGHT);
     expect(parsed.elements).toHaveLength(2);
-    expect(toDocument(parsed.elements)).toEqual(sharedDocumentFixture);
+    expect(toDocument(parsed.elements)).toMatchObject({ schema_version: 2, page: sharedDocumentFixture.page, elements: sharedDocumentFixture.elements });
+  });
+
+  it("does not preserve schema-v2 metadata smuggled into a schema-v1 document", () => {
+    const legacy = {
+      ...sharedDocumentFixture,
+      output_size_mm: { width: 210, height: 297 },
+      template: { id: "unexpected", version: 1 },
+    };
+    const parsed = parseDocument(legacy);
+    expect(parsed.outputSizeMm).toBeUndefined();
+    expect(parsed.template).toBeUndefined();
+  });
+
+  it("accepts the shared schema-v2 A4 fixture including physical output metadata", () => {
+    const parsed = parseDocument(schemaV2Fixture);
+    expect(parsed.width).toBe(794);
+    expect(parsed.height).toBe(1123);
+    expect(parsed.outputSizeMm).toEqual({ width: 210, height: 297 });
+    expect(parsed.template).toEqual({ id: "exam-paper-a4", version: 1 });
   });
 
   it("accepts valid text and rectangle elements and converts them to editor elements", () => {
@@ -70,10 +90,11 @@ describe("document parsing and validation", () => {
 
   it("rejects unknown schema versions and unsupported page dimensions", () => {
     const wrongVersion = validDocument();
-    wrongVersion.schema_version = 2;
+    wrongVersion.schema_version = 999;
     expect(() => parseDocument(wrongVersion)).toThrow(/schema version/);
 
     const wrongPage = validDocument();
+    wrongPage.schema_version = 1;
     wrongPage.page.width = 1000;
     expect(() => parseDocument(wrongPage)).toThrow(/800 × 600/);
   });
@@ -90,6 +111,16 @@ describe("document parsing and validation", () => {
     const long = validDocument();
     long.elements[0]!.id = "x".repeat(129);
     expect(() => parseDocument(long)).toThrow(/invalid ID/);
+  });
+
+  it("enforces the Rust UTF-8 byte limit for element and template IDs", () => {
+    const oversizedElementId = validDocument();
+    oversizedElementId.elements[0]!.id = "😀".repeat(33);
+    expect(() => parseDocument(oversizedElementId)).toThrow(/invalid ID/);
+
+    const oversizedTemplateId = validDocument();
+    oversizedTemplateId.template = { id: "😀".repeat(33), version: 1 };
+    expect(() => parseDocument(oversizedTemplateId)).toThrow(/Template metadata/);
   });
 
   it("rejects invalid geometry including non-finite values", () => {

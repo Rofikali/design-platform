@@ -16,9 +16,12 @@ import {
 } from "~/utils/document";
 import { validateDocumentJson } from "~/utils/document-validation";
 
-const STORAGE_KEY = "design-platform:document:v1";
-const pageWidth = PAGE_WIDTH;
-const pageHeight = PAGE_HEIGHT;
+const STORAGE_KEY = "design-platform:document:v1"; // Keep the key so existing v1 autosaves migrate in place.
+const pageWidth = ref(PAGE_WIDTH);
+const pageHeight = ref(PAGE_HEIGHT);
+const pageBackground = ref("#ffffff");
+const outputSizeMm = ref<{ width: number; height: number } | undefined>();
+const templateMetadata = ref<{ id: string; version: number } | undefined>();
 const nextId = ref(3);
 const selectedId = ref<string | null>("heading-1");
 const statusMessage = ref("Changes are saved in this browser only.");
@@ -35,13 +38,18 @@ let autosaveTimer: ReturnType<typeof setTimeout> | undefined;
 
 const selectedElement = computed(() => elements.value.find((element) => element.id === selectedId.value) ?? null);
 
-function snapshot(): string { return JSON.stringify(toDocument(elements.value)); }
+function snapshot(): string { return JSON.stringify(toDocument(elements.value, { width: pageWidth.value, height: pageHeight.value, background: pageBackground.value }, outputSizeMm.value, templateMetadata.value)); }
 const history = ref(createHistory(snapshot()));
 const undoStack = computed(() => history.value.undoStack);
 const redoStack = computed(() => history.value.redoStack);
 function applySnapshot(json: string) {
   const parsed = parseDocumentJson(json);
   elements.value = parsed.elements;
+  pageWidth.value = parsed.width;
+  pageHeight.value = parsed.height;
+  pageBackground.value = parsed.background;
+  outputSizeMm.value = parsed.outputSizeMm;
+  templateMetadata.value = parsed.template;
   selectedId.value = parsed.elements[0]?.id ?? null;
   nextId.value = parsed.elements.length + 1;
 }
@@ -64,7 +72,7 @@ function addRectangle() {
 function moveSelected(dx: number, dy: number) {
   const element = selectedElement.value;
   if (!element) return;
-  const position = clampElementPosition(element.x + dx, element.y + dy, element.width, element.height, pageWidth, pageHeight);
+  const position = clampElementPosition(element.x + dx, element.y + dy, element.width, element.height, pageWidth.value, pageHeight.value);
   element.x = position.x;
   element.y = position.y;
 }
@@ -108,8 +116,8 @@ function onElementPointerMove(event: PointerEvent) {
       resize.originHeight + event.clientY - resize.startClientY,
       element.x,
       element.y,
-      pageWidth,
-      pageHeight,
+      pageWidth.value,
+      pageHeight.value,
     );
     element.width = size.width;
     element.height = size.height;
@@ -124,8 +132,8 @@ function onElementPointerMove(event: PointerEvent) {
     drag.originY + event.clientY - drag.startClientY,
     element.width,
     element.height,
-    pageWidth,
-    pageHeight,
+    pageWidth.value,
+    pageHeight.value,
   );
   element.x = position.x;
   element.y = position.y;
@@ -178,6 +186,11 @@ async function onFileSelected(event: Event) {
     if (historyTimer) clearTimeout(historyTimer);
     historyTimer = undefined;
     elements.value = parsed.elements;
+    pageWidth.value = parsed.width;
+    pageHeight.value = parsed.height;
+    pageBackground.value = parsed.background;
+    outputSizeMm.value = parsed.outputSizeMm;
+    templateMetadata.value = parsed.template;
     selectedId.value = parsed.elements[0]?.id ?? null;
     nextId.value = parsed.elements.length + 1;
     history.value = createHistory(snapshot());
@@ -301,6 +314,7 @@ onMounted(() => {
         :selected-id="selectedId"
         :page-width="pageWidth"
         :page-height="pageHeight"
+        :page-background="pageBackground"
         @select="selectedId = $event"
         @element-pointer-down="onElementPointerDown"
         @element-pointer-move="onElementPointerMove"

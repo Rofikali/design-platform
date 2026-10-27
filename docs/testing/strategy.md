@@ -9,7 +9,7 @@ Documentation describes intended tests; it is not evidence that they have run. R
 - Keep a representative versioned JSON fixture under `fixtures/`.
 - Parse and validate the same fixture in both the Rust core and TypeScript frontend.
 - Assert Rust serialization and TypeScript serialization preserve the fixture's field names and values.
-- Treat differences that are intentional for the current MVP (such as the frontend's fixed 800 × 600 page) as documented compatibility constraints, not accidental parity.
+- Keep the schema-v1 fixture as a migration input and add schema-v2 fixtures for configurable logical geometry and optional physical output size.
 - Maintain `fixtures/validation-cases-v1.json` as a shared accept/reject corpus consumed by Rust, TypeScript, and browser/WASM tests.
 - Shared cases are a regression corpus, not proof of exhaustive equivalence; add a case whenever validation behavior changes.
 
@@ -43,7 +43,7 @@ Documentation describes intended tests; it is not evidence that they have run. R
 - Accessibility auditing, PDF/PNG export fidelity, and performance testing remain separate open gates.
 
 ### Persistence and API (when introduced)
-- Schema version and migration tests.
+- Schema-v1-to-v2 migration tests, configurable page geometry, physical-output aspect-ratio checks, and resource-boundary tests.
 - Authentication, ownership, and cross-account authorization tests.
 - Validation of malformed, oversized, and unsupported requests.
 - Failure handling and deletion behavior tests.
