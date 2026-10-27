@@ -316,6 +316,18 @@ async function main() {
         buttons, clickCount: type === "mousePressed" ? 1 : 0,
       });
     }
+    async function clickButtonContaining(text) {
+      const rect = await evaluate(`(() => {
+        const button = Array.from(document.querySelectorAll("button")).find(node => node.textContent.includes(${JSON.stringify(text)}));
+        if (!button) throw new Error("Button not found: " + ${JSON.stringify(text)});
+        const rect = button.getBoundingClientRect();
+        if (rect.width <= 0 || rect.height <= 0) throw new Error("Button is not visible: " + ${JSON.stringify(text)});
+        return { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
+      })()`);
+      await mouse("mouseMoved", rect.x, rect.y);
+      await mouse("mousePressed", rect.x, rect.y, 1);
+      await mouse("mouseReleased", rect.x, rect.y);
+    }
     async function selectedTextGeometry() {
       return evaluate("(() => { const element = Array.from(document.querySelectorAll('.design-element')).find(node => node.textContent.includes('Browser interaction proof')); if (!element) throw new Error('Edited text element not found'); const rect = element.getBoundingClientRect(); const page = document.querySelector('.design-page').getBoundingClientRect(); const style = getComputedStyle(element); return { left: parseFloat(style.left), top: parseFloat(style.top), width: parseFloat(style.width), height: parseFloat(style.height), clientLeft: rect.left, clientTop: rect.top, pageLeft: page.left, pageTop: page.top }; })()");
     }
@@ -424,7 +436,7 @@ async function main() {
     // Verify an actual PNG download, not only the renderer's SVG string.
     // The selected shop-banner template is 1200 × 500 logical units; the UI
     // promises a 2× raster export, so the PNG IHDR must report 2400 × 1000.
-    await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.includes('Download PNG'))?.click(); true");
+    await clickButtonContaining("Download PNG");
     const pngStatus = await waitForPage(
       "PNG export status",
       "document.querySelector('[role=status]')?.textContent || ''",
@@ -525,7 +537,7 @@ async function main() {
       throw new Error(`Exam Paper template did not apply expected page and print geometry: ${JSON.stringify(examCanvas)}`);
     }
 
-    await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.includes('Download PNG'))?.click(); true");
+    await clickButtonContaining("Download PNG");
     let examPngStatus;
     try {
       examPngStatus = await waitForPage(
