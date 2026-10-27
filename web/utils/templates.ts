@@ -3,7 +3,7 @@ import {
   toDocument,
   type DesignElement,
   type DesignDocument,
-} from "~/utils/document";
+} from "./document";
 
 export type TemplateId = "exam-paper-a4" | "shop-banner-landscape";
 
