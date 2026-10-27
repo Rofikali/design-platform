@@ -86,7 +86,7 @@ export function parseDocument(input: unknown): ParsedDocument {
   let template: TemplateMetadata | undefined;
   if (doc.schema_version === SCHEMA_VERSION && doc.template !== undefined) {
     const item = doc.template;
-    if (!item || typeof item.id !== "string" || item.id.length < 1 || item.id.length > 128 ||
+    if (!item || typeof item.id !== "string" || item.id.length < 1 || new TextEncoder().encode(item.id).byteLength > 128 ||
         !Number.isInteger(item.version) || item.version < 1)
       throw new Error("Template metadata requires an ID (1–128 characters) and positive integer version.");
     template = { id: item.id, version: item.version };
@@ -94,7 +94,7 @@ export function parseDocument(input: unknown): ParsedDocument {
   if (!Array.isArray(doc.elements) || doc.elements.length > MAX_ELEMENTS) throw new Error("The document must have at most 1,000 elements.");
   const ids = new Set<string>();
   const parsed = doc.elements.map((item) => {
-    if (!item || typeof item !== "object" || typeof item.id !== "string" || item.id.length < 1 || item.id.length > 128)
+    if (!item || typeof item !== "object" || typeof item.id !== "string" || item.id.length < 1 || new TextEncoder().encode(item.id).byteLength > 128)
       throw new Error("An element has an invalid ID.");
     if (ids.has(item.id)) throw new Error("Duplicate element IDs are not allowed.");
     ids.add(item.id);
