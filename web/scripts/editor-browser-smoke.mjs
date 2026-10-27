@@ -421,7 +421,43 @@ async function main() {
       throw new Error(`Template picker did not apply expected page and print geometry: ${JSON.stringify(templateCanvas)}`);
     }
 
-    process.stdout.write("PASS: Chrome covered WASM import/export, invalid-import safety, add/edit/style/move/undo/redo, autosave/restore, pointer drag/resize, page bounds, and template creation.\\n");
+    // Verify an actual PNG download, not only the renderer's SVG string.
+    // The selected shop-banner template is 1200 × 500 logical units; the UI
+    // promises a 2× raster export, so the PNG IHDR must report 2400 × 1000.
+    await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.includes('Download PNG'))?.click(); true");
+    const pngStatus = await waitForPage(
+      "PNG export status",
+      "document.querySelector('[role=status]')?.textContent || ''",
+      value => value.includes("PNG exported at 2400 × 1000 pixels") || value.startsWith("PNG export failed:"),
+    );
+    if (!pngStatus.includes("PNG exported at 2400 × 1000 pixels")) {
+      throw new Error(`PNG export reported a failure: ${pngStatus}`);
+    }
+    const pngPath = await waitFor("downloaded PNG file", async () => {
+      const names = await readdir(downloads);
+      if (names.some(item => item.endsWith(".crdownload"))) return null;
+      const name = names.find(item => item === "design-platform.png");
+      if (!name) return null;
+      const path = resolve(downloads, name);
+      const info = await stat(path);
+      return info.size > 100 ? path : null;
+    });
+    const png = await readFile(pngPath);
+    const pngSignature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
+    if (!png.subarray(0, 8).equals(pngSignature) ||
+        png.toString("ascii", 12, 16) !== "IHDR" ||
+        png.readUInt32BE(16) !== 2400 ||
+        png.readUInt32BE(20) !== 1000) {
+      throw new Error(`Downloaded PNG signature or dimensions were invalid: ${JSON.stringify({
+        signature: png.subarray(0, 8).toString("hex"),
+        chunk: png.toString("ascii", 12, 16),
+        width: png.length >= 24 ? png.readUInt32BE(16) : null,
+        height: png.length >= 24 ? png.readUInt32BE(20) : null,
+        bytes: png.length,
+      })}`);
+    }
+
+    process.stdout.write("PASS: Chrome covered WASM import/export, invalid-import safety, add/edit/style/move/undo/redo, autosave/restore, pointer drag/resize, page bounds, template creation, and actual 2× PNG download dimensions.\\n");
   } finally {
     cdp?.close();
     stopProcess(browser);
