@@ -41,6 +41,7 @@ Documentation describes intended tests; it is not evidence that they have run. R
 - Verify repeated directional movement controls cannot move an element beyond the right or bottom page edges.
 - Keep temporary browser profiles/downloads isolated and clean them after the test.
 - Verify the actual downloaded PNG signature and IHDR dimensions for the Shop Banner's 2× export.
+- Decode the downloaded PNG in Chrome and assert known background/accent samples plus minimum orange, dark-text, and non-background pixel counts. This catches blank or obviously missing-color output, but is not a golden-image comparison.
 - Intercept the print-dialog call while preserving the app's print stylesheet, request a PDF from Chrome DevTools, and assert the Shop Banner fits the requested 300 × 125 mm physical size on exactly one PDF page.
 - These checks prove file integrity and page geometry only; they do not prove visual fidelity, font/wrapping quality, or cross-browser print consistency.
 - Accessibility auditing, visual export regression, and performance testing remain separate open gates.

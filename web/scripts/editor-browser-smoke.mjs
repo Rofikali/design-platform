@@ -457,6 +457,57 @@ async function main() {
       })}`);
     }
 
+    // Inspect decoded pixels as well as the PNG header. This catches blank or
+    // incorrectly colored output that can still have a valid signature/size.
+    const pngBase64 = png.toString("base64");
+    const pngVisual = await evaluate(`(async () => {
+      const image = new Image();
+      image.src = "data:image/png;base64,${pngBase64}";
+      await image.decode();
+      const canvas = document.createElement("canvas");
+      canvas.width = image.naturalWidth;
+      canvas.height = image.naturalHeight;
+      const context = canvas.getContext("2d", { willReadFrequently: true });
+      if (!context) throw new Error("Could not create pixel inspection canvas");
+      context.drawImage(image, 0, 0);
+      const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+      const sample = (x, y) => {
+        const offset = (y * canvas.width + x) * 4;
+        return Array.from(pixels.slice(offset, offset + 4));
+      };
+      let orangePixels = 0;
+      let darkTextPixels = 0;
+      let nonBackgroundPixels = 0;
+      for (let offset = 0; offset < pixels.length; offset += 4) {
+        const red = pixels[offset];
+        const green = pixels[offset + 1];
+        const blue = pixels[offset + 2];
+        const alpha = pixels[offset + 3];
+        if (alpha > 0 && red > 200 && green > 40 && green < 120 && blue < 60) orangePixels += 1;
+        if (alpha > 0 && red < 175 && green < 105 && blue < 75) darkTextPixels += 1;
+        if (alpha > 0 && !(red === 255 && green === 247 && blue === 237)) nonBackgroundPixels += 1;
+      }
+      return {
+        width: canvas.width,
+        height: canvas.height,
+        accentSample: sample(1200, 10),
+        backgroundSample: sample(2390, 990),
+        orangePixels,
+        darkTextPixels,
+        nonBackgroundPixels,
+      };
+    })()`);
+    const expectedPixelContent = pngVisual.width === 2400 &&
+      pngVisual.height === 1000 &&
+      pngVisual.accentSample[0] === 234 && pngVisual.accentSample[1] === 88 && pngVisual.accentSample[2] === 12 &&
+      pngVisual.backgroundSample[0] === 255 && pngVisual.backgroundSample[1] === 247 && pngVisual.backgroundSample[2] === 237 &&
+      pngVisual.orangePixels > 30_000 &&
+      pngVisual.darkTextPixels > 500 &&
+      pngVisual.nonBackgroundPixels > 30_000;
+    if (!expectedPixelContent) {
+      throw new Error(`PNG pixel content did not match the Shop Banner's expected background, accent, and text: \${JSON.stringify(pngVisual)}`);
+    }
+
     // Exercise the real print workflow without opening a native print dialog.
     // Keep the application's injected print stylesheet active, then ask Chrome
     // for the same PDF output through DevTools so CI can inspect its page box.
