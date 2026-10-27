@@ -460,9 +460,9 @@ async function main() {
     // Inspect decoded pixels as well as the PNG header. This catches blank or
     // incorrectly colored output that can still have a valid signature/size.
     const pngBase64 = png.toString("base64");
-    const pngVisual = await evaluate(\`(async () => {
+    const pngVisual = await evaluate(`(async () => {
       const image = new Image();
-      image.src = "data:image/png;base64,\${"\${pngBase64}"}";
+      image.src = "data:image/png;base64,${pngBase64}";
       await image.decode();
       const canvas = document.createElement("canvas");
       canvas.width = image.naturalWidth;
@@ -493,7 +493,7 @@ async function main() {
         darkTextPixels,
         nonBackgroundPixels,
       };
-    })()\`);
+    })()`);
     const expectedPixelContent = pngVisual.width === 2400 &&
       pngVisual.height === 1000 &&
       pngVisual.accentSample[0] === 234 && pngVisual.accentSample[1] === 88 && pngVisual.accentSample[2] === 12 &&
@@ -502,7 +502,7 @@ async function main() {
       pngVisual.darkTextPixels > 500 &&
       pngVisual.nonBackgroundPixels > 30_000;
     if (!expectedPixelContent) {
-      throw new Error(\`PNG pixel content did not match the Shop Banner's expected background, accent, and text: \${JSON.stringify(pngVisual)}\`);
+      throw new Error(`PNG pixel content did not match the Shop Banner's expected background, accent, and text: \${JSON.stringify(pngVisual)}`);
     }
 
     // Exercise the real print workflow without opening a native print dialog.
