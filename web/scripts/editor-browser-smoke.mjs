@@ -489,32 +489,53 @@ async function main() {
       };
       let orangePixels = 0;
       let darkTextPixels = 0;
+      let titleRegionDarkPixels = 0;
+      let subtitleRegionDarkPixels = 0;
+      let footerRegionDarkPixels = 0;
       let nonBackgroundPixels = 0;
       for (let offset = 0; offset < pixels.length; offset += 4) {
         const red = pixels[offset];
         const green = pixels[offset + 1];
         const blue = pixels[offset + 2];
         const alpha = pixels[offset + 3];
+        const pixelIndex = offset / 4;
+        const x = pixelIndex % canvas.width;
+        const y = Math.floor(pixelIndex / canvas.width);
         if (alpha > 0 && red > 200 && green > 40 && green < 120 && blue < 60) orangePixels += 1;
-        if (alpha > 0 && red < 175 && green < 105 && blue < 75) darkTextPixels += 1;
+        if (alpha > 0 && red < 175 && green < 105 && blue < 75) {
+          darkTextPixels += 1;
+          if (x >= 80 && x < 2300 && y >= 180 && y < 360) titleRegionDarkPixels += 1;
+          if (x >= 80 && x < 2200 && y >= 390 && y < 540) subtitleRegionDarkPixels += 1;
+          if (x >= 80 && x < 1100 && y >= 660 && y < 800) footerRegionDarkPixels += 1;
+        }
         if (alpha > 0 && !(red === 255 && green === 247 && blue === 237)) nonBackgroundPixels += 1;
       }
       return {
         width: canvas.width,
         height: canvas.height,
         accentSample: sample(1200, 10),
+        accentLeftEdge: sample(0, 10),
+        accentRightEdge: sample(2399, 10),
         backgroundSample: sample(2390, 990),
         orangePixels,
         darkTextPixels,
+        titleRegionDarkPixels,
+        subtitleRegionDarkPixels,
+        footerRegionDarkPixels,
         nonBackgroundPixels,
       };
     })()`);
     const expectedPixelContent = pngVisual.width === 2400 &&
       pngVisual.height === 1000 &&
       pngVisual.accentSample[0] === 234 && pngVisual.accentSample[1] === 88 && pngVisual.accentSample[2] === 12 &&
+      pngVisual.accentLeftEdge[0] === 234 && pngVisual.accentLeftEdge[1] === 88 && pngVisual.accentLeftEdge[2] === 12 &&
+      pngVisual.accentRightEdge[0] === 234 && pngVisual.accentRightEdge[1] === 88 && pngVisual.accentRightEdge[2] === 12 &&
       pngVisual.backgroundSample[0] === 255 && pngVisual.backgroundSample[1] === 247 && pngVisual.backgroundSample[2] === 237 &&
       pngVisual.orangePixels > 30_000 &&
       pngVisual.darkTextPixels > 500 &&
+      pngVisual.titleRegionDarkPixels > 500 &&
+      pngVisual.subtitleRegionDarkPixels > 250 &&
+      pngVisual.footerRegionDarkPixels > 100 &&
       pngVisual.nonBackgroundPixels > 30_000;
     if (!expectedPixelContent) {
       throw new Error(`PNG pixel content did not match the Shop Banner's expected background, accent, and text: \${JSON.stringify(pngVisual)}`);
@@ -598,6 +619,10 @@ async function main() {
       };
       let darkPixels = 0;
       let titleRegionDarkPixels = 0;
+      let subjectRegionDarkPixels = 0;
+      let classTimeRegionDarkPixels = 0;
+      let instructionsRegionDarkPixels = 0;
+      let dividerRegionPixels = 0;
       let nonWhitePixels = 0;
       for (let y = 0; y < canvas.height; y += 1) {
         for (let x = 0; x < canvas.width; x += 1) {
@@ -609,8 +634,13 @@ async function main() {
           const isDark = alpha > 0 && red < 100 && green < 120 && blue < 150;
           if (isDark) {
             darkPixels += 1;
-            if (x >= 80 && x < 1500 && y >= 50 && y < 170) titleRegionDarkPixels += 1;
+            if (x >= 80 && x < 1000 && y >= 60 && y < 150) titleRegionDarkPixels += 1;
+            if (x >= 80 && x < 800 && y >= 220 && y < 300) subjectRegionDarkPixels += 1;
+            if (x >= 80 && x < 1500 && y >= 300 && y < 400) classTimeRegionDarkPixels += 1;
+            if (x >= 80 && x < 1500 && y >= 430 && y < 550) instructionsRegionDarkPixels += 1;
           }
+          if (alpha > 0 && red === 51 && green === 65 && blue === 85 &&
+              x >= 80 && x < 1510 && y >= 188 && y < 195) dividerRegionPixels += 1;
           if (alpha > 0 && !(red === 255 && green === 255 && blue === 255)) nonWhitePixels += 1;
         }
       }
@@ -621,6 +651,10 @@ async function main() {
         dividerSample: sample(160, 190),
         darkPixels,
         titleRegionDarkPixels,
+        subjectRegionDarkPixels,
+        classTimeRegionDarkPixels,
+        instructionsRegionDarkPixels,
+        dividerRegionPixels,
         nonWhitePixels,
       };
     })()`);
@@ -634,6 +668,10 @@ async function main() {
       examPngVisual.dividerSample[2] === 85 &&
       examPngVisual.darkPixels > 8_000 &&
       examPngVisual.titleRegionDarkPixels > 500 &&
+      examPngVisual.subjectRegionDarkPixels > 100 &&
+      examPngVisual.classTimeRegionDarkPixels > 150 &&
+      examPngVisual.instructionsRegionDarkPixels > 200 &&
+      examPngVisual.dividerRegionPixels > 7_000 &&
       examPngVisual.nonWhitePixels > 8_000;
     if (!expectedExamPixelContent) {
       throw new Error(`Exam Paper PNG pixels did not match expected white background, divider, and title: ${JSON.stringify(examPngVisual)}`);
