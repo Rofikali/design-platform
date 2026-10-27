@@ -16,6 +16,7 @@ import {
 } from "~/utils/document";
 import { validateDocumentJson } from "~/utils/document-validation";
 import { createTemplateDocument, listTemplates, type TemplateId } from "~/utils/templates";
+import { renderDesignPng } from "~/utils/design-export";
 
 const STORAGE_KEY = "design-platform:document:v1"; // Keep the key so existing v1 autosaves migrate in place.
 const pageWidth = ref(PAGE_WIDTH);
@@ -188,6 +189,51 @@ async function exportJson() {
     statusMessage.value = `Export failed: ${error instanceof Error ? error.message : "invalid document"}`;
   }
 }
+async function exportPng() {
+  try {
+    const validation = await validateDocumentJson(snapshot());
+    const parsed = parseDocumentJson(validation.json);
+    const blob = await renderDesignPng(parsed.elements, parsed.width, parsed.height, parsed.background, 2);
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "design-platform.png";
+    anchor.click();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    statusMessage.value = `PNG exported at ${parsed.width * 2} × ${parsed.height * 2} pixels.`;
+  } catch (error) {
+    statusMessage.value = `PNG export failed: ${error instanceof Error ? error.message : "could not render design"}`;
+  }
+}
+function printToPdf() {
+  const style = document.createElement("style");
+  const size = outputSizeMm.value;
+  style.dataset.designPrint = "true";
+  style.textContent = `
+    @page { size: ${size ? `${size.width}mm ${size.height}mm` : "auto"}; margin: 0; }
+    @media print {
+      body { margin: 0 !important; background: white !important; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      .app-shell.printing-design .topbar, .app-shell.printing-design .tools-panel { display: none !important; }
+      .app-shell.printing-design .workspace { display: block !important; margin: 0 !important; padding: 0 !important; }
+      .app-shell.printing-design .canvas-area { border: 0 !important; padding: 0 !important; overflow: visible !important; }
+      .app-shell.printing-design .canvas-heading, .app-shell.printing-design .canvas-note { display: none !important; }
+      .app-shell.printing-design .canvas-scroller { overflow: visible !important; padding: 0 !important; background: white !important; }
+      .app-shell.printing-design .design-page { margin: 0 !important; box-shadow: none !important; break-inside: avoid; }
+      .app-shell.printing-design .design-element { border-color: transparent !important; outline: none !important; cursor: default !important; }
+      .app-shell.printing-design .resize-handle { display: none !important; }
+    }`;
+  document.head.appendChild(style);
+  document.querySelector(".app-shell")?.classList.add("printing-design");
+  statusMessage.value = "Print dialog opened. Choose “Save as PDF” to create a PDF file.";
+  const cleanup = () => {
+    document.querySelector(".app-shell")?.classList.remove("printing-design");
+    style.remove();
+    window.removeEventListener("afterprint", cleanup);
+  };
+  window.addEventListener("afterprint", cleanup, { once: true });
+  window.print();
+  window.setTimeout(cleanup, 60_000);
+}
 function importJson() { fileInput.value?.click(); }
 async function onFileSelected(event: Event) {
   const input = event.target as HTMLInputElement;
@@ -306,6 +352,8 @@ onMounted(() => {
         <button class="primary" type="button" @click="addText">＋ Add text</button>
         <button type="button" @click="addRectangle">＋ Add rectangle</button>
         <button type="button" @click="exportJson">Download JSON</button>
+        <button type="button" @click="exportPng">Download PNG</button>
+        <button type="button" @click="printToPdf">Print / Save PDF</button>
         <button type="button" @click="importJson">Open JSON</button>
         <input ref="fileInput" class="visually-hidden" type="file" accept="application/json,.json" @change="onFileSelected" />
         <div class="history-actions"><button type="button" :disabled="undoStack.length === 0" @click="undo">Undo</button><button type="button" :disabled="redoStack.length === 0" @click="redo">Redo</button></div>
@@ -387,4 +435,8 @@ hr { margin: 20px 0; border: 0; border-top: 1px solid #e6eaf1; }
 .move-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
 .move-grid button { min-height: 34px; border: 1px solid #d7deea; border-radius: 7px; background: white; }
 @media (max-width: 760px) { .topbar { padding: 18px; } .workspace { grid-template-columns: 1fr; padding: 12px; gap: 12px; } .tools-panel { order: 2; } .canvas-area { order: 1; padding: 12px; } }
+@media print {
+  body { margin: 0; }
+  .app-shell.printing-design { min-height: 0; }
+}
 </style>
