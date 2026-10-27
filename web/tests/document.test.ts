@@ -48,6 +48,17 @@ describe("document parsing and validation", () => {
     expect(toDocument(parsed.elements)).toMatchObject({ schema_version: 2, page: sharedDocumentFixture.page, elements: sharedDocumentFixture.elements });
   });
 
+  it("does not preserve schema-v2 metadata smuggled into a schema-v1 document", () => {
+    const legacy = {
+      ...sharedDocumentFixture,
+      output_size_mm: { width: 210, height: 297 },
+      template: { id: "unexpected", version: 1 },
+    };
+    const parsed = parseDocument(legacy);
+    expect(parsed.outputSizeMm).toBeUndefined();
+    expect(parsed.template).toBeUndefined();
+  });
+
   it("accepts the shared schema-v2 A4 fixture including physical output metadata", () => {
     const parsed = parseDocument(schemaV2Fixture);
     expect(parsed.width).toBe(794);
