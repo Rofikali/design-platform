@@ -508,6 +508,114 @@ async function main() {
       throw new Error(`PNG pixel content did not match the Shop Banner's expected background, accent, and text: \${JSON.stringify(pngVisual)}`);
     }
 
+    // Verify the second MVP template through the same real PNG export path.
+    // A4 logical geometry is 794 × 1123, so the 2× image must be 1588 × 2246.
+    await rm(pngPath);
+    await evaluate(`(() => {
+      const select = document.querySelector('#template-choice');
+      const setter = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value').set;
+      setter.call(select, 'exam-paper-a4');
+      select.dispatchEvent(new Event('change', { bubbles: true }));
+      Array.from(document.querySelectorAll('button')).find(button => button.textContent.trim() === 'Use template')?.click();
+      return true;
+    })()`);
+    await waitForPage("exam paper template on canvas", "document.querySelector('.design-page')?.innerText || ''", value => value.includes("EXAMINATION"));
+    const examCanvas = await evaluate("(() => { const page = document.querySelector('.design-page'); return { width: page.style.width, height: page.style.height, details: document.querySelector('.template-controls')?.innerText || '' }; })()");
+    if (examCanvas.width !== "794px" || examCanvas.height !== "1123px" || !examCanvas.details.includes("210 × 297 mm")) {
+      throw new Error(`Exam Paper template did not apply expected page and print geometry: ${JSON.stringify(examCanvas)}`);
+    }
+
+    await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.includes('Download PNG'))?.click(); true");
+    const examPngStatus = await waitForPage(
+      "Exam Paper PNG export status",
+      "document.querySelector('[role=status]')?.textContent || ''",
+      value => value.includes("PNG exported at 1588 × 2246 pixels") || value.startsWith("PNG export failed:"),
+    );
+    if (!examPngStatus.includes("PNG exported at 1588 × 2246 pixels")) {
+      throw new Error(`Exam Paper PNG export reported a failure: ${examPngStatus}`);
+    }
+    const examPngPath = await waitFor("downloaded Exam Paper PNG", async () => {
+      const names = await readdir(downloads);
+      if (names.some(item => item.endsWith(".crdownload"))) return null;
+      const name = names.find(item => item === "design-platform.png");
+      if (!name) return null;
+      const path = resolve(downloads, name);
+      const info = await stat(path);
+      return info.size > 100 ? path : null;
+    });
+    const examPng = await readFile(examPngPath);
+    if (!examPng.subarray(0, 8).equals(pngSignature) ||
+        examPng.toString("ascii", 12, 16) !== "IHDR" ||
+        examPng.readUInt32BE(16) !== 1588 ||
+        examPng.readUInt32BE(20) !== 2246) {
+      throw new Error(`Exam Paper PNG signature or dimensions were invalid: ${JSON.stringify({
+        signature: examPng.subarray(0, 8).toString("hex"),
+        chunk: examPng.toString("ascii", 12, 16),
+        width: examPng.length >= 24 ? examPng.readUInt32BE(16) : null,
+        height: examPng.length >= 24 ? examPng.readUInt32BE(20) : null,
+        bytes: examPng.length,
+      })}`);
+    }
+
+    const examPngBase64 = examPng.toString("base64");
+    const examPngVisual = await evaluate(`(async () => {
+      const image = new Image();
+      image.src = "data:image/png;base64,${examPngBase64}";
+      await image.decode();
+      const canvas = document.createElement("canvas");
+      canvas.width = image.naturalWidth;
+      canvas.height = image.naturalHeight;
+      const context = canvas.getContext("2d", { willReadFrequently: true });
+      if (!context) throw new Error("Could not create Exam Paper pixel inspection canvas");
+      context.drawImage(image, 0, 0);
+      const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+      const sample = (x, y) => {
+        const offset = (y * canvas.width + x) * 4;
+        return Array.from(pixels.slice(offset, offset + 4));
+      };
+      let darkPixels = 0;
+      let titleRegionDarkPixels = 0;
+      let nonWhitePixels = 0;
+      for (let y = 0; y < canvas.height; y += 1) {
+        for (let x = 0; x < canvas.width; x += 1) {
+          const offset = (y * canvas.width + x) * 4;
+          const red = pixels[offset];
+          const green = pixels[offset + 1];
+          const blue = pixels[offset + 2];
+          const alpha = pixels[offset + 3];
+          const isDark = alpha > 0 && red < 100 && green < 120 && blue < 150;
+          if (isDark) {
+            darkPixels += 1;
+            if (x >= 80 && x < 1500 && y >= 50 && y < 170) titleRegionDarkPixels += 1;
+          }
+          if (alpha > 0 && !(red === 255 && green === 255 && blue === 255)) nonWhitePixels += 1;
+        }
+      }
+      return {
+        width: canvas.width,
+        height: canvas.height,
+        backgroundSample: sample(1500, 2000),
+        dividerSample: sample(160, 190),
+        darkPixels,
+        titleRegionDarkPixels,
+        nonWhitePixels,
+      };
+    })()`);
+    const expectedExamPixelContent = examPngVisual.width === 1588 &&
+      examPngVisual.height === 2246 &&
+      examPngVisual.backgroundSample[0] === 255 &&
+      examPngVisual.backgroundSample[1] === 255 &&
+      examPngVisual.backgroundSample[2] === 255 &&
+      examPngVisual.dividerSample[0] === 51 &&
+      examPngVisual.dividerSample[1] === 65 &&
+      examPngVisual.dividerSample[2] === 85 &&
+      examPngVisual.darkPixels > 8_000 &&
+      examPngVisual.titleRegionDarkPixels > 500 &&
+      examPngVisual.nonWhitePixels > 8_000;
+    if (!expectedExamPixelContent) {
+      throw new Error(`Exam Paper PNG pixels did not match expected white background, divider, and title: ${JSON.stringify(examPngVisual)}`);
+    }
+
     // Exercise the real print workflow without opening a native print dialog.
     // Keep the application's injected print stylesheet active, then ask Chrome
     // for the same PDF output through DevTools so CI can inspect its page box.
@@ -551,7 +659,7 @@ async function main() {
     }
     await cdp.send("Emulation.setEmulatedMedia", { media: "screen" });
 
-    process.stdout.write("PASS: Chrome covered WASM import/export, invalid-import safety, add/edit/style/move/undo/redo, autosave/restore, pointer drag/resize, page bounds, template creation, actual 2× PNG dimensions, and one-page 300 × 125 mm PDF geometry.\\n");
+    process.stdout.write("PASS: Chrome covered WASM import/export, invalid-import safety, add/edit/style/move/undo/redo, autosave/restore, pointer drag/resize, page bounds, template creation, actual 2× PNG dimensions and pixel content for both MVP templates, and one-page 300 × 125 mm PDF geometry.\\n");
   } finally {
     cdp?.close();
     stopProcess(browser);
