@@ -113,6 +113,16 @@ describe("document parsing and validation", () => {
     expect(() => parseDocument(long)).toThrow(/invalid ID/);
   });
 
+  it("enforces the Rust UTF-8 byte limit for element and template IDs", () => {
+    const oversizedElementId = validDocument();
+    oversizedElementId.elements[0]!.id = "😀".repeat(33);
+    expect(() => parseDocument(oversizedElementId)).toThrow(/invalid ID/);
+
+    const oversizedTemplateId = validDocument();
+    oversizedTemplateId.template = { id: "😀".repeat(33), version: 1 };
+    expect(() => parseDocument(oversizedTemplateId)).toThrow(/Template metadata/);
+  });
+
   it("rejects invalid geometry including non-finite values", () => {
     const zeroWidth = validDocument();
     zeroWidth.elements[0]!.width = 0;
