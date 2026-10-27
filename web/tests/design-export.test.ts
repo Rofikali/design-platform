@@ -24,6 +24,18 @@ describe("design export renderer", () => {
     expect(svg).not.toContain("<script");
   });
 
+  it("clips wrapped text to its element box so it cannot overlap neighboring content", () => {
+    const svg = renderDesignSvg([
+      { id: "first", type: "text", text: "one two three four five six seven", x: 10, y: 20, width: 50, height: 18, fontSize: 12, color: "#000000" },
+      { id: "second", type: "text", text: "another element", x: 70, y: 20, width: 80, height: 30, fontSize: 12, color: "#000000" },
+    ], 200, 100, "#ffffff");
+
+    expect(svg).toContain('<clipPath id="text-clip-0"><rect x="10" y="20" width="50" height="18"/></clipPath>');
+    expect(svg).toContain('<text clip-path="url(#text-clip-0)"');
+    expect(svg).toContain('<clipPath id="text-clip-1"><rect x="70" y="20" width="80" height="30"/></clipPath>');
+    expect(svg).toContain('<text clip-path="url(#text-clip-1)"');
+  });
+
   it("rejects invalid dimensions and unsupported scale", () => {
     expect(() => renderDesignSvg([], 0, 100, "#fff")).toThrow(/dimensions/);
     expect(() => renderDesignSvg([], 100, 100, "#fff", 5)).toThrow(/scale/);
