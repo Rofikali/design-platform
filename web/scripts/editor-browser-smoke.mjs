@@ -404,7 +404,24 @@ async function main() {
       throw new Error(`Directional movement escaped page bounds: ${JSON.stringify({ edgeResize, afterKeyboardBoundary })}`);
     }
 
-    process.stdout.write("PASS: Chrome covered WASM import/export, invalid-import safety, add/edit/style/move/undo/redo, autosave/restore, real pointer drag/resize with undo/redo, keyboard movement limits, and page-boundary limits.\\n");
+    // Start a new design from the real template picker after the existing editor checks.
+    await evaluate(`(() => {
+      const select = document.querySelector('#template-choice');
+      const setter = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value').set;
+      setter.call(select, 'shop-banner-landscape');
+      select.dispatchEvent(new Event('change', { bubbles: true }));
+      document.querySelector('button') && Array.from(document.querySelectorAll('button')).find(button => button.textContent.trim() === 'Use template')?.click();
+      return true;
+    })()`);
+    await waitForPage("shop banner template on canvas", "document.querySelector('.design-page')?.innerText || ''", value => value.includes("WELCOME TO OUR SHOP"));
+    const templateCanvas = await evaluate("(() => { const page = document.querySelector('.design-page'); return { width: page.style.width, height: page.style.height, count: document.querySelector('.canvas-heading > span')?.textContent, details: document.querySelector('.template-controls')?.innerText || '' }; })()");
+    if (templateCanvas.width !== "1200px" || templateCanvas.height !== "500px" ||
+        !templateCanvas.count.includes("4 elements") ||
+        !templateCanvas.details.includes("300 × 125 mm")) {
+      throw new Error(`Template picker did not apply expected page and print geometry: ${JSON.stringify(templateCanvas)}`);
+    }
+
+    process.stdout.write("PASS: Chrome covered WASM import/export, invalid-import safety, add/edit/style/move/undo/redo, autosave/restore, pointer drag/resize, page bounds, and template creation.\\n");
   } finally {
     cdp?.close();
     stopProcess(browser);
