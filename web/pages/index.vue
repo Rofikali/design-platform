@@ -190,6 +190,7 @@ async function exportJson() {
   }
 }
 async function exportPng() {
+  statusMessage.value = "Exporting PNG…";
   try {
     const validation = await validateDocumentJson(snapshot());
     const parsed = parseDocumentJson(validation.json);
