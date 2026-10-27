@@ -23,7 +23,7 @@ This is still a prototype, **not production-ready**.
 - The UI does not yet provide a template picker or finished Exam Paper / Shop Banner workflows.
 - PDF/PNG export is not implemented.
 - There is no account system, server-side persistence, cross-device synchronization, billing, or collaboration.
-- Schema-v1 documents migrate to v2 with their original 800 × 600 geometry. New documents can use bounded configurable page dimensions and optional physical output-size metadata. The editor currently supports only text and rectangles. The editor currently supports only text and rectangles.
+- Schema-v1 documents migrate to v2 with their original 800 × 600 geometry. New documents can use bounded configurable page dimensions and optional physical output-size metadata. The editor currently supports only text and rectangles.
 - The real-browser suite covers WASM-backed JSON import/export, rejection safety, adding text/rectangles, text/style editing, directional movement, undo/redo, local autosave/restore, pointer drag/resize, page-boundary limits, and template creation. PNG/PDF export needs real-browser output checks and visual regression baselines. Export fidelity, accessibility, and performance gates remain open work.
 - Browser-side validation improves feedback and data consistency; it is not an authorization boundary. A future trusted API must validate documents independently.
 - Local browser storage is not a backup. Users should download a JSON copy if they need a portable copy.
