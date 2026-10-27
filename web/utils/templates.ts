@@ -51,12 +51,22 @@ const templates: readonly TemplateDefinition[] = [
   },
 ];
 
+function cloneTemplate(template: TemplateDefinition): TemplateDefinition {
+  return {
+    ...template,
+    page: { ...template.page },
+    outputSizeMm: { ...template.outputSizeMm },
+    elements: template.elements.map((element) => ({ ...element })),
+  };
+}
+
 export function listTemplates(): readonly TemplateDefinition[] {
-  return templates;
+  return templates.map(cloneTemplate);
 }
 
 export function getTemplateDefinition(id: string): TemplateDefinition | undefined {
-  return templates.find((template) => template.id === id);
+  const template = templates.find((candidate) => candidate.id === id);
+  return template ? cloneTemplate(template) : undefined;
 }
 
 /**
@@ -67,11 +77,10 @@ export function createTemplateDocument(id: TemplateId): DesignDocument {
   const template = getTemplateDefinition(id);
   if (!template) throw new Error(`Unknown design template: ${id}`);
 
-  const elements = template.elements.map((element) => ({ ...element })) as DesignElement[];
   const document = toDocument(
-    elements,
-    { ...template.page },
-    { ...template.outputSizeMm },
+    template.elements,
+    template.page,
+    template.outputSizeMm,
     { id: template.id, version: 1 },
   );
   parseDocument(document);
