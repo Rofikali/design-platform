@@ -479,7 +479,10 @@ async function main() {
       let darkTextPixels = 0;
       let nonBackgroundPixels = 0;
       for (let offset = 0; offset < pixels.length; offset += 4) {
-        const [red, green, blue, alpha] = pixels.slice(offset, offset + 4);
+        const red = pixels[offset];
+        const green = pixels[offset + 1];
+        const blue = pixels[offset + 2];
+        const alpha = pixels[offset + 3];
         if (alpha > 0 && red > 200 && green > 40 && green < 120 && blue < 60) orangePixels += 1;
         if (alpha > 0 && red < 175 && green < 105 && blue < 75) darkTextPixels += 1;
         if (alpha > 0 && !(red === 255 && green === 247 && blue === 237)) nonBackgroundPixels += 1;
