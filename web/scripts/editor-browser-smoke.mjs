@@ -526,11 +526,22 @@ async function main() {
     }
 
     await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.includes('Download PNG'))?.click(); true");
-    const examPngStatus = await waitForPage(
-      "Exam Paper PNG export status",
-      "document.querySelector('[role=status]')?.textContent || ''",
-      value => value.includes("PNG exported at 1588 × 2246 pixels") || value.startsWith("PNG export failed:"),
-    );
+    let examPngStatus;
+    try {
+      examPngStatus = await waitForPage(
+        "Exam Paper PNG export status",
+        "document.querySelector('[role=status]')?.textContent || ''",
+        value => value.includes("PNG exported at 1588 × 2246 pixels") || value.startsWith("PNG export failed:"),
+      );
+    } catch (error) {
+      const diagnostics = await evaluate(`JSON.stringify({
+        status: document.querySelector('[role=status]')?.textContent || '',
+        page: (() => { const page = document.querySelector('.design-page'); return page ? { width: page.style.width, height: page.style.height, text: page.innerText.slice(0, 300) } : null; })(),
+        button: Array.from(document.querySelectorAll('button')).find(button => button.textContent.includes('Download PNG'))?.outerHTML || null,
+        template: document.querySelector('.template-controls')?.innerText || '',
+      })`);
+      throw new Error(`Exam Paper PNG status timed out: ${error.message}. Browser diagnostics: ${diagnostics}`);
+    }
     if (!examPngStatus.includes("PNG exported at 1588 × 2246 pixels")) {
       throw new Error(`Exam Paper PNG export reported a failure: ${examPngStatus}`);
     }
