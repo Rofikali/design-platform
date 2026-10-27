@@ -40,7 +40,10 @@ Documentation describes intended tests; it is not evidence that they have run. R
 - Use Chrome DevTools mouse input to exercise pointer drag and resize, verify undo/redo restores those geometry changes, and attempt to move or grow elements beyond the 800 × 600 page boundary.
 - Verify repeated directional movement controls cannot move an element beyond the right or bottom page edges.
 - Keep temporary browser profiles/downloads isolated and clean them after the test.
-- Accessibility auditing, PDF/PNG export fidelity, and performance testing remain separate open gates.
+- Verify the actual downloaded PNG signature and IHDR dimensions for the Shop Banner's 2× export.
+- Intercept the print-dialog call while preserving the app's print stylesheet, request a PDF from Chrome DevTools, and assert the Shop Banner fits the requested 300 × 125 mm physical size on exactly one PDF page.
+- These checks prove file integrity and page geometry only; they do not prove visual fidelity, font/wrapping quality, or cross-browser print consistency.
+- Accessibility auditing, visual export regression, and performance testing remain separate open gates.
 
 ### Persistence and API (when introduced)
 - Schema-v1-to-v2 migration tests, configurable page geometry, physical-output aspect-ratio checks, and resource-boundary tests.
