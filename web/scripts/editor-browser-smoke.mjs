@@ -483,7 +483,7 @@ async function main() {
     });
     const pdf = Buffer.from(pdfResult.data, "base64");
     const pdfText = pdf.toString("latin1");
-    const mediaBoxMatch = pdfText.match(/\\/MediaBox\\s*\\[\\s*([+-]?(?:\\d+\\.?\\d*|\\.\\d+))\\s+([+-]?(?:\\d+\\.?\\d*|\\.\\d+))\\s+([+-]?(?:\\d+\\.?\\d*|\\.\\d+))\\s+([+-]?(?:\\d+\\.?\\d*|\\.\\d+))\\s*\\]/);
+    const mediaBoxMatch = pdfText.match(/\/MediaBox\s*\[\s*([+-]?(?:\d+\.?\d*|\.\d+))\s+([+-]?(?:\d+\.?\d*|\.\d+))\s+([+-]?(?:\d+\.?\d*|\.\d+))\s+([+-]?(?:\d+\.?\d*|\.\d+))\s*\]/);
     if (!pdfText.startsWith("%PDF-") || !mediaBoxMatch) {
       throw new Error(`Chrome did not return a readable PDF page box (bytes=${pdf.length})`);
     }
@@ -492,7 +492,7 @@ async function main() {
     const actualPdfHeight = mediaBox[3] - mediaBox[1];
     const expectedPdfWidth = 300 * 72 / 25.4;
     const expectedPdfHeight = 125 * 72 / 25.4;
-    const pageCount = (pdfText.match(/\\/Type\\s*\\/Page\\b/g) || []).length;
+    const pageCount = (pdfText.match(/\/Type\s*\/Page\b/g) || []).length;
     if (Math.abs(actualPdfWidth - expectedPdfWidth) > 1.5 ||
         Math.abs(actualPdfHeight - expectedPdfHeight) > 1.5 ||
         pageCount !== 1) {
