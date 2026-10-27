@@ -457,7 +457,50 @@ async function main() {
       })}`);
     }
 
-    process.stdout.write("PASS: Chrome covered WASM import/export, invalid-import safety, add/edit/style/move/undo/redo, autosave/restore, pointer drag/resize, page bounds, template creation, and actual 2× PNG download dimensions.\\n");
+    // Exercise the real print workflow without opening a native print dialog.
+    // Keep the application's injected print stylesheet active, then ask Chrome
+    // for the same PDF output through DevTools so CI can inspect its page box.
+    await cdp.send("Emulation.setEmulatedMedia", { media: "print" });
+    await evaluate("window.print = () => { window.__designPrintIntercepted = true; }; Array.from(document.querySelectorAll('button')).find(button => button.textContent.includes('Print / Save PDF'))?.click(); true");
+    await waitForPage(
+      "print stylesheet to be installed",
+      "Boolean(document.querySelector('style[data-design-print]') && document.querySelector('.app-shell')?.classList.contains('printing-design') && window.__designPrintIntercepted)",
+    );
+    const printGeometry = await evaluate("(() => { const page = document.querySelector('.design-page'); const rect = page.getBoundingClientRect(); return { width: rect.width, height: rect.height, zoom: Number.parseFloat(getComputedStyle(page).zoom), pageWidth: page.style.width, pageHeight: page.style.height }; })()");
+    const expectedCssWidth = 300 * 96 / 25.4;
+    const expectedCssHeight = 125 * 96 / 25.4;
+    if (Math.abs(printGeometry.width - expectedCssWidth) > 1 ||
+        Math.abs(printGeometry.height - expectedCssHeight) > 1 ||
+        Math.abs(printGeometry.zoom - (expectedCssWidth / 1200)) > 0.002) {
+      throw new Error(`Print layout did not fit the logical canvas to 300 × 125 mm: ${JSON.stringify({ printGeometry, expectedCssWidth, expectedCssHeight })}`);
+    }
+
+    const pdfResult = await cdp.send("Page.printToPDF", {
+      preferCSSPageSize: true,
+      printBackground: true,
+      displayHeaderFooter: false,
+      scale: 1,
+    });
+    const pdf = Buffer.from(pdfResult.data, "base64");
+    const pdfText = pdf.toString("latin1");
+    const mediaBoxMatch = pdfText.match(/\\/MediaBox\\s*\\[\\s*([+-]?(?:\\d+\\.?\\d*|\\.\\d+))\\s+([+-]?(?:\\d+\\.?\\d*|\\.\\d+))\\s+([+-]?(?:\\d+\\.?\\d*|\\.\\d+))\\s+([+-]?(?:\\d+\\.?\\d*|\\.\\d+))\\s*\\]/);
+    if (!pdfText.startsWith("%PDF-") || !mediaBoxMatch) {
+      throw new Error(`Chrome did not return a readable PDF page box (bytes=${pdf.length})`);
+    }
+    const mediaBox = mediaBoxMatch.slice(1).map(Number);
+    const actualPdfWidth = mediaBox[2] - mediaBox[0];
+    const actualPdfHeight = mediaBox[3] - mediaBox[1];
+    const expectedPdfWidth = 300 * 72 / 25.4;
+    const expectedPdfHeight = 125 * 72 / 25.4;
+    const pageCount = (pdfText.match(/\\/Type\\s*\\/Page\\b/g) || []).length;
+    if (Math.abs(actualPdfWidth - expectedPdfWidth) > 1.5 ||
+        Math.abs(actualPdfHeight - expectedPdfHeight) > 1.5 ||
+        pageCount !== 1) {
+      throw new Error(`PDF page geometry was not one 300 × 125 mm page: ${JSON.stringify({ mediaBox, actualPdfWidth, actualPdfHeight, expectedPdfWidth, expectedPdfHeight, pageCount, bytes: pdf.length })}`);
+    }
+    await cdp.send("Emulation.setEmulatedMedia", { media: "screen" });
+
+    process.stdout.write("PASS: Chrome covered WASM import/export, invalid-import safety, add/edit/style/move/undo/redo, autosave/restore, pointer drag/resize, page bounds, template creation, actual 2× PNG dimensions, and one-page 300 × 125 mm PDF geometry.\\n");
   } finally {
     cdp?.close();
     stopProcess(browser);
