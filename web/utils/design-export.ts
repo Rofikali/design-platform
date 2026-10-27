@@ -38,14 +38,19 @@ export function renderDesignSvg(
     throw new Error("Invalid export page dimensions.");
   }
   if (!Number.isFinite(scale) || scale < 1 || scale > 4) throw new Error("Export scale must be between 1 and 4.");
-  const shapes = elements.map((element) => {
+  const shapes = elements.map((element, elementIndex) => {
     if (element.type === "rect") {
       return `<rect x="${element.x}" y="${element.y}" width="${element.width}" height="${element.height}" fill="${escapeXml(element.color)}"/>`;
     }
     const fontSize = element.fontSize;
     const maxCharacters = Math.max(1, Math.floor(element.width / Math.max(fontSize * 0.58, 1)));
     const lines = wrapText(element.text, maxCharacters);
-    return `<text x="${element.x + 2}" y="${element.y + fontSize}" fill="${escapeXml(element.color)}" font-family="Arial, Helvetica, sans-serif" font-size="${fontSize}">${lines.map((line, index) => `<tspan x="${element.x + 2}" dy="${index === 0 ? 0 : fontSize * 1.25}">${escapeXml(line)}</tspan>`).join("")}</text>`;
+    // The editor element's box is its layout contract. Without clipping, wrapped
+    // lines can paint over neighboring elements or outside the page.
+    const clipId = `text-clip-${elementIndex}`;
+    const clip = `<defs><clipPath id="${clipId}"><rect x="${element.x}" y="${element.y}" width="${element.width}" height="${element.height}"/></clipPath></defs>`;
+    const text = `<text clip-path="url(#${clipId})" x="${element.x + 2}" y="${element.y + fontSize}" fill="${escapeXml(element.color)}" font-family="Arial, Helvetica, sans-serif" font-size="${fontSize}">${lines.map((line, index) => `<tspan x="${element.x + 2}" dy="${index === 0 ? 0 : fontSize * 1.25}">${escapeXml(line)}</tspan>`).join("")}</text>`;
+    return clip + text;
   }).join("");
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width * scale}" height="${height * scale}" viewBox="0 0 ${width} ${height}"><rect width="100%" height="100%" fill="${escapeXml(background)}"/>${shapes}</svg>`;
 }
