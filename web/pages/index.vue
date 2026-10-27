@@ -190,9 +190,11 @@ async function exportJson() {
   }
 }
 async function exportPng() {
+  statusMessage.value = "Preparing PNG export…";
   try {
     const validation = await validateDocumentJson(snapshot());
     const parsed = parseDocumentJson(validation.json);
+    statusMessage.value = "Rendering PNG image…";
     const blob = await renderDesignPng(parsed.elements, parsed.width, parsed.height, parsed.background, 2);
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
