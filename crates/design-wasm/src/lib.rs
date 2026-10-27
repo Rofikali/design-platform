@@ -34,7 +34,7 @@ mod tests {
         let result = validate_document_json(V1_DOCUMENT).expect("v1 migrates");
         let parsed: serde_json::Value = serde_json::from_str(&result).expect("output JSON");
         assert_eq!(parsed["schema_version"], 2);
-        assert_eq!(parsed["page"]["width"], 800);
+        assert_eq!(parsed["page"]["width"].as_f64(), Some(800.0));
         assert!(parsed.get("output_size_mm").is_none());
         assert!(parsed.get("template").is_none());
     }
