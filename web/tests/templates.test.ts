@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { parseDocument } from "~/utils/document";
+import { parseDocument } from "../utils/document";
 import {
   createTemplateDocument,
   getTemplateDefinition,
   listTemplates,
-} from "~/utils/templates";
+} from "../utils/templates";
 
 describe("starter template catalog", () => {
   it("exposes exactly the two MVP templates", () => {
