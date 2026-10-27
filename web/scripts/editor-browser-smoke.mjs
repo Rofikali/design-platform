@@ -616,6 +616,22 @@ async function main() {
       throw new Error(`Exam Paper PNG pixels did not match expected white background, divider, and title: ${JSON.stringify(examPngVisual)}`);
     }
 
+    // Restore Shop Banner because the PDF geometry checks below intentionally
+    // exercise the landscape 300 × 125 mm output, not the A4 Exam Paper.
+    await evaluate(`(() => {
+      const select = document.querySelector('#template-choice');
+      const setter = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value').set;
+      setter.call(select, 'shop-banner-landscape');
+      select.dispatchEvent(new Event('change', { bubbles: true }));
+      Array.from(document.querySelectorAll('button')).find(button => button.textContent.trim() === 'Use template')?.click();
+      return true;
+    })()`);
+    await waitForPage(
+      "Shop Banner restored before PDF geometry checks",
+      "document.querySelector('.template-controls')?.innerText || ''",
+      value => value.includes("300 × 125 mm"),
+    );
+
     // Exercise the real print workflow without opening a native print dialog.
     // Keep the application's injected print stylesheet active, then ask Chrome
     // for the same PDF output through DevTools so CI can inspect its page box.
