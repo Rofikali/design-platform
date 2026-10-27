@@ -88,7 +88,7 @@ export function parseDocument(input: unknown): ParsedDocument {
     const item = doc.template;
     if (!item || typeof item.id !== "string" || item.id.length < 1 || new TextEncoder().encode(item.id).byteLength > 128 ||
         !Number.isInteger(item.version) || item.version < 1)
-      throw new Error("Template metadata requires an ID (1–128 characters) and positive integer version.");
+      throw new Error("Template metadata requires an ID (1–128 UTF-8 bytes) and positive integer version.");
     template = { id: item.id, version: item.version };
   }
   if (!Array.isArray(doc.elements) || doc.elements.length > MAX_ELEMENTS) throw new Error("The document must have at most 1,000 elements.");
