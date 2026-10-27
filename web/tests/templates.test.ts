@@ -30,12 +30,20 @@ describe("starter template catalog", () => {
     },
   );
 
-  it("returns a fresh document without mutating the catalog", () => {
+  it("returns a fresh document and protects catalog definitions from mutation", () => {
     const first = createTemplateDocument("exam-paper-a4");
-    first.elements[0]!.kind.type === "text" && (first.elements[0]!.kind.text = "Changed");
-    const second = createTemplateDocument("exam-paper-a4");
+    const firstElement = first.elements[0]!;
+    if (firstElement.kind.type === "text") firstElement.kind.text = "Changed";
 
+    const exposed = getTemplateDefinition("exam-paper-a4");
+    if (exposed) exposed.elements[0] = {
+      id: "tampered", type: "text", text: "Tampered",
+      x: 0, y: 0, width: 100, height: 30, fontSize: 12, color: "#000000",
+    };
+
+    const second = createTemplateDocument("exam-paper-a4");
     expect(second.elements[0]!.kind).toMatchObject({ type: "text", text: "EXAMINATION" });
+    expect(second.elements[0]!.id).toBe("exam-title");
   });
 
   it("returns undefined for unknown template metadata", () => {
