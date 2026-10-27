@@ -208,6 +208,12 @@ async function exportPng() {
 function printToPdf() {
   const style = document.createElement("style");
   const size = outputSizeMm.value;
+  // CSS pixels are 96 DPI, while the page's physical size is configured in mm.
+  // Uniformly fit the logical canvas into the requested physical page without
+  // distorting elements or allowing oversized logical canvases to clip.
+  const printScale = size
+    ? Math.min((size.width * 96 / 25.4) / pageWidth.value, (size.height * 96 / 25.4) / pageHeight.value)
+    : 1;
   style.dataset.designPrint = "true";
   style.textContent = `
     @page { size: ${size ? `${size.width}mm ${size.height}mm` : "auto"}; margin: 0; }
@@ -218,7 +224,7 @@ function printToPdf() {
       .app-shell.printing-design .canvas-area { border: 0 !important; padding: 0 !important; overflow: visible !important; }
       .app-shell.printing-design .canvas-heading, .app-shell.printing-design .canvas-note { display: none !important; }
       .app-shell.printing-design .canvas-scroller { overflow: visible !important; padding: 0 !important; background: white !important; }
-      .app-shell.printing-design .design-page { margin: 0 !important; box-shadow: none !important; break-inside: avoid; }
+      .app-shell.printing-design .design-page { zoom: ${printScale} !important; margin: 0 !important; box-shadow: none !important; break-inside: avoid; }
       .app-shell.printing-design .design-element { border-color: transparent !important; outline: none !important; cursor: default !important; }
       .app-shell.printing-design .resize-handle { display: none !important; }
     }`;
