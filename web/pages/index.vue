@@ -15,6 +15,7 @@ import {
   type DesignElement,
 } from "~/utils/document";
 import { validateDocumentJson } from "~/utils/document-validation";
+import { createTemplateDocument, listTemplates, type TemplateId } from "~/utils/templates";
 
 const STORAGE_KEY = "design-platform:document:v1"; // Keep the key so existing v1 autosaves migrate in place.
 const pageWidth = ref(PAGE_WIDTH);
@@ -22,6 +23,9 @@ const pageHeight = ref(PAGE_HEIGHT);
 const pageBackground = ref("#ffffff");
 const outputSizeMm = ref<{ width: number; height: number } | undefined>();
 const templateMetadata = ref<{ id: string; version: number } | undefined>();
+const templates = listTemplates();
+const selectedTemplateId = ref<TemplateId>("exam-paper-a4");
+const selectedTemplate = computed(() => templates.find((template) => template.id === selectedTemplateId.value) ?? templates[0]!);
 const nextId = ref(3);
 const selectedId = ref<string | null>("heading-1");
 const statusMessage = ref("Changes are saved in this browser only.");
@@ -52,6 +56,18 @@ function applySnapshot(json: string) {
   templateMetadata.value = parsed.template;
   selectedId.value = parsed.elements[0]?.id ?? null;
   nextId.value = parsed.elements.length + 1;
+}
+function createFromTemplate() {
+  try {
+    if (historyTimer) clearTimeout(historyTimer);
+    historyTimer = undefined;
+    const document = createTemplateDocument(selectedTemplateId.value);
+    applySnapshot(JSON.stringify(document));
+    history.value = createHistory(snapshot());
+    statusMessage.value = `Loaded “${selectedTemplate.value.name}”. Edit it below; changes save in this browser.`;
+  } catch (error) {
+    statusMessage.value = `Could not load template: ${error instanceof Error ? error.message : "unknown error"}`;
+  }
 }
 function addText() {
   if (elements.value.length >= MAX_ELEMENTS) { statusMessage.value = "Element limit reached (1,000)."; return; }
@@ -273,6 +289,19 @@ onMounted(() => {
 
     <section class="workspace">
       <aside class="panel tools-panel" aria-label="Design tools">
+        <h2>Start from a template</h2>
+        <div class="template-controls">
+          <label class="field" for="template-choice">
+            Template
+            <select id="template-choice" v-model="selectedTemplateId">
+              <option v-for="template in templates" :key="template.id" :value="template.id">{{ template.name }}</option>
+            </select>
+          </label>
+          <p class="hint">{{ selectedTemplate.description }}</p>
+          <p class="hint">Page: {{ selectedTemplate.page.width }} × {{ selectedTemplate.page.height }} · Print size: {{ selectedTemplate.outputSizeMm.width }} × {{ selectedTemplate.outputSizeMm.height }} mm</p>
+          <button class="primary" type="button" @click="createFromTemplate">Use template</button>
+        </div>
+        <hr />
         <h2>Elements</h2>
         <button class="primary" type="button" @click="addText">＋ Add text</button>
         <button type="button" @click="addRectangle">＋ Add rectangle</button>
@@ -342,6 +371,8 @@ h1 { margin: 0; font-size: 24px; }
 .tools-panel > button { display: block; width: 100%; margin: 8px 0; padding: 10px 12px; border: 1px solid #d7deea; border-radius: 8px; background: white; text-align: left; color: #172033; }
 .tools-panel > button.primary { border-color: #234bd6; background: #234bd6; color: white; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.template-controls select { width: 100%; padding: 9px; border: 1px solid #d7deea; border-radius: 7px; background: white; color: #172033; }
+.template-controls button { display: block; width: 100%; margin: 8px 0; padding: 10px 12px; border: 1px solid #234bd6; border-radius: 8px; background: #234bd6; color: white; text-align: left; }
 .history-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
 .history-actions button { padding: 8px; border: 1px solid #d7deea; border-radius: 7px; background: white; }
 .history-actions button:disabled { cursor: not-allowed; opacity: .45; }
