@@ -10,7 +10,9 @@ The current prototype includes:
 - Add/select elements, edit text/color/font size, bounded directional movement, pointer drag, and resize handles.
 - Bounded undo/redo history (up to 50 snapshots).
 - Browser-local autosave and restore using localStorage.
-- Versioned JSON import/export with a 2 MB input limit and Rust/WASM validation when available; TypeScript validation is the fallback if WASM cannot initialize.\n- PNG export rendered from the document model at 2× logical resolution, plus a print dialog workflow for saving PDF with print-size metadata when configured.
+- Versioned JSON import/export with a 2 MB input limit and Rust/WASM validation when available; TypeScript validation is the fallback if WASM cannot initialize.
+- A typed starter-template catalog and editor picker for Exam Paper (A4) and Shop Banner (landscape) starter documents.
+- PNG export rendered from the document model at 2× logical resolution, plus a browser print-dialog workflow for saving PDF with configured physical output dimensions when available.
 - A framework-independent Rust document model and validation rules, compiled for native tests and WebAssembly.
 - Shared validation fixtures exercised by Rust, TypeScript, direct Chrome/WASM smoke tests, and the production Nuxt editor browser test.
 - CI checks for Rust formatting/tests/Clippy, frontend type-check/tests, browser smoke tests, and the production build.
@@ -20,11 +22,12 @@ The current prototype includes:
 
 This is still a prototype, **not production-ready**.
 
-- The UI does not yet provide a template picker or finished Exam Paper / Shop Banner workflows.
-- PDF/PNG export is not implemented.
+- The editor supports only text and rectangles; the starter templates are foundations, not complete exam-paper or shop-banner authoring workflows.
+- PNG export is implemented from the document model, but export fidelity still needs real-browser output checks and visual regression baselines.
+- PDF currently uses the browser's print dialog. The user must choose “Save as PDF”; this is not a direct PDF download, and print fidelity can vary across browsers and printer settings.
 - There is no account system, server-side persistence, cross-device synchronization, billing, or collaboration.
 - Schema-v1 documents migrate to v2 with their original 800 × 600 geometry. New documents can use bounded configurable page dimensions and optional physical output-size metadata. The editor currently supports only text and rectangles.
-- The real-browser suite covers WASM-backed JSON import/export, rejection safety, adding text/rectangles, text/style editing, directional movement, undo/redo, local autosave/restore, pointer drag/resize, page-boundary limits, and template creation. PNG/PDF export needs real-browser output checks and visual regression baselines. Export fidelity, accessibility, and performance gates remain open work.
+- The real-browser suite covers WASM-backed JSON import/export, rejection safety, adding text/rectangles, text/style editing, directional movement, undo/redo, local autosave/restore, pointer drag/resize, page-boundary limits, and template creation. PNG/PDF export needs real-browser output checks and visual regression baselines. Accessibility and performance gates also remain open work.
 - Browser-side validation improves feedback and data consistency; it is not an authorization boundary. A future trusted API must validate documents independently.
 - Local browser storage is not a backup. Users should download a JSON copy if they need a portable copy.
 
