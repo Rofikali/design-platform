@@ -39,8 +39,9 @@ mod tests {
         assert!(parsed.get("template").is_none());
     }
     #[test]
-    fn rejects_unsupported_future_version() {
+    fn rejects_unsupported_future_version_in_core_migration() {
         let input = V1_DOCUMENT.replace("\"schema_version\":1", "\"schema_version\":999");
-        assert!(validate_document_json(&input).is_err());
+        let document: DesignDocument = serde_json::from_str(&input).expect("valid JSON");
+        assert!(migrate_to_current(document).is_err());
     }
 }
