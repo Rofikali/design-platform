@@ -73,7 +73,7 @@ export function parseDocument(input: unknown): ParsedDocument {
   const ratio = width / height;
   if (ratio < 1 / MAX_ASPECT_RATIO || ratio > MAX_ASPECT_RATIO) throw new Error("Page aspect ratio must be between 1:10 and 10:1.");
   let outputSizeMm: OutputSizeMm | undefined;
-  if (doc.output_size_mm !== undefined) {
+  if (doc.schema_version === SCHEMA_VERSION && doc.output_size_mm !== undefined) {
     const output = doc.output_size_mm;
     if (!output || !Number.isFinite(output.width) || !Number.isFinite(output.height) ||
         output.width <= 0 || output.height <= 0 || output.width > MAX_OUTPUT_DIMENSION_MM || output.height > MAX_OUTPUT_DIMENSION_MM)
@@ -84,7 +84,7 @@ export function parseDocument(input: unknown): ParsedDocument {
     outputSizeMm = { width: output.width, height: output.height };
   }
   let template: TemplateMetadata | undefined;
-  if (doc.template !== undefined) {
+  if (doc.schema_version === SCHEMA_VERSION && doc.template !== undefined) {
     const item = doc.template;
     if (!item || typeof item.id !== "string" || item.id.length < 1 || item.id.length > 128 ||
         !Number.isInteger(item.version) || item.version < 1)
