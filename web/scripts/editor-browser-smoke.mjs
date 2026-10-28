@@ -295,6 +295,40 @@ async function main() {
       throw new Error(`Rendered accessibility structure is incomplete: ${JSON.stringify(accessibilityStructure)}`);
     }
 
+    // Keep the small muted labels above the WCAG AA 4.5:1 normal-text
+    // contrast threshold on their current white surfaces. This is a targeted
+    // regression check for these known surfaces, not a full-page contrast audit.
+    const mutedTextContrast = await evaluate(`(() => {
+      const nodes = [
+        document.querySelector('.hint'),
+        document.querySelector('.canvas-heading p'),
+        document.querySelector('.canvas-note'),
+      ].filter(Boolean);
+      const luminance = (channel) => {
+        const value = channel / 255;
+        return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+      };
+      const contrast = (foreground, background) => {
+        const rgb = (value) => value.match(/[\\d.]+/g).slice(0, 3).map(Number);
+        const luminanceOf = (value) => {
+          const [red, green, blue] = rgb(value).map(luminance);
+          return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+        };
+        const first = luminanceOf(foreground);
+        const second = luminanceOf(background);
+        return (Math.max(first, second) + 0.05) / (Math.min(first, second) + 0.05);
+      };
+      return nodes.map((node) => {
+        const style = getComputedStyle(node);
+        const background = '#ffffff';
+        return { selector: node.className || node.tagName.toLowerCase(), color: style.color, contrast: contrast(style.color, background) };
+      });
+    })()`);
+    const failingContrast = mutedTextContrast.filter(item => item.contrast < 4.5);
+    if (mutedTextContrast.length !== 3 || failingContrast.length) {
+      throw new Error(`Muted text contrast fell below 4.5:1 on white: ${JSON.stringify(mutedTextContrast)}`);
+    }
+
     
     // Export must report WASM, not the TypeScript fallback.
     await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.includes('Download JSON'))?.click(); true");
