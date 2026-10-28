@@ -6,16 +6,20 @@ function escapeXml(value: string): string {
 
 function wrapText(text: string, maxCharacters: number): string[] {
   const lines: string[] = [];
+  // A grapheme can contain multiple code points (for example, a family emoji
+  // joined with zero-width joiners or a letter plus a combining accent).
+  const segmenter = new Intl.Segmenter(undefined, { granularity: "grapheme" });
+  const splitGraphemes = (value: string) => Array.from(segmenter.segment(value), part => part.segment);
   for (const paragraph of text.split("\n")) {
     if (paragraph.length === 0) { lines.push(""); continue; }
     let line = "";
     for (const word of paragraph.split(/\s+/)) {
-      if (line && Array.from(line).length + Array.from(word).length + 1 > maxCharacters) {
+      if (line && splitGraphemes(line).length + splitGraphemes(word).length + 1 > maxCharacters) {
         lines.push(line);
         line = "";
       }
       line = line ? line + " " + word : word;
-      let lineCharacters = Array.from(line);
+      let lineCharacters = splitGraphemes(line);
       while (lineCharacters.length > maxCharacters) {
         lines.push(lineCharacters.slice(0, maxCharacters).join(""));
         lineCharacters = lineCharacters.slice(maxCharacters);
