@@ -491,7 +491,36 @@ async function main() {
 
     // Drag to the maximum legal position using coordinates calculated from the
     // rendered page. The target remains inside the viewport, not beyond the screen.
-    const boundaryTarget = await evaluate("(() => { const page = document.querySelector('.design-page').getBoundingClientRect(); const element = Array.from(document.querySelectorAll('.design-element')).find(node => node.textContent.includes('Browser interaction proof')); const style = getComputedStyle(element); const width = parseFloat(style.width); const height = parseFloat(style.height); const left = parseFloat(style.left); const top = parseFloat(style.top); const rect = element.getBoundingClientRect(); return { startX: rect.left + 30, startY: rect.top + 20, targetX: page.left + 800 - width + 30, targetY: page.top + 600 - height + 20, maxLeft: 800 - width, maxTop: 600 - height }; })()");
+    const boundaryTarget = await evaluate(`(() => {
+      const page = document.querySelector('.design-page').getBoundingClientRect();
+      const element = Array.from(document.querySelectorAll('.design-element')).find(node => node.textContent.includes('Browser interaction proof'));
+      const style = getComputedStyle(element);
+      const width = parseFloat(style.width);
+      const height = parseFloat(style.height);
+      const left = parseFloat(style.left);
+      const top = parseFloat(style.top);
+      const rect = element.getBoundingClientRect();
+      let start = null;
+      for (const yFraction of [0.25, 0.5, 0.75]) {
+        for (const xFraction of [0.15, 0.35, 0.55, 0.75, 0.9]) {
+          const x = rect.left + rect.width * xFraction;
+          const y = rect.top + rect.height * yFraction;
+          const hit = document.elementFromPoint(x, y);
+          if (hit && (hit === element || element.contains(hit))) { start = { x, y }; break; }
+        }
+        if (start) break;
+      }
+      if (!start) return null;
+      const maxLeft = 800 - width;
+      const maxTop = 600 - height;
+      return {
+        startX: start.x, startY: start.y,
+        targetX: page.left + maxLeft + (start.x - rect.left),
+        targetY: page.top + maxTop + (start.y - rect.top),
+        maxLeft, maxTop
+      };
+    })()`);
+    if (!boundaryTarget) throw new Error("No unobstructed point found for boundary drag");
     await mouse("mouseMoved", boundaryTarget.startX, boundaryTarget.startY);
     await mouse("mousePressed", boundaryTarget.startX, boundaryTarget.startY, 1);
     await mouse("mouseMoved", boundaryTarget.targetX, boundaryTarget.targetY, 1);
