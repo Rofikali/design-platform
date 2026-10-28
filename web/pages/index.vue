@@ -93,6 +93,18 @@ function moveSelected(dx: number, dy: number) {
   element.x = position.x;
   element.y = position.y;
 }
+function setSelectedWidth(value: string | number) {
+  const element = selectedElement.value;
+  if (!element) return;
+  const size = clampElementSize(Number(value), element.height, element.x, element.y, pageWidth.value, pageHeight.value);
+  element.width = size.width;
+}
+function setSelectedHeight(value: string | number) {
+  const element = selectedElement.value;
+  if (!element) return;
+  const size = clampElementSize(element.width, Number(value), element.x, element.y, pageWidth.value, pageHeight.value);
+  element.height = size.height;
+}
 function onResizePointerDown(event: PointerEvent, element: DesignElement) {
   if (event.button !== 0) return;
   event.preventDefault();
@@ -382,6 +394,28 @@ onMounted(() => {
           <label v-if="selectedElement.type === 'text'" class="field">
             Font size
             <input v-model.number="selectedElement.fontSize" type="number" min="1" max="512" />
+          </label>
+          <label class="field">
+            Width
+            <input
+              :value="selectedElement.width"
+              type="number"
+              min="1"
+              :max="pageWidth - selectedElement.x"
+              aria-label="Selected element width"
+              @change="setSelectedWidth(($event.target as HTMLInputElement).value)"
+            />
+          </label>
+          <label class="field">
+            Height
+            <input
+              :value="selectedElement.height"
+              type="number"
+              min="1"
+              :max="pageHeight - selectedElement.y"
+              aria-label="Selected element height"
+              @change="setSelectedHeight(($event.target as HTMLInputElement).value)"
+            />
           </label>
           <p class="field-label">Move selected element</p>
           <div class="move-grid" aria-label="Move selected element">
