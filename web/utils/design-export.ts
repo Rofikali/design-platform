@@ -23,14 +23,14 @@ function wrapText(
     ? measureText(value, fontSize)
     : splitGraphemes(value).length * fontSize * 0.58;
 
-  for (const paragraph of text.split("\\n")) {
+  for (const paragraph of text.split("\n")) {
     if (paragraph.length === 0) {
       lines.push("");
       continue;
     }
 
     let line = "";
-    for (const word of paragraph.split(/\\s+/)) {
+    for (const word of paragraph.split(/\s+/)) {
       const candidate = line ? line + " " + word : word;
       if (line && widthOf(candidate) <= maxWidth) {
         line = candidate;
