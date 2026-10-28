@@ -194,6 +194,65 @@ async function main() {
       return response.result?.value;
     }
 
+    async function comparePngToReference(pngBytes, referenceName, expectedWidth, expectedHeight) {
+      const referenceSvg = await readFile(resolve(webRoot, "tests/visual-references", referenceName), "utf8");
+      const pngBase64 = pngBytes.toString("base64");
+      const referenceBase64 = Buffer.from(referenceSvg, "utf8").toString("base64");
+      const comparison = await evaluate(`(async () => {
+        const loadImage = async (source) => {
+          const image = new Image();
+          image.src = source;
+          await image.decode();
+          return image;
+        };
+        const [actual, reference] = await Promise.all([
+          loadImage("data:image/png;base64,${pngBase64}"),
+          loadImage("data:image/svg+xml;base64,${referenceBase64}"),
+        ]);
+        if (actual.naturalWidth !== ${expectedWidth} || actual.naturalHeight !== ${expectedHeight} ||
+            reference.naturalWidth !== ${expectedWidth} || reference.naturalHeight !== ${expectedHeight}) {
+          throw new Error("Reference image dimensions do not match the expected export dimensions");
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = ${expectedWidth};
+        canvas.height = ${expectedHeight};
+        const context = canvas.getContext("2d", { willReadFrequently: true });
+        if (!context) throw new Error("Could not create reference comparison canvas");
+        context.drawImage(actual, 0, 0);
+        const actualPixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(reference, 0, 0);
+        const referencePixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+        let differingPixels = 0;
+        let totalChannelDelta = 0;
+        let maximumChannelDelta = 0;
+        for (let offset = 0; offset < actualPixels.length; offset += 4) {
+          let pixelDelta = 0;
+          for (let channel = 0; channel < 4; channel += 1) {
+            const delta = Math.abs(actualPixels[offset + channel] - referencePixels[offset + channel]);
+            pixelDelta = Math.max(pixelDelta, delta);
+            totalChannelDelta += delta;
+            maximumChannelDelta = Math.max(maximumChannelDelta, delta);
+          }
+          if (pixelDelta > 8) differingPixels += 1;
+        }
+        const totalPixels = canvas.width * canvas.height;
+        return {
+          width: canvas.width,
+          height: canvas.height,
+          differingPixels,
+          differingRatio: differingPixels / totalPixels,
+          meanChannelDelta: totalChannelDelta / actualPixels.length,
+          maximumChannelDelta,
+        };
+      })()`);
+      if (comparison.differingRatio > 0.002 || comparison.meanChannelDelta > 0.25) {
+        throw new Error(`PNG export differs from the ${referenceName} visual reference: ${JSON.stringify(comparison)}`);
+      }
+      process.stdout.write(`PASS: ${referenceName} PNG reference comparison ${JSON.stringify(comparison)}\\n`);
+      return comparison;
+    }
+
     async function waitForPage(description, expression, predicate = Boolean) {
       return waitFor(description, async () => {
         const value = await evaluate(expression);
@@ -469,6 +528,8 @@ async function main() {
       })}`);
     }
 
+    await comparePngToReference(png, "shop-banner.svg", 2400, 1000);
+
     // Inspect decoded pixels as well as the PNG header. This catches blank or
     // incorrectly colored output that can still have a valid signature/size.
     const pngBase64 = png.toString("base64");
@@ -601,6 +662,7 @@ async function main() {
       })}`);
     }
 
+    await comparePngToReference(examPng, "exam-paper.svg", 1588, 2246);
     const examPngBase64 = examPng.toString("base64");
     const examPngVisual = await evaluate(`(async () => {
       const image = new Image();
