@@ -408,7 +408,7 @@ async function main() {
       throw new Error(`Text/style/movement controls did not apply expected changes: ${JSON.stringify({ initialPosition, changed })}`);
     }
 
-    const sizeControls = await evaluate(`() => {
+    const sizeControls = await evaluate(`(() => {
       const width = document.querySelector('input[aria-label="Selected element width"]');
       const height = document.querySelector('input[aria-label="Selected element height"]');
       return {
@@ -417,7 +417,7 @@ async function main() {
         widthMin: width?.min || "",
         heightMin: height?.min || "",
       };
-    }`);
+    })()`);
     if (!Number(sizeControls.width) || !Number(sizeControls.height) || sizeControls.widthMin !== "8" || sizeControls.heightMin !== "8") {
       throw new Error(`Selected element size controls do not expose the actual minimum geometry size: ${JSON.stringify(sizeControls)}`);
     }
