@@ -341,9 +341,16 @@ async function main() {
     if (!keyboardAccessibility?.focused || keyboardAccessibility.outlineStyle === 'none' || keyboardAccessibility.outlineWidth !== '3px') {
       throw new Error(`Keyboard navigation did not reach Add text with a visible focus indicator: ${JSON.stringify(keyboardAccessibility)}`);
     }
-    await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13 });
-    await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13 });
-    await waitForPage("keyboard activation adds text", "document.querySelector('.canvas-heading > span')?.textContent || ''", value => value.trim() === "3 elements");
+    // Space activates a focused native button on key release. Use the browser's
+    // real keyboard input path rather than element.click() or synthetic DOM events.
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: " ", code: "Space", windowsVirtualKeyCode: 32, nativeVirtualKeyCode: 32 });
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: " ", code: "Space", windowsVirtualKeyCode: 32, nativeVirtualKeyCode: 32 });
+    try {
+      await waitForPage("keyboard activation adds text", "document.querySelector('.canvas-heading > span')?.textContent || ''", value => value.trim() === "3 elements", 5_000);
+    } catch (error) {
+      const diagnostics = await evaluate("JSON.stringify({ activeTag: document.activeElement?.tagName || '', activeText: document.activeElement?.textContent?.trim() || '', activeLabel: document.activeElement?.getAttribute('aria-label') || '', count: document.querySelector('.canvas-heading > span')?.textContent || '', button: Array.from(document.querySelectorAll('button')).find(item => item.textContent.includes('＋ Add text'))?.outerHTML || '' })");
+      throw new Error(`Keyboard activation did not add text: ${error.message}. Browser diagnostics: ${diagnostics}`);
+    }
     const keyboardElementLabel = await evaluate("Array.from(document.querySelectorAll('.design-element')).find(item => item.textContent.includes('Exam Paper'))?.getAttribute('aria-label') || ''");
     if (!keyboardElementLabel.includes('Exam Paper')) throw new Error(`Canvas element accessible name omits its text: ${keyboardElementLabel}`);
 
