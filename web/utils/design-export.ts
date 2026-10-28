@@ -1,30 +1,57 @@
 import type { DesignElement } from "./document";
 
+type TextWidthMeasurer = (text: string, fontSize: number) => number;
+
 function escapeXml(value: string): string {
   return value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&apos;");
 }
 
-function wrapText(text: string, maxCharacters: number): string[] {
+function wrapText(
+  text: string,
+  maxWidth: number,
+  fontSize: number,
+  measureText?: TextWidthMeasurer,
+): string[] {
   const lines: string[] = [];
   // A grapheme can contain multiple code points (for example, a family emoji
   // joined with zero-width joiners or a letter plus a combining accent).
   const segmenter = new Intl.Segmenter(undefined, { granularity: "grapheme" });
   const splitGraphemes = (value: string) => Array.from(segmenter.segment(value), part => part.segment);
+  // Keep a deterministic approximation for pure unit tests and non-browser callers.
+  // PNG export supplies Canvas measureText so real exports wrap by rendered width.
+  const widthOf = (value: string) => measureText
+    ? measureText(value, fontSize)
+    : splitGraphemes(value).length * fontSize * 0.58;
+
   for (const paragraph of text.split("\n")) {
-    if (paragraph.length === 0) { lines.push(""); continue; }
+    if (paragraph.length === 0) {
+      lines.push("");
+      continue;
+    }
+
     let line = "";
     for (const word of paragraph.split(/\s+/)) {
-      if (line && splitGraphemes(line).length + splitGraphemes(word).length + 1 > maxCharacters) {
+      const candidate = line ? line + " " + word : word;
+      if (line && widthOf(candidate) <= maxWidth) {
+        line = candidate;
+        continue;
+      }
+      if (line) {
         lines.push(line);
         line = "";
       }
-      line = line ? line + " " + word : word;
-      let lineCharacters = splitGraphemes(line);
-      while (lineCharacters.length > maxCharacters) {
-        lines.push(lineCharacters.slice(0, maxCharacters).join(""));
-        lineCharacters = lineCharacters.slice(maxCharacters);
+
+      // A single unbroken word may be wider than its box. Split it only at
+      // grapheme boundaries, choosing the longest chunk that fits.
+      for (const grapheme of splitGraphemes(word)) {
+        const chunk = line + grapheme;
+        if (line && widthOf(chunk) > maxWidth) {
+          lines.push(line);
+          line = grapheme;
+        } else {
+          line = chunk;
+        }
       }
-      line = lineCharacters.join("");
     }
     lines.push(line);
   }
@@ -38,6 +65,7 @@ export function renderDesignSvg(
   height: number,
   background: string,
   scale = 2,
+  measureText?: TextWidthMeasurer,
 ): string {
   if (!Number.isFinite(width) || !Number.isFinite(height) || width < 1 || height < 1 || width > 10_000 || height > 10_000) {
     throw new Error("Invalid export page dimensions.");
@@ -48,8 +76,7 @@ export function renderDesignSvg(
       return `<rect x="${element.x}" y="${element.y}" width="${element.width}" height="${element.height}" fill="${escapeXml(element.color)}"/>`;
     }
     const fontSize = element.fontSize;
-    const maxCharacters = Math.max(1, Math.floor(element.width / Math.max(fontSize * 0.58, 1)));
-    const lines = wrapText(element.text, maxCharacters);
+    const lines = wrapText(element.text, element.width, fontSize, measureText);
     // The editor element's box is its layout contract. Without clipping, wrapped
     // lines can paint over neighboring elements or outside the page.
     const clipId = `text-clip-${elementIndex}`;
@@ -67,18 +94,32 @@ export async function renderDesignPng(
   background: string,
   scale = 2,
 ): Promise<Blob> {
-  const svg = renderDesignSvg(elements, width, height, background, scale);
+  // Measure with the same font family used by the SVG. Character-count wrapping
+  // is only an approximation: "WWW" and "iii" have very different rendered widths.
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+  if (!context) throw new Error("PNG export is unavailable because the canvas could not be created.");
+  const svg = renderDesignSvg(
+    elements,
+    width,
+    height,
+    background,
+    scale,
+    (text, fontSize) => {
+      context.font = `${fontSize}px Arial, Helvetica, sans-serif`;
+      return context.measureText(text).width;
+    },
+  );
   const url = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml;charset=utf-8" }));
   try {
     const image = new Image();
     image.src = url;
     await image.decode();
-    const canvas = document.createElement("canvas");
     canvas.width = Math.round(width * scale);
     canvas.height = Math.round(height * scale);
-    const context = canvas.getContext("2d");
-    if (!context) throw new Error("PNG export is unavailable because the canvas could not be created.");
-    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    const exportContext = canvas.getContext("2d");
+    if (!exportContext) throw new Error("PNG export is unavailable because the canvas could not be created.");
+    exportContext.drawImage(image, 0, 0, canvas.width, canvas.height);
     return await new Promise<Blob>((resolve, reject) => {
       canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("PNG encoding failed.")), "image/png");
     });

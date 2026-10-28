@@ -58,6 +58,28 @@ describe("design export renderer", () => {
     expect(svg).toContain('<text clip-path="url(#text-clip-1)"');
   });
 
+  it("uses measured glyph widths when a browser text measurer is supplied", () => {
+    const svg = renderDesignSvg([
+      { id: "measured", type: "text", text: "WWW iii", x: 0, y: 0, width: 30, height: 60, fontSize: 10, color: "#000000" },
+    ], 100, 100, "#fff", 2, (value) => {
+      // Simulate proportional font metrics: W is wide, i is narrow.
+      return Array.from(value).reduce((sum, character) => sum + (character === "W" ? 10 : character === " " ? 3 : 2), 0);
+    });
+
+    expect(svg).toContain("<tspan x=\"2\" dy=\"0\">WWW</tspan>");
+    expect(svg).toContain("<tspan x=\"2\" dy=\"12.5\">iii</tspan>");
+  });
+
+  it("preserves word spaces while wrapping measured text", () => {
+    const svg = renderDesignSvg([
+      { id: "words", type: "text", text: "alpha beta gamma", x: 0, y: 0, width: 65, height: 60, fontSize: 10, color: "#000000" },
+    ], 100, 100, "#fff", 2, (value) => value.length * 10);
+
+    expect(svg).toContain("<tspan x=\"2\" dy=\"0\">alpha</tspan>");
+    expect(svg).toContain("<tspan x=\"2\" dy=\"12.5\">beta</tspan>");
+    expect(svg).toContain("<tspan x=\"2\" dy=\"12.5\">gamma</tspan>");
+  });
+
   it("rejects invalid dimensions and unsupported scale", () => {
     expect(() => renderDesignSvg([], 0, 100, "#fff")).toThrow(/dimensions/);
     expect(() => renderDesignSvg([], 100, 100, "#fff", 5)).toThrow(/scale/);
