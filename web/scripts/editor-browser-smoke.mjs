@@ -704,7 +704,7 @@ async function main() {
         }
         if (alpha > 0 && !(red === 255 && green === 247 && blue === 237)) nonBackgroundPixels += 1;
       }
-      return {
+      const result = {
         width: canvas.width,
         height: canvas.height,
         accentSample: sample(1200, 10),
@@ -845,7 +845,7 @@ async function main() {
           if (alpha > 0 && !(red === 255 && green === 255 && blue === 255)) nonWhitePixels += 1;
         }
       }
-      return {
+      const result = {
         width: canvas.width,
         height: canvas.height,
         backgroundSample: sample(1500, 2000),
