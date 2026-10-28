@@ -308,12 +308,25 @@ async function main() {
         const value = channel / 255;
         return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
       };
+      const luminanceOf = (value) => {
+        // Computed CSS colors are not guaranteed to serialize as rgb()/rgba();
+        // newer browsers may return color(srgb ...), oklab(), or other CSS Color 4
+        // forms. Let the browser's own canvas color parser normalize them to sRGB.
+        const canvas = document.createElement('canvas');
+        canvas.width = 1;
+        canvas.height = 1;
+        const context = canvas.getContext('2d', { willReadFrequently: true });
+        if (!context) throw new Error('Could not create canvas context for CSS color parsing');
+        context.clearRect(0, 0, 1, 1);
+        context.fillStyle = value;
+        context.fillRect(0, 0, 1, 1);
+        const [red, green, blue] = context.getImageData(0, 0, 1, 1).data;
+        canvas.width = 0;
+        canvas.height = 0;
+        const channels = [red, green, blue].map(luminance);
+        return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+      };
       const contrast = (foreground, background) => {
-        const rgb = (value) => value.match(/[\\d.]+/g).slice(0, 3).map(Number);
-        const luminanceOf = (value) => {
-          const [red, green, blue] = rgb(value).map(luminance);
-          return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
-        };
         const first = luminanceOf(foreground);
         const second = luminanceOf(background);
         return (Math.max(first, second) + 0.05) / (Math.min(first, second) + 0.05);
