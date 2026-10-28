@@ -423,13 +423,30 @@ async function main() {
 
     await evaluate("Array.from(document.querySelectorAll('.design-element')).find(element => element.textContent.includes('Browser interaction proof'))?.scrollIntoView({ block: 'center', inline: 'center' }); true");
     let geometry = await selectedTextGeometry();
-    const dragHitTarget = await evaluate(`(() => { const element = Array.from(document.querySelectorAll('.design-element')).find(node => node.textContent.includes('Browser interaction proof')); const hit = document.elementFromPoint(${geometry.clientLeft + 30}, ${geometry.clientTop + 20}); return { target: element?.tagName, hit: hit?.tagName, hitIsTarget: Boolean(element && hit && (hit === element || element.contains(hit))) }; })()`);
-    if (!dragHitTarget.hitIsTarget) throw new Error(`Pointer drag start is not over the target element: ${JSON.stringify({ geometry, dragHitTarget })}`);
+    // Other canvas elements can overlap this element. Find an exposed point
+    // inside its actual rendered bounds rather than assuming the top-left area
+    // is unobstructed; keep the test on the real mouse/pointer input path.
+    const dragStart = await evaluate(`(() => {
+      const element = Array.from(document.querySelectorAll('.design-element')).find(node => node.textContent.includes('Browser interaction proof'));
+      if (!element) throw new Error('Edited text element not found');
+      const rect = element.getBoundingClientRect();
+      const candidates = [];
+      for (const yFraction of [0.25, 0.5, 0.75]) {
+        for (const xFraction of [0.15, 0.35, 0.55, 0.75, 0.9]) {
+          const x = rect.left + rect.width * xFraction;
+          const y = rect.top + rect.height * yFraction;
+          const hit = document.elementFromPoint(x, y);
+          if (hit && (hit === element || element.contains(hit))) candidates.push({ x, y });
+        }
+      }
+      return candidates[0] || null;
+    })()`);
+    if (!dragStart) throw new Error(`No unobstructed pointer drag point found inside the target element: ${JSON.stringify(geometry)}`);
     // Drag by a modest delta and verify the actual pointer-driven position change.
-    await mouse("mouseMoved", geometry.clientLeft + 30, geometry.clientTop + 20);
-    await mouse("mousePressed", geometry.clientLeft + 30, geometry.clientTop + 20, 1);
-    await mouse("mouseMoved", geometry.clientLeft + 70, geometry.clientTop + 50, 1);
-    await mouse("mouseReleased", geometry.clientLeft + 70, geometry.clientTop + 50);
+    await mouse("mouseMoved", dragStart.x, dragStart.y);
+    await mouse("mousePressed", dragStart.x, dragStart.y, 1);
+    await mouse("mouseMoved", dragStart.x + 40, dragStart.y + 30, 1);
+    await mouse("mouseReleased", dragStart.x + 40, dragStart.y + 30);
     let afterDrag = await selectedTextGeometry();
     if (afterDrag.left !== geometry.left + 40 || afterDrag.top !== geometry.top + 30) {
       throw new Error(`Pointer drag did not apply expected delta: ${JSON.stringify({ before: geometry, after: afterDrag })}`);
