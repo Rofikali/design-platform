@@ -395,8 +395,9 @@ async function main() {
       return true;
     })()`);
     await cdp.send("Input.insertText", { text: String(beforeKeyboardResize.width + 15) });
-    await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13 });
-    await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13 });
+    // Tab away to commit the native number input through its real change/blur path.
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9, nativeVirtualKeyCode: 9 });
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9, nativeVirtualKeyCode: 9 });
     const afterKeyboardResize = await waitFor("keyboard width edit", async () => {
       const value = await selectedTextGeometry();
       return value.width === beforeKeyboardResize.width + 15 ? value : null;
