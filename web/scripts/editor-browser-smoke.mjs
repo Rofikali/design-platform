@@ -477,12 +477,25 @@ async function main() {
       throw new Error(`Selected element size controls do not expose the actual minimum geometry size: ${JSON.stringify(sizeControls)}`);
     }
     const beforeKeyboardResize = await selectedTextGeometry();
-    await evaluate(`(() => {
-      const field = document.querySelector('input[aria-label="Selected element width"]');
-      field.focus();
-      field.select();
-      return true;
-    })()`);
+    const tabUntilFocused = async (description, focusedExpression, maxTabs = 50) => {
+      for (let tab = 0; tab < maxTabs; tab += 1) {
+        await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9, nativeVirtualKeyCode: 9 });
+        await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9, nativeVirtualKeyCode: 9 });
+        if (await evaluate(focusedExpression)) return;
+      }
+      const focus = await evaluate("JSON.stringify({ tag: document.activeElement?.tagName || '', label: document.activeElement?.getAttribute('aria-label') || '', text: document.activeElement?.textContent?.trim() || '' })");
+      throw new Error(`Keyboard Tab order did not reach ${description}. Current focus: ${focus}`);
+    };
+    // Reach the width field through the browser's actual Tab order; do not call
+    // focus() or select() in page JavaScript.
+    await tabUntilFocused(
+      "Selected element width",
+      "document.activeElement?.getAttribute('aria-label') === 'Selected element width'",
+    );
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Control", code: "ControlLeft", windowsVirtualKeyCode: 17 });
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: "a", code: "KeyA", windowsVirtualKeyCode: 65 });
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: "a", code: "KeyA", windowsVirtualKeyCode: 65 });
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Control", code: "ControlLeft", windowsVirtualKeyCode: 17 });
     await cdp.send("Input.insertText", { text: String(beforeKeyboardResize.width + 15) });
     // Tab away to commit the native number input through its real change/blur path.
     await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9, nativeVirtualKeyCode: 9 });
@@ -495,12 +508,23 @@ async function main() {
       throw new Error(`Keyboard width control did not resize the selected element: ${JSON.stringify({ beforeKeyboardResize, afterKeyboardResize })}`);
     }
 
-    // Wait for debounced history, then prove undo/redo and browser-local restore.
+    // Undo/redo are also keyboard-only: traverse the native Tab order and
+    // activate the focused controls with Space, never element.click().
     await delay(500);
-    await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.trim() === 'Undo')?.click(); true");
-    await waitForPage("undo restores prior text", "document.querySelector('.design-page')?.innerText || ''", value => !value.includes("Browser interaction proof"));
-    await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.trim() === 'Redo')?.click(); true");
-    await waitForPage("redo restores edited text", "document.querySelector('.design-page')?.innerText || ''", value => value.includes("Browser interaction proof"));
+    await tabUntilFocused(
+      "Undo button",
+      "document.activeElement === Array.from(document.querySelectorAll('button')).find(button => button.textContent.trim() === 'Undo')",
+    );
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: " ", code: "Space", windowsVirtualKeyCode: 32, nativeVirtualKeyCode: 32 });
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: " ", code: "Space", windowsVirtualKeyCode: 32, nativeVirtualKeyCode: 32 });
+    await waitForPage("keyboard undo restores prior text", "document.querySelector('.design-page')?.innerText || ''", value => !value.includes("Browser interaction proof"));
+    await tabUntilFocused(
+      "Redo button",
+      "document.activeElement === Array.from(document.querySelectorAll('button')).find(button => button.textContent.trim() === 'Redo')",
+    );
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: " ", code: "Space", windowsVirtualKeyCode: 32, nativeVirtualKeyCode: 32 });
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: " ", code: "Space", windowsVirtualKeyCode: 32, nativeVirtualKeyCode: 32 });
+    await waitForPage("keyboard redo restores edited text", "document.querySelector('.design-page')?.innerText || ''", value => value.includes("Browser interaction proof"));
     await delay(500);
     await evaluate("location.reload(); true");
     await waitForPage("locally saved document restored after reload", "document.querySelector('.design-page')?.innerText || ''", value => value.includes("Browser interaction proof"));
@@ -1003,7 +1027,7 @@ async function main() {
     }
     await cdp.send("Emulation.setEmulatedMedia", { media: "screen" });
 
-    process.stdout.write("PASS: Chrome covered WASM import/export, invalid-import safety, add/edit/style/move/undo/redo, autosave/restore, pointer drag/resize, page bounds, template creation, actual 2× PNG dimensions and pixel content for both MVP templates, and one-page 300 × 125 mm PDF geometry.\\n");
+    process.stdout.write("PASS: Chrome covered WASM import/export, invalid-import safety, keyboard Tab/Space editing and undo/redo, add/edit/style/move, autosave/restore, pointer drag/resize, page bounds, template creation, actual 2× PNG dimensions and pixel content for both MVP templates, and one-page 300 × 125 mm PDF geometry.\\n");
   } finally {
     cdp?.close();
     stopProcess(browser);
