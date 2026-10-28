@@ -10,7 +10,6 @@ function wrapText(text: string, maxCharacters: number): string[] {
     if (paragraph.length === 0) { lines.push(""); continue; }
     let line = "";
     for (const word of paragraph.split(/\s+/)) {
-      const characters = Array.from(word);
       if (line && Array.from(line).length + Array.from(word).length + 1 > maxCharacters) {
         lines.push(line);
         line = "";
