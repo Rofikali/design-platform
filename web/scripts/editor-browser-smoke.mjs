@@ -327,6 +327,18 @@ async function main() {
     const preserved = await evaluate("document.querySelector('.design-page')?.innerText || ''");
     if (!preserved.includes("Exam Paper")) throw new Error("Invalid import changed the existing canvas document");
 
+    // Keyboard users need a visible focus indicator and must be able to invoke
+    // the same core actions without pointer input.
+    const keyboardAccessibility = await evaluate("(() => { const button = Array.from(document.querySelectorAll('button')).find(item => item.textContent.includes('＋ Add text')); button?.focus(); const style = button ? getComputedStyle(button) : null; return { focused: document.activeElement === button, outlineStyle: style?.outlineStyle, outlineWidth: style?.outlineWidth, label: Array.from(document.querySelectorAll('.design-element')).find(item => item.textContent.includes('Exam Paper'))?.getAttribute('aria-label') || '' }; })()");
+    if (!keyboardAccessibility.focused || keyboardAccessibility.outlineStyle === 'none' || keyboardAccessibility.outlineWidth !== '3px') {
+      throw new Error(`Keyboard focus indicator is missing or not visible: ${JSON.stringify(keyboardAccessibility)}`);
+    }
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });
+    await waitForPage("keyboard activation adds text", "document.querySelector('.canvas-heading > span')?.textContent || ''", value => value.trim() === "3 elements");
+    const keyboardElementLabel = await evaluate("Array.from(document.querySelectorAll('.design-element')).find(item => item.textContent.includes('Exam Paper'))?.getAttribute('aria-label') || ''");
+    if (!keyboardElementLabel.includes('Exam Paper')) throw new Error(`Canvas element accessible name omits its text: ${keyboardElementLabel}`);
+
     // Exercise core editing controls through the rendered UI. Use accessible
     // labels and visible canvas state rather than Vue internals.
     const fixtureCount = Number.parseInt(await evaluate("document.querySelector('.canvas-heading > span')?.textContent || '0'"), 10);
