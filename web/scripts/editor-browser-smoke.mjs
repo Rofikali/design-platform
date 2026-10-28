@@ -395,6 +395,9 @@ async function main() {
     // Real mouse input through Chrome DevTools exercises actual pointer capture.
     // Widen the viewport so the full 800x600 logical page and its edge handles are reachable.
     await cdp.send("Emulation.setDeviceMetricsOverride", { width: 1600, height: 1000, deviceScaleFactor: 1, mobile: false });
+    // Keyboard focus can scroll the document to the focused toolbar control.
+    // Reset scroll after changing the viewport so pointer coordinates are stable.
+    await evaluate("window.scrollTo(0, 0); true");
     await delay(100);
     async function mouse(type, x, y, buttons = 0) {
       await cdp.send("Input.dispatchMouseEvent", {
