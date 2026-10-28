@@ -481,7 +481,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
 .history-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
 .history-actions button { padding: 8px; border: 1px solid #d7deea; border-radius: 7px; background: white; }
 .history-actions button:disabled { cursor: not-allowed; opacity: .45; }
-.hint { color: #6c778b; font-size: 12px; line-height: 1.5; }
+.hint { color: #596780; font-size: 12px; line-height: 1.5; }
 hr { margin: 20px 0; border: 0; border-top: 1px solid #e6eaf1; }
 .selected-name { color: #52617a; font-size: 12px; }
 .field { display: grid; gap: 6px; margin: 14px 0; color: #52617a; font-size: 12px; font-weight: 650; }
