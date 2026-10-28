@@ -23,16 +23,20 @@ function wrapText(
     ? measureText(value, fontSize)
     : splitGraphemes(value).length * fontSize * 0.58;
 
-  for (const paragraph of text.split("\n")) {
+  for (const paragraph of text.split("\\n")) {
     if (paragraph.length === 0) {
       lines.push("");
       continue;
     }
 
     let line = "";
-    for (const word of paragraph.split(/\s+/)) {
+    for (const word of paragraph.split(/\\s+/)) {
       const candidate = line ? line + " " + word : word;
-      if (line && widthOf(candidate) > maxWidth) {
+      if (line && widthOf(candidate) <= maxWidth) {
+        line = candidate;
+        continue;
+      }
+      if (line) {
         lines.push(line);
         line = "";
       }
@@ -40,19 +44,13 @@ function wrapText(
       // A single unbroken word may be wider than its box. Split it only at
       // grapheme boundaries, choosing the longest chunk that fits.
       for (const grapheme of splitGraphemes(word)) {
-        const chunk = line ? line + grapheme : grapheme;
+        const chunk = line + grapheme;
         if (line && widthOf(chunk) > maxWidth) {
           lines.push(line);
           line = grapheme;
         } else {
           line = chunk;
         }
-      }
-      // The original space between words is represented by the candidate check;
-      // after a wrap, words start on a new line without a leading space.
-      if (word !== paragraph.split(/\s+/).at(-1) && line) {
-        // The next iteration decides whether the next word plus a space fits.
-        // Store no trailing space, matching the editor's text normalization.
       }
     }
     lines.push(line);
