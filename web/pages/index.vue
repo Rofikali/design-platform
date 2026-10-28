@@ -375,7 +375,7 @@ onMounted(() => {
         <button type="button" @click="exportPng">Download PNG</button>
         <button type="button" @click="printToPdf">Print / Save PDF</button>
         <button type="button" @click="importJson">Open JSON</button>
-        <input ref="fileInput" class="visually-hidden" type="file" accept="application/json,.json" @change="onFileSelected" />
+        <input ref="fileInput" class="visually-hidden" type="file" accept="application/json,.json" aria-label="Import design JSON file" @change="onFileSelected" />
         <div class="history-actions"><button type="button" :disabled="undoStack.length === 0" @click="undo">Undo</button><button type="button" :disabled="redoStack.length === 0" @click="redo">Redo</button></div>
         <p class="hint" role="status">{{ statusMessage }}</p>
         <p class="hint">Select an element on the page to edit it.</p>

@@ -31,6 +31,7 @@ const emit = defineEmits<{
           <div
             class="design-page"
              :style="{ width: pageWidth + 'px', height: pageHeight + 'px', backgroundColor: pageBackground }"
+            role="group"
             aria-label="Editable design page"
           >
             <button

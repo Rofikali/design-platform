@@ -267,6 +267,34 @@ async function main() {
     // startup. Wait for that public-ish runtime marker rather than matching
     // SSR text, which can exist before the event handlers are active.
     await waitForPage("Vue app mount", "Boolean(document.querySelector('#__nuxt')?.__vue_app__)");
+
+    // Audit the rendered control names and named canvas group in the real browser.
+    // This is a targeted regression check, not a replacement for screen-reader testing.
+    const accessibilityStructure = await evaluate(`(() => {
+      const controls = Array.from(document.querySelectorAll('input, select, textarea'));
+      const unnamedControls = controls.filter((control) => {
+        if (control.type === 'hidden') return false;
+        const id = control.id;
+        const hasExplicitLabel = id && Array.from(document.querySelectorAll('label')).some(label => label.htmlFor === id);
+        const hasWrappingLabel = Boolean(control.closest('label'));
+        return !hasExplicitLabel && !hasWrappingLabel && !control.getAttribute('aria-label') && !control.getAttribute('aria-labelledby');
+      }).map(control => ({ tag: control.tagName, type: control.type || '', id: control.id || '' }));
+      const buttonsWithoutNames = Array.from(document.querySelectorAll('button')).filter(button =>
+        !button.getAttribute('aria-label') && !button.getAttribute('aria-labelledby') && !button.innerText.trim()
+      ).map(button => button.outerHTML.slice(0, 160));
+      const page = document.querySelector('.design-page');
+      return {
+        unnamedControls,
+        buttonsWithoutNames,
+        canvasRole: page?.getAttribute('role') || '',
+        canvasLabel: page?.getAttribute('aria-label') || '',
+      };
+    })()`);
+    if (accessibilityStructure.unnamedControls.length || accessibilityStructure.buttonsWithoutNames.length ||
+        accessibilityStructure.canvasRole !== 'group' || accessibilityStructure.canvasLabel !== 'Editable design page') {
+      throw new Error(`Rendered accessibility structure is incomplete: ${JSON.stringify(accessibilityStructure)}`);
+    }
+
     
     // Export must report WASM, not the TypeScript fallback.
     await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.includes('Download JSON'))?.click(); true");
