@@ -704,7 +704,7 @@ async function main() {
         }
         if (alpha > 0 && !(red === 255 && green === 247 && blue === 237)) nonBackgroundPixels += 1;
       }
-      return {
+      const result = {
         width: canvas.width,
         height: canvas.height,
         accentSample: sample(1200, 10),
@@ -718,6 +718,12 @@ async function main() {
         footerRegionDarkPixels,
         nonBackgroundPixels,
       };
+      // Release the decoded image and backing store before exporting the next
+      // template; the smoke test intentionally exercises two large PNGs.
+      canvas.width = 0;
+      canvas.height = 0;
+      image.src = "";
+      return result;
     })()`);
     const expectedPixelContent = pngVisual.width === 2400 &&
       pngVisual.height === 1000 &&
@@ -839,7 +845,7 @@ async function main() {
           if (alpha > 0 && !(red === 255 && green === 255 && blue === 255)) nonWhitePixels += 1;
         }
       }
-      return {
+      const result = {
         width: canvas.width,
         height: canvas.height,
         backgroundSample: sample(1500, 2000),
@@ -852,6 +858,11 @@ async function main() {
         dividerRegionPixels,
         nonWhitePixels,
       };
+      // Release the decoded image and backing store after sampling this export.
+      canvas.width = 0;
+      canvas.height = 0;
+      image.src = "";
+      return result;
     })()`);
     const expectedExamPixelContent = examPngVisual.width === 1588 &&
       examPngVisual.height === 2246 &&
