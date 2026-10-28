@@ -327,6 +327,33 @@ async function main() {
     const preserved = await evaluate("document.querySelector('.design-page')?.innerText || ''");
     if (!preserved.includes("Exam Paper")) throw new Error("Invalid import changed the existing canvas document");
 
+    // Keyboard users need a visible focus indicator and must be able to invoke
+    // the same core actions without pointer input. Walk the real Tab order until
+    // the Add text button is focused, rather than forcing focus programmatically.
+    await evaluate("document.activeElement?.blur(); true");
+    let keyboardAccessibility = null;
+    for (let tab = 0; tab < 30; tab += 1) {
+      await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
+      await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
+      keyboardAccessibility = await evaluate("(() => { const button = Array.from(document.querySelectorAll('button')).find(item => item.textContent.includes('＋ Add text')); const style = button ? getComputedStyle(button) : null; return { focused: document.activeElement === button, outlineStyle: style?.outlineStyle, outlineWidth: style?.outlineWidth, label: Array.from(document.querySelectorAll('.design-element')).find(item => item.textContent.includes('Exam Paper'))?.getAttribute('aria-label') || '' }; })()");
+      if (keyboardAccessibility.focused) break;
+    }
+    if (!keyboardAccessibility?.focused || keyboardAccessibility.outlineStyle === 'none' || keyboardAccessibility.outlineWidth !== '3px') {
+      throw new Error(`Keyboard navigation did not reach Add text with a visible focus indicator: ${JSON.stringify(keyboardAccessibility)}`);
+    }
+    // Space activates a focused native button on key release. Use the browser's
+    // real keyboard input path rather than element.click() or synthetic DOM events.
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: " ", code: "Space", windowsVirtualKeyCode: 32, nativeVirtualKeyCode: 32 });
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: " ", code: "Space", windowsVirtualKeyCode: 32, nativeVirtualKeyCode: 32 });
+    try {
+      await waitForPage("keyboard activation adds text", "document.querySelector('.canvas-heading > span')?.textContent || ''", value => value.trim() === "3 elements", 5_000);
+    } catch (error) {
+      const diagnostics = await evaluate("JSON.stringify({ activeTag: document.activeElement?.tagName || '', activeText: document.activeElement?.textContent?.trim() || '', activeLabel: document.activeElement?.getAttribute('aria-label') || '', count: document.querySelector('.canvas-heading > span')?.textContent || '', button: Array.from(document.querySelectorAll('button')).find(item => item.textContent.includes('＋ Add text'))?.outerHTML || '' })");
+      throw new Error(`Keyboard activation did not add text: ${error.message}. Browser diagnostics: ${diagnostics}`);
+    }
+    const keyboardElementLabel = await evaluate("Array.from(document.querySelectorAll('.design-element')).find(item => item.textContent.includes('Exam Paper'))?.getAttribute('aria-label') || ''");
+    if (!keyboardElementLabel.includes('Exam Paper')) throw new Error(`Canvas element accessible name omits its text: ${keyboardElementLabel}`);
+
     // Exercise core editing controls through the rendered UI. Use accessible
     // labels and visible canvas state rather than Vue internals.
     const fixtureCount = Number.parseInt(await evaluate("document.querySelector('.canvas-heading > span')?.textContent || '0'"), 10);
@@ -368,6 +395,9 @@ async function main() {
     // Real mouse input through Chrome DevTools exercises actual pointer capture.
     // Widen the viewport so the full 800x600 logical page and its edge handles are reachable.
     await cdp.send("Emulation.setDeviceMetricsOverride", { width: 1600, height: 1000, deviceScaleFactor: 1, mobile: false });
+    // Keyboard focus can scroll the document to the focused toolbar control.
+    // Reset scroll after changing the viewport so pointer coordinates are stable.
+    await evaluate("window.scrollTo(0, 0); true");
     await delay(100);
     async function mouse(type, x, y, buttons = 0) {
       await cdp.send("Input.dispatchMouseEvent", {
@@ -391,12 +421,32 @@ async function main() {
       return evaluate("(() => { const element = Array.from(document.querySelectorAll('.design-element')).find(node => node.textContent.includes('Browser interaction proof')); if (!element) throw new Error('Edited text element not found'); const rect = element.getBoundingClientRect(); const page = document.querySelector('.design-page').getBoundingClientRect(); const style = getComputedStyle(element); return { left: parseFloat(style.left), top: parseFloat(style.top), width: parseFloat(style.width), height: parseFloat(style.height), clientLeft: rect.left, clientTop: rect.top, pageLeft: page.left, pageTop: page.top }; })()");
     }
 
+    await evaluate("Array.from(document.querySelectorAll('.design-element')).find(element => element.textContent.includes('Browser interaction proof'))?.scrollIntoView({ block: 'center', inline: 'center' }); true");
     let geometry = await selectedTextGeometry();
+    // Other canvas elements can overlap this element. Find an exposed point
+    // inside its actual rendered bounds rather than assuming the top-left area
+    // is unobstructed; keep the test on the real mouse/pointer input path.
+    const dragStart = await evaluate(`(() => {
+      const element = Array.from(document.querySelectorAll('.design-element')).find(node => node.textContent.includes('Browser interaction proof'));
+      if (!element) throw new Error('Edited text element not found');
+      const rect = element.getBoundingClientRect();
+      const candidates = [];
+      for (const yFraction of [0.25, 0.5, 0.75]) {
+        for (const xFraction of [0.15, 0.35, 0.55, 0.75, 0.9]) {
+          const x = rect.left + rect.width * xFraction;
+          const y = rect.top + rect.height * yFraction;
+          const hit = document.elementFromPoint(x, y);
+          if (hit && (hit === element || element.contains(hit))) candidates.push({ x, y });
+        }
+      }
+      return candidates[0] || null;
+    })()`);
+    if (!dragStart) throw new Error(`No unobstructed pointer drag point found inside the target element: ${JSON.stringify(geometry)}`);
     // Drag by a modest delta and verify the actual pointer-driven position change.
-    await mouse("mouseMoved", geometry.clientLeft + 30, geometry.clientTop + 20);
-    await mouse("mousePressed", geometry.clientLeft + 30, geometry.clientTop + 20, 1);
-    await mouse("mouseMoved", geometry.clientLeft + 70, geometry.clientTop + 50, 1);
-    await mouse("mouseReleased", geometry.clientLeft + 70, geometry.clientTop + 50);
+    await mouse("mouseMoved", dragStart.x, dragStart.y);
+    await mouse("mousePressed", dragStart.x, dragStart.y, 1);
+    await mouse("mouseMoved", dragStart.x + 40, dragStart.y + 30, 1);
+    await mouse("mouseReleased", dragStart.x + 40, dragStart.y + 30);
     let afterDrag = await selectedTextGeometry();
     if (afterDrag.left !== geometry.left + 40 || afterDrag.top !== geometry.top + 30) {
       throw new Error(`Pointer drag did not apply expected delta: ${JSON.stringify({ before: geometry, after: afterDrag })}`);
@@ -441,7 +491,36 @@ async function main() {
 
     // Drag to the maximum legal position using coordinates calculated from the
     // rendered page. The target remains inside the viewport, not beyond the screen.
-    const boundaryTarget = await evaluate("(() => { const page = document.querySelector('.design-page').getBoundingClientRect(); const element = Array.from(document.querySelectorAll('.design-element')).find(node => node.textContent.includes('Browser interaction proof')); const style = getComputedStyle(element); const width = parseFloat(style.width); const height = parseFloat(style.height); const left = parseFloat(style.left); const top = parseFloat(style.top); const rect = element.getBoundingClientRect(); return { startX: rect.left + 30, startY: rect.top + 20, targetX: page.left + 800 - width + 30, targetY: page.top + 600 - height + 20, maxLeft: 800 - width, maxTop: 600 - height }; })()");
+    const boundaryTarget = await evaluate(`(() => {
+      const page = document.querySelector('.design-page').getBoundingClientRect();
+      const element = Array.from(document.querySelectorAll('.design-element')).find(node => node.textContent.includes('Browser interaction proof'));
+      const style = getComputedStyle(element);
+      const width = parseFloat(style.width);
+      const height = parseFloat(style.height);
+      const left = parseFloat(style.left);
+      const top = parseFloat(style.top);
+      const rect = element.getBoundingClientRect();
+      let start = null;
+      for (const yFraction of [0.25, 0.5, 0.75]) {
+        for (const xFraction of [0.15, 0.35, 0.55, 0.75, 0.9]) {
+          const x = rect.left + rect.width * xFraction;
+          const y = rect.top + rect.height * yFraction;
+          const hit = document.elementFromPoint(x, y);
+          if (hit && (hit === element || element.contains(hit))) { start = { x, y }; break; }
+        }
+        if (start) break;
+      }
+      if (!start) return null;
+      const maxLeft = 800 - width;
+      const maxTop = 600 - height;
+      return {
+        startX: start.x, startY: start.y,
+        targetX: page.left + maxLeft + (start.x - rect.left),
+        targetY: page.top + maxTop + (start.y - rect.top),
+        maxLeft, maxTop
+      };
+    })()`);
+    if (!boundaryTarget) throw new Error("No unobstructed point found for boundary drag");
     await mouse("mouseMoved", boundaryTarget.startX, boundaryTarget.startY);
     await mouse("mousePressed", boundaryTarget.startX, boundaryTarget.startY, 1);
     await mouse("mouseMoved", boundaryTarget.targetX, boundaryTarget.targetY, 1);

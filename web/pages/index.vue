@@ -424,6 +424,7 @@ h1 { margin: 0; font-size: 24px; }
 .workspace { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 20px; padding: 20px; }
 .panel { min-width: 0; border: 1px solid #e1e6ef; border-radius: 14px; background: white; }
 .tools-panel { padding: 18px; align-self: start; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 3px solid #0b57d0; outline-offset: 2px; }
 .tools-panel > button { display: block; width: 100%; margin: 8px 0; padding: 10px 12px; border: 1px solid #d7deea; border-radius: 8px; background: white; text-align: left; color: #172033; }
 .tools-panel > button.primary { border-color: #234bd6; background: #234bd6; color: white; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }

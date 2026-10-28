@@ -48,7 +48,7 @@ const emit = defineEmits<{
                 fontSize: element.type === 'text' ? element.fontSize + 'px' : undefined,
               }"
               type="button"
-              :aria-label="'Select ' + element.type + ' element'"
+              :aria-label="element.type === 'text' ? 'Select text element: ' + element.text.slice(0, 80) : 'Select rectangle element'"
               :aria-pressed="selectedId === element.id"
               @pointerdown="emit('elementPointerDown', $event, element)"
               @pointermove="emit('elementPointerMove', $event)"
