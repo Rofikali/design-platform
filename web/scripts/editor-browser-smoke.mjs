@@ -391,6 +391,14 @@ async function main() {
     await waitForPage("rectangle added", "document.querySelector('.canvas-heading > span')?.textContent || ''", value => value.trim() === `${fixtureCount + 2} elements`);
 
     await evaluate("Array.from(document.querySelectorAll('.design-element')).find(element => element.textContent.includes('New text'))?.click(); true");
+    const selectionStatus = await waitFor("selected element announcement", async () => {
+      const status = await evaluate(`(() => {
+        const node = document.querySelector('.selected-name');
+        return { text: node?.textContent?.trim() || "", role: node?.getAttribute("role") || "", live: node?.getAttribute("aria-live") || "", atomic: node?.getAttribute("aria-atomic") || "" };
+      })()`);
+      return status.role === "status" && status.live === "polite" && status.atomic === "true" && status.text.includes("New text") ? status : null;
+    }, 5_000);
+    if (!selectionStatus) throw new Error("Selecting an element did not expose a polite, descriptive selection announcement.");
     const editTextExpression = `(() => {
       const field = document.querySelector('textarea');
       const setter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set;
