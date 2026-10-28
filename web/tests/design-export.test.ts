@@ -33,6 +33,19 @@ describe("design export renderer", () => {
     expect(svg).not.toContain("\uFFFD");
   });
 
+  it("keeps grapheme clusters intact when wrapping joined emoji and combining marks", () => {
+    const family = "👨‍👩‍👧‍👦";
+    const accented = "e\u0301";
+    const svg = renderDesignSvg([
+      { id: "family", type: "text", text: `A${family}B`, x: 0, y: 0, width: 24, height: 40, fontSize: 10, color: "#000000" },
+      { id: "accent", type: "text", text: `${accented}x`, x: 0, y: 50, width: 6, height: 30, fontSize: 10, color: "#000000" },
+    ], 100, 100, "#fff");
+    expect(svg).toContain(`<tspan x="2" dy="0">A${family}B</tspan>`);
+    expect(svg).toContain(`<tspan x="2" dy="0">${accented}</tspan>`);
+    expect(svg).toContain(`<tspan x="2" dy="12.5">x</tspan>`);
+    expect(svg).not.toContain("\uFFFD");
+  });
+
   it("clips wrapped text to its element box so it cannot overlap neighboring content", () => {
     const svg = renderDesignSvg([
       { id: "first", type: "text", text: "one two three four five six seven", x: 10, y: 20, width: 50, height: 18, fontSize: 12, color: "#000000" },
