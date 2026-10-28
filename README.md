@@ -23,11 +23,11 @@ The current prototype includes:
 This is still a prototype, **not production-ready**.
 
 - The editor supports only text and rectangles; the starter templates are foundations, not complete exam-paper or shop-banner authoring workflows.
-- PNG export is implemented from the document model; Chrome CI verifies a real 2× PNG download's signature and dimensions. Visual fidelity still needs golden-image comparisons.
+- PNG export is implemented from the document model; Chrome CI verifies real 2× PNG downloads and compares both MVP template exports against checked-in SVG visual references with a pixel-difference tolerance. This is a deterministic regression gate for the current Chrome renderer, not proof of cross-browser font parity or user-validated print quality.
 - PDF currently uses the browser's print dialog. The user must choose “Save as PDF”; this is not a direct PDF download. Chrome CI checks the Shop Banner print layout scale and generated PDF page box (one 300 × 125 mm page), but visual fidelity and cross-browser behavior remain unverified.
 - There is no account system, server-side persistence, cross-device synchronization, billing, or collaboration.
 - Schema-v1 documents migrate to v2 with their original 800 × 600 geometry. New documents can use bounded configurable page dimensions and optional physical output-size metadata. The editor currently supports only text and rectangles.
-- The real-browser suite covers WASM-backed JSON import/export, rejection safety, adding text/rectangles, text/style editing, directional movement, undo/redo, local autosave/restore, pointer drag/resize, page-boundary limits, template creation, actual 2× PNG file integrity/dimensions and pixel-level checks for both MVP templates: Shop Banner background/accent/text and Exam Paper background/divider/title, plus one-page PDF geometry. Visual export comparisons, accessibility, and performance gates remain open work.
+- The real-browser suite covers WASM-backed JSON import/export, rejection safety, adding text/rectangles, text/style editing, directional movement, undo/redo, local autosave/restore, pointer drag/resize, page-boundary limits, template creation, actual 2× PNG file integrity/dimensions, pixel-level checks and checked-in SVG reference-image comparisons for both MVP templates, plus one-page PDF geometry. Cross-browser export fidelity, accessibility, and performance gates remain open work.
 - Browser-side validation improves feedback and data consistency; it is not an authorization boundary. A future trusted API must validate documents independently.
 - Local browser storage is not a backup. Users should download a JSON copy if they need a portable copy.
 
