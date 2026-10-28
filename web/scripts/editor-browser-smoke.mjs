@@ -421,7 +421,10 @@ async function main() {
       return evaluate("(() => { const element = Array.from(document.querySelectorAll('.design-element')).find(node => node.textContent.includes('Browser interaction proof')); if (!element) throw new Error('Edited text element not found'); const rect = element.getBoundingClientRect(); const page = document.querySelector('.design-page').getBoundingClientRect(); const style = getComputedStyle(element); return { left: parseFloat(style.left), top: parseFloat(style.top), width: parseFloat(style.width), height: parseFloat(style.height), clientLeft: rect.left, clientTop: rect.top, pageLeft: page.left, pageTop: page.top }; })()");
     }
 
+    await evaluate("Array.from(document.querySelectorAll('.design-element')).find(element => element.textContent.includes('Browser interaction proof'))?.scrollIntoView({ block: 'center', inline: 'center' }); true");
     let geometry = await selectedTextGeometry();
+    const dragHitTarget = await evaluate(`(() => { const element = Array.from(document.querySelectorAll('.design-element')).find(node => node.textContent.includes('Browser interaction proof')); const hit = document.elementFromPoint(${geometry.clientLeft + 30}, ${geometry.clientTop + 20}); return { target: element?.tagName, hit: hit?.tagName, hitIsTarget: Boolean(element && hit && (hit === element || element.contains(hit))) }; })()`);
+    if (!dragHitTarget.hitIsTarget) throw new Error(`Pointer drag start is not over the target element: ${JSON.stringify({ geometry, dragHitTarget })}`);
     // Drag by a modest delta and verify the actual pointer-driven position change.
     await mouse("mouseMoved", geometry.clientLeft + 30, geometry.clientTop + 20);
     await mouse("mousePressed", geometry.clientLeft + 30, geometry.clientTop + 20, 1);
