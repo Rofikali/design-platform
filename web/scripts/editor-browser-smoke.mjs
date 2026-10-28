@@ -380,6 +380,32 @@ async function main() {
       throw new Error(`Text/style/movement controls did not apply expected changes: ${JSON.stringify({ initialPosition, changed })}`);
     }
 
+    const sizeControls = await evaluate(`(() => ({
+      width: document.querySelector('input[aria-label="Selected element width"]')?.value || "",
+      height: document.querySelector('input[aria-label="Selected element height"]')?.value || "",
+    }))()`);
+    if (!Number(sizeControls.width) || !Number(sizeControls.height)) {
+      throw new Error(`Selected element does not expose accessible width and height controls: ${JSON.stringify(sizeControls)}`);
+    }
+    const beforeKeyboardResize = await selectedTextGeometry();
+    await evaluate(`(() => {
+      const field = document.querySelector('input[aria-label="Selected element width"]');
+      field.focus();
+      field.select();
+      return true;
+    })()`);
+    await cdp.send("Input.insertText", { text: String(beforeKeyboardResize.width + 15) });
+    // Tab away to commit the native number input through its real change/blur path.
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9, nativeVirtualKeyCode: 9 });
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9, nativeVirtualKeyCode: 9 });
+    const afterKeyboardResize = await waitFor("keyboard width edit", async () => {
+      const value = await selectedTextGeometry();
+      return value.width === beforeKeyboardResize.width + 15 ? value : null;
+    }, 5_000);
+    if (afterKeyboardResize.width !== beforeKeyboardResize.width + 15) {
+      throw new Error(`Keyboard width control did not resize the selected element: ${JSON.stringify({ beforeKeyboardResize, afterKeyboardResize })}`);
+    }
+
     // Wait for debounced history, then prove undo/redo and browser-local restore.
     await delay(500);
     await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.trim() === 'Undo')?.click(); true");
