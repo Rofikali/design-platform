@@ -320,7 +320,7 @@ async function main() {
       };
       return nodes.map((node) => {
         const style = getComputedStyle(node);
-        const background = '#ffffff';
+        const background = 'rgb(255, 255, 255)';
         return { selector: node.className || node.tagName.toLowerCase(), color: style.color, contrast: contrast(style.color, background) };
       });
     })()`);
