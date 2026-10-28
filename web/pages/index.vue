@@ -42,6 +42,18 @@ let historyTimer: ReturnType<typeof setTimeout> | undefined;
 let autosaveTimer: ReturnType<typeof setTimeout> | undefined;
 
 const selectedElement = computed(() => elements.value.find((element) => element.id === selectedId.value) ?? null);
+const selectionAnnouncement = ref("");
+function announceSelection(id: string | null) {
+  const element = elements.value.find((candidate) => candidate.id === id);
+  if (!element) {
+    selectionAnnouncement.value = "No element selected.";
+    return;
+  }
+  selectionAnnouncement.value = element.type === "text"
+    ? `Selected text element: ${element.text.slice(0, 80)}${element.text.length > 80 ? "…" : ""}`
+    : "Selected rectangle element.";
+}
+watch(selectedId, announceSelection, { immediate: true });
 
 function snapshot(): string { return JSON.stringify(toDocument(elements.value, { width: pageWidth.value, height: pageHeight.value, background: pageBackground.value }, outputSizeMm.value, templateMetadata.value)); }
 const history = ref(createHistory(snapshot()));
@@ -57,6 +69,8 @@ function applySnapshot(json: string) {
   templateMetadata.value = parsed.template;
   selectedId.value = parsed.elements[0]?.id ?? null;
   nextId.value = parsed.elements.length + 1;
+  // A loaded document can reuse the same selected ID with different content.
+  announceSelection(selectedId.value);
 }
 function createFromTemplate() {
   try {
@@ -382,7 +396,7 @@ onMounted(() => {
         <hr />
         <h2>Selection</h2>
         <template v-if="selectedElement">
-          <p class="selected-name">{{ selectedElement.type === "text" ? "Text element" : "Rectangle" }}</p>
+          <p class="selected-name" role="status" aria-live="polite" aria-atomic="true">{{ selectionAnnouncement }}</p>
           <label v-if="selectedElement.type === 'text'" class="field">
             Text
             <textarea v-model="selectedElement.text" rows="4" maxlength="10000" />
