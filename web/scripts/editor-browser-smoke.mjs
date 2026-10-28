@@ -341,8 +341,8 @@ async function main() {
     if (!keyboardAccessibility?.focused || keyboardAccessibility.outlineStyle === 'none' || keyboardAccessibility.outlineWidth !== '3px') {
       throw new Error(`Keyboard navigation did not reach Add text with a visible focus indicator: ${JSON.stringify(keyboardAccessibility)}`);
     }
-    await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });
-    await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });
+    await cdp.send("Input.dispatchKeyEvent", { type: "rawKeyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13 });
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13 });
     await waitForPage("keyboard activation adds text", "document.querySelector('.canvas-heading > span')?.textContent || ''", value => value.trim() === "3 elements");
     const keyboardElementLabel = await evaluate("Array.from(document.querySelectorAll('.design-element')).find(item => item.textContent.includes('Exam Paper'))?.getAttribute('aria-label') || ''");
     if (!keyboardElementLabel.includes('Exam Paper')) throw new Error(`Canvas element accessible name omits its text: ${keyboardElementLabel}`);
