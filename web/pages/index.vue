@@ -400,7 +400,7 @@ onMounted(() => {
             <input
               :value="selectedElement.width"
               type="number"
-              min="1"
+              min="8"
               :max="pageWidth - selectedElement.x"
               aria-label="Selected element width"
               @change="setSelectedWidth(($event.target as HTMLInputElement).value)"
@@ -411,7 +411,7 @@ onMounted(() => {
             <input
               :value="selectedElement.height"
               type="number"
-              min="1"
+              min="8"
               :max="pageHeight - selectedElement.y"
               aria-label="Selected element height"
               @change="setSelectedHeight(($event.target as HTMLInputElement).value)"
