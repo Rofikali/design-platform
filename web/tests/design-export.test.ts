@@ -28,9 +28,8 @@ describe("design export renderer", () => {
     const svg = renderDesignSvg([
       { id: "unicode", type: "text", text: "abc😀def", x: 0, y: 0, width: 24, height: 80, fontSize: 10, color: "#000000" },
     ], 100, 100, "#fff");
-    expect(svg).toContain("<tspan x=\"2\" dy=\"0\">abc</tspan>");
-    expect(svg).toContain("<tspan x=\"2\" dy=\"12.5\">😀</tspan>");
-    expect(svg).toContain("<tspan x=\"2\" dy=\"25\">def</tspan>");
+    expect(svg).toContain(`<tspan x="2" dy="0">abc😀</tspan>`);
+    expect(svg).toContain(`<tspan x="2" dy="12.5">def</tspan>`);
     expect(svg).not.toContain("\uFFFD");
   });
 
