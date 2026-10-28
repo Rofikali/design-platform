@@ -10,16 +10,18 @@ function wrapText(text: string, maxCharacters: number): string[] {
     if (paragraph.length === 0) { lines.push(""); continue; }
     let line = "";
     for (const word of paragraph.split(/\s+/)) {
-      if (line && line.length + word.length + 1 > maxCharacters) {
+      const characters = Array.from(word);
+      if (line && Array.from(line).length + Array.from(word).length + 1 > maxCharacters) {
         lines.push(line);
-        line = word;
-      } else {
-        line = line ? line + " " + word : word;
+        line = "";
       }
-      while (line.length > maxCharacters) {
-        lines.push(line.slice(0, maxCharacters));
-        line = line.slice(maxCharacters);
+      line = line ? line + " " + word : word;
+      let lineCharacters = Array.from(line);
+      while (lineCharacters.length > maxCharacters) {
+        lines.push(lineCharacters.slice(0, maxCharacters).join(""));
+        lineCharacters = lineCharacters.slice(maxCharacters);
       }
+      line = lineCharacters.join("");
     }
     lines.push(line);
   }
