@@ -70,7 +70,7 @@ const emit = defineEmits<{
 .canvas-area { min-width: 0; border: 1px solid #e1e6ef; border-radius: 14px; background: white; padding: 18px; overflow: hidden; }
 .canvas-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
 .canvas-heading h2 { margin: 0 0 4px; }
-.canvas-heading p, .canvas-heading > span { margin: 0; color: #6c778b; font-size: 12px; }
+.canvas-heading p, .canvas-heading > span { margin: 0; color: #596780; font-size: 12px; }
 .canvas-scroller { overflow: auto; padding: 10px 0 16px; background: #f3f5f9; border-radius: 10px; }
 .design-page { position: relative; margin: 0 auto; overflow: hidden; background: white; box-shadow: 0 4px 20px #18274414; }
 .design-element { position: absolute; display: flex; align-items: flex-start; justify-content: flex-start; padding: 2px; border: 1px solid transparent; border-radius: 2px; text-align: left; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.25; touch-action: none; cursor: grab; user-select: none; }
@@ -78,5 +78,5 @@ const emit = defineEmits<{
 .design-element.selected { border: 1px dashed #234bd6; outline: 1px solid #234bd6; }
 .resize-handle { position: absolute; right: -1px; bottom: -1px; width: 12px; height: 12px; border: 2px solid white; border-radius: 2px; background: #234bd6; box-shadow: 0 0 0 1px #234bd6; cursor: nwse-resize; touch-action: none; }
 .design-element.rectangle { border-radius: 0; }
-.canvas-note { margin: 12px 0 0; color: #6c778b; font-size: 12px; line-height: 1.5; }
+.canvas-note { margin: 12px 0 0; color: #596780; font-size: 12px; line-height: 1.5; }
 </style>
