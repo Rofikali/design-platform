@@ -1,11 +1,12 @@
 FROM node:22.14.0-bookworm-slim AS build
 WORKDIR /app
 
-COPY web/package.json ./package.json
-RUN npm install --no-audit --no-fund
+RUN corepack enable && corepack prepare pnpm@10.11.0 --activate
+COPY web/package.json web/pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
 
 COPY web/ ./
-RUN npm run build
+RUN pnpm run build
 
 FROM node:22.14.0-bookworm-slim AS runtime
 ENV NODE_ENV=production
