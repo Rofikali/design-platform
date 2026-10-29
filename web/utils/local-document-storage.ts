@@ -32,16 +32,18 @@ export function loadLocalDocument(
 }
 
 /**
- * Save only bounded serialized content. The caller owns serialization and
- * debounce timing; this function owns the storage boundary and error mapping.
+ * Save only bounded serialized content. The limit uses UTF-8 bytes to match
+ * the import/validation boundary, not JavaScript's UTF-16 string length.
+ * The caller owns serialization and debounce timing; this function owns the
+ * storage boundary and error mapping.
  */
 export function saveLocalDocument(
   key: string,
   value: string,
-  maxChars: number,
+  maxBytes: number,
   getStorage: StorageProvider = browserStorage,
 ): SaveLocalDocumentResult {
-  if (value.length > maxChars) return { status: "too-large" };
+  if (new TextEncoder().encode(value).byteLength > maxBytes) return { status: "too-large" };
 
   try {
     getStorage().setItem(key, value);
