@@ -41,16 +41,33 @@ function wrapText(
         line = "";
       }
 
-      // A single unbroken word may be wider than its box. Split it only at
-      // grapheme boundaries, choosing the longest chunk that fits.
-      for (const grapheme of splitGraphemes(word)) {
-        const chunk = line + grapheme;
-        if (line && widthOf(chunk) > maxWidth) {
-          lines.push(line);
-          line = grapheme;
-        } else {
-          line = chunk;
+      // Avoid repeatedly measuring every growing prefix of a long unbroken
+      // word. Try the whole word once, then binary-search the largest grapheme
+      // chunk that fits. This keeps very wide text boxes from causing quadratic
+      // text-measurement work.
+      if (widthOf(word) <= maxWidth) {
+        line = word;
+        continue;
+      }
+      const graphemes = splitGraphemes(word);
+      let offset = 0;
+      while (offset < graphemes.length) {
+        let low = offset + 1;
+        let high = graphemes.length;
+        // Keep one grapheme even if it is wider than the element.
+        let best = offset + 1;
+        while (low <= high) {
+          const middle = Math.floor((low + high) / 2);
+          const candidate = graphemes.slice(offset, middle).join("");
+          if (widthOf(candidate) <= maxWidth) {
+            best = middle;
+            low = middle + 1;
+          } else {
+            high = middle - 1;
+          }
         }
+        lines.push(graphemes.slice(offset, best).join(""));
+        offset = best;
       }
     }
     lines.push(line);
