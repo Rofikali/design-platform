@@ -66,8 +66,13 @@ function wrapText(
             high = middle - 1;
           }
         }
-        lines.push(graphemes.slice(offset, best).join(""));
+        const chunk = graphemes.slice(offset, best).join("");
         offset = best;
+        if (offset < graphemes.length) {
+          lines.push(chunk);
+        } else {
+          line = chunk;
+        }
       }
     }
     lines.push(line);
