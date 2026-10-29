@@ -268,6 +268,36 @@ async function main() {
     // SSR text, which can exist before the event handlers are active.
     await waitForPage("Vue app mount", "Boolean(document.querySelector('#__nuxt')?.__vue_app__)");
 
+    // Prove that a real edit is autosaved and survives a browser reload.
+    // This protects the persistence watcher, not just the isolated storage helper.
+    const autosaveProbe = "Autosave survives reload";
+    await evaluate(`(() => {
+      const textarea = document.querySelector('.tools-panel textarea');
+      if (!textarea) throw new Error("Selected text editor was not rendered");
+      const setter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set;
+      setter.call(textarea, ${JSON.stringify(autosaveProbe)});
+      textarea.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText', data: ${JSON.stringify(autosaveProbe)} }));
+      return true;
+    })()`);
+    await waitFor("edited document to be autosaved", async () => {
+      const saved = await evaluate("localStorage.getItem('design-platform:document:v1')");
+      if (!saved) return null;
+      try {
+        const parsed = JSON.parse(saved);
+        return parsed.elements?.some(element => element.text === "Autosave survives reload") ? saved : null;
+      } catch { return null; }
+    });
+    await evaluate("location.reload(); true");
+    await waitForPage(
+      "autosaved text to be restored after reload",
+      "document.querySelector('.design-page')?.innerText || ''",
+      value => value.includes("Autosave survives reload"),
+    );
+    // Reset to a clean baseline for the remaining starter-design export checks.
+    await evaluate("localStorage.clear(); location.reload(); true");
+    await waitForPage("clean starter design after persistence test", "document.querySelector('.design-page')?.innerText || ''", value => value.includes("Your design starts here"));
+    await waitForPage("Vue app remount after persistence reset", "Boolean(document.querySelector('#__nuxt')?.__vue_app__)");
+
     // Audit the rendered control names and named canvas group in the real browser.
     // This is a targeted regression check, not a replacement for screen-reader testing.
     const accessibilityStructure = await evaluate(`(() => {
