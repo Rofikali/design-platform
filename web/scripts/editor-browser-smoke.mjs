@@ -285,6 +285,17 @@ async function main() {
     if (preservedAutosave !== malformedAutosave) {
       throw new Error("Editing while recovery is pending overwrote the original malformed autosave");
     }
+    // Simulate a quota/security write failure. Recovery must remain pending and
+    // the original invalid bytes must remain available for a later retry.
+    await evaluate("window.__originalStorageSetItem ??= Storage.prototype.setItem; Storage.prototype.setItem = function() { throw new DOMException('quota exceeded', 'QuotaExceededError'); }; true");
+    await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.includes('Replace saved data with current design'))?.click(); true");
+    await waitForPage("recovery remains available after failed storage write", "document.querySelector('#recovery-heading')?.textContent || ''", value => value.includes("needs recovery"));
+    const preservedAfterWriteFailure = await evaluate("localStorage.getItem('design-platform:document:v1')");
+    if (preservedAfterWriteFailure !== malformedAutosave) {
+      throw new Error("A failed recovery write changed or lost the original malformed autosave");
+    }
+    await evaluate("Storage.prototype.setItem = window.__originalStorageSetItem; delete window.__originalStorageSetItem; true");
+
     await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.includes('Replace saved data with current design'))?.click(); true");
     await waitFor("explicit recovery replacement to save current design", async () => {
       const saved = await evaluate("localStorage.getItem('design-platform:document:v1')");
