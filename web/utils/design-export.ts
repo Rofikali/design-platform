@@ -71,6 +71,16 @@ export function renderDesignSvg(
     throw new Error("Invalid export page dimensions.");
   }
   if (!Number.isFinite(scale) || scale < 1 || scale > 4) throw new Error("Export scale must be between 1 and 4.");
+  // A valid logical document can still expand into an unsafe raster allocation.
+  // Bound both dimensions and total output pixels before building/decoding SVG.
+  const outputWidth = Math.ceil(width * scale);
+  const outputHeight = Math.ceil(height * scale);
+  if (outputWidth > 16_384 || outputHeight > 16_384) {
+    throw new Error("PNG export dimensions exceed the 16,384-pixel limit.");
+  }
+  if (outputWidth * outputHeight > 16_000_000) {
+    throw new Error("PNG export exceeds the 16-million-pixel limit. Reduce the page size or export scale.");
+  }
   const shapes = elements.map((element, elementIndex) => {
     if (element.type === "rect") {
       return `<rect x="${element.x}" y="${element.y}" width="${element.width}" height="${element.height}" fill="${escapeXml(element.color)}"/>`;

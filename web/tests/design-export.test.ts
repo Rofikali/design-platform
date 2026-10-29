@@ -84,4 +84,12 @@ describe("design export renderer", () => {
     expect(() => renderDesignSvg([], 0, 100, "#fff")).toThrow(/dimensions/);
     expect(() => renderDesignSvg([], 100, 100, "#fff", 5)).toThrow(/scale/);
   });
+
+  it("rejects raster dimensions that could allocate excessive browser memory", () => {
+    // The logical page area is within the document limit, but 2x export would
+    // allocate 40 million output pixels (roughly 160 MB for one RGBA bitmap).
+    expect(() => renderDesignSvg([], 4_000, 2_500, "#fff", 2)).toThrow(/16-million-pixel limit/);
+    expect(() => renderDesignSvg([], 9_000, 1_000, "#fff", 2)).toThrow(/16,384-pixel limit/);
+    expect(() => renderDesignSvg([], 2_000, 2_000, "#fff", 2)).not.toThrow();
+  });
 });
