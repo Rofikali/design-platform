@@ -42,7 +42,7 @@ describe("design export renderer", () => {
     ], 100, 100, "#fff");
     expect(svg).toContain(`<tspan x="2" dy="0">A</tspan>`);
     expect(svg).toContain(`<tspan x="2" dy="12.5">${family}</tspan>`);
-    expect(svg).toContain(`<tspan x="2" dy="25">B</tspan>`);
+    expect(svg).toContain(`<tspan x="2" dy="12.5">B</tspan>`);
     expect(svg).toContain(`<tspan x="2" dy="0">${accented}</tspan>`);
     expect(svg).toContain(`<tspan x="2" dy="12.5">x</tspan>`);
     expect(svg).not.toContain("\uFFFD");
