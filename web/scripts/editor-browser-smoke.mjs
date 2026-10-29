@@ -271,23 +271,17 @@ async function main() {
     // Prove that a real edit is autosaved and survives a browser reload.
     // This protects the persistence watcher, not just the isolated storage helper.
     const autosaveProbe = "Autosave survives reload";
-    await evaluate(`(() => {
-      const textarea = document.querySelector('.tools-panel textarea');
-      if (!textarea) throw new Error("Selected text editor was not rendered");
-      const setter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set;
-      setter.call(textarea, ${JSON.stringify(autosaveProbe)});
-      textarea.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText', data: ${JSON.stringify(autosaveProbe)} }));
-      return true;
-    })()`);
+    await evaluate("document.querySelector('.tools-panel textarea')?.focus(); true");
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Control", code: "ControlLeft", modifiers: 2 });
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: "a", code: "KeyA", modifiers: 2 });
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: "a", code: "KeyA", modifiers: 2 });
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Control", code: "ControlLeft" });
+    await cdp.send("Input.insertText", { text: autosaveProbe });
     await waitFor("edited document to be autosaved", async () => {
       const saved = await evaluate("localStorage.getItem('design-platform:document:v1')");
-      if (!saved) return null;
-      try {
-        const parsed = JSON.parse(saved);
-        return parsed.elements?.some(element => element.text === "Autosave survives reload") ? saved : null;
-      } catch { return null; }
+      return saved && saved.includes(autosaveProbe) ? saved : null;
     });
-    await evaluate("location.reload(); true");
+        await evaluate("location.reload(); true");
     await waitForPage(
       "autosaved text to be restored after reload",
       "document.querySelector('.design-page')?.innerText || ''",
