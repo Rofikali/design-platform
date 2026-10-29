@@ -80,6 +80,21 @@ describe("design export renderer", () => {
     expect(svg).toContain("<tspan x=\"2\" dy=\"12.5\">gamma</tspan>");
   });
 
+  it("measures long unbroken words with bounded binary-search work", () => {
+    let measurements = 0;
+    const longWord = "W".repeat(4096);
+    const svg = renderDesignSvg([
+      { id: "long-word", type: "text", text: longWord, x: 0, y: 0, width: 40, height: 100, fontSize: 10, color: "#000000" },
+    ], 100, 100, "#fff", 2, (value) => {
+      measurements += 1;
+      return value.length * 10;
+    });
+
+    expect(svg.match(/<tspan/g)?.length).toBe(1024);
+    expect(measurements).toBeLessThan(longWord.length * 2);
+    expect(svg).not.toContain("\uFFFD");
+  });
+
   it("rejects invalid dimensions and unsupported scale", () => {
     expect(() => renderDesignSvg([], 0, 100, "#fff")).toThrow(/dimensions/);
     expect(() => renderDesignSvg([], 100, 100, "#fff", 5)).toThrow(/scale/);

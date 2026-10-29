@@ -41,16 +41,57 @@ function wrapText(
         line = "";
       }
 
-      // A single unbroken word may be wider than its box. Split it only at
-      // grapheme boundaries, choosing the longest chunk that fits.
-      for (const grapheme of splitGraphemes(word)) {
-        const chunk = line + grapheme;
-        if (line && widthOf(chunk) > maxWidth) {
-          lines.push(line);
-          line = grapheme;
-        } else {
-          line = chunk;
+      // Avoid repeatedly measuring every growing prefix of a long unbroken
+      // word. Try the whole word once, then binary-search the largest grapheme
+      // chunk that fits. This keeps very wide text boxes from causing quadratic
+      // text-measurement work.
+      if (widthOf(word) <= maxWidth) {
+        line = word;
+        continue;
+      }
+      const graphemes = splitGraphemes(word);
+      let offset = 0;
+      while (offset < graphemes.length) {
+        // Exponentially find a small search window, then binary-search it.
+        // This avoids scanning the entire remaining suffix for every line.
+        let step = 1;
+        let best = offset;
+        let high = graphemes.length;
+        while (offset + step <= graphemes.length) {
+          const end = offset + step;
+          const candidate = graphemes.slice(offset, end).join("");
+          if (widthOf(candidate) <= maxWidth) {
+            best = end;
+            step *= 2;
+          } else {
+            high = end - 1;
+            break;
+          }
         }
+        if (offset + step > graphemes.length && best < graphemes.length) {
+          const candidate = graphemes.slice(offset).join("");
+          if (widthOf(candidate) <= maxWidth) best = graphemes.length;
+          else high = graphemes.length - 1;
+        }
+        let low = best + 1;
+        while (low <= high) {
+          const middle = Math.floor((low + high) / 2);
+          const candidate = graphemes.slice(offset, middle).join("");
+          if (widthOf(candidate) <= maxWidth) {
+            best = middle;
+            low = middle + 1;
+          } else {
+            high = middle - 1;
+          }
+        }
+        // Keep one grapheme even when that glyph itself exceeds the box.
+        if (best <= offset) best = offset + 1;
+        const chunk = graphemes.slice(offset, best).join("");
+        offset = best;
+        // Keep the final chunk as the current line so following words retain
+        // their normal separating whitespace.
+        if (offset < graphemes.length) lines.push(chunk);
+        else line = chunk;
       }
     }
     lines.push(line);
