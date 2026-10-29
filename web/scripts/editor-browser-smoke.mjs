@@ -268,6 +268,30 @@ async function main() {
     // SSR text, which can exist before the event handlers are active.
     await waitForPage("Vue app mount", "Boolean(document.querySelector('#__nuxt')?.__vue_app__)");
 
+    // Prove that a real edit is autosaved and survives a browser reload.
+    // This protects the persistence watcher, not just the isolated storage helper.
+    const autosaveProbe = "Autosave survives reload";
+    await evaluate("document.querySelector('.tools-panel textarea')?.focus(); true");
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Control", code: "ControlLeft", modifiers: 2 });
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: "a", code: "KeyA", modifiers: 2 });
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: "a", code: "KeyA", modifiers: 2 });
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Control", code: "ControlLeft" });
+    await cdp.send("Input.insertText", { text: autosaveProbe });
+    await waitFor("edited document to be autosaved", async () => {
+      const saved = await evaluate("localStorage.getItem('design-platform:document:v1')");
+      return saved && saved.includes(autosaveProbe) ? saved : null;
+    });
+        await evaluate("location.reload(); true");
+    await waitForPage(
+      "autosaved text to be restored after reload",
+      "document.querySelector('.design-page')?.innerText || ''",
+      value => value.includes("Autosave survives reload"),
+    );
+    // Reset to a clean baseline for the remaining starter-design export checks.
+    await evaluate("localStorage.clear(); location.reload(); true");
+    await waitForPage("clean starter design after persistence test", "document.querySelector('.design-page')?.innerText || ''", value => value.includes("Your design starts here"));
+    await waitForPage("Vue app remount after persistence reset", "Boolean(document.querySelector('#__nuxt')?.__vue_app__)");
+
     // Audit the rendered control names and named canvas group in the real browser.
     // This is a targeted regression check, not a replacement for screen-reader testing.
     const accessibilityStructure = await evaluate(`(() => {
