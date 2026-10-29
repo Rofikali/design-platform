@@ -52,10 +52,28 @@ function wrapText(
       const graphemes = splitGraphemes(word);
       let offset = 0;
       while (offset < graphemes.length) {
-        let low = offset + 1;
+        // Exponentially find a small search window, then binary-search it.
+        // This avoids scanning the entire remaining suffix for every line.
+        let step = 1;
+        let best = offset;
         let high = graphemes.length;
-        // Keep one grapheme even if it is wider than the element.
-        let best = offset + 1;
+        while (offset + step <= graphemes.length) {
+          const end = offset + step;
+          const candidate = graphemes.slice(offset, end).join("");
+          if (widthOf(candidate) <= maxWidth) {
+            best = end;
+            step *= 2;
+          } else {
+            high = end - 1;
+            break;
+          }
+        }
+        if (offset + step > graphemes.length && best < graphemes.length) {
+          const candidate = graphemes.slice(offset).join("");
+          if (widthOf(candidate) <= maxWidth) best = graphemes.length;
+          else high = graphemes.length - 1;
+        }
+        let low = best + 1;
         while (low <= high) {
           const middle = Math.floor((low + high) / 2);
           const candidate = graphemes.slice(offset, middle).join("");
@@ -66,13 +84,14 @@ function wrapText(
             high = middle - 1;
           }
         }
+        // Keep one grapheme even when that glyph itself exceeds the box.
+        if (best <= offset) best = offset + 1;
         const chunk = graphemes.slice(offset, best).join("");
         offset = best;
-        if (offset < graphemes.length) {
-          lines.push(chunk);
-        } else {
-          line = chunk;
-        }
+        // Keep the final chunk as the current line so following words retain
+        // their normal separating whitespace.
+        if (offset < graphemes.length) lines.push(chunk);
+        else line = chunk;
       }
     }
     lines.push(line);
