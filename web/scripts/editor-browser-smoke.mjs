@@ -268,6 +268,34 @@ async function main() {
     // SSR text, which can exist before the event handlers are active.
     await waitForPage("Vue app mount", "Boolean(document.querySelector('#__nuxt')?.__vue_app__)");
 
+    // Malformed autosaves must not be silently overwritten by later edits.
+    const malformedAutosave = "{ this is not valid JSON";
+    await evaluate(`localStorage.setItem('design-platform:document:v1', ${JSON.stringify(malformedAutosave)}); location.reload(); true`);
+    await waitForPage("recovery warning for malformed autosave", "document.querySelector('#recovery-heading')?.textContent || ''", value => value.includes("needs recovery"));
+    await waitForPage("recovery actions visible", "Array.from(document.querySelectorAll('button')).some(button => button.textContent.includes('Replace saved data with current design'))");
+    const recoveryEdit = "Edit while recovery is pending";
+    await evaluate("document.querySelector('.tools-panel textarea')?.focus(); true");
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Control", code: "ControlLeft", modifiers: 2 });
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: "a", code: "KeyA", modifiers: 2 });
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: "a", code: "KeyA", modifiers: 2 });
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Control", code: "ControlLeft" });
+    await cdp.send("Input.insertText", { text: recoveryEdit });
+    await delay(700);
+    const preservedAutosave = await evaluate("localStorage.getItem('design-platform:document:v1')");
+    if (preservedAutosave !== malformedAutosave) {
+      throw new Error("Editing while recovery is pending overwrote the original malformed autosave");
+    }
+    await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.includes('Replace saved data with current design'))?.click(); true");
+    await waitFor("explicit recovery replacement to save current design", async () => {
+      const saved = await evaluate("localStorage.getItem('design-platform:document:v1')");
+      return saved && saved !== malformedAutosave && saved.includes(recoveryEdit) ? saved : null;
+    });
+    await evaluate("location.reload(); true");
+    await waitForPage("explicitly recovered design to restore", "document.querySelector('.design-page')?.innerText || ''", value => value.includes(recoveryEdit));
+    await evaluate("localStorage.clear(); location.reload(); true");
+    await waitForPage("fresh editor after recovery regression", "document.querySelector('.design-page')?.innerText || ''", value => value.includes("Your design starts here"));
+    await waitForPage("Vue app mount after recovery regression", "Boolean(document.querySelector('#__nuxt')?.__vue_app__)");
+
     // Prove that a real edit is autosaved and survives a browser reload.
     // This protects the persistence watcher, not just the isolated storage helper.
     const autosaveProbe = "Autosave survives reload";

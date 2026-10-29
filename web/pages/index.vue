@@ -30,6 +30,9 @@ const selectedTemplate = computed(() => templates.find((template) => template.id
 const nextId = ref(3);
 const selectedId = ref<string | null>("heading-1");
 const statusMessage = ref("Changes are saved in this browser only.");
+// Keep the exact unreadable autosave in memory until the user explicitly replaces it.
+const invalidSavedDocument = ref<string | null>(null);
+const recoveryPending = computed(() => invalidSavedDocument.value !== null);
 const elements = ref<DesignElement[]>([
   { id: "heading-1", type: "text", text: "Your design starts here", x: 48, y: 56, width: 500, height: 70, fontSize: 32, color: "#172033" },
   { id: "rect-2", type: "rect", x: 48, y: 160, width: 250, height: 110, color: "#dbeafe" },
@@ -268,6 +271,30 @@ function printToPdf() {
   window.print();
   window.setTimeout(cleanup, 60_000);
 }
+function downloadRecoveryCopy() {
+  const saved = invalidSavedDocument.value;
+  if (saved === null) return;
+  const blob = new Blob([saved], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = "design-platform-recovery-copy.txt";
+  anchor.click();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  statusMessage.value = "Recovery copy downloaded. The original saved data is still preserved in this browser.";
+}
+function replaceInvalidAutosaveWithCurrentDesign() {
+  if (invalidSavedDocument.value === null) return;
+  const result = saveLocalDocument(STORAGE_KEY, snapshot(), MAX_FILE_CHARS);
+  if (result.status === "saved") {
+    invalidSavedDocument.value = null;
+    statusMessage.value = "Saved browser data was explicitly replaced with the current design.";
+  } else if (result.status === "too-large") {
+    statusMessage.value = "Could not replace saved data: current design exceeds the local save limit.";
+  } else {
+    statusMessage.value = "Could not replace saved data because browser storage is unavailable. The original remains preserved.";
+  }
+}
 function importJson() { fileInput.value?.click(); }
 async function onFileSelected(event: Event) {
   const input = event.target as HTMLInputElement;
@@ -334,6 +361,10 @@ watch(elements, () => {
   }, 300);
   if (autosaveTimer) clearTimeout(autosaveTimer);
   autosaveTimer = setTimeout(() => {
+    if (recoveryPending.value) {
+      statusMessage.value = "Autosave paused to protect unreadable saved data. Download a recovery copy or explicitly replace it.";
+      return;
+    }
     const result = saveLocalDocument(STORAGE_KEY, snapshot(), MAX_FILE_CHARS);
     if (result.status === "saved") {
       statusMessage.value = "Auto-saved locally in this browser.";
@@ -348,7 +379,10 @@ onMounted(() => {
   const result = loadLocalDocument(STORAGE_KEY);
   if (result.status === "loaded") {
     try { applySnapshot(result.value); statusMessage.value = "Restored the last locally saved design."; }
-    catch { statusMessage.value = "Saved browser data was invalid; starting with a fresh design."; }
+    catch {
+      invalidSavedDocument.value = result.value;
+      statusMessage.value = "Saved browser data could not be read. Autosave is paused so it is not overwritten; download a recovery copy or explicitly replace it.";
+    }
   } else if (result.status === "unavailable") {
     statusMessage.value = "Browser storage is unavailable; use JSON download to keep a copy.";
   }
@@ -392,6 +426,12 @@ onMounted(() => {
         <input ref="fileInput" class="visually-hidden" type="file" accept="application/json,.json" aria-label="Import design JSON file" @change="onFileSelected" />
         <div class="history-actions"><button type="button" :disabled="undoStack.length === 0" @click="undo">Undo</button><button type="button" :disabled="redoStack.length === 0" @click="redo">Redo</button></div>
         <p class="hint" role="status">{{ statusMessage }}</p>
+        <section v-if="recoveryPending" class="recovery-panel" aria-labelledby="recovery-heading">
+          <h3 id="recovery-heading">Saved design needs recovery</h3>
+          <p class="hint">This saved data could not be opened. Normal autosave is paused to protect it. Download a copy before replacing it if you may need to recover information.</p>
+          <button type="button" @click="downloadRecoveryCopy">Download recovery copy</button>
+          <button type="button" class="primary" @click="replaceInvalidAutosaveWithCurrentDesign">Replace saved data with current design</button>
+        </section>
         <p class="hint">Select an element on the page to edit it.</p>
         <hr />
         <h2>Selection</h2>
@@ -478,6 +518,10 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
 .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 .template-controls select { width: 100%; padding: 9px; border: 1px solid #d7deea; border-radius: 7px; background: white; color: #172033; }
 .template-controls button { display: block; width: 100%; margin: 8px 0; padding: 10px 12px; border: 1px solid #234bd6; border-radius: 8px; background: #234bd6; color: white; text-align: left; }
+.recovery-panel { margin: 14px 0; padding: 12px; border: 1px solid #c58a19; border-radius: 8px; background: #fffaf0; }
+.recovery-panel h3 { margin: 0; font-size: 14px; }
+.recovery-panel button { display: block; width: 100%; margin-top: 8px; padding: 9px; border: 1px solid #d7deea; border-radius: 7px; background: white; text-align: left; color: #172033; }
+.recovery-panel button.primary { border-color: #234bd6; background: #234bd6; color: white; }
 .history-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
 .history-actions button { padding: 8px; border: 1px solid #d7deea; border-radius: 7px; background: white; }
 .history-actions button:disabled { cursor: not-allowed; opacity: .45; }
