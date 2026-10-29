@@ -1,3 +1,13 @@
+FROM rust:1.90-bookworm AS wasm
+RUN rustup target add wasm32-unknown-unknown \
+    && cargo install wasm-pack --version 0.15.0 --locked
+WORKDIR /workspace
+COPY Cargo.toml ./Cargo.toml
+COPY crates ./crates
+RUN mkdir -p /workspace/web/generated/design-wasm
+WORKDIR /workspace/crates/design-wasm
+RUN wasm-pack build --target web --out-dir ../../web/generated/design-wasm --out-name design_wasm --release
+
 FROM node:22.14.0-bookworm-slim AS build
 WORKDIR /app
 
@@ -6,7 +16,8 @@ COPY web/package.json web/pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
 COPY web/ ./
-RUN pnpm run build
+COPY --from=wasm /workspace/web/generated/design-wasm ./generated/design-wasm
+RUN pnpm exec nuxt build
 
 FROM node:22.14.0-bookworm-slim AS runtime
 ENV NODE_ENV=production
