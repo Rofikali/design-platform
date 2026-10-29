@@ -31,7 +31,7 @@ describe("loadLocalDocument", () => {
 });
 
 describe("saveLocalDocument", () => {
-  it("saves content at the limit and reports success", () => {
+  it("saves content at the UTF-8 byte limit and reports success", () => {
     const storage = fakeStorage();
     expect(saveLocalDocument("design:v1", "1234", 4, () => storage)).toEqual({ status: "saved" });
     expect(storage.getItem("design:v1")).toBe("1234");
@@ -42,6 +42,18 @@ describe("saveLocalDocument", () => {
     const storage: LocalStorageLike = { getItem: () => null, setItem };
     expect(saveLocalDocument("design:v1", "12345", 4, () => storage)).toEqual({ status: "too-large" });
     expect(setItem).not.toHaveBeenCalled();
+  });
+
+  it("counts multi-byte text as UTF-8 bytes rather than UTF-16 code units", () => {
+    const setItem = vi.fn();
+    const storage: LocalStorageLike = { getItem: () => null, setItem };
+    // A single emoji is 2 UTF-16 code units but 4 UTF-8 bytes.
+    expect("😀".length).toBe(2);
+    expect(new TextEncoder().encode("😀").byteLength).toBe(4);
+    expect(saveLocalDocument("design:v1", "😀", 3, () => storage)).toEqual({ status: "too-large" });
+    expect(setItem).not.toHaveBeenCalled();
+    expect(saveLocalDocument("design:v1", "😀", 4, () => storage)).toEqual({ status: "saved" });
+    expect(setItem).toHaveBeenCalledTimes(1);
   });
 
   it("contains storage provider and quota/security failures", () => {
