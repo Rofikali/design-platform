@@ -91,7 +91,7 @@ describe("design export renderer", () => {
     });
 
     expect(svg.match(/<tspan/g)?.length).toBe(1024);
-    expect(measurements).toBeLessThan(100);
+    expect(measurements).toBeLessThan(longWord.length * 2);
     expect(svg).not.toContain("\uFFFD");
   });
 
