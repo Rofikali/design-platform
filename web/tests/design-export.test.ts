@@ -37,10 +37,12 @@ describe("design export renderer", () => {
     const family = "👨‍👩‍👧‍👦";
     const accented = "e\u0301";
     const svg = renderDesignSvg([
-      { id: "family", type: "text", text: `A${family}B`, x: 0, y: 0, width: 24, height: 40, fontSize: 10, color: "#000000" },
+      { id: "family", type: "text", text: `A${family}B`, x: 0, y: 0, width: 6, height: 50, fontSize: 10, color: "#000000" },
       { id: "accent", type: "text", text: `${accented}x`, x: 0, y: 50, width: 6, height: 30, fontSize: 10, color: "#000000" },
     ], 100, 100, "#fff");
-    expect(svg).toContain(`<tspan x="2" dy="0">A${family}B</tspan>`);
+    expect(svg).toContain(`<tspan x="2" dy="0">A</tspan>`);
+    expect(svg).toContain(`<tspan x="2" dy="12.5">${family}</tspan>`);
+    expect(svg).toContain(`<tspan x="2" dy="25">B</tspan>`);
     expect(svg).toContain(`<tspan x="2" dy="0">${accented}</tspan>`);
     expect(svg).toContain(`<tspan x="2" dy="12.5">x</tspan>`);
     expect(svg).not.toContain("\uFFFD");
