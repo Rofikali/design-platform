@@ -13,4 +13,4 @@ RUN apt-get update \
 
 WORKDIR /workspace/web
 
-CMD ["sh", "-lc", "corepack enable && corepack prepare pnpm@10.11.0 --activate && pnpm install --frozen-lockfile && pnpm run dev"]
+CMD ["sh", "-lc", "cd /workspace && cargo metadata --locked --format-version 1 > /dev/null && cd /workspace/web && corepack enable && corepack prepare pnpm@10.11.0 --activate && pnpm install --frozen-lockfile && pnpm run dev"]
