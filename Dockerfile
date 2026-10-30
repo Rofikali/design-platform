@@ -1,11 +1,26 @@
+FROM rust:1.91-bookworm AS wasm
+RUN rustup target add wasm32-unknown-unknown \
+    && cargo install wasm-pack --version 0.15.0 --locked
+WORKDIR /workspace
+COPY Cargo.toml ./Cargo.toml
+COPY crates ./crates
+RUN mkdir -p /workspace/web/generated/design-wasm
+WORKDIR /workspace/crates/design-wasm
+RUN wasm-pack build --target web --out-dir ../../web/generated/design-wasm --out-name design_wasm --release
+
 FROM node:22.14.0-bookworm-slim AS build
 WORKDIR /app
 
-COPY web/package.json ./package.json
-RUN npm install --no-audit --no-fund
+RUN corepack enable && corepack prepare pnpm@10.11.0 --activate
+COPY web/package.json web/pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
 
 COPY web/ ./
-RUN npm run build
+# Tests are included in Nuxt's TypeScript build, and import shared fixtures
+# using paths relative to the repository root (../../fixtures).
+COPY fixtures/ /fixtures/
+COPY --from=wasm /workspace/web/generated/design-wasm ./generated/design-wasm
+RUN pnpm exec nuxt build
 
 FROM node:22.14.0-bookworm-slim AS runtime
 ENV NODE_ENV=production

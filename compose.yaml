@@ -2,10 +2,12 @@ services:
   web:
     image: node:22.14.0-bookworm-slim
     working_dir: /workspace/web
-    command: sh -lc "npm install --no-audit --no-fund && npm run dev"
+    command: sh -lc "corepack enable && corepack prepare pnpm@10.11.0 --activate && pnpm install --frozen-lockfile && pnpm run dev"
     ports:
       - "3000:3000"
     volumes:
+      - ./Cargo.toml:/workspace/Cargo.toml:ro
+      - ./crates:/workspace/crates:ro
       - ./web:/workspace/web
       - web_node_modules:/workspace/web/node_modules
     environment:
