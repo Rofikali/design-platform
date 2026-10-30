@@ -1,0 +1,16 @@
+FROM node:22.14.0-bookworm-slim
+
+ENV RUSTUP_HOME=/root/.rustup \
+    CARGO_HOME=/root/.cargo \
+    PATH=/root/.cargo/bin:${PATH}
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates curl build-essential pkg-config \
+    && rm -rf /var/lib/apt/lists/* \
+    && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.91.0 --profile minimal \
+    && rustup target add wasm32-unknown-unknown \
+    && cargo install wasm-pack --version 0.15.0 --locked
+
+WORKDIR /workspace/web
+
+CMD ["sh", "-lc", "corepack enable && corepack prepare pnpm@10.11.0 --activate && pnpm install --frozen-lockfile && pnpm run dev"]
