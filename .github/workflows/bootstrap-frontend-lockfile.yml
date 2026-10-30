@@ -1,0 +1,38 @@
+name: Bootstrap patched frontend lockfile
+
+on:
+  push:
+    branches:
+      - security/fix-js-dependency-advisories
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-lockfile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22.14.0"
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.11.0
+          run_install: false
+      - name: Regenerate lockfile from patched direct dependencies
+        working-directory: web
+        run: pnpm install --lockfile-only --no-frozen-lockfile
+      - name: Validate dependency graph
+        working-directory: web
+        run: pnpm install --frozen-lockfile
+      - name: Commit generated lockfile and remove bootstrap workflow
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm .github/workflows/bootstrap-frontend-lockfile.yml
+          git add web/pnpm-lock.yaml .github/workflows/bootstrap-frontend-lockfile.yml
+          git commit -m "build: lock patched frontend dependencies"
+          git push
