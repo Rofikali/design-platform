@@ -8,6 +8,7 @@ services:
       - "3000:3000"
     volumes:
       - ./Cargo.toml:/workspace/Cargo.toml:ro
+      - ./Cargo.lock:/workspace/Cargo.lock:ro
       - ./crates:/workspace/crates:ro
       - ./web:/workspace/web
       - web_node_modules:/workspace/web/node_modules
