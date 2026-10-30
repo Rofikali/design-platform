@@ -1,4 +1,4 @@
-FROM rust:1.90-bookworm AS wasm
+FROM rust:1.91-bookworm AS wasm
 RUN rustup target add wasm32-unknown-unknown \
     && cargo install wasm-pack --version 0.15.0 --locked
 WORKDIR /workspace
