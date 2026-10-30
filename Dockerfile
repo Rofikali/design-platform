@@ -16,6 +16,9 @@ COPY web/package.json web/pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
 COPY web/ ./
+# Tests are included in Nuxt's TypeScript build, and import shared fixtures
+# using paths relative to the repository root (../../fixtures).
+COPY fixtures/ /fixtures/
 COPY --from=wasm /workspace/web/generated/design-wasm ./generated/design-wasm
 RUN pnpm exec nuxt build
 
