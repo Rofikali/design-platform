@@ -1,8 +1,9 @@
 services:
   web:
-    image: node:22.14.0-bookworm-slim
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     working_dir: /workspace/web
-    command: sh -lc "corepack enable && corepack prepare pnpm@10.11.0 --activate && pnpm install --frozen-lockfile && pnpm run dev"
     ports:
       - "3000:3000"
     volumes:
@@ -10,6 +11,8 @@ services:
       - ./crates:/workspace/crates:ro
       - ./web:/workspace/web
       - web_node_modules:/workspace/web/node_modules
+      - cargo_registry:/root/.cargo/registry
+      - cargo_git:/root/.cargo/git
     environment:
       NODE_ENV: development
       NUXT_TELEMETRY_DISABLED: "1"
@@ -17,3 +20,5 @@ services:
 
 volumes:
   web_node_modules:
+  cargo_registry:
+  cargo_git:
