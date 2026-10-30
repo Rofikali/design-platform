@@ -72,10 +72,12 @@ Open http://localhost:3000 for the local editor when running `corepack pnpm run 
 From the repository root:
 
 ```sh
-docker compose up
+docker compose up --build
 ```
 
-Then open http://localhost:3000. The first container start installs frontend dependencies into a named volume; subsequent starts reuse that volume. If dependencies change, recreate the volume deliberately with `docker compose down -v` before starting again. This removes the named dependency volume, not repository files.
+The development image includes the pinned Node.js 22.14.0 and Rust 1.91.0 toolchains, the `wasm32-unknown-unknown` target, and wasm-pack 0.15.0. The Compose command installs frontend dependencies with the committed pnpm lockfile, then `pnpm run dev` invokes the `predev` lifecycle script to build the WASM adapter before starting Nuxt.
+
+Then open http://localhost:3000. The first image build installs the toolchains and can take several minutes; the first container start installs frontend dependencies into a named volume and compiles the Rust/WASM adapter. Subsequent starts reuse the image and named dependency/cache volumes. If frontend dependencies change, recreate the dependency volume deliberately with `docker compose down -v` before starting again. This removes the named volumes, not repository files. Rebuild the image with `docker compose up --build` when the toolchain or Dockerfile changes.
 
 ## Architecture direction
 
