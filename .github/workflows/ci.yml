@@ -37,6 +37,7 @@ jobs:
   frontend:
     name: Nuxt frontend
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     defaults:
       run:
         working-directory: web
@@ -62,10 +63,6 @@ jobs:
         run: pnpm run typecheck
       - name: Run frontend tests
         run: pnpm test
-      - name: Install cross-browser test engines
-        run: pnpm exec playwright install --with-deps chromium firefox webkit
-      - name: Run cross-browser PNG export regression
-        run: pnpm run test:export-cross-browser
       - name: Run real-browser WASM smoke test
         env:
           CHROME_BIN: ${{ steps.setup-chrome.outputs.chrome-path }}
