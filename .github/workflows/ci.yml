@@ -37,6 +37,7 @@ jobs:
   frontend:
     name: Nuxt frontend
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     defaults:
       run:
         working-directory: web

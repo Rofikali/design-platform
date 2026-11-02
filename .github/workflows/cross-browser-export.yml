@@ -1,0 +1,33 @@
+name: Cross-browser export
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "23 5 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  export-regression:
+    name: PNG export across browser engines
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22.14.0"
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.11.0
+          run_install: false
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium firefox webkit
+      - name: Run cross-browser PNG export regression
+        run: pnpm run test:export-cross-browser
