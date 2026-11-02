@@ -471,8 +471,8 @@ onMounted(() => {
               @change="setSelectedHeight(($event.target as HTMLInputElement).value)"
             />
           </label>
-          <p class="field-label">Move selected element</p>
-          <div class="move-grid" aria-label="Move selected element">
+          <p id="move-controls-label" class="field-label">Move selected element</p>
+          <div class="move-grid" role="group" aria-labelledby="move-controls-label">
             <span></span><button type="button" aria-label="Move up" @click="moveSelected(0, -10)">↑</button><span></span>
             <button type="button" aria-label="Move left" @click="moveSelected(-10, 0)">←</button>
             <button type="button" aria-label="Move down" @click="moveSelected(0, 10)">↓</button>
