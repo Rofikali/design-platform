@@ -346,15 +346,20 @@ async function main() {
         !button.getAttribute('aria-label') && !button.getAttribute('aria-labelledby') && !button.innerText.trim()
       ).map(button => button.outerHTML.slice(0, 160));
       const page = document.querySelector('.design-page');
+      const moveGroup = document.querySelector('.move-grid');
+      const moveGroupLabel = moveGroup?.getAttribute('aria-labelledby') || '';
       return {
         unnamedControls,
         buttonsWithoutNames,
         canvasRole: page?.getAttribute('role') || '',
         canvasLabel: page?.getAttribute('aria-label') || '',
+        moveGroupRole: moveGroup?.getAttribute('role') || '',
+        moveGroupLabel: moveGroupLabel && document.getElementById(moveGroupLabel)?.textContent?.trim() || '',
       };
     })()`);
     if (accessibilityStructure.unnamedControls.length || accessibilityStructure.buttonsWithoutNames.length ||
-        accessibilityStructure.canvasRole !== 'group' || accessibilityStructure.canvasLabel !== 'Editable design page') {
+        accessibilityStructure.canvasRole !== 'group' || accessibilityStructure.canvasLabel !== 'Editable design page' ||
+        accessibilityStructure.moveGroupRole !== 'group' || accessibilityStructure.moveGroupLabel !== 'Move selected element') {
       throw new Error(`Rendered accessibility structure is incomplete: ${JSON.stringify(accessibilityStructure)}`);
     }
 
