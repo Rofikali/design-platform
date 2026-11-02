@@ -8,7 +8,9 @@ describe("shared Rust/TypeScript document validation cases", () => {
     expect(validationCases.cases.length).toBeGreaterThan(0);
   });
 
-  it.each(validationCases.cases)("$name", ({ document, valid }) => {
+  it.each(validationCases.cases)("$name", (testCase) => {
+    const { document, valid } = testCase;
+
     if (valid) {
       expect(() => parseDocument(document)).not.toThrow();
     } else {
