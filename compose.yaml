@@ -10,6 +10,7 @@ services:
       - ./Cargo.toml:/workspace/Cargo.toml:ro
       - ./Cargo.lock:/workspace/Cargo.lock:ro
       - ./crates:/workspace/crates:ro
+      - ./fixtures:/workspace/fixtures:ro
       - ./web:/workspace/web
       - web_node_modules:/workspace/web/node_modules
       - cargo_registry:/root/.cargo/registry
