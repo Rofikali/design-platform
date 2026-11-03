@@ -6,7 +6,7 @@ A template-driven design editor, built incrementally with security, export fidel
 
 The current prototype includes:
 
-- A Nuxt/Vue/TypeScript browser editor with text and rectangle elements; schema v3 supports page-level embedded background images and configurable logical page dimensions.
+- A Nuxt/Vue/TypeScript browser editor with text and rectangle elements, configurable page dimensions, and page-level PNG/JPEG/WebP background image upload with Cover/Contain fit controls.
 - Add/select elements, edit text/color/font size, bounded directional movement, pointer drag, and resize handles.
 - Bounded undo/redo history (up to 50 snapshots).
 - Browser-local autosave and restore using localStorage.
@@ -26,7 +26,7 @@ This is still a prototype, **not production-ready**.
 - PNG export is implemented from the document model; Chrome CI verifies real 2× PNG downloads and compares both MVP template exports against checked-in SVG visual references with a pixel-difference tolerance. This is a deterministic regression gate for the current Chrome renderer, not proof of cross-browser font parity or user-validated print quality.
 - PDF currently uses the browser's print dialog. The user must choose “Save as PDF”; this is not a direct PDF download. Chrome CI checks the Shop Banner print layout scale and generated PDF page box (one 300 × 125 mm page), but visual fidelity and cross-browser behavior remain unverified.
 - There is no account system, server-side persistence, cross-device synchronization, billing, or collaboration.
-- Schema-v1 and schema-v2 documents migrate to v3 while preserving their supported geometry and physical output-size metadata. Schema v3 adds optional bounded page-level embedded PNG/JPEG/WebP backgrounds; the editor currently supports only text and rectangles. The editor currently supports only text and rectangles.
+- Schema-v1 and schema-v2 documents migrate to v3 while preserving their supported geometry and physical output-size metadata. Schema v3 adds optional bounded page-level embedded PNG/JPEG/WebP backgrounds. Background uploads are decoded in the browser, checked against 4,096-pixel edge and 16-million-pixel limits, and constrained by the 1 MiB embedded-data limit. PNG export includes the page background. Browser-side checks are usability and data-integrity safeguards, not a server-side trust boundary.
 - The real-browser suite covers WASM-backed JSON import/export, rejection safety, adding text/rectangles, text/style editing, directional movement, keyboard-driven width editing, undo/redo, local autosave/restore, pointer drag/resize, page-boundary limits, template creation, actual 2× PNG file integrity/dimensions, pixel-level checks and checked-in SVG reference-image comparisons for both MVP templates, plus one-page PDF geometry. Focus indicators, keyboard activation, named canvas elements/group, labeled form controls, and keyboard-accessible width/height controls have targeted regression checks. Full screen-reader/manual accessibility review, cross-browser export fidelity, and performance gates remain open work. The [manual accessibility audit worksheet](docs/testing/accessibility-manual-audit.md) is prepared but not yet completed.
 - Browser-side validation improves feedback and data consistency; it is not an authorization boundary. A future trusted API must validate documents independently.
 - Local browser storage is not a backup. Users should download a JSON copy if they need a portable copy.
