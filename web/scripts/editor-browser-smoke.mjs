@@ -444,7 +444,7 @@ async function main() {
     // Import the shared valid fixture through the actual file input and UI event handler.
     const fixture = await readFile(fixturePath, "utf8");
     const importExpression = `(() => {
-      const input = document.querySelector('input[type="file"]');
+      const input = document.querySelector('input[aria-label="Import design JSON file"]');
       const transfer = new DataTransfer();
       transfer.items.add(new File([${JSON.stringify(fixture)}], "document-v1.json", { type: "application/json" }));
       input.files = transfer.files;
@@ -482,7 +482,7 @@ async function main() {
     // A rejected import must not replace the currently loaded valid document.
     const invalidFixture = JSON.stringify({ ...JSON.parse(fixture), schema_version: 999 });
     const invalidImportExpression = `(() => {
-      const input = document.querySelector('input[type="file"]');
+      const input = document.querySelector('input[aria-label="Import design JSON file"]');
       const transfer = new DataTransfer();
       transfer.items.add(new File([${JSON.stringify(invalidFixture)}], "unsupported-schema.json", { type: "application/json" }));
       input.files = transfer.files;
