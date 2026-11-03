@@ -466,7 +466,12 @@ async function main() {
       input.dispatchEvent(new Event("change", { bubbles: true }));
       return true;
     })()`);
-    await waitForPage("background image upload", "document.querySelector('[role=status]')?.textContent || ''", value => value.includes("Background image added"));
+    try {
+      await waitFor("background image to render", () => evaluate("Boolean(document.querySelector('.page-background-image')?.getAttribute('src')?.startsWith('data:image/png;base64,'))"));
+    } catch (error) {
+      const diagnostics = await evaluate("JSON.stringify({ status: document.querySelector('[role=status]')?.textContent || '', backgroundImage: Boolean(document.querySelector('.page-background-image')), fileInputs: document.querySelectorAll('input[type=file]').length })");
+      throw new Error(`Background image did not render: ${error.message}. Browser diagnostics: ${diagnostics}`);
+    }
     const backgroundVisible = await evaluate("Boolean(document.querySelector('.page-background-image')?.getAttribute('src')?.startsWith('data:image/png;base64,'))");
     if (!backgroundVisible) throw new Error("Uploaded page background was not rendered");
     await evaluate(`(() => {
