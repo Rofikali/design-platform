@@ -39,6 +39,15 @@ mod tests {
         assert!(parsed.get("template").is_none());
     }
     #[test]
+    fn validates_shared_schema_v3_background_image_fixture() {
+        let input = include_str!("../../../fixtures/document-v3-background-image.json");
+        let output = validate_document_json(input).expect("v3 fixture validates");
+        let parsed: serde_json::Value = serde_json::from_str(&output).expect("normalized JSON");
+        assert_eq!(parsed["schema_version"], 3);
+        assert_eq!(parsed["page"]["background_image"]["fit"], "cover");
+    }
+
+    #[test]
     fn rejects_unsupported_future_version_in_core_migration() {
         let input = V1_DOCUMENT.replace("\"schema_version\":1", "\"schema_version\":999");
         let document: DesignDocument = serde_json::from_str(&input).expect("valid JSON");
