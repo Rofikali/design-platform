@@ -241,9 +241,11 @@ fn valid_background_image_data_url(value: &str) -> bool {
         }
     }
     let content_end = bytes.len() - padding;
-    if bytes[..content_end].iter().any(|byte| {
-        !byte.is_ascii_alphanumeric() && *byte != b'+' && *byte != b'/'
-    }) || bytes[content_end..].iter().any(|byte| *byte != b'=') {
+    if bytes[..content_end]
+        .iter()
+        .any(|byte| !byte.is_ascii_alphanumeric() && *byte != b'+' && *byte != b'/')
+        || bytes[content_end..].iter().any(|byte| *byte != b'=')
+    {
         return false;
     }
     (payload.len() / 4) * 3 > padding
@@ -385,12 +387,16 @@ mod tests {
 
     #[test]
     fn accepts_shared_schema_v3_background_image_fixture() {
-        let fixture: serde_json::Value =
-            serde_json::from_str(include_str!("../../../fixtures/document-v3-background-image.json"))
-                .expect("v3 fixture");
+        let fixture: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../fixtures/document-v3-background-image.json"
+        ))
+        .expect("v3 fixture");
         let document: DesignDocument = serde_json::from_value(fixture).expect("deserialize v3");
         assert_eq!(document.validate(), Ok(()));
-        assert_eq!(document.page.background_image.unwrap().fit, BackgroundImageFit::Cover);
+        assert_eq!(
+            document.page.background_image.unwrap().fit,
+            BackgroundImageFit::Cover
+        );
     }
 
     #[test]
@@ -406,13 +412,22 @@ mod tests {
                 data_url: data_url.into(),
                 fit: BackgroundImageFit::Contain,
             });
-            assert_eq!(document.validate(), Err(ValidationError::InvalidBackgroundImage));
+            assert_eq!(
+                document.validate(),
+                Err(ValidationError::InvalidBackgroundImage)
+            );
         }
         document.page.background_image = Some(BackgroundImage {
-            data_url: format!("data:image/png;base64,{}", "A".repeat(MAX_BACKGROUND_IMAGE_DATA_URL_BYTES)),
+            data_url: format!(
+                "data:image/png;base64,{}",
+                "A".repeat(MAX_BACKGROUND_IMAGE_DATA_URL_BYTES)
+            ),
             fit: BackgroundImageFit::Cover,
         });
-        assert_eq!(document.validate(), Err(ValidationError::InvalidBackgroundImage));
+        assert_eq!(
+            document.validate(),
+            Err(ValidationError::InvalidBackgroundImage)
+        );
     }
 
     #[test]
