@@ -6,22 +6,7 @@ afterEach(() => vi.unstubAllGlobals());
 function pngFile(size = 16): File {
   const bytes = new Uint8Array(size);
   bytes.set([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
-  return new File([bytes], "background.png", { type: "image/png" 
-  it("validates embedded image bytes and decoded dimensions on import", async () => {
-    const prepared = await (async () => {
-      stubDecoder(32, 32);
-      return prepareBackgroundImage(pngFile());
-    })();
-    const close = stubDecoder(32, 32);
-    await expect(validateEmbeddedBackgroundImage(prepared)).resolves.toBeUndefined();
-    expect(close).toHaveBeenCalledOnce();
-  });
-
-  it("rejects embedded image data whose declared MIME type disagrees with its bytes", async () => {
-    const image = { data_url: "data:image/jpeg;base64,iVBORw0KGgo=", fit: "cover" as const };
-    await expect(validateEmbeddedBackgroundImage(image)).rejects.toThrow(/MIME type does not match/);
-  });
-});
+  return new File([bytes], "background.png", { type: "image/png" });
 }
 
 function stubDecoder(width: number, height: number) {
@@ -55,5 +40,18 @@ describe("background image preparation", () => {
     bytes.set([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
     const large = new File([bytes], "large.png", { type: "image/png" });
     await expect(prepareBackgroundImage(large)).rejects.toThrow(/Encoded image exceeds the 1 MiB document limit/);
+  });
+
+  it("validates embedded image bytes and decoded dimensions on import", async () => {
+    stubDecoder(32, 32);
+    const prepared = await prepareBackgroundImage(pngFile());
+    const close = stubDecoder(32, 32);
+    await expect(validateEmbeddedBackgroundImage(prepared)).resolves.toBeUndefined();
+    expect(close).toHaveBeenCalledOnce();
+  });
+
+  it("rejects embedded image data whose declared MIME type disagrees with its bytes", async () => {
+    const image = { data_url: "data:image/jpeg;base64,iVBORw0KGgo=", fit: "cover" as const };
+    await expect(validateEmbeddedBackgroundImage(image)).rejects.toThrow(/MIME type does not match/);
   });
 });
