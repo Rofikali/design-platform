@@ -22,7 +22,7 @@ The current prototype includes:
 
 This is still a prototype, **not production-ready**.
 
-- The editor supports only text and rectangles; the starter templates are foundations, not complete exam-paper or shop-banner authoring workflows.
+- Foreground editing currently supports text and rectangles; the starter templates are foundations, not complete exam-paper or shop-banner authoring workflows. Page background images are supported separately.
 - PNG export is implemented from the document model; Chrome CI verifies real 2× PNG downloads and compares both MVP template exports against checked-in SVG visual references with a pixel-difference tolerance. This is a deterministic regression gate for the current Chrome renderer, not proof of cross-browser font parity or user-validated print quality.
 - PDF currently uses the browser's print dialog. The user must choose “Save as PDF”; this is not a direct PDF download. Chrome CI checks the Shop Banner print layout scale and generated PDF page box (one 300 × 125 mm page), but visual fidelity and cross-browser behavior remain unverified.
 - There is no account system, server-side persistence, cross-device synchronization, billing, or collaboration.
