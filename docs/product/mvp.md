@@ -11,8 +11,8 @@ These are hypotheses to validate with real users, not proven market demand.
 
 ## MVP user journey
 1. Open the app and choose **Exam Paper** or **Shop Banner**.
-2. Edit text and basic shapes on a canvas.
-3. Select, move, resize, and style elements.
+2. Optionally upload a page background image (PNG/JPEG/WebP) and choose Cover or Contain.
+3. Edit text and basic shapes on a canvas; select, move, resize, and style elements.
 4. Undo and redo edits.
 5. Save the document.
 6. Reopen it and confirm the layout and content remain intact.
