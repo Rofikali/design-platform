@@ -478,6 +478,9 @@ async function main() {
     })()`);
     const fitMode = await evaluate("document.querySelector('.page-background-image') ? getComputedStyle(document.querySelector('.page-background-image')).objectFit : ''");
     if (fitMode !== "contain") throw new Error(`Background image fit mode was not applied: ${fitMode}`);
+    await waitForPage("background image autosave", "document.querySelector('[role=status]')?.textContent || ''", value => value.includes("Auto-saved locally in this browser"));
+    const savedBackgroundFit = await evaluate("JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null')?.page?.background_image?.fit || ''");
+    if (savedBackgroundFit !== "contain") throw new Error(`Background image or fit mode was not preserved in local autosave: ${savedBackgroundFit}`);
 
     // A rejected import must not replace the currently loaded valid document.
     const invalidFixture = JSON.stringify({ ...JSON.parse(fixture), schema_version: 999 });
