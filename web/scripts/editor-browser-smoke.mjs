@@ -457,7 +457,7 @@ async function main() {
     await waitForPage("fixture import autosave", "document.querySelector('[role=status]')?.textContent || ''", value => value.includes("Auto-saved locally in this browser"));
 
     // Upload a real raster fixture and verify the page image and fit control.
-    const backgroundImageBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAFklEQVR4nGP8z8DAwMDAwMDAwMDAAAANHQEDasKb6QAAAABJRU5ErkJggg==";
+    const backgroundImageBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAFklEQVR4nGP8z8DAwMDAwMDAAAANHQEDasKb6QAAAABJRU5ErkJggg==";
     await evaluate(`(() => {
       const input = document.querySelector('input[aria-label="Upload page background image"]');
       const bytes = Uint8Array.from(atob("${backgroundImageBase64}"), character => character.charCodeAt(0));
