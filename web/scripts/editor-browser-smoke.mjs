@@ -454,9 +454,10 @@ async function main() {
     await evaluate(importExpression);
     await waitForPage("WASM-backed JSON import", "document.querySelector('[role=status]')?.textContent || ''", value => value.includes("imported and validated with WebAssembly"));
     await waitForPage("imported fixture visible on canvas", "document.querySelector('.design-page')?.innerText || ''", value => value.includes("Exam Paper"));
+    await waitForPage("fixture import autosave", "document.querySelector('[role=status]')?.textContent || ''", value => value.includes("Auto-saved locally in this browser"));
 
     // Upload a real raster fixture and verify the page image and fit control.
-    const backgroundImageBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jZl8AAAAASUVORK5CYII=";
+    const backgroundImageBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAFklEQVR4nGP8z8DAwMDAwMDAwMDAAAANHQEDasKb6QAAAABJRU5ErkJggg==";
     await evaluate(`(() => {
       const input = document.querySelector('input[aria-label="Upload page background image"]');
       const bytes = Uint8Array.from(atob("${backgroundImageBase64}"), character => character.charCodeAt(0));
