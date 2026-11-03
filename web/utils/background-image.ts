@@ -16,13 +16,17 @@ function detectRasterMime(bytes: Uint8Array): SupportedMime | null {
   return null;
 }
 
-/**
- * Accept only real PNG/JPEG/WebP raster files. Decode before storing so a
- * renamed or corrupt file cannot become a page background.
- */
-
 async function validateDecodedBitmap(bitmap: ImageBitmap): Promise<void> {
-  await validateDecodedBitmap(bitmap);
+  try {
+    if (bitmap.width < 1 || bitmap.height < 1 ||
+        bitmap.width > MAX_BACKGROUND_IMAGE_DIMENSION ||
+        bitmap.height > MAX_BACKGROUND_IMAGE_DIMENSION ||
+        bitmap.width * bitmap.height > MAX_BACKGROUND_IMAGE_PIXELS) {
+      throw new Error("Image dimensions exceed the 4,096-pixel edge or 16-million-pixel limit.");
+    }
+  } finally {
+    bitmap.close();
+  }
 }
 
 export async function validateEmbeddedBackgroundImage(image: BackgroundImage): Promise<void> {
@@ -48,6 +52,10 @@ export async function validateEmbeddedBackgroundImage(image: BackgroundImage): P
   await validateDecodedBitmap(bitmap);
 }
 
+/**
+ * Accept only real PNG/JPEG/WebP raster files. Decode before storing so a
+ * renamed or corrupt file cannot become a page background.
+ */
 export async function prepareBackgroundImage(file: File): Promise<BackgroundImage> {
   if (file.size === 0) throw new Error("Choose a non-empty image file.");
   if (file.size > 1_048_576) throw new Error("Image file exceeds the 1 MiB upload limit.");
@@ -62,17 +70,7 @@ export async function prepareBackgroundImage(file: File): Promise<BackgroundImag
   } catch {
     throw new Error("The selected image could not be decoded.");
   }
-
-  try {
-    if (bitmap.width < 1 || bitmap.height < 1 ||
-        bitmap.width > MAX_BACKGROUND_IMAGE_DIMENSION ||
-        bitmap.height > MAX_BACKGROUND_IMAGE_DIMENSION ||
-        bitmap.width * bitmap.height > MAX_BACKGROUND_IMAGE_PIXELS) {
-      throw new Error("Image dimensions exceed the 4,096-pixel edge or 16-million-pixel limit.");
-    }
-  } finally {
-    bitmap.close();
-  }
+  await validateDecodedBitmap(bitmap);
 
   let binary = "";
   for (const byte of bytes) binary += String.fromCharCode(byte);
