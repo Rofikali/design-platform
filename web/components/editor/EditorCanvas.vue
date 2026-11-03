@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { DesignElement } from "~/utils/document";
+import type { BackgroundImage, DesignElement } from "~/utils/document";
 
 defineProps<{
   elements: DesignElement[];
@@ -7,6 +7,7 @@ defineProps<{
   pageWidth: number;
   pageHeight: number;
   pageBackground: string;
+  backgroundImage?: BackgroundImage;
 }>();
 
 const emit = defineEmits<{
@@ -73,6 +74,8 @@ const emit = defineEmits<{
 .canvas-heading p, .canvas-heading > span { margin: 0; color: #596780; font-size: 12px; }
 .canvas-scroller { overflow: auto; padding: 10px 0 16px; background: #f3f5f9; border-radius: 10px; }
 .design-page { position: relative; margin: 0 auto; overflow: hidden; background: white; box-shadow: 0 4px 20px #18274414; }
+.page-background-image { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; pointer-events: none; user-select: none; }
+.design-element { z-index: 1; }
 .design-element { position: absolute; display: flex; align-items: flex-start; justify-content: flex-start; padding: 2px; border: 1px solid transparent; border-radius: 2px; text-align: left; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.25; touch-action: none; cursor: grab; user-select: none; }
 .design-element:active { cursor: grabbing; }
 .design-element.selected { border: 1px dashed #234bd6; outline: 1px solid #234bd6; }
