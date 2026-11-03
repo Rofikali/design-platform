@@ -79,6 +79,54 @@ For meaningful changes, document the relevant subset of:
 - Sequence, state, data-flow, domain, ER, and deployment diagrams as useful.
 - ADRs with context, decision, alternatives, consequences, and status.
 
+
+## 4. Clean, secure, and modular code standards
+
+These standards are mandatory for every implementation and code review. "Working" is not enough: code must be understandable, safe at its trust boundaries, cohesive, testable, and straightforward to change.
+
+### Clean code
+- Use names that communicate domain meaning and intent; avoid unexplained abbreviations and misleading names.
+- Keep functions focused, short enough to understand, and at one meaningful level of abstraction.
+- Make side effects visible. Prefer pure functions for calculations, transformations, and validation where practical.
+- Avoid hidden mutation, magic numbers, boolean parameter traps, deeply nested conditionals, duplicated branches, and broad catch-all error handling.
+- Use explicit, typed errors and actionable messages. Do not swallow errors or silently fall back in ways that hide defects.
+- Keep formatting, linting, and language idioms consistent with the repository.
+- Comments should explain why, invariants, constraints, or non-obvious trade-offs—not narrate obvious code.
+- Remove dead code, stale TODOs, unused dependencies, debug output, and commented-out implementations.
+- Do not optimize for fewer lines. Optimize for clarity, correctness, and maintainability.
+
+### Secure code
+- Identify whether input is trusted. Treat browser input, imports, files, persisted data, network responses, and third-party results as untrusted until validated.
+- Validate type, structure, encoding, length, range, ownership, and semantic invariants at every relevant trust boundary.
+- Use allowlists and safe APIs; avoid string-built SQL, shell commands, HTML, filesystem paths, or dynamic code execution.
+- Encode output for its destination context. Avoid unsafe HTML/SVG insertion and unsafe URL schemes.
+- Enforce authentication and resource-level authorization on the server; never trust a client-provided user or tenant ID.
+- Apply least privilege, secure defaults, bounded resource use, safe error responses, and secret redaction.
+- Keep dependencies minimal and review their provenance, advisories, maintenance, and licenses.
+- Add tests for malicious, malformed, boundary, unauthorized, and resource-exhaustion inputs.
+- Never claim code is secure merely because it passes lint, tests, or a dependency scanner. Record residual risks.
+
+### Modular code
+- Organize code around cohesive business capabilities and stable responsibilities, not arbitrary file size or technical fashion.
+- Define explicit public interfaces and keep implementation details private.
+- Keep dependency direction intentional: UI and infrastructure should depend on application/domain contracts, not leak into the core.
+- Avoid circular dependencies, cross-module reach-through, shared mutable globals, and modules that know too much about one another.
+- Put shared rules in one authoritative place when they represent the same invariant; do not create a generic shared module for unrelated helpers.
+- Prefer composition and dependency injection at genuine boundaries; avoid unnecessary interfaces and wrapper layers.
+- Keep modules independently testable and make their dependencies visible.
+- Document module ownership, allowed dependencies, and data flow when boundaries become non-trivial.
+- Refactor incrementally with tests; do not combine unrelated architecture rewrites with feature work.
+
+### Code review questions
+- Can another engineer understand the intent without asking the author?
+- Does each function/module have a coherent responsibility?
+- Are trust boundaries, validation, authorization, and resource limits explicit?
+- Are errors handled without hiding failures or leaking sensitive details?
+- Are dependencies and side effects visible and controlled?
+- Is the change covered by meaningful tests, including negative and boundary cases?
+- Does this introduce abstraction or architecture without a demonstrated need?
+- Are docs, contracts, migrations, and rollback implications updated?
+
 ## 5. Security, privacy, and safety requirements
 
 - Threat-model new trust boundaries and sensitive workflows before implementation.
