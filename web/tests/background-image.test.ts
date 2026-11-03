@@ -1,0 +1,44 @@
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { prepareBackgroundImage } from "../utils/background-image";
+
+afterEach(() => vi.unstubAllGlobals());
+
+function pngFile(size = 16): File {
+  const bytes = new Uint8Array(size);
+  bytes.set([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+  return new File([bytes], "background.png", { type: "image/png" });
+}
+
+function stubDecoder(width: number, height: number) {
+  const close = vi.fn();
+  vi.stubGlobal("createImageBitmap", vi.fn(async () => ({ width, height, close })));
+  return close;
+}
+
+describe("background image preparation", () => {
+  it("accepts a decoded PNG and returns a portable embedded data URL", async () => {
+    stubDecoder(1200, 800);
+    const result = await prepareBackgroundImage(pngFile());
+    expect(result.fit).toBe("cover");
+    expect(result.data_url).toMatch(/^data:image\/png;base64,/);
+  });
+
+  it("rejects content that only claims to be an image by filename or MIME type", async () => {
+    const fake = new File(["<svg></svg>"], "image.png", { type: "image/png" });
+    await expect(prepareBackgroundImage(fake)).rejects.toThrow(/Only valid PNG, JPEG and WebP/);
+  });
+
+  it("rejects decoded images that exceed the dimension or pixel budget", async () => {
+    const close = stubDecoder(5000, 1000);
+    await expect(prepareBackgroundImage(pngFile())).rejects.toThrow(/4,096-pixel edge or 16-million-pixel limit/);
+    expect(close).toHaveBeenCalledOnce();
+  });
+
+  it("rejects images whose embedded base64 representation exceeds the document limit", async () => {
+    stubDecoder(100, 100);
+    const bytes = new Uint8Array(800_000);
+    bytes.set([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+    const large = new File([bytes], "large.png", { type: "image/png" });
+    await expect(prepareBackgroundImage(large)).rejects.toThrow(/Encoded image exceeds the 1 MiB document limit/);
+  });
+});
