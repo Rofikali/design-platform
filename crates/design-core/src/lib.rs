@@ -384,6 +384,16 @@ mod tests {
     }
 
     #[test]
+    fn accepts_shared_schema_v3_background_image_fixture() {
+        let fixture: serde_json::Value =
+            serde_json::from_str(include_str!("../../../fixtures/document-v3-background-image.json"))
+                .expect("v3 fixture");
+        let document: DesignDocument = serde_json::from_value(fixture).expect("deserialize v3");
+        assert_eq!(document.validate(), Ok(()));
+        assert_eq!(document.page.background_image.unwrap().fit, BackgroundImageFit::Cover);
+    }
+
+    #[test]
     fn rejects_unsupported_or_oversized_background_image_data_urls() {
         let mut document = valid_document();
         for data_url in [
