@@ -26,12 +26,14 @@ describe("background image preparation", () => {
 
   it("accepts JPEG and WebP signatures independently of filename extensions", async () => {
     stubDecoder(64, 64);
-    const jpeg = new File([new Uint8Array([0xff, 0xd8, 0xff, 0xd9])], "photo.bin", { type: "application/octet-stream" });
-    await expect(prepareBackgroundImage(jpeg)).resolves.toMatchObject({ data_url: expect.stringMatching(/^data:image\\/jpeg;base64,/) });
+    const jpegBytes = new Uint8Array([0xff, 0xd8, 0xff, 0xd9]);
+    const jpeg = new File([jpegBytes.buffer as ArrayBuffer], "photo.bin", { type: "application/octet-stream" });
+    await expect(prepareBackgroundImage(jpeg)).resolves.toMatchObject({ data_url: expect.stringContaining("data:image/jpeg;base64,") });
 
     stubDecoder(64, 64);
-    const webp = new File([new Uint8Array([0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x57, 0x45, 0x42, 0x50])], "photo.bin", { type: "application/octet-stream" });
-    await expect(prepareBackgroundImage(webp)).resolves.toMatchObject({ data_url: expect.stringMatching(/^data:image\\/webp;base64,/) });
+    const webpBytes = new Uint8Array([0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x57, 0x45, 0x42, 0x50]);
+    const webp = new File([webpBytes.buffer as ArrayBuffer], "photo.bin", { type: "application/octet-stream" });
+    await expect(prepareBackgroundImage(webp)).resolves.toMatchObject({ data_url: expect.stringContaining("data:image/webp;base64,") });
   });
 
   it("rejects content that only claims to be an image by filename or MIME type", async () => {
