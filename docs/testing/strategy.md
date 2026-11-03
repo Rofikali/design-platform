@@ -48,7 +48,7 @@ Documentation describes intended tests; it is not evidence that they have run. R
 - The reference comparisons are checked-in visual baselines for the current Chrome renderer and catch layout, text, color, and clipping regressions beyond targeted pixel counts. They do not prove cross-browser font parity or guarantee that the design meets real users' print expectations; baseline changes require deliberate visual review.
 - Intercept the print-dialog call while preserving the app's print stylesheet, request a PDF from Chrome DevTools, and assert the Shop Banner fits the requested 300 × 125 mm physical size on exactly one PDF page.
 - These checks prove file integrity and page geometry only; they do not prove visual fidelity, font/wrapping quality, or cross-browser print consistency.
-- Focus indicators, keyboard activation, canvas accessible names, and keyboard-editable width controls have targeted browser regression checks. Full accessibility auditing (including screen-reader/manual review and contrast review), cross-browser export regression, and performance testing remain separate open gates.
+- Focus indicators, keyboard activation, canvas accessible names, and keyboard-editable width controls have targeted browser regression checks. Full accessibility auditing (including screen-reader/manual review and contrast review), cross-browser export regression, and performance testing remain separate open gates. Use [`accessibility-manual-audit.md`](./accessibility-manual-audit.md) to record hands-on results; leave checks as Not run until performed and evidence is captured.
 
 ### Persistence and API (when introduced)
 - Schema-v1-to-v2 migration tests, configurable page geometry, physical-output aspect-ratio checks, and resource-boundary tests.
