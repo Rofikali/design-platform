@@ -30,7 +30,7 @@ export async function prepareBackgroundImage(file: File): Promise<BackgroundImag
 
   let bitmap: ImageBitmap;
   try {
-    bitmap = await createImageBitmap(new Blob([bytes], { type: mime }));
+    bitmap = await createImageBitmap(file.slice(0, file.size, mime));
   } catch {
     throw new Error("The selected image could not be decoded.");
   }
