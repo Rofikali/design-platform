@@ -23,6 +23,17 @@ describe("background image preparation", () => {
     expect(result.data_url).toMatch(/^data:image\/png;base64,/);
   });
 
+
+  it("accepts JPEG and WebP signatures independently of filename extensions", async () => {
+    stubDecoder(64, 64);
+    const jpeg = new File([new Uint8Array([0xff, 0xd8, 0xff, 0xd9])], "photo.bin", { type: "application/octet-stream" });
+    await expect(prepareBackgroundImage(jpeg)).resolves.toMatchObject({ data_url: expect.stringMatching(/^data:image\\/jpeg;base64,/) });
+
+    stubDecoder(64, 64);
+    const webp = new File([new Uint8Array([0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x57, 0x45, 0x42, 0x50])], "photo.bin", { type: "application/octet-stream" });
+    await expect(prepareBackgroundImage(webp)).resolves.toMatchObject({ data_url: expect.stringMatching(/^data:image\\/webp;base64,/) });
+  });
+
   it("rejects content that only claims to be an image by filename or MIME type", async () => {
     const fake = new File(["<svg></svg>"], "image.png", { type: "image/png" });
     await expect(prepareBackgroundImage(fake)).rejects.toThrow(/Only valid PNG, JPEG and WebP/);
