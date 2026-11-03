@@ -6,7 +6,8 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
-pub const CURRENT_SCHEMA_VERSION: u32 = 2;
+pub const CURRENT_SCHEMA_VERSION: u32 = 3;
+pub const MAX_BACKGROUND_IMAGE_DATA_URL_BYTES: usize = 1_048_576;
 pub const MAX_PAGE_DIMENSION: f64 = 10_000.0;
 pub const MAX_PAGE_AREA: f64 = 25_000_000.0;
 pub const MAX_ASPECT_RATIO: f64 = 10.0;
@@ -32,6 +33,21 @@ pub struct Page {
     pub width: f64,
     pub height: f64,
     pub background: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub background_image: Option<BackgroundImage>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct BackgroundImage {
+    pub data_url: String,
+    pub fit: BackgroundImageFit,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum BackgroundImageFit {
+    Cover,
+    Contain,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -80,6 +96,7 @@ pub enum ValidationError {
     OutputAspectRatioMismatch,
     InvalidTemplateMetadata,
     InvalidBackground,
+    InvalidBackgroundImage,
     TooManyElements,
     EmptyOrLongElementId,
     DuplicateElementId,
@@ -107,6 +124,11 @@ impl DesignDocument {
         }
         if !valid_color(&self.page.background) {
             return Err(ValidationError::InvalidBackground);
+        }
+        if let Some(image) = &self.page.background_image {
+            if !valid_background_image_data_url(&image.data_url) {
+                return Err(ValidationError::InvalidBackgroundImage);
+            }
         }
         if let Some(output) = &self.output_size_mm {
             if !valid_output_dimension(output.width) || !valid_output_dimension(output.height) {
@@ -169,7 +191,7 @@ impl DesignDocument {
     }
 }
 
-/// Migrate a supported legacy document to schema v2 without inventing print intent.
+/// Migrate supported legacy documents to schema v3 without inventing print intent.
 pub fn migrate_to_current(mut document: DesignDocument) -> Result<DesignDocument, ValidationError> {
     match document.schema_version {
         1 => {
@@ -179,12 +201,52 @@ pub fn migrate_to_current(mut document: DesignDocument) -> Result<DesignDocument
             document.schema_version = CURRENT_SCHEMA_VERSION;
             document.output_size_mm = None;
             document.template = None;
+            document.page.background_image = None;
+        }
+        2 => {
+            document.schema_version = CURRENT_SCHEMA_VERSION;
+            document.page.background_image = None;
         }
         CURRENT_SCHEMA_VERSION => {}
         _ => return Err(ValidationError::UnsupportedSchemaVersion),
     }
     document.validate()?;
     Ok(document)
+}
+
+/// Validate a self-contained raster data URL. Browser decoding and pixel limits
+/// remain a separate boundary.
+fn valid_background_image_data_url(value: &str) -> bool {
+    if value.len() > MAX_BACKGROUND_IMAGE_DATA_URL_BYTES {
+        return false;
+    }
+    let payload = if let Some(rest) = value.strip_prefix("data:image/png;base64,") {
+        rest
+    } else if let Some(rest) = value.strip_prefix("data:image/jpeg;base64,") {
+        rest
+    } else if let Some(rest) = value.strip_prefix("data:image/webp;base64,") {
+        rest
+    } else {
+        return false;
+    };
+    if payload.is_empty() || payload.len() % 4 != 0 {
+        return false;
+    }
+    let bytes = payload.as_bytes();
+    let mut padding = 0usize;
+    if bytes.ends_with(b"=") {
+        padding = 1;
+        if bytes.len() >= 2 && bytes[bytes.len() - 2] == b'=' {
+            padding = 2;
+        }
+    }
+    let content_end = bytes.len() - padding;
+    if bytes[..content_end].iter().any(|byte| {
+        !byte.is_ascii_alphanumeric() && *byte != b'+' && *byte != b'/'
+    }) || bytes[content_end..].iter().any(|byte| *byte != b'=') {
+        return false;
+    }
+    (payload.len() / 4) * 3 > padding
 }
 
 fn valid_dimension(value: f64) -> bool {
@@ -213,6 +275,7 @@ mod tests {
                 width: 800.0,
                 height: 600.0,
                 background: "#fff".into(),
+                background_image: None,
             },
             elements: vec![Element {
                 id: "heading-1".into(),
@@ -291,7 +354,7 @@ mod tests {
                 .expect("fixture");
         let document: DesignDocument = serde_json::from_value(fixture).expect("deserialize v1");
         let migrated = migrate_to_current(document).expect("migration");
-        assert_eq!(migrated.schema_version, 2);
+        assert_eq!(migrated.schema_version, 3);
         assert_eq!(migrated.page.width, 800.0);
         assert_eq!(migrated.page.height, 600.0);
         assert_eq!(migrated.output_size_mm, None);
@@ -300,12 +363,46 @@ mod tests {
     }
 
     #[test]
-    fn accepts_shared_schema_v2_a4_fixture() {
+    fn accepts_shared_schema_v2_a4_fixture_and_migrates_it() {
         let fixture: serde_json::Value =
             serde_json::from_str(include_str!("../../../fixtures/document-v2-a4.json"))
                 .expect("v2 fixture");
         let document: DesignDocument = serde_json::from_value(fixture).expect("deserialize v2");
+        let migrated = migrate_to_current(document).expect("v2 migrates");
+        assert_eq!(migrated.schema_version, 3);
+        assert_eq!(migrated.output_size_mm.unwrap().width, 210.0);
+    }
+
+    #[test]
+    fn accepts_valid_embedded_background_image() {
+        let mut document = valid_document();
+        document.page.background_image = Some(BackgroundImage {
+            data_url: "data:image/png;base64,aGVsbG8=".into(),
+            fit: BackgroundImageFit::Cover,
+        });
         assert_eq!(document.validate(), Ok(()));
+    }
+
+    #[test]
+    fn rejects_unsupported_or_oversized_background_image_data_urls() {
+        let mut document = valid_document();
+        for data_url in [
+            "https://example.invalid/image.png",
+            "data:image/svg+xml;base64,PHN2Zz4=",
+            "data:image/png;base64,not base64!",
+            "data:image/png;base64,",
+        ] {
+            document.page.background_image = Some(BackgroundImage {
+                data_url: data_url.into(),
+                fit: BackgroundImageFit::Contain,
+            });
+            assert_eq!(document.validate(), Err(ValidationError::InvalidBackgroundImage));
+        }
+        document.page.background_image = Some(BackgroundImage {
+            data_url: format!("data:image/png;base64,{}", "A".repeat(MAX_BACKGROUND_IMAGE_DATA_URL_BYTES)),
+            fit: BackgroundImageFit::Cover,
+        });
+        assert_eq!(document.validate(), Err(ValidationError::InvalidBackgroundImage));
     }
 
     #[test]
