@@ -97,6 +97,17 @@ describe("design export renderer", () => {
     expect(svg).not.toContain("\uFFFD");
   });
 
+
+  it("renders page backgrounds with the requested cover or contain fit before elements", () => {
+    const image = { data_url: "data:image/png;base64,iVBORw0KGgo=", fit: "cover" as const };
+    const cover = renderDesignSvg(elements, 300, 125, "#ffffff", 2, undefined, image);
+    expect(cover).toContain('preserveAspectRatio="xMidYMid slice"');
+    expect(cover.indexOf("<image")).toBeLessThan(cover.indexOf("<rect x="));
+
+    const contain = renderDesignSvg(elements, 300, 125, "#ffffff", 2, undefined, { ...image, fit: "contain" });
+    expect(contain).toContain('preserveAspectRatio="xMidYMid meet"');
+  });
+
   it("rejects invalid dimensions and unsupported scale", () => {
     expect(() => renderDesignSvg([], 0, 100, "#fff")).toThrow(/dimensions/);
     expect(() => renderDesignSvg([], 100, 100, "#fff", 5)).toThrow(/scale/);
