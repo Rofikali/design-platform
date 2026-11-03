@@ -20,6 +20,34 @@ function detectRasterMime(bytes: Uint8Array): SupportedMime | null {
  * Accept only real PNG/JPEG/WebP raster files. Decode before storing so a
  * renamed or corrupt file cannot become a page background.
  */
+
+async function validateDecodedBitmap(bitmap: ImageBitmap): Promise<void> {
+  await validateDecodedBitmap(bitmap);
+}
+
+export async function validateEmbeddedBackgroundImage(image: BackgroundImage): Promise<void> {
+  const match = /^data:(image\/(?:png|jpeg|webp));base64,([A-Za-z0-9+/]+={0,2})$/.exec(image.data_url);
+  if (!match) throw new Error("Embedded background image has an unsupported data URL.");
+  let binary: string;
+  try {
+    binary = atob(match[2]!);
+  } catch {
+    throw new Error("Embedded background image contains invalid base64 data.");
+  }
+  const buffer = new ArrayBuffer(binary.length);
+  const bytes = new Uint8Array(buffer);
+  for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index);
+  const mime = detectRasterMime(bytes);
+  if (mime !== match[1]) throw new Error("Embedded background image MIME type does not match its file content.");
+  let bitmap: ImageBitmap;
+  try {
+    bitmap = await createImageBitmap(new Blob([buffer], { type: mime }));
+  } catch {
+    throw new Error("Embedded background image could not be decoded.");
+  }
+  await validateDecodedBitmap(bitmap);
+}
+
 export async function prepareBackgroundImage(file: File): Promise<BackgroundImage> {
   if (file.size === 0) throw new Error("Choose a non-empty image file.");
   if (file.size > 1_048_576) throw new Error("Image file exceeds the 1 MiB upload limit.");
