@@ -14,7 +14,7 @@ import {
   toDocument,
   type DesignElement,
 } from "~/utils/document";
-import { prepareBackgroundImage } from "~/utils/background-image";
+import { prepareBackgroundImage, validateEmbeddedBackgroundImage } from "~/utils/background-image";
 import { validateDocumentJson } from "~/utils/document-validation";
 import { createTemplateDocument, listTemplates, type TemplateId } from "~/utils/templates";
 import { renderDesignPng } from "~/utils/design-export";
@@ -327,6 +327,7 @@ async function onFileSelected(event: Event) {
     const text = await file.text();
     const validation = await validateDocumentJson(text);
     const parsed = parseDocumentJson(validation.json);
+    if (parsed.backgroundImage) await validateEmbeddedBackgroundImage(parsed.backgroundImage);
     if (historyTimer) clearTimeout(historyTimer);
     historyTimer = undefined;
     elements.value = parsed.elements;
@@ -374,7 +375,7 @@ function redo() {
   applySnapshot(transition.snapshot);
   statusMessage.value = "Redo applied.";
 }
-watch(elements, () => {
+watch([elements, pageWidth, pageHeight, pageBackground, backgroundImage], () => {
   if (!historyReady) return;
   if (historyTimer) clearTimeout(historyTimer);
   historyTimer = setTimeout(() => {
@@ -397,10 +398,15 @@ watch(elements, () => {
     }
   }, 300);
 }, { deep: true, flush: "sync" });
-onMounted(() => {
+onMounted(async () => {
   const result = loadLocalDocument(STORAGE_KEY);
   if (result.status === "loaded") {
-    try { applySnapshot(result.value); statusMessage.value = "Restored the last locally saved design."; }
+    try {
+      const saved = parseDocumentJson(result.value);
+      if (saved.backgroundImage) await validateEmbeddedBackgroundImage(saved.backgroundImage);
+      applySnapshot(result.value);
+      statusMessage.value = "Restored the last locally saved design.";
+    }
     catch {
       invalidSavedDocument.value = result.value;
       statusMessage.value = "Saved browser data could not be read. Autosave is paused so it is not overwritten; download a recovery copy or explicitly replace it.";
