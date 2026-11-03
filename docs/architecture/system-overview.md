@@ -46,6 +46,7 @@ The diagram is a target boundary, not a claim that these components already exis
 
 ### Rendering and export
 - Interactive rendering starts with controlled SVG generated from validated document data.
+- Schema-v3 page background images are embedded PNG/JPEG/WebP data URLs with explicit Cover/Contain fit. They are page-level backgrounds, not foreground image elements. The current browser checks file signatures and decoded dimensions; no remote fetch or asset service is used. These client checks are not trusted validation. Any future API must independently validate the bytes and decoded resource limits.
 - PDF/PNG export must use a defined, testable rendering path with controlled fonts.
 - Do not assume browser SVG and server PDF render identically. Text shaping, line wrapping, font fallback, DPI, and SVG feature support can differ.
 - Add golden fixtures and compare page dimensions, text, and rendered images within documented tolerances.
