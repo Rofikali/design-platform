@@ -16,7 +16,7 @@ import {
 
 function validDocument(): DesignDocument {
   return {
-    schema_version: 2,
+    schema_version: 3,
     page: { width: PAGE_WIDTH, height: PAGE_HEIGHT, background: "#ffffff" },
     elements: [
       {
@@ -45,7 +45,7 @@ describe("document parsing and validation", () => {
     expect(parsed.width).toBe(PAGE_WIDTH);
     expect(parsed.height).toBe(PAGE_HEIGHT);
     expect(parsed.elements).toHaveLength(2);
-    expect(toDocument(parsed.elements)).toMatchObject({ schema_version: 2, page: sharedDocumentFixture.page, elements: sharedDocumentFixture.elements });
+    expect(toDocument(parsed.elements)).toMatchObject({ schema_version: 3, page: sharedDocumentFixture.page, elements: sharedDocumentFixture.elements });
   });
 
   it("does not preserve schema-v2 metadata smuggled into a schema-v1 document", () => {
