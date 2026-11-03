@@ -35,6 +35,15 @@ const emit = defineEmits<{
             role="group"
             aria-label="Editable design page"
           >
+            <img
+              v-if="backgroundImage"
+              class="page-background-image"
+              :src="backgroundImage.data_url"
+              :style="{ objectFit: backgroundImage.fit }"
+              alt=""
+              aria-hidden="true"
+              draggable="false"
+            />
             <button
               v-for="element in elements"
               :key="element.id"
