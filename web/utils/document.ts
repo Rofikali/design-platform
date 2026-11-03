@@ -5,7 +5,9 @@ export type RectElement = {
   id: string; type: "rect"; x: number; y: number; width: number; height: number; color: string;
 };
 export type DesignElement = TextElement | RectElement;
-export type PageGeometry = { width: number; height: number; background: string };
+export type BackgroundImageFit = "cover" | "contain";
+export type BackgroundImage = { data_url: string; fit: BackgroundImageFit };
+export type PageGeometry = { width: number; height: number; background: string; background_image?: BackgroundImage };
 export type OutputSizeMm = { width: number; height: number };
 export type TemplateMetadata = { id: string; version: number };
 export type DesignDocument = {
@@ -18,7 +20,8 @@ export type DesignDocument = {
   output_size_mm?: OutputSizeMm;
   template?: TemplateMetadata;
 };
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
+export const MAX_BACKGROUND_IMAGE_DATA_URL_BYTES = 1_048_576;
 export const MAX_ELEMENTS = 1000;
 export const MAX_TEXT_CHARS = 10000;
 export const MAX_FILE_CHARS = 2_000_000;
@@ -49,7 +52,7 @@ function validColor(value: unknown): value is string {
   return typeof value === "string" && /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(value);
 }
 export type ParsedDocument = {
-  elements: DesignElement[]; width: number; height: number; background: string;
+  elements: DesignElement[]; width: number; height: number; background: string; backgroundImage?: BackgroundImage;
   outputSizeMm?: OutputSizeMm; template?: TemplateMetadata;
 };
 export function parseDocumentJson(json: string): ParsedDocument {
@@ -61,7 +64,7 @@ export function parseDocumentJson(json: string): ParsedDocument {
 export function parseDocument(input: unknown): ParsedDocument {
   if (!input || typeof input !== "object" || Array.isArray(input)) throw new Error("The file must contain a JSON document object.");
   const doc = input as Partial<DesignDocument>;
-  if (doc.schema_version !== 1 && doc.schema_version !== SCHEMA_VERSION) throw new Error("Unsupported document schema version. This editor supports versions 1 and 2.");
+  if (doc.schema_version !== 1 && doc.schema_version !== 2 && doc.schema_version !== SCHEMA_VERSION) throw new Error("Unsupported document schema version. This editor supports versions 1, 2 and 3.");
   if (!doc.page || !Number.isFinite(doc.page.width) || !Number.isFinite(doc.page.height) || !validColor(doc.page.background))
     throw new Error("The document must have finite page dimensions and a valid hexadecimal background color.");
   const width = doc.page.width; const height = doc.page.height;
@@ -73,7 +76,7 @@ export function parseDocument(input: unknown): ParsedDocument {
   const ratio = width / height;
   if (ratio < 1 / MAX_ASPECT_RATIO || ratio > MAX_ASPECT_RATIO) throw new Error("Page aspect ratio must be between 1:10 and 10:1.");
   let outputSizeMm: OutputSizeMm | undefined;
-  if (doc.schema_version === SCHEMA_VERSION && doc.output_size_mm !== undefined) {
+  if (doc.schema_version >= 2 && doc.output_size_mm !== undefined) {
     const output = doc.output_size_mm;
     if (!output || !Number.isFinite(output.width) || !Number.isFinite(output.height) ||
         output.width <= 0 || output.height <= 0 || output.width > MAX_OUTPUT_DIMENSION_MM || output.height > MAX_OUTPUT_DIMENSION_MM)
@@ -84,12 +87,28 @@ export function parseDocument(input: unknown): ParsedDocument {
     outputSizeMm = { width: output.width, height: output.height };
   }
   let template: TemplateMetadata | undefined;
-  if (doc.schema_version === SCHEMA_VERSION && doc.template !== undefined) {
+  if (doc.schema_version >= 2 && doc.template !== undefined) {
     const item = doc.template;
     if (!item || typeof item.id !== "string" || item.id.length < 1 || new TextEncoder().encode(item.id).byteLength > 128 ||
         !Number.isInteger(item.version) || item.version < 1)
       throw new Error("Template metadata requires an ID (1–128 UTF-8 bytes) and positive integer version.");
     template = { id: item.id, version: item.version };
+  }
+  let backgroundImage: BackgroundImage | undefined;
+  if (doc.schema_version === SCHEMA_VERSION && doc.page.background_image !== undefined) {
+    const image = doc.page.background_image;
+    if (!image || typeof image !== "object" ||
+        (image.fit !== "cover" && image.fit !== "contain") ||
+        typeof image.data_url !== "string" ||
+        new TextEncoder().encode(image.data_url).byteLength > MAX_BACKGROUND_IMAGE_DATA_URL_BYTES) {
+      throw new Error("Background image must be a supported embedded raster data URL within the 1 MiB limit.");
+    }
+    const match = /^data:image\/(png|jpeg|webp);base64,([A-Za-z0-9+/]+={0,2})$/.exec(image.data_url);
+    if (!match || match[2]!.length % 4 !== 0 ||
+        !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(match[2]!)) {
+      throw new Error("Background image must use valid base64 PNG, JPEG or WebP data.");
+    }
+    backgroundImage = { data_url: image.data_url, fit: image.fit };
   }
   if (!Array.isArray(doc.elements) || doc.elements.length > MAX_ELEMENTS) throw new Error("The document must have at most 1,000 elements.");
   const ids = new Set<string>();
@@ -114,5 +133,5 @@ export function parseDocument(input: unknown): ParsedDocument {
     if (kind.type === "rect") return { id: item.id, type: "rect" as const, x: item.x, y: item.y, width: item.width, height: item.height, color: kind.color };
     throw new Error("Unsupported element type.");
   });
-  return { elements: parsed, width, height, background: doc.page.background, ...(outputSizeMm ? { outputSizeMm } : {}), ...(template ? { template } : {}) };
+  return { elements: parsed, width, height, background: doc.page.background, ...(backgroundImage ? { backgroundImage } : {}), ...(outputSizeMm ? { outputSizeMm } : {}), ...(template ? { template } : {}) };
 }
