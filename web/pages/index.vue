@@ -12,6 +12,7 @@ import {
   PAGE_WIDTH,
   parseDocumentJson,
   toDocument,
+  type BackgroundImage,
   type DesignElement,
 } from "~/utils/document";
 import { prepareBackgroundImage, validateEmbeddedBackgroundImage } from "~/utils/background-image";
@@ -23,7 +24,7 @@ const STORAGE_KEY = "design-platform:document:v1"; // Keep the key so existing v
 const pageWidth = ref(PAGE_WIDTH);
 const pageHeight = ref(PAGE_HEIGHT);
 const pageBackground = ref("#ffffff");
-const backgroundImage = ref<import("~/utils/document").BackgroundImage | undefined>();
+const backgroundImage = ref<BackgroundImage | undefined>();
 const outputSizeMm = ref<{ width: number; height: number } | undefined>();
 const templateMetadata = ref<{ id: string; version: number } | undefined>();
 const templates = listTemplates();
