@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import sharedDocumentFixture from "../../fixtures/document-v1.json";
 import schemaV2Fixture from "../../fixtures/document-v2-a4.json";
+import schemaV3BackgroundFixture from "../../fixtures/document-v3-background-image.json";
 import {
   MAX_ELEMENTS,
   MAX_FILE_CHARS,
@@ -65,6 +66,12 @@ describe("document parsing and validation", () => {
     expect(parsed.height).toBe(1123);
     expect(parsed.outputSizeMm).toEqual({ width: 210, height: 297 });
     expect(parsed.template).toEqual({ id: "exam-paper-a4", version: 1 });
+  });
+
+  it("accepts the shared schema-v3 background image fixture", () => {
+    const parsed = parseDocument(schemaV3BackgroundFixture);
+    expect(parsed.backgroundImage?.fit).toBe("cover");
+    expect(parsed.elements).toHaveLength(1);
   });
 
   it("accepts portable schema-v3 PNG backgrounds and preserves fit mode", () => {
