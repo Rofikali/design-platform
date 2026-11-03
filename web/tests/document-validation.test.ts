@@ -8,7 +8,7 @@ describe("document validation adapter", () => {
 
     expect(result.engine).toBe("typescript");
     expect(JSON.parse(result.json)).toMatchObject({
-      schema_version: 2,
+      schema_version: 3,
       page: { width: 800, height: 600 },
       elements: [{ id: "title-1" }, { id: "rect-2" }],
     });
