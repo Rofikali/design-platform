@@ -1,4 +1,4 @@
-import type { DesignElement } from "./document";
+import type { BackgroundImage, DesignElement } from "./document";
 
 type TextWidthMeasurer = (text: string, fontSize: number) => number;
 
@@ -107,6 +107,7 @@ export function renderDesignSvg(
   background: string,
   scale = 2,
   measureText?: TextWidthMeasurer,
+  backgroundImage?: BackgroundImage,
 ): string {
   if (!Number.isFinite(width) || !Number.isFinite(height) || width < 1 || height < 1 || width > 10_000 || height > 10_000) {
     throw new Error("Invalid export page dimensions.");
@@ -135,7 +136,10 @@ export function renderDesignSvg(
     const text = `<text clip-path="url(#${clipId})" x="${element.x + 2}" y="${element.y + fontSize}" fill="${escapeXml(element.color)}" font-family="Arial, Helvetica, sans-serif" font-size="${fontSize}">${lines.map((line, index) => `<tspan x="${element.x + 2}" dy="${index === 0 ? 0 : fontSize * 1.25}">${escapeXml(line)}</tspan>`).join("")}</text>`;
     return clip + text;
   }).join("");
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width * scale}" height="${height * scale}" viewBox="0 0 ${width} ${height}"><rect width="100%" height="100%" fill="${escapeXml(background)}"/>${shapes}</svg>`;
+  const image = backgroundImage
+    ? `<image href="${escapeXml(backgroundImage.data_url)}" x="0" y="0" width="${width}" height="${height}" preserveAspectRatio="${backgroundImage.fit === "cover" ? "xMidYMid slice" : "xMidYMid meet"}"/>`
+    : "";
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width * scale}" height="${height * scale}" viewBox="0 0 ${width} ${height}"><rect width="100%" height="100%" fill="${escapeXml(background)}"/>${image}${shapes}</svg>`;
 }
 
 export async function renderDesignPng(
@@ -144,6 +148,7 @@ export async function renderDesignPng(
   height: number,
   background: string,
   scale = 2,
+  backgroundImage?: BackgroundImage,
 ): Promise<Blob> {
   // Measure with the same font family used by the SVG. Character-count wrapping
   // is only an approximation: "WWW" and "iii" have very different rendered widths.
@@ -160,6 +165,7 @@ export async function renderDesignPng(
       context.font = `${fontSize}px Arial, Helvetica, sans-serif`;
       return context.measureText(text).width;
     },
+    backgroundImage,
   );
   const url = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml;charset=utf-8" }));
   try {
