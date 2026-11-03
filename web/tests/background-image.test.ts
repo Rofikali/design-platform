@@ -34,6 +34,13 @@ describe("background image preparation", () => {
     expect(close).toHaveBeenCalledOnce();
   });
 
+
+  it("rejects decoded images above the total pixel budget even when each edge is allowed", async () => {
+    const close = stubDecoder(4096, 4096);
+    await expect(prepareBackgroundImage(pngFile())).rejects.toThrow(/16-million-pixel limit/);
+    expect(close).toHaveBeenCalledOnce();
+  });
+
   it("rejects images whose embedded base64 representation exceeds the document limit", async () => {
     stubDecoder(100, 100);
     const bytes = new Uint8Array(800_000);
