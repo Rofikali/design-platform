@@ -1,0 +1,27 @@
+{
+  "schema_version": 3,
+  "page": {
+    "width": 800,
+    "height": 600,
+    "background": "#ffffff",
+    "background_image": {
+      "data_url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jZl8AAAAASUVORK5CYII=",
+      "fit": "cover"
+    }
+  },
+  "elements": [
+    {
+      "id": "title-1",
+      "x": 40,
+      "y": 40,
+      "width": 500,
+      "height": 60,
+      "kind": {
+        "type": "text",
+        "text": "Background image contract",
+        "font_size": 28,
+        "color": "#123456"
+      }
+    }
+  ]
+}
