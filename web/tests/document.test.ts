@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import sharedDocumentFixture from "../../fixtures/document-v1.json";
 import schemaV2Fixture from "../../fixtures/document-v2-a4.json";
 import schemaV3BackgroundFixture from "../../fixtures/document-v3-background-image.json";
+import schemaV4FramesGridsFixture from "../../fixtures/document-v4-frames-grids.json";
 import {
   MAX_ELEMENTS,
   MAX_FILE_CHARS,
@@ -17,7 +18,7 @@ import {
 
 function validDocument(): DesignDocument {
   return {
-    schema_version: 3,
+    schema_version: 4,
     page: { width: PAGE_WIDTH, height: PAGE_HEIGHT, background: "#ffffff" },
     elements: [
       {
@@ -46,7 +47,7 @@ describe("document parsing and validation", () => {
     expect(parsed.width).toBe(PAGE_WIDTH);
     expect(parsed.height).toBe(PAGE_HEIGHT);
     expect(parsed.elements).toHaveLength(2);
-    expect(toDocument(parsed.elements)).toMatchObject({ schema_version: 3, page: sharedDocumentFixture.page, elements: sharedDocumentFixture.elements });
+    expect(toDocument(parsed.elements)).toMatchObject({ schema_version: 4, page: sharedDocumentFixture.page, elements: sharedDocumentFixture.elements });
   });
 
   it("does not preserve schema-v2 metadata smuggled into a schema-v1 document", () => {
@@ -68,10 +69,29 @@ describe("document parsing and validation", () => {
     expect(parsed.template).toEqual({ id: "exam-paper-a4", version: 1 });
   });
 
-  it("accepts the shared schema-v3 background image fixture", () => {
+  it("accepts schema-v3 background image documents after v4 upgrade", () => {
     const parsed = parseDocument(schemaV3BackgroundFixture);
     expect(parsed.backgroundImage?.fit).toBe("cover");
     expect(parsed.elements).toHaveLength(1);
+  });
+
+  it("accepts the shared schema-v4 frame and grid fixture", () => {
+    const parsed = parseDocument(schemaV4FramesGridsFixture);
+    expect(parsed.elements).toEqual([
+      { id: "frame-1", type: "frame", x: 24, y: 32, width: 300, height: 180, strokeColor: "#2563eb", strokeWidth: 2, fillColor: "#ffffff" },
+      { id: "grid-1", type: "grid", x: 360, y: 32, width: 240, height: 180, rows: 3, columns: 4, strokeColor: "#64748b", strokeWidth: 1 },
+    ]);
+    expect(toDocument(parsed.elements).schema_version).toBe(4);
+  });
+
+  it("rejects invalid frame and grid styles", () => {
+    const invalidFrame = schemaV4FramesGridsFixture as unknown as DesignDocument;
+    const badFrame = structuredClone(invalidFrame);
+    badFrame.elements[0]!.kind = { type: "frame", stroke_color: "#fff", stroke_width: 101 } as never;
+    expect(() => parseDocument(badFrame)).toThrow(/stroke width/);
+    const badGrid = structuredClone(invalidFrame);
+    badGrid.elements[1]!.kind = { type: "grid", rows: 21, columns: 2, stroke_color: "#fff", stroke_width: 1 } as never;
+    expect(() => parseDocument(badGrid)).toThrow(/rows and columns/);
   });
 
   it("accepts portable schema-v3 PNG backgrounds and preserves fit mode", () => {
