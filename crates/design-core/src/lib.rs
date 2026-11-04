@@ -203,16 +203,29 @@ impl DesignDocument {
                         return Err(ValidationError::InvalidColor);
                     }
                 }
-                ElementKind::Frame { stroke_color, stroke_width, fill_color } => {
-                    if !valid_color(stroke_color) || fill_color.as_ref().is_some_and(|color| !valid_color(color)) {
+                ElementKind::Frame {
+                    stroke_color,
+                    stroke_width,
+                    fill_color,
+                } => {
+                    if !valid_color(stroke_color)
+                        || fill_color.as_ref().is_some_and(|color| !valid_color(color))
+                    {
                         return Err(ValidationError::InvalidFrameStyle);
                     }
                     if !valid_stroke_width(*stroke_width) {
                         return Err(ValidationError::InvalidStrokeWidth);
                     }
                 }
-                ElementKind::Grid { rows, columns, stroke_color, stroke_width } => {
-                    if !(1..=MAX_GRID_ROWS).contains(rows) || !(1..=MAX_GRID_COLUMNS).contains(columns) {
+                ElementKind::Grid {
+                    rows,
+                    columns,
+                    stroke_color,
+                    stroke_width,
+                } => {
+                    if !(1..=MAX_GRID_ROWS).contains(rows)
+                        || !(1..=MAX_GRID_COLUMNS).contains(columns)
+                    {
                         return Err(ValidationError::InvalidGridDimensions);
                     }
                     if !valid_color(stroke_color) {
@@ -478,10 +491,31 @@ mod tests {
     fn validates_frame_and_grid_primitives() {
         let mut document = valid_document();
         document.elements = vec![
-            Element { id: "frame-1".into(), x: 10.0, y: 20.0, width: 300.0, height: 200.0,
-                kind: ElementKind::Frame { stroke_color: "#123456".into(), stroke_width: 2.0, fill_color: Some("#fff".into()) } },
-            Element { id: "grid-1".into(), x: 20.0, y: 30.0, width: 200.0, height: 100.0,
-                kind: ElementKind::Grid { rows: 3, columns: 4, stroke_color: "#abc".into(), stroke_width: 1.0 } },
+            Element {
+                id: "frame-1".into(),
+                x: 10.0,
+                y: 20.0,
+                width: 300.0,
+                height: 200.0,
+                kind: ElementKind::Frame {
+                    stroke_color: "#123456".into(),
+                    stroke_width: 2.0,
+                    fill_color: Some("#fff".into()),
+                },
+            },
+            Element {
+                id: "grid-1".into(),
+                x: 20.0,
+                y: 30.0,
+                width: 200.0,
+                height: 100.0,
+                kind: ElementKind::Grid {
+                    rows: 3,
+                    columns: 4,
+                    stroke_color: "#abc".into(),
+                    stroke_width: 1.0,
+                },
+            },
         ];
         assert_eq!(document.validate(), Ok(()));
         let json = serde_json::to_string(&document).expect("serialize");
@@ -493,7 +527,8 @@ mod tests {
     fn accepts_shared_schema_v4_frames_and_grids_fixture() {
         let fixture: serde_json::Value = serde_json::from_str(include_str!(
             "../../../fixtures/document-v4-frames-grids.json"
-        )).expect("v4 fixture");
+        ))
+        .expect("v4 fixture");
         let document: DesignDocument = serde_json::from_value(fixture).expect("deserialize v4");
         assert_eq!(document.schema_version, 4);
         assert_eq!(document.validate(), Ok(()));
@@ -504,13 +539,24 @@ mod tests {
     fn rejects_invalid_grid_dimensions_and_stroke_width() {
         let mut document = valid_document();
         document.elements[0].kind = ElementKind::Grid {
-            rows: 0, columns: 2, stroke_color: "#000".into(), stroke_width: 1.0,
+            rows: 0,
+            columns: 2,
+            stroke_color: "#000".into(),
+            stroke_width: 1.0,
         };
-        assert_eq!(document.validate(), Err(ValidationError::InvalidGridDimensions));
+        assert_eq!(
+            document.validate(),
+            Err(ValidationError::InvalidGridDimensions)
+        );
         document.elements[0].kind = ElementKind::Frame {
-            stroke_color: "#000".into(), stroke_width: f64::NAN, fill_color: None,
+            stroke_color: "#000".into(),
+            stroke_width: f64::NAN,
+            fill_color: None,
         };
-        assert_eq!(document.validate(), Err(ValidationError::InvalidStrokeWidth));
+        assert_eq!(
+            document.validate(),
+            Err(ValidationError::InvalidStrokeWidth)
+        );
     }
 
     #[test]
