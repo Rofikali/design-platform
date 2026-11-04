@@ -58,7 +58,7 @@ function announceSelection(id: string | null) {
   }
   selectionAnnouncement.value = element.type === "text"
     ? `Selected text element: ${element.text.slice(0, 80)}${element.text.length > 80 ? "…" : ""}`
-    : "Selected rectangle element.";
+     : element.type === "rect" ? "Selected rectangle element." : element.type === "frame" ? "Selected frame element." : `Selected grid element with ${element.rows} rows and ${element.columns} columns`;
 }
 watch(selectedId, announceSelection, { immediate: true });
 
@@ -107,6 +107,30 @@ function addRectangle() {
   nextId.value = generated.nextNumber;
   elements.value.push({ id, type: "rect", x: 100 + elements.value.length * 12, y: 220 + elements.value.length * 12, width: 180, height: 90, color: "#dbeafe" });
   selectedId.value = id;
+}
+function addFrame() {
+  if (elements.value.length >= MAX_ELEMENTS) { statusMessage.value = "Element limit reached (1,000)."; return; }
+  const generated = nextElementId("frame", elements.value, nextId.value);
+  nextId.value = generated.nextNumber;
+  const id = generated.id;
+  elements.value.push({ id, type: "frame", x: 90, y: 120, width: 260, height: 160, strokeColor: "#2563eb", strokeWidth: 2, fillColor: "#ffffff" });
+  selectedId.value = id;
+}
+function addGrid() {
+  if (elements.value.length >= MAX_ELEMENTS) { statusMessage.value = "Element limit reached (1,000)."; return; }
+  const generated = nextElementId("grid", elements.value, nextId.value);
+  nextId.value = generated.nextNumber;
+  const id = generated.id;
+  elements.value.push({ id, type: "grid", x: 90, y: 120, width: 300, height: 180, rows: 3, columns: 3, strokeColor: "#64748b", strokeWidth: 1 });
+  selectedId.value = id;
+}
+function setGridRows(value: string | number) {
+  const element = selectedElement.value;
+  if (element?.type === "grid") element.rows = Math.min(20, Math.max(1, Math.round(Number(value) || 1)));
+}
+function setGridColumns(value: string | number) {
+  const element = selectedElement.value;
+  if (element?.type === "grid") element.columns = Math.min(20, Math.max(1, Math.round(Number(value) || 1)));
 }
 function moveSelected(dx: number, dy: number) {
   const element = selectedElement.value;
@@ -461,6 +485,8 @@ onMounted(async () => {
         <h2>Elements</h2>
         <button class="primary" type="button" @click="addText">＋ Add text</button>
         <button type="button" @click="addRectangle">＋ Add rectangle</button>
+        <button type="button" @click="addFrame">＋ Add frame</button>
+        <button type="button" @click="addGrid">＋ Add grid</button>
         <button type="button" @click="exportJson">Download JSON</button>
         <button type="button" @click="exportPng">Download PNG</button>
         <button type="button" @click="printToPdf">Print / Save PDF</button>
@@ -483,10 +509,34 @@ onMounted(async () => {
             Text
             <textarea v-model="selectedElement.text" rows="4" maxlength="10000" />
           </label>
-          <label class="field">
+          <label v-if="selectedElement.type === 'text' || selectedElement.type === 'rect'" class="field">
             Color
             <input v-model="selectedElement.color" type="color" />
           </label>
+          <template v-if="selectedElement.type === 'frame' || selectedElement.type === 'grid'">
+            <label class="field">
+              Stroke color
+              <input v-model="selectedElement.strokeColor" type="color" />
+            </label>
+            <label class="field">
+              Stroke width
+              <input v-model.number="selectedElement.strokeWidth" type="number" min="0.1" max="100" step="0.1" />
+            </label>
+          </template>
+          <label v-if="selectedElement.type === 'frame'" class="field">
+            Fill color
+            <input v-model="selectedElement.fillColor" type="color" />
+          </label>
+          <template v-if="selectedElement.type === 'grid'">
+            <label class="field">
+              Rows (1–20)
+              <input :value="selectedElement.rows" type="number" min="1" max="20" step="1" @change="setGridRows(($event.target as HTMLInputElement).value)" />
+            </label>
+            <label class="field">
+              Columns (1–20)
+              <input :value="selectedElement.columns" type="number" min="1" max="20" step="1" @change="setGridColumns(($event.target as HTMLInputElement).value)" />
+            </label>
+          </template>
           <label v-if="selectedElement.type === 'text'" class="field">
             Font size
             <input v-model.number="selectedElement.fontSize" type="number" min="1" max="512" />
