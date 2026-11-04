@@ -291,7 +291,8 @@ function printToPdf() {
       .app-shell.printing-design .canvas-heading, .app-shell.printing-design .canvas-note { display: none !important; }
       .app-shell.printing-design .canvas-scroller { overflow: visible !important; padding: 0 !important; background: white !important; }
       .app-shell.printing-design .design-page { zoom: ${printScale} !important; margin: 0 !important; box-shadow: none !important; break-inside: avoid; }
-      .app-shell.printing-design .design-element { border-color: transparent !important; outline: none !important; cursor: default !important; }
+      .app-shell.printing-design .design-element:not(.frame):not(.grid) { border-color: transparent !important; outline: none !important; cursor: default !important; }
+      .app-shell.printing-design .design-element.frame, .app-shell.printing-design .design-element.grid { outline: none !important; cursor: default !important; }
       .app-shell.printing-design .resize-handle { display: none !important; }
     }`;
   document.head.appendChild(style);
