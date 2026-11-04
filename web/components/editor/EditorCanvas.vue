@@ -20,63 +20,63 @@ const emit = defineEmits<{
 </script>
 
 <template>
-      <section class="canvas-area" aria-label="Design canvas">
-        <div class="canvas-heading">
-          <div>
-            <h2>Untitled design</h2>
-            <p>{{ pageWidth }} × {{ pageHeight }} logical units</p>
-          </div>
-          <span>{{ elements.length }} elements</span>
-        </div>
-        <div class="canvas-scroller">
-          <div
-            class="design-page"
-             :style="{ width: pageWidth + 'px', height: pageHeight + 'px', backgroundColor: pageBackground }"
-            role="group"
-            aria-label="Editable design page"
-          >
-            <img
-              v-if="backgroundImage"
-              class="page-background-image"
-              :src="backgroundImage.data_url"
-              :style="{ objectFit: backgroundImage.fit }"
-              alt=""
-              aria-hidden="true"
-              draggable="false"
-            />
-            <button
-              v-for="element in elements"
-              :key="element.id"
-              class="design-element"
-              :class="{ selected: selectedId === element.id, rectangle: element.type === 'rect', frame: element.type === 'frame', grid: element.type === 'grid' }"
-              :style="{
-                left: element.x + 'px',
-                top: element.y + 'px',
-                width: element.width + 'px',
-                height: element.height + 'px',
-                color: element.type === 'text' ? element.color : undefined,
-                backgroundColor: element.type === 'rect' ? element.color : element.type === 'frame' ? (element.fillColor ?? 'transparent') : 'transparent',
-                fontSize: element.type === 'text' ? element.fontSize + 'px' : undefined,
-                border: element.type === 'frame' || element.type === 'grid' ? element.strokeWidth + 'px solid ' + element.strokeColor : undefined,
-                backgroundImage: element.type === 'grid' ? 'linear-gradient(to bottom, ' + element.strokeColor + ' 1px, transparent 1px), linear-gradient(to right, ' + element.strokeColor + ' 1px, transparent 1px)' : undefined,
-                backgroundSize: element.type === 'grid' ? '100% ' + (100 / element.rows) + '%, ' + (100 / element.columns) + '% 100%' : undefined,
-              }"
-              type="button"
-              :aria-label="element.type === 'text' ? 'Select text element: ' + element.text.slice(0, 80) : element.type === 'rect' ? 'Select rectangle element' : element.type === 'frame' ? 'Select frame element' : 'Select grid element with ' + element.rows + ' rows and ' + element.columns + ' columns'
-              :aria-pressed="selectedId === element.id"
-              @pointerdown="emit('elementPointerDown', $event, element)"
-              @pointermove="emit('elementPointerMove', $event)"
-              @pointerup="emit('elementPointerEnd', $event)"
-              @pointercancel="emit('elementPointerEnd', $event)"
-              @click="emit('select', element.id)"
-            >
-              <span v-if="element.type === 'text'">{{ element.text }}</span>
-              <span v-if="selectedId === element.id" class="resize-handle" aria-hidden="true" @pointerdown="emit('resizePointerDown', $event, element)" />
-            </button>
-          </div>
-        </div>
-        <p class="canvas-note">Designs auto-save in this browser. Download JSON for a portable copy. JSON import and export use Rust/WASM validation when available, with a TypeScript fallback if the WASM runtime cannot initialize.</p>
-      </section>
+  <section class="canvas-area" aria-label="Design canvas">
+    <div class="canvas-heading">
+      <div>
+        <h2>Untitled design</h2>
+        <p>{{ pageWidth }} × {{ pageHeight }} logical units</p>
+      </div>
+      <span>{{ elements.length }} elements</span>
+    </div>
+    <div class="canvas-scroller">
+      <div
+        class="design-page"
+        :style="{ width: pageWidth + 'px', height: pageHeight + 'px', backgroundColor: pageBackground }"
+        role="group"
+        aria-label="Editable design page"
+      >
+        <img
+          v-if="backgroundImage"
+          class="page-background-image"
+          :src="backgroundImage.data_url"
+          :style="{ objectFit: backgroundImage.fit }"
+          alt=""
+          aria-hidden="true"
+          draggable="false"
+        />
+        <button
+          v-for="element in elements"
+          :key="element.id"
+          class="design-element"
+          :class="{ selected: selectedId === element.id, rectangle: element.type === 'rect', frame: element.type === 'frame', grid: element.type === 'grid' }"
+          :style="{
+            left: element.x + 'px',
+            top: element.y + 'px',
+            width: element.width + 'px',
+            height: element.height + 'px',
+            color: element.type === 'text' ? element.color : undefined,
+            backgroundColor: element.type === 'rect' ? element.color : element.type === 'frame' ? (element.fillColor ?? 'transparent') : 'transparent',
+            fontSize: element.type === 'text' ? element.fontSize + 'px' : undefined,
+            border: element.type === 'frame' || element.type === 'grid' ? element.strokeWidth + 'px solid ' + element.strokeColor : undefined,
+            backgroundImage: element.type === 'grid' ? 'linear-gradient(to bottom, ' + element.strokeColor + ' 1px, transparent 1px), linear-gradient(to right, ' + element.strokeColor + ' 1px, transparent 1px)' : undefined,
+            backgroundSize: element.type === 'grid' ? '100% ' + (100 / element.rows) + '%, ' + (100 / element.columns) + '% 100%' : undefined,
+          }"
+          type="button"
+          :aria-label="element.type === 'text' ? 'Select text element: ' + element.text.slice(0, 80) : element.type === 'rect' ? 'Select rectangle element' : element.type === 'frame' ? 'Select frame element' : 'Select grid element with ' + element.rows + ' rows and ' + element.columns + ' columns'"
+          :aria-pressed="selectedId === element.id"
+          @pointerdown="emit('elementPointerDown', $event, element)"
+          @pointermove="emit('elementPointerMove', $event)"
+          @pointerup="emit('elementPointerEnd', $event)"
+          @pointercancel="emit('elementPointerEnd', $event)"
+          @click="emit('select', element.id)"
+        >
+          <span v-if="element.type === 'text'">{{ element.text }}</span>
+          <span v-if="selectedId === element.id" class="resize-handle" aria-hidden="true" @pointerdown="emit('resizePointerDown', $event, element)" />
+        </button>
+      </div>
+    </div>
+    <p class="canvas-note">Designs auto-save in this browser. Download JSON for a portable copy. JSON import and export use Rust/WASM validation when available, with a TypeScript fallback if the WASM runtime cannot initialize.</p>
+  </section>
 </template>
 
 <style scoped>
