@@ -195,7 +195,7 @@ describe("document parsing and validation", () => {
 
   it("rejects unsupported colors and element types", () => {
     const badColor = validDocument();
-    badColor.elements[0]!.kind.color = "url(javascript:alert(1))";
+    badColor.elements[0]!.kind = { type: "text", text: "unsafe", font_size: 12, color: "url(javascript:alert(1))" } as never;
     expect(() => parseDocument(badColor)).toThrow(/invalid color/);
 
     const badType = validDocument();
