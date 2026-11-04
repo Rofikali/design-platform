@@ -829,6 +829,33 @@ async function main() {
     const restoredGrid = await evaluate("(() => { const grid = document.querySelector('.design-element.grid'); return grid?.getAttribute('aria-label') || ''; })()");
     if (!restoredGrid.includes("4 rows and 5 columns")) throw new Error("Saved grid structure did not survive reload: " + restoredGrid);
 
+    // Export the persisted frame/grid document through the actual browser PNG path.
+    await clickButtonContaining("Download PNG");
+    const frameGridPngStatus = await waitForPage(
+      "frame/grid PNG export status",
+      "document.querySelector('[role=status]')?.textContent || ''",
+      value => value.includes("PNG exported at 1600 × 1200 pixels") || value.startsWith("PNG export failed:"),
+    );
+    if (!frameGridPngStatus.includes("PNG exported at 1600 × 1200 pixels")) {
+      throw new Error("Frame/grid PNG export failed: " + frameGridPngStatus);
+    }
+    const frameGridPngPath = await waitFor("downloaded frame/grid PNG", async () => {
+      const names = await readdir(downloads);
+      if (names.some(item => item.endsWith(".crdownload"))) return null;
+      const name = names.find(item => item === "design-platform.png");
+      if (!name) return null;
+      const path = resolve(downloads, name);
+      const info = await stat(path);
+      return info.size > 100 ? path : null;
+    });
+    const frameGridPng = await readFile(frameGridPngPath);
+    if (!frameGridPng.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])) ||
+        frameGridPng.toString("ascii", 12, 16) !== "IHDR" ||
+        frameGridPng.readUInt32BE(16) !== 1600 || frameGridPng.readUInt32BE(20) !== 1200) {
+      throw new Error("Frame/grid PNG signature or dimensions were invalid.");
+    }
+    await rm(frameGridPngPath);
+
     // Start a new design from the real template picker after the existing editor checks.
     await evaluate(`(() => {
       const select = document.querySelector('#template-choice');
