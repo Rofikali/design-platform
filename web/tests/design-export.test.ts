@@ -16,6 +16,16 @@ describe("design export renderer", () => {
     expect(svg).toContain("Shop &amp; &lt;Save&gt;");
   });
 
+  it("renders frame and grid primitives as deterministic SVG geometry", () => {
+    const svg = renderDesignSvg([
+      { id: "frame", type: "frame", x: 10, y: 20, width: 100, height: 60, strokeColor: "#123456", strokeWidth: 2, fillColor: "#ffffff" },
+      { id: "grid", type: "grid", x: 140, y: 20, width: 120, height: 60, rows: 3, columns: 4, strokeColor: "#64748b", strokeWidth: 1 },
+    ], 300, 100, "#fff");
+    expect(svg).toContain('<rect x="10" y="20" width="100" height="60" fill="#ffffff" stroke="#123456" stroke-width="2"/>');
+    expect(svg).toContain('<g fill="none" stroke="#64748b" stroke-width="1">');
+    expect(svg.match(/<line /g)?.length).toBe(5);
+  });
+
   it("wraps text to the element width and escapes user text", () => {
     const svg = renderDesignSvg([
       { id: "text", type: "text", text: "one two three four five", x: 0, y: 0, width: 45, height: 80, fontSize: 12, color: "#000000" },
