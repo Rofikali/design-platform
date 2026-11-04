@@ -1,7 +1,7 @@
 # Frames and Grids Milestone — Product and Engineering Contract
 
-**Status:** Proposed; implementation must follow in a separate code-focused PR.
-**Target:** First frames/grids increment after schema-v3 background images.
+**Status:** Implementation in progress in PR #90; schema-v4 contract and first editor/export slice are implemented on the branch, pending CI verification.
+**Target:** First frames/grids increment on top of schema v3 background images; document contract is schema v4.
 **Scope:** Browser design editor for exam papers and shop banners. This milestone does not add audio, video, animation, arbitrary SVG, or a general-purpose page-layout engine.
 
 ## User outcomes
@@ -32,15 +32,15 @@ A user can:
 - Frame and Grid are first-class document elements, not collections of synthetic rectangles. This keeps selection, resize, history, and serialization coherent.
 - A Grid is a single selectable element with a visual lattice. In this increment, cells are structural regions only; text remains separate editable text elements.
 - Resize preserves the selected grid's row/column counts and recomputes line positions from its bounds.
-- Row and column counts are explicit integer properties with conservative caps (proposed 1–20 each; confirm against performance and UX testing).
+- Row and column counts are integer properties capped at 1–20 each. Stroke width is bounded to 0.1–100 logical units; colors are #RGB or #RRGGBB.
 - Grid lines and frame borders are rendered by the shared SVG/export path, not by separate DOM-only decoration.
 - Rendering order follows document element order, preserving predictable overlap behavior.
 
 ## Document contract proposal
 
-Introduce schema version 4 only when implementation is ready. Keep v1–v3 migration behavior explicit and covered by fixtures.
+Schema version 4 introduces the Frame and Grid variants. v1–v3 migration behavior is explicit; v3 page backgrounds are preserved. Shared schema-v4 fixture: fixtures/document-v4-frames-grids.json.
 
-Proposed variants (names and exact representation are subject to implementation review):
+Implemented contract variants (subject to review in PR #90):
 
 - **Frame:** id, position, dimensions, stroke color, stroke width, and optional fill color.
 - **Grid:** id, position, dimensions, rows, columns, stroke color, and stroke width.
