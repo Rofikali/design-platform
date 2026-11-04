@@ -48,18 +48,21 @@ const emit = defineEmits<{
               v-for="element in elements"
               :key="element.id"
               class="design-element"
-              :class="{ selected: selectedId === element.id, rectangle: element.type === 'rect' }"
+              :class="{ selected: selectedId === element.id, rectangle: element.type === 'rect', frame: element.type === 'frame', grid: element.type === 'grid' }"
               :style="{
                 left: element.x + 'px',
                 top: element.y + 'px',
                 width: element.width + 'px',
                 height: element.height + 'px',
                 color: element.type === 'text' ? element.color : undefined,
-                backgroundColor: element.type === 'rect' ? element.color : 'transparent',
+                backgroundColor: element.type === 'rect' ? element.color : element.type === 'frame' ? (element.fillColor ?? 'transparent') : 'transparent',
                 fontSize: element.type === 'text' ? element.fontSize + 'px' : undefined,
+                border: element.type === 'frame' || element.type === 'grid' ? element.strokeWidth + 'px solid ' + element.strokeColor : undefined,
+                backgroundImage: element.type === 'grid' ? 'linear-gradient(to bottom, ' + element.strokeColor + ' 1px, transparent 1px), linear-gradient(to right, ' + element.strokeColor + ' 1px, transparent 1px)' : undefined,
+                backgroundSize: element.type === 'grid' ? '100% ' + (100 / element.rows) + '%, ' + (100 / element.columns) + '% 100%' : undefined,
               }"
               type="button"
-              :aria-label="element.type === 'text' ? 'Select text element: ' + element.text.slice(0, 80) : 'Select rectangle element'"
+              :aria-label="element.type === 'text' ? 'Select text element: ' + element.text.slice(0, 80) : element.type === 'rect' ? 'Select rectangle element' : element.type === 'frame' ? 'Select frame element' : 'Select grid element with ' + element.rows + ' rows and ' + element.columns + ' columns'
               :aria-pressed="selectedId === element.id"
               @pointerdown="emit('elementPointerDown', $event, element)"
               @pointermove="emit('elementPointerMove', $event)"
