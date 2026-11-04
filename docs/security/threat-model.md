@@ -27,7 +27,9 @@ The planned browser editor, saved design documents, uploaded assets, API, and ex
 ### Malicious files and parser vulnerabilities
 **Threat:** Crafted images, fonts, SVG, or documents exploit parsers, load remote resources, or consume excessive resources.
 
-**Controls:** Allowlist formats; validate actual file content rather than trusting extensions or MIME headers; cap upload bytes, dimensions, pixel count, element count, page count, and decompression; disallow external references and scripts; keep parsers patched; use a sandboxed export process.
+**Current browser controls:** Schema-v3 page backgrounds accept embedded PNG/JPEG/WebP data only. The frontend checks raster signatures, decodes the image, enforces a 4,096-pixel edge limit, a 16-million-pixel decoded-area limit, and a 1 MiB embedded-data limit. SVG and remote image URLs are rejected. JSON import and local restore repeat the browser decode and dimension checks.
+
+**Required future server controls:** Browser checks are bypassable and do not protect a future API. The trusted server must independently inspect bytes, decode in a constrained process, enforce upload/dimension/pixel/decompression/output limits, disallow external references and scripts, keep parsers patched, and use a sandboxed export process.
 
 ### Resource exhaustion
 **Threat:** Huge dimensions, pathological text, complex vectors, repeated exports, or decompression bombs exhaust CPU, memory, disk, or provider quotas.

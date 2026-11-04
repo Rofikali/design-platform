@@ -437,14 +437,14 @@ async function main() {
       return info.size > 0 ? path : null;
     });
     const exported = JSON.parse(await readFile(exportedPath, "utf8"));
-    if (exported.schema_version !== 2 || exported.elements?.length !== 2) {
+    if (exported.schema_version !== 3 || exported.elements?.length !== 2) {
       throw new Error("Exported file did not contain the expected versioned two-element document");
     }
 
     // Import the shared valid fixture through the actual file input and UI event handler.
     const fixture = await readFile(fixturePath, "utf8");
     const importExpression = `(() => {
-      const input = document.querySelector('input[type="file"]');
+      const input = document.querySelector('input[aria-label="Import design JSON file"]');
       const transfer = new DataTransfer();
       transfer.items.add(new File([${JSON.stringify(fixture)}], "document-v1.json", { type: "application/json" }));
       input.files = transfer.files;
@@ -454,11 +454,44 @@ async function main() {
     await evaluate(importExpression);
     await waitForPage("WASM-backed JSON import", "document.querySelector('[role=status]')?.textContent || ''", value => value.includes("imported and validated with WebAssembly"));
     await waitForPage("imported fixture visible on canvas", "document.querySelector('.design-page')?.innerText || ''", value => value.includes("Exam Paper"));
+    await waitForPage("fixture import autosave", "document.querySelector('[role=status]')?.textContent || ''", value => value.includes("Auto-saved locally in this browser"));
+
+    // Upload a real raster fixture and verify the page image and fit control.
+    const backgroundImageBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAFklEQVR4nGP8z8DAwMDAxMDAwMDAAAANHQEDasKb6QAAAABJRU5ErkJggg==";
+    await evaluate(`(() => {
+      const input = document.querySelector('input[aria-label="Upload page background image"]');
+      const bytes = Uint8Array.from(atob("${backgroundImageBase64}"), character => character.charCodeAt(0));
+      const transfer = new DataTransfer();
+      transfer.items.add(new File([bytes], "background.png", { type: "image/png" }));
+      input.files = transfer.files;
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+      return true;
+    })()`);
+    try {
+      await waitFor("background image to render", () => evaluate("Boolean(document.querySelector('.page-background-image')?.getAttribute('src')?.startsWith('data:image/png;base64,'))"));
+    } catch (error) {
+      const diagnostics = await evaluate("JSON.stringify({ status: document.querySelector('[role=status]')?.textContent || '', backgroundImage: Boolean(document.querySelector('.page-background-image')), fileInputs: document.querySelectorAll('input[type=file]').length })");
+      throw new Error(`Background image did not render: ${error.message}. Browser diagnostics: ${diagnostics}`);
+    }
+    const backgroundVisible = await evaluate("Boolean(document.querySelector('.page-background-image')?.getAttribute('src')?.startsWith('data:image/png;base64,'))");
+    if (!backgroundVisible) throw new Error("Uploaded page background was not rendered");
+    await evaluate(`(() => {
+      const select = Array.from(document.querySelectorAll('label')).find(label => label.textContent.includes('Image fit'))?.querySelector('select');
+      if (!select) throw new Error("Background image fit control was not rendered");
+      select.value = "contain";
+      select.dispatchEvent(new Event("change", { bubbles: true }));
+      return true;
+    })()`);
+    const fitMode = await evaluate("document.querySelector('.page-background-image') ? getComputedStyle(document.querySelector('.page-background-image')).objectFit : ''");
+    if (fitMode !== "contain") throw new Error(`Background image fit mode was not applied: ${fitMode}`);
+    await waitForPage("background image autosave", "document.querySelector('[role=status]')?.textContent || ''", value => value.includes("Auto-saved locally in this browser"));
+    const savedBackgroundFit = await evaluate("JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null')?.page?.background_image?.fit || ''");
+    if (savedBackgroundFit !== "contain") throw new Error(`Background image or fit mode was not preserved in local autosave: ${savedBackgroundFit}`);
 
     // A rejected import must not replace the currently loaded valid document.
     const invalidFixture = JSON.stringify({ ...JSON.parse(fixture), schema_version: 999 });
     const invalidImportExpression = `(() => {
-      const input = document.querySelector('input[type="file"]');
+      const input = document.querySelector('input[aria-label="Import design JSON file"]');
       const transfer = new DataTransfer();
       transfer.items.add(new File([${JSON.stringify(invalidFixture)}], "unsupported-schema.json", { type: "application/json" }));
       input.files = transfer.files;

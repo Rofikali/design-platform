@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import sharedDocumentFixture from "../../fixtures/document-v1.json";
 import schemaV2Fixture from "../../fixtures/document-v2-a4.json";
+import schemaV3BackgroundFixture from "../../fixtures/document-v3-background-image.json";
 import {
   MAX_ELEMENTS,
   MAX_FILE_CHARS,
@@ -16,7 +17,7 @@ import {
 
 function validDocument(): DesignDocument {
   return {
-    schema_version: 2,
+    schema_version: 3,
     page: { width: PAGE_WIDTH, height: PAGE_HEIGHT, background: "#ffffff" },
     elements: [
       {
@@ -45,7 +46,7 @@ describe("document parsing and validation", () => {
     expect(parsed.width).toBe(PAGE_WIDTH);
     expect(parsed.height).toBe(PAGE_HEIGHT);
     expect(parsed.elements).toHaveLength(2);
-    expect(toDocument(parsed.elements)).toMatchObject({ schema_version: 2, page: sharedDocumentFixture.page, elements: sharedDocumentFixture.elements });
+    expect(toDocument(parsed.elements)).toMatchObject({ schema_version: 3, page: sharedDocumentFixture.page, elements: sharedDocumentFixture.elements });
   });
 
   it("does not preserve schema-v2 metadata smuggled into a schema-v1 document", () => {
@@ -67,6 +68,41 @@ describe("document parsing and validation", () => {
     expect(parsed.template).toEqual({ id: "exam-paper-a4", version: 1 });
   });
 
+  it("accepts the shared schema-v3 background image fixture", () => {
+    const parsed = parseDocument(schemaV3BackgroundFixture);
+    expect(parsed.backgroundImage?.fit).toBe("cover");
+    expect(parsed.elements).toHaveLength(1);
+  });
+
+  it("accepts portable schema-v3 PNG backgrounds and preserves fit mode", () => {
+    const document = validDocument();
+    document.page.background_image = {
+      data_url: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jZl8AAAAASUVORK5CYII=",
+      fit: "cover",
+    };
+    const parsed = parseDocument(document);
+    expect(parsed.backgroundImage).toEqual(document.page.background_image);
+    const serialized = toDocument(parsed.elements, {
+      width: parsed.width, height: parsed.height, background: parsed.background,
+      background_image: parsed.backgroundImage,
+    });
+    expect(parseDocument(serialized).backgroundImage).toEqual(document.page.background_image);
+  });
+
+  it("rejects remote, SVG, malformed base64 and oversized background assets", () => {
+    const invalidValues = [
+      "https://example.invalid/background.png",
+      "data:image/svg+xml;base64,PHN2Zz4=",
+      "data:image/png;base64,not base64!",
+      "data:image/png;base64,",
+      "data:image/png;base64," + "A".repeat(1_048_560),
+    ];
+    for (const data_url of invalidValues) {
+      const document = validDocument();
+      document.page.background_image = { data_url, fit: "contain" };
+      expect(() => parseDocument(document)).toThrow(/Background image/);
+    }
+  });
   it("accepts valid text and rectangle elements and converts them to editor elements", () => {
     const parsed = parseDocument(validDocument());
     expect(parsed.width).toBe(PAGE_WIDTH);

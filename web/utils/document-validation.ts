@@ -50,6 +50,6 @@ export async function validateDocumentJson(json: string): Promise<DocumentValida
   }
 
   const parsed = parseDocumentJson(json);
-  const document: DesignDocument = toDocument(parsed.elements, { width: parsed.width, height: parsed.height, background: parsed.background }, parsed.outputSizeMm, parsed.template);
+  const document: DesignDocument = toDocument(parsed.elements, { width: parsed.width, height: parsed.height, background: parsed.background, ...(parsed.backgroundImage ? { background_image: parsed.backgroundImage } : {}) }, parsed.outputSizeMm, parsed.template);
   return { json: JSON.stringify(document), engine: "typescript" };
 }

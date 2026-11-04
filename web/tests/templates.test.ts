@@ -22,7 +22,7 @@ describe("starter template catalog", () => {
     (id, width, height, outputWidth, outputHeight) => {
       const document = createTemplateDocument(id);
       expect(() => parseDocument(document)).not.toThrow();
-      expect(document.schema_version).toBe(2);
+      expect(document.schema_version).toBe(3);
       expect(document.page).toMatchObject({ width, height });
       expect(document.output_size_mm).toEqual({ width: outputWidth, height: outputHeight });
       expect(document.template).toEqual({ id, version: 1 });

@@ -12,8 +12,10 @@ import {
   PAGE_WIDTH,
   parseDocumentJson,
   toDocument,
+  type BackgroundImage,
   type DesignElement,
 } from "~/utils/document";
+import { prepareBackgroundImage, validateEmbeddedBackgroundImage } from "~/utils/background-image";
 import { validateDocumentJson } from "~/utils/document-validation";
 import { createTemplateDocument, listTemplates, type TemplateId } from "~/utils/templates";
 import { renderDesignPng } from "~/utils/design-export";
@@ -22,6 +24,7 @@ const STORAGE_KEY = "design-platform:document:v1"; // Keep the key so existing v
 const pageWidth = ref(PAGE_WIDTH);
 const pageHeight = ref(PAGE_HEIGHT);
 const pageBackground = ref("#ffffff");
+const backgroundImage = ref<BackgroundImage | undefined>();
 const outputSizeMm = ref<{ width: number; height: number } | undefined>();
 const templateMetadata = ref<{ id: string; version: number } | undefined>();
 const templates = listTemplates();
@@ -38,6 +41,7 @@ const elements = ref<DesignElement[]>([
   { id: "rect-2", type: "rect", x: 48, y: 160, width: 250, height: 110, color: "#dbeafe" },
 ]);
 const fileInput = ref<HTMLInputElement | null>(null);
+const backgroundImageInput = ref<HTMLInputElement | null>(null);
 const dragState = ref<{ id: string; pointerId: number; startClientX: number; startClientY: number; originX: number; originY: number } | null>(null);
 const resizeState = ref<{ id: string; pointerId: number; startClientX: number; startClientY: number; originWidth: number; originHeight: number } | null>(null);
 let historyReady = false;
@@ -58,7 +62,7 @@ function announceSelection(id: string | null) {
 }
 watch(selectedId, announceSelection, { immediate: true });
 
-function snapshot(): string { return JSON.stringify(toDocument(elements.value, { width: pageWidth.value, height: pageHeight.value, background: pageBackground.value }, outputSizeMm.value, templateMetadata.value)); }
+function snapshot(): string { return JSON.stringify(toDocument(elements.value, { width: pageWidth.value, height: pageHeight.value, background: pageBackground.value, ...(backgroundImage.value ? { background_image: backgroundImage.value } : {}) }, outputSizeMm.value, templateMetadata.value)); }
 const history = ref(createHistory(snapshot()));
 const undoStack = computed(() => history.value.undoStack);
 const redoStack = computed(() => history.value.redoStack);
@@ -68,6 +72,7 @@ function applySnapshot(json: string) {
   pageWidth.value = parsed.width;
   pageHeight.value = parsed.height;
   pageBackground.value = parsed.background;
+  backgroundImage.value = parsed.backgroundImage;
   outputSizeMm.value = parsed.outputSizeMm;
   templateMetadata.value = parsed.template;
   selectedId.value = parsed.elements[0]?.id ?? null;
@@ -224,7 +229,7 @@ async function exportPng() {
     const validation = await validateDocumentJson(snapshot());
     const parsed = parseDocumentJson(validation.json);
     statusMessage.value = "Rendering PNG image…";
-    const blob = await renderDesignPng(parsed.elements, parsed.width, parsed.height, parsed.background, 2);
+    const blob = await renderDesignPng(parsed.elements, parsed.width, parsed.height, parsed.background, 2, parsed.backgroundImage);
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
     anchor.href = url;
@@ -296,6 +301,23 @@ function replaceInvalidAutosaveWithCurrentDesign() {
   }
 }
 function importJson() { fileInput.value?.click(); }
+function chooseBackgroundImage() { backgroundImageInput.value?.click(); }
+function removeBackgroundImage() {
+  backgroundImage.value = undefined;
+  statusMessage.value = "Page background image removed.";
+}
+async function onBackgroundImageSelected(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+  input.value = "";
+  if (!file) return;
+  try {
+    backgroundImage.value = await prepareBackgroundImage(file);
+    statusMessage.value = "Background image added. It is included in local saves and JSON exports.";
+  } catch (error) {
+    statusMessage.value = `Background image rejected: ${error instanceof Error ? error.message : "invalid image"}`;
+  }
+}
 async function onFileSelected(event: Event) {
   const input = event.target as HTMLInputElement;
   const file = input.files?.[0];
@@ -306,12 +328,14 @@ async function onFileSelected(event: Event) {
     const text = await file.text();
     const validation = await validateDocumentJson(text);
     const parsed = parseDocumentJson(validation.json);
+    if (parsed.backgroundImage) await validateEmbeddedBackgroundImage(parsed.backgroundImage);
     if (historyTimer) clearTimeout(historyTimer);
     historyTimer = undefined;
     elements.value = parsed.elements;
     pageWidth.value = parsed.width;
     pageHeight.value = parsed.height;
     pageBackground.value = parsed.background;
+    backgroundImage.value = parsed.backgroundImage;
     outputSizeMm.value = parsed.outputSizeMm;
     templateMetadata.value = parsed.template;
     selectedId.value = parsed.elements[0]?.id ?? null;
@@ -352,7 +376,7 @@ function redo() {
   applySnapshot(transition.snapshot);
   statusMessage.value = "Redo applied.";
 }
-watch(elements, () => {
+watch([elements, pageWidth, pageHeight, pageBackground, backgroundImage], () => {
   if (!historyReady) return;
   if (historyTimer) clearTimeout(historyTimer);
   historyTimer = setTimeout(() => {
@@ -375,10 +399,15 @@ watch(elements, () => {
     }
   }, 300);
 }, { deep: true, flush: "sync" });
-onMounted(() => {
+onMounted(async () => {
   const result = loadLocalDocument(STORAGE_KEY);
   if (result.status === "loaded") {
-    try { applySnapshot(result.value); statusMessage.value = "Restored the last locally saved design."; }
+    try {
+      const saved = parseDocumentJson(result.value);
+      if (saved.backgroundImage) await validateEmbeddedBackgroundImage(saved.backgroundImage);
+      applySnapshot(result.value);
+      statusMessage.value = "Restored the last locally saved design.";
+    }
     catch {
       invalidSavedDocument.value = result.value;
       statusMessage.value = "Saved browser data could not be read. Autosave is paused so it is not overwritten; download a recovery copy or explicitly replace it.";
@@ -415,6 +444,19 @@ onMounted(() => {
           <p class="hint">Page: {{ selectedTemplate.page.width }} × {{ selectedTemplate.page.height }} · Print size: {{ selectedTemplate.outputSizeMm.width }} × {{ selectedTemplate.outputSizeMm.height }} mm</p>
           <button class="primary" type="button" @click="createFromTemplate">Use template</button>
         </div>
+        <hr />
+        <h2>Page background</h2>
+        <button type="button" @click="chooseBackgroundImage">Upload background image</button>
+        <input ref="backgroundImageInput" class="visually-hidden" type="file" accept="image/png,image/jpeg,image/webp" aria-label="Upload page background image" @change="onBackgroundImageSelected" />
+        <label v-if="backgroundImage" class="field">
+          Image fit
+          <select v-model="backgroundImage.fit">
+            <option value="cover">Cover (fill page)</option>
+            <option value="contain">Contain (show whole image)</option>
+          </select>
+        </label>
+        <button v-if="backgroundImage" type="button" @click="removeBackgroundImage">Remove background image</button>
+        <p class="hint">PNG, JPEG or WebP · maximum 1 MiB · maximum 16 megapixels.</p>
         <hr />
         <h2>Elements</h2>
         <button class="primary" type="button" @click="addText">＋ Add text</button>
@@ -488,6 +530,7 @@ onMounted(() => {
         :page-width="pageWidth"
         :page-height="pageHeight"
         :page-background="pageBackground"
+        :background-image="backgroundImage"
         @select="selectedId = $event"
         @element-pointer-down="onElementPointerDown"
         @element-pointer-move="onElementPointerMove"
