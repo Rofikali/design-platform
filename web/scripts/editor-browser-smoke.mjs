@@ -538,6 +538,44 @@ async function main() {
     await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.includes('＋ Add rectangle'))?.click(); true");
     await waitForPage("rectangle added", "document.querySelector('.canvas-heading > span')?.textContent || ''", value => value.trim() === `${fixtureCount + 2} elements`);
 
+    // Frames and grids are first-class editable elements with bounded controls.
+    await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.includes('＋ Add frame'))?.click(); true");
+    await waitForPage("frame added", "document.querySelector('.design-element.frame')?.getAttribute('aria-label') || ''", value => value.includes("frame element"));
+    const frameStyle = await evaluate("(() => { const frame = document.querySelector('.design-element.frame'); return { border: frame ? getComputedStyle(frame).borderTopWidth : '', fill: frame ? getComputedStyle(frame).backgroundColor : '' }; })()");
+    if (frameStyle.border !== "2px") throw new Error("Frame default stroke was not rendered: " + JSON.stringify(frameStyle));
+
+    await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.includes('＋ Add grid'))?.click(); true");
+    await waitForPage("grid added", "document.querySelector('.design-element.grid')?.getAttribute('aria-label') || ''", value => value.includes("3 rows and 3 columns"));
+    const setNumberField = async (label, value) => evaluate(`(() => {
+      const field = Array.from(document.querySelectorAll('label.field')).find(node => node.textContent.includes(${JSON.stringify(label)}));
+      const input = field?.querySelector('input');
+      if (!input) throw new Error("Missing grid property input: " + ${JSON.stringify(label)});
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+      setter.call(input, ${JSON.stringify(String(value))});
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+      return true;
+    })()`);
+    await setNumberField("Rows (1–20)", 4);
+    await setNumberField("Columns (1–20)", 5);
+    const configuredGrid = await evaluate("(() => { const grid = document.querySelector('.design-element.grid'); const fields = Array.from(document.querySelectorAll('label.field')); return { label: grid?.getAttribute('aria-label') || '', backgroundSize: grid ? getComputedStyle(grid).backgroundSize : '', rows: fields.find(node => node.textContent.includes('Rows'))?.querySelector('input')?.value, columns: fields.find(node => node.textContent.includes('Columns'))?.querySelector('input')?.value }; })()");
+    if (!configuredGrid.label.includes("4 rows and 5 columns") || configuredGrid.rows !== "4" || configuredGrid.columns !== "5") {
+      throw new Error("Grid controls did not apply the selected structure: " + JSON.stringify(configuredGrid));
+    }
+    await waitFor("schema-v4 frame/grid autosave", async () => {
+      const saved = await evaluate("localStorage.getItem('design-platform:document:v1')");
+      if (!saved) return null;
+      const doc = JSON.parse(saved);
+      return doc.schema_version === 4 && doc.elements.some(item => item.kind.type === "frame") &&
+        doc.elements.some(item => item.kind.type === "grid" && item.kind.rows === 4 && item.kind.columns === 5) ? saved : null;
+    });
+    await evaluate("location.reload(); true");
+    await waitForPage("frame and grid restore after reload", "document.querySelectorAll('.design-element.frame').length + ':' + document.querySelectorAll('.design-element.grid').length", value => value === "1:1");
+    const restoredGrid = await evaluate("(() => { const grid = document.querySelector('.design-element.grid'); return grid?.getAttribute('aria-label') || ''; })()");
+    if (!restoredGrid.includes("4 rows and 5 columns")) throw new Error("Saved grid structure did not survive reload: " + restoredGrid);
+    await evaluate("localStorage.clear(); location.reload(); true");
+    await waitForPage("clean editor after frame/grid persistence test", "document.querySelector('.design-page')?.innerText || ''", value => value.includes("Your design starts here"));
+    await waitForPage("Vue app mount after frame/grid persistence test", "Boolean(document.querySelector('#__nuxt')?.__vue_app__)");
+
     await evaluate("Array.from(document.querySelectorAll('.design-element')).find(element => element.textContent.includes('New text'))?.click(); true");
     const selectionStatus = await waitFor("selected element announcement", async () => {
       const status = await evaluate(`(() => {
