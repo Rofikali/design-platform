@@ -152,9 +152,9 @@ export function parseDocument(input: unknown): ParsedDocument {
       return { id: item.id, type: "rect" as const, x: item.x, y: item.y, width: item.width, height: item.height, color: kind.color };
     }
     if (kind.type === "frame") {
-      if (!validColor(kind.stroke_color) || (kind.fill_color !== undefined && !validColor(kind.fill_color))) throw new Error("Frame colors must be valid hexadecimal colors.");
+      if (!validColor(kind.stroke_color) || (kind.fill_color !== undefined && kind.fill_color !== null && !validColor(kind.fill_color))) throw new Error("Frame colors must be valid hexadecimal colors.");
       if (typeof kind.stroke_width !== "number" || !Number.isFinite(kind.stroke_width) || kind.stroke_width < 0.1 || kind.stroke_width > MAX_STROKE_WIDTH) throw new Error("Frame stroke width must be between 0.1 and 100.");
-      return { id: item.id, type: "frame" as const, x: item.x, y: item.y, width: item.width, height: item.height, strokeColor: kind.stroke_color, strokeWidth: kind.stroke_width, ...(kind.fill_color ? { fillColor: kind.fill_color } : {}) };
+      return { id: item.id, type: "frame" as const, x: item.x, y: item.y, width: item.width, height: item.height, strokeColor: kind.stroke_color, strokeWidth: kind.stroke_width, ...(typeof kind.fill_color === "string" ? { fillColor: kind.fill_color } : {}) };
     }
     if (kind.type === "grid") {
       if (!Number.isInteger(kind.rows) || kind.rows < 1 || kind.rows > MAX_GRID_ROWS || !Number.isInteger(kind.columns) || kind.columns < 1 || kind.columns > MAX_GRID_COLUMNS) throw new Error("Grid rows and columns must be integers between 1 and 20.");
