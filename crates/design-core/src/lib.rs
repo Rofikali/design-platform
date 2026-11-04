@@ -490,6 +490,17 @@ mod tests {
     }
 
     #[test]
+    fn accepts_shared_schema_v4_frames_and_grids_fixture() {
+        let fixture: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../fixtures/document-v4-frames-grids.json"
+        )).expect("v4 fixture");
+        let document: DesignDocument = serde_json::from_value(fixture).expect("deserialize v4");
+        assert_eq!(document.schema_version, 4);
+        assert_eq!(document.validate(), Ok(()));
+        assert_eq!(document.elements.len(), 2);
+    }
+
+    #[test]
     fn rejects_invalid_grid_dimensions_and_stroke_width() {
         let mut document = valid_document();
         document.elements[0].kind = ElementKind::Grid {
