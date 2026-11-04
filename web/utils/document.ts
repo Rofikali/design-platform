@@ -142,6 +142,7 @@ export function parseDocument(input: unknown): ParsedDocument {
     const kind = item.kind;
     if (!kind || typeof kind !== "object") throw new Error("An element has an invalid kind.");
     if (kind.type === "text") {
+      if (!validColor(kind.color)) throw new Error("An element has an invalid color.");
       if (typeof kind.text !== "string" || [...kind.text].length > MAX_TEXT_CHARS) throw new Error("Text must be 10,000 characters or fewer.");
       if (typeof kind.font_size !== "number" || !Number.isFinite(kind.font_size) || kind.font_size < 1 || kind.font_size > 512)
         throw new Error("Font size must be between 1 and 512.");
