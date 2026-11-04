@@ -124,6 +124,12 @@ function addGrid() {
   elements.value.push({ id, type: "grid", x: 90, y: 120, width: 300, height: 180, rows: 3, columns: 3, strokeColor: "#64748b", strokeWidth: 1 });
   selectedId.value = id;
 }
+function setSelectedStrokeWidth(value: string | number) {
+  const element = selectedElement.value;
+  if (element?.type !== "frame" && element?.type !== "grid") return;
+  const parsed = Number(value);
+  element.strokeWidth = Number.isFinite(parsed) ? Math.min(100, Math.max(0.1, parsed)) : 1;
+}
 function setGridRows(value: string | number) {
   const element = selectedElement.value;
   if (element?.type === "grid") element.rows = Math.min(20, Math.max(1, Math.round(Number(value) || 1)));
@@ -520,7 +526,7 @@ onMounted(async () => {
             </label>
             <label class="field">
               Stroke width
-              <input v-model.number="selectedElement.strokeWidth" type="number" min="0.1" max="100" step="0.1" />
+              <input :value="selectedElement.strokeWidth" type="number" min="0.1" max="100" step="0.1" @change="setSelectedStrokeWidth(($event.target as HTMLInputElement).value)" />
             </label>
           </template>
           <label v-if="selectedElement.type === 'frame'" class="field">
