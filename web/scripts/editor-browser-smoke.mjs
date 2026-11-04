@@ -437,7 +437,7 @@ async function main() {
       return info.size > 0 ? path : null;
     });
     const exported = JSON.parse(await readFile(exportedPath, "utf8"));
-    if (exported.schema_version !== 3 || exported.elements?.length !== 2) {
+    if (exported.schema_version !== 4 || exported.elements?.length !== 2) {
       throw new Error("Exported file did not contain the expected versioned two-element document");
     }
 
