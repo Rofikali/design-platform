@@ -19,6 +19,13 @@ The planned browser editor, saved design documents, uploaded assets, API, and ex
 
 ## Threats and controls
 
+### Untrusted document structure and render complexity
+**Threat:** Imported frame/grid variants contain invalid colors, non-finite or excessive stroke widths, huge row/column counts, duplicate IDs, or geometry that triggers excessive SVG work or inconsistent rendering.
+
+**Current client/core controls:** Schema v4 validation allowlists frame/grid fields, constrains grid rows and columns to 1–20, constrains stroke width to 0.1–100 logical units, validates colors, and retains document-wide element/geometry limits. Rust core and TypeScript fallback must enforce the same contract. Grid rendering is bounded by the row/column caps and produces a deterministic finite number of SVG lines.
+
+**Residual risk:** Browser/WASM validation is defense-in-depth only. Any future API must independently validate the schema and enforce request, CPU, memory and output limits. SVG export must continue to escape values and must not accept arbitrary SVG/HTML from documents.
+
 ### Broken access control / IDOR
 **Threat:** A user reads, edits, exports, or deletes another user's document by changing an identifier.
 
