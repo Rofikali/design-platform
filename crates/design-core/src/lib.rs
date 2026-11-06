@@ -313,7 +313,7 @@ impl DesignDocument {
     }
 }
 
-/// Migrate supported legacy documents to schema v4 without inventing print intent.
+/// Migrate supported schema-v1 through schema-v4 documents to current schema v5 without inventing print intent.
 pub fn migrate_to_current(mut document: DesignDocument) -> Result<DesignDocument, ValidationError> {
     if document.schema_version < CURRENT_SCHEMA_VERSION
         && document.elements.iter().any(|element| matches!(&element.kind, ElementKind::Table { .. }))
@@ -609,8 +609,10 @@ mod tests {
         .expect("v4 fixture");
         let document: DesignDocument = serde_json::from_value(fixture).expect("deserialize v4");
         assert_eq!(document.schema_version, 4);
-        assert_eq!(document.validate(), Ok(()));
-        assert_eq!(document.elements.len(), 2);
+        let migrated = migrate_to_current(document).expect("v4 migrates to v5");
+        assert_eq!(migrated.schema_version, 5);
+        assert_eq!(migrated.validate(), Ok(()));
+        assert_eq!(migrated.elements.len(), 2);
     }
 
     #[test]
