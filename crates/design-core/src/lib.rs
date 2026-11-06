@@ -6,7 +6,12 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
-pub const CURRENT_SCHEMA_VERSION: u32 = 4;
+pub const CURRENT_SCHEMA_VERSION: u32 = 5;
+pub const MAX_TABLE_ROWS: u32 = 20;
+pub const MAX_TABLE_COLUMNS: u32 = 20;
+pub const MAX_TABLE_CELLS: usize = 400;
+pub const MAX_TABLE_CELL_CHARS: usize = 2_000;
+pub const MAX_TABLE_TEXT_CHARS: usize = 20_000;
 pub const MAX_GRID_ROWS: u32 = 20;
 pub const MAX_GRID_COLUMNS: u32 = 20;
 pub const MAX_STROKE_WIDTH: f64 = 100.0;
@@ -98,6 +103,19 @@ pub enum ElementKind {
         stroke_color: String,
         stroke_width: f64,
     },
+    Table {
+        rows: u32,
+        columns: u32,
+        cells: Vec<Vec<String>>,
+        header_rows: u32,
+        stroke_color: String,
+        stroke_width: f64,
+        cell_padding: f64,
+        font_size: f64,
+        text_color: String,
+        header_fill: String,
+        cell_fill: String,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -121,6 +139,11 @@ pub enum ValidationError {
     InvalidColor,
     InvalidFrameStyle,
     InvalidGridDimensions,
+    InvalidTableDimensions,
+    InvalidTableMatrix,
+    InvalidTableTextLength,
+    InvalidTableStyle,
+    TableRequiresSchemaV5,
     InvalidStrokeWidth,
 }
 
@@ -235,6 +258,55 @@ impl DesignDocument {
                         return Err(ValidationError::InvalidStrokeWidth);
                     }
                 }
+                ElementKind::Table {
+                    rows,
+                    columns,
+                    cells,
+                    header_rows,
+                    stroke_color,
+                    stroke_width,
+                    cell_padding,
+                    font_size,
+                    text_color,
+                    header_fill,
+                    cell_fill,
+                } => {
+                    if !(1..=MAX_TABLE_ROWS).contains(rows)
+                        || !(1..=MAX_TABLE_COLUMNS).contains(columns)
+                        || *header_rows > 1
+                    {
+                        return Err(ValidationError::InvalidTableDimensions);
+                    }
+                    if cells.len() != *rows as usize
+                        || cells.iter().any(|row| row.len() != *columns as usize)
+                        || cells.len().saturating_mul(*columns as usize) > MAX_TABLE_CELLS
+                    {
+                        return Err(ValidationError::InvalidTableMatrix);
+                    }
+                    let mut total_chars = 0usize;
+                    for cell in cells.iter().flatten() {
+                        let cell_chars = cell.chars().count();
+                        if cell_chars > MAX_TABLE_CELL_CHARS {
+                            return Err(ValidationError::InvalidTableTextLength);
+                        }
+                        total_chars = total_chars.saturating_add(cell_chars);
+                        if total_chars > MAX_TABLE_TEXT_CHARS {
+                            return Err(ValidationError::InvalidTableTextLength);
+                        }
+                    }
+                    if !valid_color(stroke_color)
+                        || !valid_color(text_color)
+                        || !valid_color(header_fill)
+                        || !valid_color(cell_fill)
+                        || !valid_stroke_width(*stroke_width)
+                        || !cell_padding.is_finite()
+                        || !(2.0..=24.0).contains(cell_padding)
+                        || !font_size.is_finite()
+                        || !(8.0..=96.0).contains(font_size)
+                    {
+                        return Err(ValidationError::InvalidTableStyle);
+                    }
+                }
             }
         }
         Ok(())
@@ -243,6 +315,12 @@ impl DesignDocument {
 
 /// Migrate supported legacy documents to schema v4 without inventing print intent.
 pub fn migrate_to_current(mut document: DesignDocument) -> Result<DesignDocument, ValidationError> {
+    if document.schema_version < CURRENT_SCHEMA_VERSION
+        && document.elements.iter().any(|element| matches!(element.kind, ElementKind::Table { .. }))
+    {
+        return Err(ValidationError::TableRequiresSchemaV5);
+    }
+
     match document.schema_version {
         1 => {
             if document.page.width != 800.0 || document.page.height != 600.0 {
@@ -257,7 +335,7 @@ pub fn migrate_to_current(mut document: DesignDocument) -> Result<DesignDocument
             document.schema_version = CURRENT_SCHEMA_VERSION;
             document.page.background_image = None;
         }
-        3 => {
+        3 | 4 => {
             document.schema_version = CURRENT_SCHEMA_VERSION;
         }
         CURRENT_SCHEMA_VERSION => {}
@@ -616,4 +694,55 @@ mod tests {
             Err(ValidationError::InvalidTemplateMetadata)
         );
     }
+    #[test]
+    fn accepts_shared_schema_v5_table_fixture() {
+        let fixture: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../fixtures/document-v5-semantic-table.json"
+        ))
+        .expect("v5 fixture");
+        let document: DesignDocument = serde_json::from_value(fixture).expect("deserialize v5");
+        assert_eq!(document.schema_version, 5);
+        assert_eq!(document.validate(), Ok(()));
+        assert!(matches!(document.elements[0].kind, ElementKind::Table { .. }));
+    }
+
+    #[test]
+    fn rejects_table_in_legacy_schema_even_when_table_fields_are_valid() {
+        let fixture: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../fixtures/document-v5-semantic-table.json"
+        ))
+        .expect("v5 fixture");
+        let mut legacy = fixture;
+        legacy["schema_version"] = serde_json::json!(4);
+        let document: DesignDocument = serde_json::from_value(legacy).expect("deserialize");
+        assert_eq!(
+            migrate_to_current(document),
+            Err(ValidationError::TableRequiresSchemaV5)
+        );
+    }
+
+    #[test]
+    fn rejects_ragged_table_matrix_and_excessive_cell_text() {
+        let fixture: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../fixtures/document-v5-semantic-table.json"
+        ))
+        .expect("v5 fixture");
+        let mut document: DesignDocument =
+            serde_json::from_value(fixture.clone()).expect("deserialize");
+        if let ElementKind::Table { cells, .. } = &mut document.elements[0].kind {
+            cells[0].pop();
+        }
+        assert_eq!(document.validate(), Err(ValidationError::InvalidTableMatrix));
+
+        let mut oversized: DesignDocument = serde_json::from_value(fixture).expect("deserialize");
+        if let ElementKind::Table { cells, .. } = &mut oversized.elements[0].kind {
+            cells[0][0] = "x".repeat(MAX_TABLE_CELL_CHARS + 1);
+        }
+        assert_eq!(
+            oversized.validate(),
+            Err(ValidationError::InvalidTableTextLength)
+        );
+    }
+
+
 }
