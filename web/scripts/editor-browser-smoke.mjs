@@ -832,11 +832,17 @@ async function main() {
 
     // Export the persisted frame/grid document through the actual browser PNG path.
     await clickButtonContaining("Download PNG");
-    const frameGridPngStatus = await waitForPage(
-      "frame/grid PNG export status",
-      "document.querySelector('aside.tools-panel')?.querySelector('p[role=status]')?.textContent || ''",
-      value => value.includes("PNG exported at 1600 × 1200 pixels") || value.startsWith("PNG export failed:"),
-    );
+    let frameGridPngStatus;
+    try {
+      frameGridPngStatus = await waitForPage(
+        "frame/grid PNG export status",
+        "document.querySelector('aside.tools-panel')?.querySelector('p[role=status]')?.textContent || ''",
+        value => value.includes("PNG exported at 1600 × 1200 pixels") || value.startsWith("PNG export failed:"),
+      );
+    } catch (error) {
+      const diagnostics = await evaluate("JSON.stringify({ status: document.querySelector('aside.tools-panel')?.querySelector('p[role=status]')?.textContent || null, allStatuses: Array.from(document.querySelectorAll('[role=status]')).map(node => ({ text: node.textContent, className: node.className, parent: node.parentElement?.className })), toolsText: document.querySelector('aside.tools-panel')?.innerText || null, pngButtons: Array.from(document.querySelectorAll('button')).filter(button => button.textContent.includes('Download PNG')).map(button => ({ text: button.textContent, disabled: button.disabled, rect: (() => { const r = button.getBoundingClientRect(); return { x: r.x, y: r.y, width: r.width, height: r.height }; })() })) })");
+      throw new Error(`Frame/grid PNG export status diagnostic: ${diagnostics}; ${error instanceof Error ? error.message : String(error)}`);
+    }
     if (!frameGridPngStatus.includes("PNG exported at 1600 × 1200 pixels")) {
       throw new Error("Frame/grid PNG export failed: " + frameGridPngStatus);
     }
