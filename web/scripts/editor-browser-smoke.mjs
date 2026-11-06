@@ -833,7 +833,7 @@ async function main() {
     await clickButtonContaining("Download PNG");
     const frameGridPngStatus = await waitForPage(
       "frame/grid PNG export status",
-      "document.querySelector('.tools-panel p.hint[role=status]')?.textContent || ''",
+      "document.querySelector('aside.tools-panel')?.querySelector('p[role=status]')?.textContent || ''",
       value => value.includes("PNG exported at 1600 × 1200 pixels") || value.startsWith("PNG export failed:"),
     );
     if (!frameGridPngStatus.includes("PNG exported at 1600 × 1200 pixels")) {
