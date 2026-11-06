@@ -316,7 +316,10 @@ impl DesignDocument {
 /// Migrate supported schema-v1 through schema-v4 documents to current schema v5 without inventing print intent.
 pub fn migrate_to_current(mut document: DesignDocument) -> Result<DesignDocument, ValidationError> {
     if document.schema_version < CURRENT_SCHEMA_VERSION
-        && document.elements.iter().any(|element| matches!(&element.kind, ElementKind::Table { .. }))
+        && document
+            .elements
+            .iter()
+            .any(|element| matches!(&element.kind, ElementKind::Table { .. }))
     {
         return Err(ValidationError::TableRequiresSchemaV5);
     }
@@ -705,7 +708,10 @@ mod tests {
         let document: DesignDocument = serde_json::from_value(fixture).expect("deserialize v5");
         assert_eq!(document.schema_version, 5);
         assert_eq!(document.validate(), Ok(()));
-        assert!(matches!(&document.elements[0].kind, ElementKind::Table { .. }));
+        assert!(matches!(
+            &document.elements[0].kind,
+            ElementKind::Table { .. }
+        ));
     }
 
     #[test]
@@ -762,7 +768,10 @@ mod tests {
         if let ElementKind::Table { cells, .. } = &mut document.elements[0].kind {
             cells[0].pop();
         }
-        assert_eq!(document.validate(), Err(ValidationError::InvalidTableMatrix));
+        assert_eq!(
+            document.validate(),
+            Err(ValidationError::InvalidTableMatrix)
+        );
 
         let mut oversized: DesignDocument = serde_json::from_value(fixture).expect("deserialize");
         if let ElementKind::Table { cells, .. } = &mut oversized.elements[0].kind {
@@ -773,6 +782,4 @@ mod tests {
             Err(ValidationError::InvalidTableTextLength)
         );
     }
-
-
 }
