@@ -61,7 +61,9 @@ mod tests {
         let input = include_str!("../../../fixtures/document-v5-semantic-table.json");
         let mut parsed: serde_json::Value = serde_json::from_str(input).expect("fixture JSON");
         parsed["schema_version"] = serde_json::json!(4);
-        assert!(validate_document_json(&parsed.to_string()).is_err());
+        let document: DesignDocument =
+            serde_json::from_value(parsed).expect("deserialize legacy table document");
+        assert!(migrate_to_current(document).is_err());
     }
 
     #[test]
