@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "typescript": "5.8.3",
-    "vue-tsc": "3.3.13",
+    "vue-tsc": "3.3.14",
     "vitest": "5.0.5",
     "playwright": "1.56.1"
   },
