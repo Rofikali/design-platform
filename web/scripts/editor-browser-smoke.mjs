@@ -437,7 +437,7 @@ async function main() {
       return info.size > 0 ? path : null;
     });
     const exported = JSON.parse(await readFile(exportedPath, "utf8"));
-    if (exported.schema_version !== 4 || exported.elements?.length !== 2) {
+    if (exported.schema_version !== 5 || exported.elements?.length !== 2) {
       throw new Error("Exported file did not contain the expected versioned two-element document");
     }
 
@@ -840,7 +840,7 @@ async function main() {
       const doc = JSON.parse(saved);
       const frame = doc.elements.find(item => item.id === expectedFrameGridIds.frame && item.kind.type === "frame");
       const grid = doc.elements.find(item => item.id === expectedFrameGridIds.grid && item.kind.type === "grid");
-      return doc.schema_version === 4 && doc.elements.length === expectedFrameGridIds.elementCount &&
+      return doc.schema_version === 5 && doc.elements.length === expectedFrameGridIds.elementCount &&
         frame && grid && grid.kind.rows === 4 && grid.kind.columns === 5 && grid.kind.stroke_width === 3.5 ? saved : null;
     });
     await evaluate("location.reload(); true");
