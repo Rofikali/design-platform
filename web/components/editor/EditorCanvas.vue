@@ -58,7 +58,7 @@ const emit = defineEmits<{
             backgroundColor: element.type === 'rect' ? element.color : element.type === 'frame' ? (element.fillColor ?? 'transparent') : 'transparent',
             fontSize: element.type === 'text' ? element.fontSize + 'px' : undefined,
             border: element.type === 'frame' || element.type === 'grid' ? element.strokeWidth + 'px solid ' + element.strokeColor : undefined,
-            backgroundImage: element.type === 'grid' ? 'linear-gradient(to bottom, ' + element.strokeColor + ' 1px, transparent 1px), linear-gradient(to right, ' + element.strokeColor + ' 1px, transparent 1px)' : undefined,
+            backgroundImage: element.type === 'grid' ? 'linear-gradient(to bottom, ' + element.strokeColor + ' ' + element.strokeWidth + 'px, transparent ' + element.strokeWidth + 'px), linear-gradient(to right, ' + element.strokeColor + ' ' + element.strokeWidth + 'px, transparent ' + element.strokeWidth + 'px)' : undefined,
             backgroundSize: element.type === 'grid' ? '100% ' + (100 / element.rows) + '%, ' + (100 / element.columns) + '% 100%' : undefined,
           }"
           type="button"
