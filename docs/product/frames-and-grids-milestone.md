@@ -1,6 +1,6 @@
 # Frames and Grids Milestone — Product and Engineering Contract
 
-**Status:** Implementation in progress in PR #90; schema-v4 contract and first editor/export slice are implemented on the branch, pending CI verification.
+**Status:** Implemented and merged to `main` via PR #90 on 2026-11-06. The post-merge Rust core and JavaScript dependency audit passed; the post-merge Nuxt frontend and Rust dependency audit were still running at the time this status was recorded. See the PR and merge commit for implementation history.
 **Target:** First frames/grids increment on top of schema v3 background images; document contract is schema v4.
 **Scope:** Browser design editor for exam papers and shop banners. This milestone does not add audio, video, animation, arbitrary SVG, or a general-purpose page-layout engine.
 
@@ -40,7 +40,7 @@ A user can:
 
 Schema version 4 introduces the Frame and Grid variants. v1–v3 migration behavior is explicit; v3 page backgrounds are preserved. Shared schema-v4 fixture: fixtures/document-v4-frames-grids.json.
 
-Implemented contract variants (subject to review in PR #90):
+Implemented contract variants:
 
 - **Frame:** id, position, dimensions, stroke color, stroke width, and optional fill color.
 - **Grid:** id, position, dimensions, rows, columns, stroke color, and stroke width.

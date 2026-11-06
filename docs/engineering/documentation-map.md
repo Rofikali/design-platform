@@ -5,9 +5,13 @@ This index explains where project knowledge belongs. Keep each document focused 
 ## Product and architecture
 
 - [MVP scope](../product/mvp.md): initial users, outcomes, and explicit non-goals.
+- [Frames and Grids milestone](../product/frames-and-grids-milestone.md): implemented schema-v4 frame/grid scope and acceptance contract.
+- [Semantic Tables milestone](../product/semantic-tables-milestone.md): proposed schema-v5 data-bearing table scope and acceptance contract.
 - [System overview](../architecture/system-overview.md): HLD, responsibilities, trust boundaries, and target component flow.
 - [Architecture decision records](../adr/ADR-0001-architecture.md): current foundational architecture decision.
 - [ADR-0002: WebAssembly adapter](../adr/ADR-0002-wasm-adapter.md): thin Rust-to-JavaScript boundary and staged integration decision.
+- [ADR-0005: Frames and Grids](../adr/ADR-0005-frames-and-grids-schema-v4.md): schema-v4 first-class visual layout primitives.
+- [ADR-0006: Semantic Tables](../adr/ADR-0006-semantic-tables.md): proposed first-class table data model and rejected alternatives.
 - [Security threat model](../security/threat-model.md): assets, threats, controls, and risks to revisit.
 - [Engineering standards](standards.md): SOLID, DRY, design-pattern selection, HLD/LLD, and definition of done.
 - [Editor geometry](editor-geometry.md): coordinate model, resize invariants, algorithm complexity, and verification requirements.
