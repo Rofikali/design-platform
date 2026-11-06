@@ -1,0 +1,37 @@
+{
+  "schema_version": 4,
+  "page": {
+    "width": 800,
+    "height": 600,
+    "background": "#ffffff"
+  },
+  "elements": [
+    {
+      "id": "frame-1",
+      "x": 24,
+      "y": 32,
+      "width": 300,
+      "height": 180,
+      "kind": {
+        "type": "frame",
+        "stroke_color": "#2563eb",
+        "stroke_width": 2,
+        "fill_color": "#ffffff"
+      }
+    },
+    {
+      "id": "grid-1",
+      "x": 360,
+      "y": 32,
+      "width": 240,
+      "height": 180,
+      "kind": {
+        "type": "grid",
+        "rows": 3,
+        "columns": 4,
+        "stroke_color": "#64748b",
+        "stroke_width": 1
+      }
+    }
+  ]
+}

@@ -4,7 +4,15 @@ export type TextElement = {
 export type RectElement = {
   id: string; type: "rect"; x: number; y: number; width: number; height: number; color: string;
 };
-export type DesignElement = TextElement | RectElement;
+export type FrameElement = {
+  id: string; type: "frame"; x: number; y: number; width: number; height: number;
+  strokeColor: string; strokeWidth: number; fillColor?: string;
+};
+export type GridElement = {
+  id: string; type: "grid"; x: number; y: number; width: number; height: number;
+  rows: number; columns: number; strokeColor: string; strokeWidth: number;
+};
+export type DesignElement = TextElement | RectElement | FrameElement | GridElement;
 export type BackgroundImageFit = "cover" | "contain";
 export type BackgroundImage = { data_url: string; fit: BackgroundImageFit };
 export type PageGeometry = { width: number; height: number; background: string; background_image?: BackgroundImage };
@@ -15,12 +23,17 @@ export type DesignDocument = {
   page: PageGeometry;
   elements: Array<{
     id: string; x: number; y: number; width: number; height: number;
-    kind: { type: "text"; text: string; font_size: number; color: string } | { type: "rect"; color: string };
+    kind: { type: "text"; text: string; font_size: number; color: string } | { type: "rect"; color: string } |
+      { type: "frame"; stroke_color: string; stroke_width: number; fill_color?: string } |
+      { type: "grid"; rows: number; columns: number; stroke_color: string; stroke_width: number };
   }>;
   output_size_mm?: OutputSizeMm;
   template?: TemplateMetadata;
 };
-export const SCHEMA_VERSION = 3;
+export const SCHEMA_VERSION = 4;
+export const MAX_GRID_ROWS = 20;
+export const MAX_GRID_COLUMNS = 20;
+export const MAX_STROKE_WIDTH = 100;
 export const MAX_BACKGROUND_IMAGE_DATA_URL_BYTES = 1_048_576;
 export const MAX_ELEMENTS = 1000;
 export const MAX_TEXT_CHARS = 10000;
@@ -42,7 +55,11 @@ export function toDocument(source: DesignElement[], page: PageGeometry = { width
       id: element.id, x: element.x, y: element.y, width: element.width, height: element.height,
       kind: element.type === "text"
         ? { type: "text" as const, text: element.text, font_size: element.fontSize, color: element.color }
-        : { type: "rect" as const, color: element.color },
+        : element.type === "rect"
+          ? { type: "rect" as const, color: element.color }
+          : element.type === "frame"
+            ? { type: "frame" as const, stroke_color: element.strokeColor, stroke_width: element.strokeWidth, ...(element.fillColor ? { fill_color: element.fillColor } : {}) }
+            : { type: "grid" as const, rows: element.rows, columns: element.columns, stroke_color: element.strokeColor, stroke_width: element.strokeWidth },
     })),
     ...(outputSizeMm ? { output_size_mm: { ...outputSizeMm } } : {}),
     ...(template ? { template: { ...template } } : {}),
@@ -64,7 +81,7 @@ export function parseDocumentJson(json: string): ParsedDocument {
 export function parseDocument(input: unknown): ParsedDocument {
   if (!input || typeof input !== "object" || Array.isArray(input)) throw new Error("The file must contain a JSON document object.");
   const doc = input as Partial<DesignDocument>;
-  if (doc.schema_version !== 1 && doc.schema_version !== 2 && doc.schema_version !== SCHEMA_VERSION) throw new Error("Unsupported document schema version. This editor supports versions 1, 2 and 3.");
+  if (doc.schema_version !== 1 && doc.schema_version !== 2 && doc.schema_version !== 3 && doc.schema_version !== SCHEMA_VERSION) throw new Error("Unsupported document schema version. This editor supports versions 1, 2, 3 and 4.");
   if (!doc.page || !Number.isFinite(doc.page.width) || !Number.isFinite(doc.page.height) || !validColor(doc.page.background))
     throw new Error("The document must have finite page dimensions and a valid hexadecimal background color.");
   const width = doc.page.width; const height = doc.page.height;
@@ -95,7 +112,7 @@ export function parseDocument(input: unknown): ParsedDocument {
     template = { id: item.id, version: item.version };
   }
   let backgroundImage: BackgroundImage | undefined;
-  if (doc.schema_version === SCHEMA_VERSION && doc.page.background_image !== undefined) {
+  if (doc.schema_version >= 3 && doc.page.background_image !== undefined) {
     const image = doc.page.background_image;
     if (!image || typeof image !== "object" ||
         (image.fit !== "cover" && image.fit !== "contain") ||
@@ -123,14 +140,29 @@ export function parseDocument(input: unknown): ParsedDocument {
         item.width <= 0 || item.height <= 0 || item.width > MAX_PAGE_DIMENSION || item.height > MAX_PAGE_DIMENSION)
       throw new Error("An element has invalid or out-of-range geometry.");
     const kind = item.kind;
-    if (!kind || typeof kind !== "object" || !validColor(kind.color)) throw new Error("An element has an invalid color.");
+    if (!kind || typeof kind !== "object") throw new Error("An element has an invalid kind.");
     if (kind.type === "text") {
+      if (!validColor(kind.color)) throw new Error("An element has an invalid color.");
       if (typeof kind.text !== "string" || [...kind.text].length > MAX_TEXT_CHARS) throw new Error("Text must be 10,000 characters or fewer.");
       if (typeof kind.font_size !== "number" || !Number.isFinite(kind.font_size) || kind.font_size < 1 || kind.font_size > 512)
         throw new Error("Font size must be between 1 and 512.");
       return { id: item.id, type: "text" as const, text: kind.text, x: item.x, y: item.y, width: item.width, height: item.height, fontSize: kind.font_size, color: kind.color };
     }
-    if (kind.type === "rect") return { id: item.id, type: "rect" as const, x: item.x, y: item.y, width: item.width, height: item.height, color: kind.color };
+    if (kind.type === "rect") {
+      if (!validColor(kind.color)) throw new Error("An element has an invalid color.");
+      return { id: item.id, type: "rect" as const, x: item.x, y: item.y, width: item.width, height: item.height, color: kind.color };
+    }
+    if (kind.type === "frame") {
+      if (!validColor(kind.stroke_color) || (kind.fill_color !== undefined && kind.fill_color !== null && !validColor(kind.fill_color))) throw new Error("Frame colors must be valid hexadecimal colors.");
+      if (typeof kind.stroke_width !== "number" || !Number.isFinite(kind.stroke_width) || kind.stroke_width < 0.1 || kind.stroke_width > MAX_STROKE_WIDTH) throw new Error("Frame stroke width must be between 0.1 and 100.");
+      return { id: item.id, type: "frame" as const, x: item.x, y: item.y, width: item.width, height: item.height, strokeColor: kind.stroke_color, strokeWidth: kind.stroke_width, ...(typeof kind.fill_color === "string" ? { fillColor: kind.fill_color } : {}) };
+    }
+    if (kind.type === "grid") {
+      if (!Number.isInteger(kind.rows) || kind.rows < 1 || kind.rows > MAX_GRID_ROWS || !Number.isInteger(kind.columns) || kind.columns < 1 || kind.columns > MAX_GRID_COLUMNS) throw new Error("Grid rows and columns must be integers between 1 and 20.");
+      if (!validColor(kind.stroke_color)) throw new Error("Grid stroke color must be a valid hexadecimal color.");
+      if (typeof kind.stroke_width !== "number" || !Number.isFinite(kind.stroke_width) || kind.stroke_width < 0.1 || kind.stroke_width > MAX_STROKE_WIDTH) throw new Error("Grid stroke width must be between 0.1 and 100.");
+      return { id: item.id, type: "grid" as const, x: item.x, y: item.y, width: item.width, height: item.height, rows: kind.rows, columns: kind.columns, strokeColor: kind.stroke_color, strokeWidth: kind.stroke_width };
+    }
     throw new Error("Unsupported element type.");
   });
   return { elements: parsed, width, height, background: doc.page.background, ...(backgroundImage ? { backgroundImage } : {}), ...(outputSizeMm ? { outputSizeMm } : {}), ...(template ? { template } : {}) };

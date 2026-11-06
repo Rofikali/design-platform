@@ -18,11 +18,11 @@ describe("starter template catalog", () => {
     ["exam-paper-a4", 794, 1123, 210, 297],
     ["shop-banner-landscape", 1200, 500, 300, 125],
   ] as const)(
-    "creates a valid versioned document for %s",
+    "creates a valid schema-v4 document for %s",
     (id, width, height, outputWidth, outputHeight) => {
       const document = createTemplateDocument(id);
       expect(() => parseDocument(document)).not.toThrow();
-      expect(document.schema_version).toBe(3);
+      expect(document.schema_version).toBe(4);
       expect(document.page).toMatchObject({ width, height });
       expect(document.output_size_mm).toEqual({ width: outputWidth, height: outputHeight });
       expect(document.template).toEqual({ id, version: 1 });

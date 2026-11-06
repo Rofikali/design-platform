@@ -437,7 +437,7 @@ async function main() {
       return info.size > 0 ? path : null;
     });
     const exported = JSON.parse(await readFile(exportedPath, "utf8"));
-    if (exported.schema_version !== 3 || exported.elements?.length !== 2) {
+    if (exported.schema_version !== 4 || exported.elements?.length !== 2) {
       throw new Error("Exported file did not contain the expected versioned two-element document");
     }
 
@@ -793,6 +793,89 @@ async function main() {
         afterKeyboardBoundary.top + afterKeyboardBoundary.height > 600) {
       throw new Error(`Directional movement escaped page bounds: ${JSON.stringify({ edgeResize, afterKeyboardBoundary })}`);
     }
+
+    // Frames and grids are first-class editable elements with bounded controls.
+    await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.includes('＋ Add frame'))?.click(); true");
+    await waitForPage("frame added", "document.querySelector('.design-element.frame')?.getAttribute('aria-label') || ''", value => value.includes("frame element"));
+    const frameStyle = await evaluate("(() => { const frame = document.querySelector('.design-element.frame'); return { border: frame ? getComputedStyle(frame).borderTopWidth : '', fill: frame ? getComputedStyle(frame).backgroundColor : '' }; })()");
+    if (frameStyle.border !== "2px") throw new Error("Frame default stroke was not rendered: " + JSON.stringify(frameStyle));
+
+    await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.includes('＋ Add grid'))?.click(); true");
+    await waitForPage("grid added", "document.querySelector('.design-element.grid')?.getAttribute('aria-label') || ''", value => value.includes("3 rows and 3 columns"));
+    const setNumberField = async (label, value) => evaluate(`(() => {
+      const field = Array.from(document.querySelectorAll('label.field')).find(node => node.textContent.includes(${JSON.stringify(label)}));
+      const input = field?.querySelector('input');
+      if (!input) throw new Error("Missing grid property input: " + ${JSON.stringify(label)});
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+      setter.call(input, ${JSON.stringify(String(value))});
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+      return true;
+    })()`);
+    await setNumberField("Stroke width", 3.5);
+    await setNumberField("Rows (1–20)", 4);
+    await setNumberField("Columns (1–20)", 5);
+    const configuredGrid = await evaluate("(() => { const grid = document.querySelector('.design-element.grid'); const fields = Array.from(document.querySelectorAll('label.field')); return { label: grid?.getAttribute('aria-label') || '', backgroundSize: grid ? getComputedStyle(grid).backgroundSize : '', backgroundImage: grid ? getComputedStyle(grid).backgroundImage : '', rows: fields.find(node => node.textContent.includes('Rows'))?.querySelector('input')?.value, columns: fields.find(node => node.textContent.includes('Columns'))?.querySelector('input')?.value }; })()");
+    if (!configuredGrid.label.includes("4 rows and 5 columns") || configuredGrid.rows !== "4" || configuredGrid.columns !== "5" || !configuredGrid.backgroundImage.includes("3.5px")) {
+      throw new Error("Grid controls did not apply the selected structure and stroke width: " + JSON.stringify(configuredGrid));
+    }
+    const expectedFrameGridIds = await evaluate("(() => ({ frame: document.querySelector('.design-element.frame')?.dataset.elementId || '', grid: document.querySelector('.design-element.grid')?.dataset.elementId || '', elementCount: document.querySelectorAll('.design-element').length }))()");
+    if (!expectedFrameGridIds.frame || !expectedFrameGridIds.grid) {
+      throw new Error("Could not capture stable frame/grid IDs before autosave: " + JSON.stringify(expectedFrameGridIds));
+    }
+    await waitFor("exact schema-v4 frame/grid autosave", async () => {
+      const saved = await evaluate("localStorage.getItem('design-platform:document:v1')");
+      if (!saved) return null;
+      const doc = JSON.parse(saved);
+      const frame = doc.elements.find(item => item.id === expectedFrameGridIds.frame && item.kind.type === "frame");
+      const grid = doc.elements.find(item => item.id === expectedFrameGridIds.grid && item.kind.type === "grid");
+      return doc.schema_version === 4 && doc.elements.length === expectedFrameGridIds.elementCount &&
+        frame && grid && grid.kind.rows === 4 && grid.kind.columns === 5 && grid.kind.stroke_width === 3.5 ? saved : null;
+    });
+    await evaluate("location.reload(); true");
+    await waitForPage(
+      "saved design restoration to finish",
+      "document.querySelector('aside.tools-panel p[role=status]')?.textContent || ''",
+      value => value.includes("Restored the last locally saved design."),
+    );
+    const restoredFrameGrid = await evaluate("(() => ({ frame: document.querySelector('.design-element.frame')?.dataset.elementId || '', grid: document.querySelector('.design-element.grid')?.dataset.elementId || '', gridLabel: document.querySelector('.design-element.grid')?.getAttribute('aria-label') || '', elementCount: document.querySelectorAll('.design-element').length }))()");
+    if (restoredFrameGrid.frame !== expectedFrameGridIds.frame || restoredFrameGrid.grid !== expectedFrameGridIds.grid ||
+        restoredFrameGrid.elementCount !== expectedFrameGridIds.elementCount ||
+        !restoredFrameGrid.gridLabel.includes("4 rows and 5 columns")) {
+      throw new Error("Exact frame/grid document did not survive reload: " + JSON.stringify({ expected: expectedFrameGridIds, actual: restoredFrameGrid }));
+    }
+
+    // Export the persisted frame/grid document through the actual browser PNG path.
+    await clickButtonContaining("Download PNG");
+    let frameGridPngStatus;
+    try {
+      frameGridPngStatus = await waitForPage(
+        "frame/grid PNG export status",
+        "document.querySelector('aside.tools-panel')?.querySelector('p[role=status]')?.textContent || ''",
+        value => value.includes("PNG exported at 1600 × 1200 pixels") || value.startsWith("PNG export failed:"),
+      );
+    } catch (error) {
+      const diagnostics = await evaluate("JSON.stringify({ status: document.querySelector('aside.tools-panel')?.querySelector('p[role=status]')?.textContent || null, allStatuses: Array.from(document.querySelectorAll('[role=status]')).map(node => ({ text: node.textContent, className: node.className, parent: node.parentElement?.className })), toolsText: document.querySelector('aside.tools-panel')?.innerText || null, pngButtons: Array.from(document.querySelectorAll('button')).filter(button => button.textContent.includes('Download PNG')).map(button => ({ text: button.textContent, disabled: button.disabled, rect: (() => { const r = button.getBoundingClientRect(); return { x: r.x, y: r.y, width: r.width, height: r.height }; })() })) })");
+      throw new Error(`Frame/grid PNG export status diagnostic: ${diagnostics}; ${error instanceof Error ? error.message : String(error)}`);
+    }
+    if (!frameGridPngStatus.includes("PNG exported at 1600 × 1200 pixels")) {
+      throw new Error("Frame/grid PNG export failed: " + frameGridPngStatus);
+    }
+    const frameGridPngPath = await waitFor("downloaded frame/grid PNG", async () => {
+      const names = await readdir(downloads);
+      if (names.some(item => item.endsWith(".crdownload"))) return null;
+      const name = names.find(item => item === "design-platform.png");
+      if (!name) return null;
+      const path = resolve(downloads, name);
+      const info = await stat(path);
+      return info.size > 100 ? path : null;
+    });
+    const frameGridPng = await readFile(frameGridPngPath);
+    if (!frameGridPng.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])) ||
+        frameGridPng.toString("ascii", 12, 16) !== "IHDR" ||
+        frameGridPng.readUInt32BE(16) !== 1600 || frameGridPng.readUInt32BE(20) !== 1200) {
+      throw new Error("Frame/grid PNG signature or dimensions were invalid.");
+    }
+    await rm(frameGridPngPath);
 
     // Start a new design from the real template picker after the existing editor checks.
     await evaluate(`(() => {

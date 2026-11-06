@@ -6,7 +6,10 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
-pub const CURRENT_SCHEMA_VERSION: u32 = 3;
+pub const CURRENT_SCHEMA_VERSION: u32 = 4;
+pub const MAX_GRID_ROWS: u32 = 20;
+pub const MAX_GRID_COLUMNS: u32 = 20;
+pub const MAX_STROKE_WIDTH: f64 = 100.0;
 pub const MAX_BACKGROUND_IMAGE_DATA_URL_BYTES: usize = 1_048_576;
 pub const MAX_PAGE_DIMENSION: f64 = 10_000.0;
 pub const MAX_PAGE_AREA: f64 = 25_000_000.0;
@@ -83,6 +86,18 @@ pub enum ElementKind {
     Rect {
         color: String,
     },
+    Frame {
+        stroke_color: String,
+        stroke_width: f64,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        fill_color: Option<String>,
+    },
+    Grid {
+        rows: u32,
+        columns: u32,
+        stroke_color: String,
+        stroke_width: f64,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -104,6 +119,9 @@ pub enum ValidationError {
     InvalidTextLength,
     InvalidFontSize,
     InvalidColor,
+    InvalidFrameStyle,
+    InvalidGridDimensions,
+    InvalidStrokeWidth,
 }
 
 impl DesignDocument {
@@ -185,13 +203,45 @@ impl DesignDocument {
                         return Err(ValidationError::InvalidColor);
                     }
                 }
+                ElementKind::Frame {
+                    stroke_color,
+                    stroke_width,
+                    fill_color,
+                } => {
+                    if !valid_color(stroke_color)
+                        || fill_color.as_ref().is_some_and(|color| !valid_color(color))
+                    {
+                        return Err(ValidationError::InvalidFrameStyle);
+                    }
+                    if !valid_stroke_width(*stroke_width) {
+                        return Err(ValidationError::InvalidStrokeWidth);
+                    }
+                }
+                ElementKind::Grid {
+                    rows,
+                    columns,
+                    stroke_color,
+                    stroke_width,
+                } => {
+                    if !(1..=MAX_GRID_ROWS).contains(rows)
+                        || !(1..=MAX_GRID_COLUMNS).contains(columns)
+                    {
+                        return Err(ValidationError::InvalidGridDimensions);
+                    }
+                    if !valid_color(stroke_color) {
+                        return Err(ValidationError::InvalidColor);
+                    }
+                    if !valid_stroke_width(*stroke_width) {
+                        return Err(ValidationError::InvalidStrokeWidth);
+                    }
+                }
             }
         }
         Ok(())
     }
 }
 
-/// Migrate supported legacy documents to schema v3 without inventing print intent.
+/// Migrate supported legacy documents to schema v4 without inventing print intent.
 pub fn migrate_to_current(mut document: DesignDocument) -> Result<DesignDocument, ValidationError> {
     match document.schema_version {
         1 => {
@@ -206,6 +256,9 @@ pub fn migrate_to_current(mut document: DesignDocument) -> Result<DesignDocument
         2 => {
             document.schema_version = CURRENT_SCHEMA_VERSION;
             document.page.background_image = None;
+        }
+        3 => {
+            document.schema_version = CURRENT_SCHEMA_VERSION;
         }
         CURRENT_SCHEMA_VERSION => {}
         _ => return Err(ValidationError::UnsupportedSchemaVersion),
@@ -251,6 +304,9 @@ fn valid_background_image_data_url(value: &str) -> bool {
     (payload.len() / 4) * 3 > padding
 }
 
+fn valid_stroke_width(value: f64) -> bool {
+    value.is_finite() && (0.1..=MAX_STROKE_WIDTH).contains(&value)
+}
 fn valid_dimension(value: f64) -> bool {
     value.is_finite() && value > 0.0 && value <= MAX_PAGE_DIMENSION
 }
@@ -356,7 +412,7 @@ mod tests {
                 .expect("fixture");
         let document: DesignDocument = serde_json::from_value(fixture).expect("deserialize v1");
         let migrated = migrate_to_current(document).expect("migration");
-        assert_eq!(migrated.schema_version, 3);
+        assert_eq!(migrated.schema_version, 4);
         assert_eq!(migrated.page.width, 800.0);
         assert_eq!(migrated.page.height, 600.0);
         assert_eq!(migrated.output_size_mm, None);
@@ -371,7 +427,7 @@ mod tests {
                 .expect("v2 fixture");
         let document: DesignDocument = serde_json::from_value(fixture).expect("deserialize v2");
         let migrated = migrate_to_current(document).expect("v2 migrates");
-        assert_eq!(migrated.schema_version, 3);
+        assert_eq!(migrated.schema_version, 4);
         assert_eq!(migrated.output_size_mm.unwrap().width, 210.0);
     }
 
@@ -392,9 +448,10 @@ mod tests {
         ))
         .expect("v3 fixture");
         let document: DesignDocument = serde_json::from_value(fixture).expect("deserialize v3");
-        assert_eq!(document.validate(), Ok(()));
+        let migrated = migrate_to_current(document).expect("v3 migrates");
+        assert_eq!(migrated.schema_version, 4);
         assert_eq!(
-            document.page.background_image.unwrap().fit,
+            migrated.page.background_image.unwrap().fit,
             BackgroundImageFit::Cover
         );
     }
@@ -427,6 +484,78 @@ mod tests {
         assert_eq!(
             document.validate(),
             Err(ValidationError::InvalidBackgroundImage)
+        );
+    }
+
+    #[test]
+    fn validates_frame_and_grid_primitives() {
+        let mut document = valid_document();
+        document.elements = vec![
+            Element {
+                id: "frame-1".into(),
+                x: 10.0,
+                y: 20.0,
+                width: 300.0,
+                height: 200.0,
+                kind: ElementKind::Frame {
+                    stroke_color: "#123456".into(),
+                    stroke_width: 2.0,
+                    fill_color: Some("#fff".into()),
+                },
+            },
+            Element {
+                id: "grid-1".into(),
+                x: 20.0,
+                y: 30.0,
+                width: 200.0,
+                height: 100.0,
+                kind: ElementKind::Grid {
+                    rows: 3,
+                    columns: 4,
+                    stroke_color: "#abc".into(),
+                    stroke_width: 1.0,
+                },
+            },
+        ];
+        assert_eq!(document.validate(), Ok(()));
+        let json = serde_json::to_string(&document).expect("serialize");
+        let restored: DesignDocument = serde_json::from_str(&json).expect("deserialize");
+        assert_eq!(restored, document);
+    }
+
+    #[test]
+    fn accepts_shared_schema_v4_frames_and_grids_fixture() {
+        let fixture: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../fixtures/document-v4-frames-grids.json"
+        ))
+        .expect("v4 fixture");
+        let document: DesignDocument = serde_json::from_value(fixture).expect("deserialize v4");
+        assert_eq!(document.schema_version, 4);
+        assert_eq!(document.validate(), Ok(()));
+        assert_eq!(document.elements.len(), 2);
+    }
+
+    #[test]
+    fn rejects_invalid_grid_dimensions_and_stroke_width() {
+        let mut document = valid_document();
+        document.elements[0].kind = ElementKind::Grid {
+            rows: 0,
+            columns: 2,
+            stroke_color: "#000".into(),
+            stroke_width: 1.0,
+        };
+        assert_eq!(
+            document.validate(),
+            Err(ValidationError::InvalidGridDimensions)
+        );
+        document.elements[0].kind = ElementKind::Frame {
+            stroke_color: "#000".into(),
+            stroke_width: f64::NAN,
+            fill_color: None,
+        };
+        assert_eq!(
+            document.validate(),
+            Err(ValidationError::InvalidStrokeWidth)
         );
     }
 

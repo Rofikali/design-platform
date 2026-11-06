@@ -127,6 +127,22 @@ export function renderDesignSvg(
     if (element.type === "rect") {
       return `<rect x="${element.x}" y="${element.y}" width="${element.width}" height="${element.height}" fill="${escapeXml(element.color)}"/>`;
     }
+    if (element.type === "frame") {
+      const fill = element.fillColor ? escapeXml(element.fillColor) : "none";
+      return `<rect x="${element.x}" y="${element.y}" width="${element.width}" height="${element.height}" fill="${fill}" stroke="${escapeXml(element.strokeColor)}" stroke-width="${element.strokeWidth}"/>`;
+    }
+    if (element.type === "grid") {
+      const lines: string[] = [];
+      for (let row = 1; row < element.rows; row += 1) {
+        const y = element.y + element.height * row / element.rows;
+        lines.push(`<line x1="${element.x}" y1="${y}" x2="${element.x + element.width}" y2="${y}"/>`);
+      }
+      for (let column = 1; column < element.columns; column += 1) {
+        const x = element.x + element.width * column / element.columns;
+        lines.push(`<line x1="${x}" y1="${element.y}" x2="${x}" y2="${element.y + element.height}"/>`);
+      }
+      return `<g fill="none" stroke="${escapeXml(element.strokeColor)}" stroke-width="${element.strokeWidth}"><rect x="${element.x}" y="${element.y}" width="${element.width}" height="${element.height}"/>${lines.join("")}</g>`;
+    }
     const fontSize = element.fontSize;
     const lines = wrapText(element.text, element.width, fontSize, measureText);
     // The editor element's box is its layout contract. Without clipping, wrapped
