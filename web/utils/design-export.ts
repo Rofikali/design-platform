@@ -160,7 +160,7 @@ export function renderDesignSvg(
           const lines = wrapText(cell, textWidth, element.fontSize, measureText);
           const fill = escapeXml(row < element.headerRows ? element.headerFill : element.cellFill);
           cellFills.push(`<rect x="${x}" y="${y}" width="${cellWidth}" height="${cellHeight}" fill="${fill}"/>`);
-          cellText.push(`<defs><clipPath id="${clipId}"><rect x="${textX}" y="${y + element.cellPadding}" width="${textWidth}" height="${textHeight}"/></clipPath></defs><text clip-path="url(#${clipId})" x="${textX}" y="${textY}" fill="${escapeXml(element.textColor)}" font-family="Arial, Helvetica, sans-serif" font-size="${element.fontSize}">${lines.map((line, lineIndex) => `<tspan x="${textX}" dy="${lineIndex === 0 ? 0 : element.fontSize * 1.25}">${escapeXml(line)}</tspan>`).join("")}</text>`);
+          cellText.push(`<defs><clipPath id="${clipId}"><rect x="${textX}" y="${y + element.cellPadding}" width="${textWidth}" height="${Math.max(0, cellHeight - element.cellPadding * 2)}"/></clipPath></defs><text clip-path="url(#${clipId})" x="${textX}" y="${textY}" fill="${escapeXml(element.textColor)}" font-family="Arial, Helvetica, sans-serif" font-size="${element.fontSize}">${lines.map((line, lineIndex) => `<tspan x="${textX}" dy="${lineIndex === 0 ? 0 : element.fontSize * 1.25}">${escapeXml(line)}</tspan>`).join("")}</text>`);
         }
       }
       const lines: string[] = [];
