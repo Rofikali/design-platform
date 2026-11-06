@@ -818,17 +818,31 @@ async function main() {
     if (!configuredGrid.label.includes("4 rows and 5 columns") || configuredGrid.rows !== "4" || configuredGrid.columns !== "5" || !configuredGrid.backgroundImage.includes("3.5px")) {
       throw new Error("Grid controls did not apply the selected structure and stroke width: " + JSON.stringify(configuredGrid));
     }
-    await waitFor("schema-v4 frame/grid autosave", async () => {
+    const expectedFrameGridIds = await evaluate("(() => ({ frame: document.querySelector('.design-element.frame')?.dataset.elementId || '', grid: document.querySelector('.design-element.grid')?.dataset.elementId || '', elementCount: document.querySelectorAll('.design-element').length }))()");
+    if (!expectedFrameGridIds.frame || !expectedFrameGridIds.grid) {
+      throw new Error("Could not capture stable frame/grid IDs before autosave: " + JSON.stringify(expectedFrameGridIds));
+    }
+    await waitFor("exact schema-v4 frame/grid autosave", async () => {
       const saved = await evaluate("localStorage.getItem('design-platform:document:v1')");
       if (!saved) return null;
       const doc = JSON.parse(saved);
-      return doc.schema_version === 4 && doc.elements.some(item => item.kind.type === "frame") &&
-        doc.elements.some(item => item.kind.type === "grid" && item.kind.rows === 4 && item.kind.columns === 5) ? saved : null;
+      const frame = doc.elements.find(item => item.id === expectedFrameGridIds.frame && item.kind.type === "frame");
+      const grid = doc.elements.find(item => item.id === expectedFrameGridIds.grid && item.kind.type === "grid");
+      return doc.schema_version === 4 && doc.elements.length === expectedFrameGridIds.elementCount &&
+        frame && grid && grid.kind.rows === 4 && grid.kind.columns === 5 && grid.kind.stroke_width === 3.5 ? saved : null;
     });
     await evaluate("location.reload(); true");
-    await waitForPage("frame and grid restore after reload", "document.querySelectorAll('.design-element.frame').length + ':' + document.querySelectorAll('.design-element.grid').length", value => value === "1:1");
-    const restoredGrid = await evaluate("(() => { const grid = document.querySelector('.design-element.grid'); return grid?.getAttribute('aria-label') || ''; })()");
-    if (!restoredGrid.includes("4 rows and 5 columns")) throw new Error("Saved grid structure did not survive reload: " + restoredGrid);
+    await waitForPage(
+      "saved design restoration to finish",
+      "document.querySelector('aside.tools-panel p[role=status]')?.textContent || ''",
+      value => value.includes("Restored the last locally saved design."),
+    );
+    const restoredFrameGrid = await evaluate("(() => ({ frame: document.querySelector('.design-element.frame')?.dataset.elementId || '', grid: document.querySelector('.design-element.grid')?.dataset.elementId || '', gridLabel: document.querySelector('.design-element.grid')?.getAttribute('aria-label') || '', elementCount: document.querySelectorAll('.design-element').length }))()");
+    if (restoredFrameGrid.frame !== expectedFrameGridIds.frame || restoredFrameGrid.grid !== expectedFrameGridIds.grid ||
+        restoredFrameGrid.elementCount !== expectedFrameGridIds.elementCount ||
+        !restoredFrameGrid.gridLabel.includes("4 rows and 5 columns")) {
+      throw new Error("Exact frame/grid document did not survive reload: " + JSON.stringify({ expected: expectedFrameGridIds, actual: restoredFrameGrid }));
+    }
 
     // Export the persisted frame/grid document through the actual browser PNG path.
     await clickButtonContaining("Download PNG");
