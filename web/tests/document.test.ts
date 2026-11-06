@@ -118,7 +118,7 @@ describe("document parsing and validation", () => {
     const invalidStyle = structuredClone(schemaV5TableFixture) as unknown as DesignDocument;
     const invalidStyleKind = invalidStyle.elements[0]!.kind;
     if (invalidStyleKind.type !== "table") throw new Error("Expected table fixture");
-    invalidStyleKind.cellPadding = 25;
+    invalidStyleKind.cell_padding = 25;
     expect(() => parseDocument(invalidStyle)).toThrow(/Table styles/);
   });
 
