@@ -9,16 +9,16 @@ describe("document validation adapter", () => {
 
     expect(result.engine).toBe("typescript");
     expect(JSON.parse(result.json)).toMatchObject({
-      schema_version: 4,
+      schema_version: 5,
       page: { width: 800, height: 600 },
       elements: [{ id: "title-1" }, { id: "rect-2" }],
     });
   });
 
-  it("upgrades schema-v3 background images to v4 without losing the image", async () => {
+  it("upgrades schema-v3 background images to v5 without losing the image", async () => {
     const result = await validateDocumentJson(JSON.stringify(backgroundDocumentFixture));
     const exported = JSON.parse(result.json);
-    expect(exported.schema_version).toBe(4);
+    expect(exported.schema_version).toBe(5);
     expect(exported.page.background_image).toEqual(backgroundDocumentFixture.page.background_image);
   });
 
