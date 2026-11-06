@@ -316,7 +316,7 @@ impl DesignDocument {
 /// Migrate supported legacy documents to schema v4 without inventing print intent.
 pub fn migrate_to_current(mut document: DesignDocument) -> Result<DesignDocument, ValidationError> {
     if document.schema_version < CURRENT_SCHEMA_VERSION
-        && document.elements.iter().any(|element| matches!(element.kind, ElementKind::Table { .. }))
+        && document.elements.iter().any(|element| matches!(&element.kind, ElementKind::Table { .. }))
     {
         return Err(ValidationError::TableRequiresSchemaV5);
     }
@@ -490,7 +490,7 @@ mod tests {
                 .expect("fixture");
         let document: DesignDocument = serde_json::from_value(fixture).expect("deserialize v1");
         let migrated = migrate_to_current(document).expect("migration");
-        assert_eq!(migrated.schema_version, 4);
+        assert_eq!(migrated.schema_version, 5);
         assert_eq!(migrated.page.width, 800.0);
         assert_eq!(migrated.page.height, 600.0);
         assert_eq!(migrated.output_size_mm, None);
@@ -505,7 +505,7 @@ mod tests {
                 .expect("v2 fixture");
         let document: DesignDocument = serde_json::from_value(fixture).expect("deserialize v2");
         let migrated = migrate_to_current(document).expect("v2 migrates");
-        assert_eq!(migrated.schema_version, 4);
+        assert_eq!(migrated.schema_version, 5);
         assert_eq!(migrated.output_size_mm.unwrap().width, 210.0);
     }
 
@@ -527,7 +527,7 @@ mod tests {
         .expect("v3 fixture");
         let document: DesignDocument = serde_json::from_value(fixture).expect("deserialize v3");
         let migrated = migrate_to_current(document).expect("v3 migrates");
-        assert_eq!(migrated.schema_version, 4);
+        assert_eq!(migrated.schema_version, 5);
         assert_eq!(
             migrated.page.background_image.unwrap().fit,
             BackgroundImageFit::Cover
