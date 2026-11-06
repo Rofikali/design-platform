@@ -48,6 +48,23 @@ mod tests {
     }
 
     #[test]
+    fn validates_shared_schema_v5_table_fixture() {
+        let input = include_str!("../../../fixtures/document-v5-semantic-table.json");
+        let output = validate_document_json(input).expect("v5 table fixture validates");
+        let parsed: serde_json::Value = serde_json::from_str(&output).expect("normalized JSON");
+        assert_eq!(parsed["schema_version"], 5);
+        assert_eq!(parsed["elements"][0]["kind"]["cells"][1][2], "₹80");
+    }
+
+    #[test]
+    fn rejects_table_data_smuggled_into_schema_v4() {
+        let input = include_str!("../../../fixtures/document-v5-semantic-table.json");
+        let mut parsed: serde_json::Value = serde_json::from_str(input).expect("fixture JSON");
+        parsed["schema_version"] = serde_json::json!(4);
+        assert!(validate_document_json(&parsed.to_string()).is_err());
+    }
+
+    #[test]
     fn rejects_unsupported_future_version_in_core_migration() {
         let input = V1_DOCUMENT.replace("\"schema_version\":1", "\"schema_version\":999");
         let document: DesignDocument = serde_json::from_str(&input).expect("valid JSON");
