@@ -153,27 +153,27 @@ export function renderDesignSvg(
           const x = element.x + column * cellWidth;
           const y = element.y + row * cellHeight;
           const cell = element.cells[row]![column]!;
-          const clipId = \`table-\${elementIndex}-cell-\${row}-\${column}\`;
+          const clipId = `table-${elementIndex}-cell-${row}-${column}`;
           const textX = x + element.cellPadding;
           const textY = y + element.cellPadding + element.fontSize;
           const textWidth = Math.max(0, cellWidth - element.cellPadding * 2);
           const textHeight = Math.max(0, cellHeight - element.cellPadding * 2);
           const lines = wrapText(cell, textWidth, element.fontSize, measureText);
           const fill = escapeXml(row < element.headerRows ? element.headerFill : element.cellFill);
-          cellFills.push(\`<rect x="\${x}" y="\${y}" width="\${cellWidth}" height="\${cellHeight}" fill="\${fill}"/>\`);
-          cellText.push(\`<defs><clipPath id="\${clipId}"><rect x="\${textX}" y="\${y + element.cellPadding}" width="\${textWidth}" height="\${textHeight}"/></clipPath></defs><text clip-path="url(#\${clipId})" x="\${textX}" y="\${textY}" fill="\${escapeXml(element.textColor)}" font-family="Arial, Helvetica, sans-serif" font-size="\${element.fontSize}">\${lines.map((line, lineIndex) => \`<tspan x="\${textX}" dy="\${lineIndex === 0 ? 0 : element.fontSize * 1.25}">\${escapeXml(line)}</tspan>\`).join("")}</text>\`);
+          cellFills.push(`<rect x="${x}" y="${y}" width="${cellWidth}" height="${cellHeight}" fill="${fill}"/>`);
+          cellText.push(`<defs><clipPath id="${clipId}"><rect x="${textX}" y="${y + element.cellPadding}" width="${textWidth}" height="${textHeight}"/></clipPath></defs><text clip-path="url(#${clipId})" x="${textX}" y="${textY}" fill="${escapeXml(element.textColor)}" font-family="Arial, Helvetica, sans-serif" font-size="${element.fontSize}">${lines.map((line, lineIndex) => `<tspan x="${textX}" dy="${lineIndex === 0 ? 0 : element.fontSize * 1.25}">${escapeXml(line)}</tspan>`).join("")}</text>`);
         }
       }
       const lines: string[] = [];
       for (let row = 1; row < element.rows; row += 1) {
         const y = element.y + row * cellHeight;
-        lines.push(\`<line x1="\${element.x}" y1="\${y}" x2="\${element.x + element.width}" y2="\${y}"/>\`);
+        lines.push(`<line x1="${element.x}" y1="${y}" x2="${element.x + element.width}" y2="${y}"/>`);
       }
       for (let column = 1; column < element.columns; column += 1) {
         const x = element.x + column * cellWidth;
-        lines.push(\`<line x1="\${x}" y1="\${element.y}" x2="\${x}" y2="\${element.y + element.height}"/>\`);
+        lines.push(`<line x1="${x}" y1="${element.y}" x2="${x}" y2="${element.y + element.height}"/>`);
       }
-      const border = \`<g fill="none" stroke="\${escapeXml(element.strokeColor)}" stroke-width="\${element.strokeWidth}"><rect x="\${element.x}" y="\${element.y}" width="\${element.width}" height="\${element.height}"/>\${lines.join("")}</g>\`;
+      const border = `<g fill="none" stroke="${escapeXml(element.strokeColor)}" stroke-width="${element.strokeWidth}"><rect x="${element.x}" y="${element.y}" width="${element.width}" height="${element.height}"/>${lines.join("")}</g>`;
       return cellFills.join("") + border + cellText.join("");
     }
     const fontSize = element.fontSize;
