@@ -705,7 +705,7 @@ mod tests {
         let document: DesignDocument = serde_json::from_value(fixture).expect("deserialize v5");
         assert_eq!(document.schema_version, 5);
         assert_eq!(document.validate(), Ok(()));
-        assert!(matches!(document.elements[0].kind, ElementKind::Table { .. }));
+        assert!(matches!(&document.elements[0].kind, ElementKind::Table { .. }));
     }
 
     #[test]
@@ -720,6 +720,34 @@ mod tests {
         assert_eq!(
             migrate_to_current(document),
             Err(ValidationError::TableRequiresSchemaV5)
+        );
+    }
+
+    #[test]
+    fn rejects_table_aggregate_text_limit_and_invalid_style() {
+        let fixture: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../fixtures/document-v5-semantic-table.json"
+        ))
+        .expect("v5 fixture");
+
+        let mut too_much_text: DesignDocument =
+            serde_json::from_value(fixture.clone()).expect("deserialize");
+        if let ElementKind::Table { cells, .. } = &mut too_much_text.elements[0].kind {
+            cells[0][0] = "x".repeat(MAX_TABLE_TEXT_CHARS + 1);
+        }
+        assert_eq!(
+            too_much_text.validate(),
+            Err(ValidationError::InvalidTableTextLength)
+        );
+
+        let mut invalid_style: DesignDocument =
+            serde_json::from_value(fixture).expect("deserialize");
+        if let ElementKind::Table { cell_padding, .. } = &mut invalid_style.elements[0].kind {
+            *cell_padding = 25.0;
+        }
+        assert_eq!(
+            invalid_style.validate(),
+            Err(ValidationError::InvalidTableStyle)
         );
     }
 
