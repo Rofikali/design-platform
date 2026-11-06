@@ -47,6 +47,7 @@ const emit = defineEmits<{
         <button
           v-for="element in elements"
           :key="element.id"
+          :data-element-id="element.id"
           class="design-element"
           :class="{ selected: selectedId === element.id, rectangle: element.type === 'rect', frame: element.type === 'frame', grid: element.type === 'grid' }"
           :style="{
