@@ -157,7 +157,6 @@ export function renderDesignSvg(
           const textX = x + element.cellPadding;
           const textY = y + element.cellPadding + element.fontSize;
           const textWidth = Math.max(0, cellWidth - element.cellPadding * 2);
-          const textHeight = Math.max(0, cellHeight - element.cellPadding * 2);
           const lines = wrapText(cell, textWidth, element.fontSize, measureText);
           const fill = escapeXml(row < element.headerRows ? element.headerFill : element.cellFill);
           cellFills.push(`<rect x="${x}" y="${y}" width="${cellWidth}" height="${cellHeight}" fill="${fill}"/>`);
