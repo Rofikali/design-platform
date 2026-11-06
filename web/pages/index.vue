@@ -58,7 +58,7 @@ function announceSelection(id: string | null) {
   }
   selectionAnnouncement.value = element.type === "text"
     ? `Selected text element: ${element.text.slice(0, 80)}${element.text.length > 80 ? "…" : ""}`
-     : element.type === "rect" ? "Selected rectangle element." : element.type === "frame" ? "Selected frame element." : `Selected grid element with ${element.rows} rows and ${element.columns} columns`;
+     : element.type === "rect" ? "Selected rectangle element." : element.type === "frame" ? "Selected frame element." : element.type === "grid" ? `Selected grid element with ${element.rows} rows and ${element.columns} columns` : `Selected table with ${element.rows} rows and ${element.columns} columns`;
 }
 watch(selectedId, announceSelection, { immediate: true });
 
