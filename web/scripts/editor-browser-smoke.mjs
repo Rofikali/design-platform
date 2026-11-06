@@ -811,11 +811,12 @@ async function main() {
       input.dispatchEvent(new Event('change', { bubbles: true }));
       return true;
     })()`);
+    await setNumberField("Stroke width", 3.5);
     await setNumberField("Rows (1–20)", 4);
     await setNumberField("Columns (1–20)", 5);
-    const configuredGrid = await evaluate("(() => { const grid = document.querySelector('.design-element.grid'); const fields = Array.from(document.querySelectorAll('label.field')); return { label: grid?.getAttribute('aria-label') || '', backgroundSize: grid ? getComputedStyle(grid).backgroundSize : '', rows: fields.find(node => node.textContent.includes('Rows'))?.querySelector('input')?.value, columns: fields.find(node => node.textContent.includes('Columns'))?.querySelector('input')?.value }; })()");
-    if (!configuredGrid.label.includes("4 rows and 5 columns") || configuredGrid.rows !== "4" || configuredGrid.columns !== "5") {
-      throw new Error("Grid controls did not apply the selected structure: " + JSON.stringify(configuredGrid));
+    const configuredGrid = await evaluate("(() => { const grid = document.querySelector('.design-element.grid'); const fields = Array.from(document.querySelectorAll('label.field')); return { label: grid?.getAttribute('aria-label') || '', backgroundSize: grid ? getComputedStyle(grid).backgroundSize : '', backgroundImage: grid ? getComputedStyle(grid).backgroundImage : '', rows: fields.find(node => node.textContent.includes('Rows'))?.querySelector('input')?.value, columns: fields.find(node => node.textContent.includes('Columns'))?.querySelector('input')?.value }; })()");
+    if (!configuredGrid.label.includes("4 rows and 5 columns") || configuredGrid.rows !== "4" || configuredGrid.columns !== "5" || !configuredGrid.backgroundImage.includes("3.5px")) {
+      throw new Error("Grid controls did not apply the selected structure and stroke width: " + JSON.stringify(configuredGrid));
     }
     await waitFor("schema-v4 frame/grid autosave", async () => {
       const saved = await evaluate("localStorage.getItem('design-platform:document:v1')");
