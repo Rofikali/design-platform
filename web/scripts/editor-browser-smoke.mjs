@@ -649,8 +649,20 @@ async function main() {
       const rect = await evaluate(`(() => {
         const button = Array.from(document.querySelectorAll("button")).find(node => node.textContent.includes(${JSON.stringify(text)}));
         if (!button) throw new Error("Button not found: " + ${JSON.stringify(text)});
+        // Toolbar controls may be below the viewport after canvas interactions.
+        // CDP mouse events outside the viewport are ignored, even when the
+        // element has a non-zero layout box. Scroll it into the visible viewport
+        // before calculating coordinates for the real pointer-input path.
+        button.scrollIntoView({ block: "center", inline: "nearest" });
         const rect = button.getBoundingClientRect();
-        if (rect.width <= 0 || rect.height <= 0) throw new Error("Button is not visible: " + ${JSON.stringify(text)});
+        if (rect.width <= 0 || rect.height <= 0 ||
+            rect.bottom <= 0 || rect.right <= 0 ||
+            rect.top >= window.innerHeight || rect.left >= window.innerWidth) {
+          throw new Error("Button is outside the visible viewport: " + ${JSON.stringify(text)} + " " + JSON.stringify({
+            rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height },
+            viewport: { width: window.innerWidth, height: window.innerHeight },
+          }));
+        }
         return { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
       })()`);
       await mouse("mouseMoved", rect.x, rect.y);
