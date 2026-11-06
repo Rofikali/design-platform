@@ -70,7 +70,7 @@ describe("document parsing and validation", () => {
     expect(parsed.template).toEqual({ id: "exam-paper-a4", version: 1 });
   });
 
-  it("accepts schema-v3 background image documents after v4 upgrade", () => {
+  it("accepts schema-v3 background image documents after v5 upgrade", () => {
     const parsed = parseDocument(schemaV3BackgroundFixture);
     expect(parsed.backgroundImage?.fit).toBe("cover");
     expect(parsed.elements).toHaveLength(1);
@@ -100,20 +100,25 @@ describe("document parsing and validation", () => {
   });
 
   it("rejects tables in schema v4 and malformed or oversized table data", () => {
-    const legacy = structuredClone(schemaV5TableFixture);
-    legacy.schema_version = 4;
+    const legacy = { ...structuredClone(schemaV5TableFixture), schema_version: 4 };
     expect(() => parseDocument(legacy)).toThrow(/Tables require schema version 5/);
 
-    const ragged = structuredClone(schemaV5TableFixture);
-    ragged.elements[0]!.kind.cells[0]!.pop();
+    const ragged = structuredClone(schemaV5TableFixture) as unknown as DesignDocument;
+    const raggedKind = ragged.elements[0]!.kind;
+    if (raggedKind.type !== "table") throw new Error("Expected table fixture");
+    raggedKind.cells[0]!.pop();
     expect(() => parseDocument(ragged)).toThrow(/rectangular matrix/);
 
-    const excessiveCell = structuredClone(schemaV5TableFixture);
-    excessiveCell.elements[0]!.kind.cells[0]![0] = "x".repeat(2_001);
+    const excessiveCell = structuredClone(schemaV5TableFixture) as unknown as DesignDocument;
+    const excessiveKind = excessiveCell.elements[0]!.kind;
+    if (excessiveKind.type !== "table") throw new Error("Expected table fixture");
+    excessiveKind.cells[0]![0] = "x".repeat(2_001);
     expect(() => parseDocument(excessiveCell)).toThrow(/Table text exceeds/);
 
-    const invalidStyle = structuredClone(schemaV5TableFixture);
-    invalidStyle.elements[0]!.kind.cell_padding = 25;
+    const invalidStyle = structuredClone(schemaV5TableFixture) as unknown as DesignDocument;
+    const invalidStyleKind = invalidStyle.elements[0]!.kind;
+    if (invalidStyleKind.type !== "table") throw new Error("Expected table fixture");
+    invalidStyleKind.cellPadding = 25;
     expect(() => parseDocument(invalidStyle)).toThrow(/Table styles/);
   });
 
