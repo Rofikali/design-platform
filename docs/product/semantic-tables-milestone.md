@@ -1,6 +1,6 @@
 # Semantic Tables Milestone — Product and Engineering Contract
 
-**Status:** Proposed contract; documentation only. No schema or editor behavior is implemented by this proposal.
+**Status:** Schema-v5 core contract, validation, and read-only canvas/SVG rendering are implemented in the current implementation PR. Cell editing, structural commands, undo/redo integration, and full export/accessibility acceptance remain future slices.
 **Target:** First editable, data-bearing table primitive after schema v4 Frames and Grids.
 **Product scope:** Exam-paper and shop-banner authoring. This milestone does not expand into spreadsheet software.
 
@@ -26,11 +26,11 @@ Do not implement a Table as a Grid plus separately positioned text elements. Tha
 
 A Table is one first-class document element. Its cells are owned by the table and edited through table-specific commands.
 
-## 3. Proposed v5 document contract
+## 3. Schema v5 document contract
 
 Schema v5 adds a `table` element variant. It preserves all schema-v4 element variants and page background metadata.
 
-Proposed table data:
+Persisted table data:
 - Common element identity and geometry: `id`, `x`, `y`, `width`, `height`.
 - `rows` and `columns`: positive bounded integers.
 - `cells`: rectangular two-dimensional array of plain-text strings; exactly `rows` arrays, each exactly `columns` cells.
@@ -38,7 +38,7 @@ Proposed table data:
 - `stroke_color`, `stroke_width`, `cell_padding`.
 - `font_size`, `text_color`, `header_fill`, and `cell_fill`.
 
-Proposed initial bounds (to confirm against implementation and usability tests):
+Initial enforced bounds (subject to future usability review):
 - Rows: 1–20.
 - Columns: 1–20.
 - Cells per table: at most 400.
@@ -90,9 +90,9 @@ The canvas must expose a meaningful accessible name for the table and announce s
 
 ## 7. Architecture and implementation sequence
 
-1. **Contract/ADR:** agree the domain model, limits, migration policy, and text overflow behavior.
-2. **Core schema:** add Rust and TypeScript types, strict validation, migration, shared fixture, and parity tests.
-3. **Domain commands:** add/update cell, insert/delete row, insert/delete column, and table style commands with deterministic validation and undo/redo semantics.
+1. **Contract/ADR:** accepted domain model, limits, migration policy, and text overflow policy.
+2. **Core schema:** Rust and TypeScript types, strict validation, v1–v4 migration, shared fixture, and parity tests (current slice).
+3. **Domain commands (next):** add/update cell, insert/delete row, insert/delete column, and table style commands with deterministic validation and undo/redo semantics.
 4. **Editor workflow:** table insertion, selection, cell editing, keyboard navigation, row/column controls, accessible status.
 5. **Rendering/export:** shared layout calculation, SVG/PNG and print/PDF output.
 6. **Persistence:** local autosave, reopen, import/export, history compatibility.
