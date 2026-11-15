@@ -202,7 +202,7 @@ Keep documentation discoverable and current:
 - `AGENTS.md`: binding project rules and agent behavior.
 - `SKILLS.md`: reusable role-based playbooks and practical checklists.
 - `README.md`: product status, local setup, commands, current limitations.
-- `NEXT.md`: owner-facing product, engineering, security, operations, free/paid, finance, management roadmap and current execution queue.
+- `next.md`: owner-facing product, engineering, security, operations, free/paid, finance, management roadmap and current execution queue.
 - `docs/product/`: vision, personas, workflows, requirements, roadmap, metrics.
 - `docs/architecture/`: HLD, LLD, C4, module boundaries, ADRs, data flows.
 - `docs/security/`: threat models, security controls, privacy, release gates.
