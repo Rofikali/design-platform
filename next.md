@@ -5,7 +5,7 @@
 > **Document status:** Living roadmap and governance contract — not proof that planned work is implemented.
 > **Last reviewed:** 2026-11-15
 > **Repository:** Rofikali/design-platform
-> **Current baseline observed:** `main` at `dc8373df1e43051d950dcd20656fcd57b126fc29` (latest commit visible during this review).
+> **Current baseline observed:** `main` at `91ff02d0c0c4c32396f83bcf083a9351d54065c9` (latest commit visible during this review).
 > **Product status:** Prototype; not production-ready; no verified paying customers or product-market fit.
 
 This file is deliberately broad so the owner and future agents do not need to repeat the product direction in every conversation. It is not permission to build every item immediately. Execute one bounded milestone at a time, in dependency order, with evidence and owner approval for consequential changes.
@@ -779,6 +779,8 @@ Each requires customer demand, architecture review, cost model, security model a
 ---
 
 ## 16. Current execution queue — do this next, not everything
+
+Baseline evidence is recorded in [`docs/testing/m1-baseline-evidence.md`](docs/testing/m1-baseline-evidence.md). M0 remains partially open: the PR-head CI evidence is available, but post-merge verification, open-PR/branch-protection review and the manual accessibility audit are not yet complete.
 
 **Recommended active milestone: M1 — Reliability and Security Hardening.**
 
