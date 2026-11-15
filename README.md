@@ -86,4 +86,4 @@ Then open http://localhost:3000. The first image build installs the toolchains a
 - `crates/design-wasm/`: thin WASM adapter for browser-side document validation.
 - Later milestones should prove core editor interaction reliability, template workflows, and export fidelity before adding server persistence or expanding template categories.
 
-Read `docs/product/mvp.md`, `docs/architecture/system-overview.md`, `docs/security/threat-model.md`, and `docs/testing/strategy.md` before extending the prototype.
+Read [`next.md`](next.md) for the complete product, engineering, security, operations, free/paid, finance and management roadmap and the current execution queue. Also read `docs/product/mvp.md`, `docs/architecture/system-overview.md`, `docs/security/threat-model.md`, and `docs/testing/strategy.md` before extending the prototype.
