@@ -1,0 +1,74 @@
+# M1 Baseline Evidence — CI and Dependency Audit
+
+- **Repository:** Rofikali/design-platform
+- **Baseline main commit:** `91ff02d0c0c4c32396f83bcf083a9351d54065c9`
+- **Roadmap merge:** PR #100
+- **Reviewed:** 2026-11-15
+- **Purpose:** Record the CI evidence available at the start of M1. This is not a full security audit, manual QA report, or production-readiness approval.
+
+## 1. Verified GitHub Actions evidence
+
+The following runs were associated with PR #100 head commit `4dc85279d414a86df4c4f7c9f510e7031382ad7c`. The PR changed documentation only (`next.md`, `AGENTS.md`, `README.md`), so the tested application source matched the source merged into main.
+
+### CI — run #292
+
+- Run ID: `43722467588`
+- URL: https://github.com/Rofikali/design-platform/actions/runs/43722467588
+- Overall result: **completed / success**
+
+| Job / step | Observed result |
+|---|---|
+| Rust core job | Success |
+| `cargo fmt --all -- --check` | Success |
+| `cargo test --workspace --locked` | Success |
+| `cargo clippy --workspace --all-targets --locked -- -D warnings` | Success |
+| WASM target installation and adapter check | Success |
+| Nuxt frontend job | Success |
+| Node/pnpm dependency installation | Success |
+| Nuxt type check | Success |
+| Frontend Vitest suite | Success |
+| Real-browser WASM smoke test | Success |
+| Real Nuxt editor import/export browser test | Success |
+| Nuxt production build | Success |
+| Production Docker image build | Success |
+| Development Docker image build | Success |
+
+### Dependency security audit — run #88
+
+- Run ID: `43722467594`
+- URL: https://github.com/Rofikali/design-platform/actions/runs/43722467594
+- Overall result: **completed / success**
+
+| Job / step | Observed result |
+|---|---|
+| Production JavaScript dependency audit | Success |
+| Locked Rust dependency audit | Success |
+
+## 2. What this evidence establishes
+
+- The PR head snapshot passed the repository's configured Rust, frontend, browser, build and Docker CI jobs.
+- The configured production JavaScript and locked Rust dependency audit jobs completed successfully.
+- The application code was unchanged by PR #100; only documentation files were changed.
+- The merged main commit contains the same final blobs for `next.md`, `AGENTS.md` and `README.md` as the reviewed PR head.
+
+## 3. What this evidence does NOT establish
+
+- These are CI results for the PR head commit, not a new CI run on the merge commit itself.
+- This report does not claim that a local Docker test was run during this review.
+- A successful dependency audit does not prove the absence of vulnerabilities or a secure application.
+- CI does not replace manual keyboard-only, screen-reader, zoom/reflow or contrast review.
+- CI does not prove cross-browser/OS export fidelity, real printer output, product-market fit, or production readiness.
+- This is not a complete review of all open PRs, repository branch protections, GitHub Actions permissions, or every trust boundary.
+
+## 4. Outstanding baseline work
+
+- [ ] Confirm current CI status on the merge commit / latest main.
+- [ ] Inspect open PRs and branch protection / required status checks.
+- [ ] Run or obtain a fresh reproducible full test result on the current main SHA.
+- [ ] Complete the manual accessibility worksheet in `accessibility-manual-audit.md`.
+- [ ] Review document validation parity, import/render/export limits and dependency provenance as M1 work.
+- [ ] Record confirmed findings, owners and remediation PRs.
+
+## 5. Interpretation
+
+Treat the current application test baseline as **CI-passing on the PR head snapshot**, with post-merge main verification and manual accessibility still open. Do not label M0 fully complete until the outstanding baseline checks are reconciled.
