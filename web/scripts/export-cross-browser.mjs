@@ -86,10 +86,18 @@ async function verifyExport(browserName, browserType, template, expectedWidth, e
 }
 
 async function main() {
-  const build = start("pnpm", ["exec", "nuxt", "build"]);
+  // Use the package build lifecycle so the prebuild hook generates the
+  // Rust/WASM adapter before Nuxt resolves its browser-only module import.
+  const build = start("pnpm", ["run", "build"]);
   await new Promise((resolveExit, rejectExit) => {
     build.once("error", rejectExit);
-    build.once("close", code => code === 0 ? resolveExit() : rejectExit(new Error(`Nuxt build failed (${code}): ${build.output().stderr.slice(-4000)}`)));
+    build.once("close", code => {
+      if (code === 0) return resolveExit();
+      const output = build.output();
+      rejectExit(new Error(
+        `Production build failed (${code}). stdout:\\n${output.stdout.slice(-4000)}\\nstderr:\\n${output.stderr.slice(-4000)}`,
+      ));
+    });
   });
   const preview = start("pnpm", ["exec", "nuxt", "preview", "--host=127.0.0.1", `--port=${port}`]);
   try {
