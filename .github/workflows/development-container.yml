@@ -42,3 +42,10 @@ jobs:
       - uses: actions/checkout@v7
       - name: Build development image
         run: docker build --file Dockerfile.dev --tag design-platform-dev-ci .
+      - name: Verify development container startup dependencies
+        run: |
+          docker run --rm \
+            --volume "$PWD:/workspace" \
+            --workdir /workspace/web \
+            design-platform-dev-ci \
+            sh -lc 'cd /workspace && cargo metadata --locked --format-version 1 > /dev/null && cd /workspace/web && corepack enable && corepack prepare pnpm@10.11.0 --activate && pnpm install --frozen-lockfile && pnpm run build:wasm'
