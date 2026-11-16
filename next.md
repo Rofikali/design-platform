@@ -780,7 +780,7 @@ Each requires customer demand, architecture review, cost model, security model a
 
 ## 16. Current execution queue — do this next, not everything
 
-Baseline evidence is recorded in [`docs/testing/m1-baseline-evidence.md`](docs/testing/m1-baseline-evidence.md). M0 remains partially open: the PR-head CI evidence is available, but post-merge verification, open-PR/branch-protection review and the manual accessibility audit are not yet complete.
+Baseline evidence is recorded in [`docs/testing/m1-baseline-evidence.md`](docs/testing/m1-baseline-evidence.md). Push-triggered CI run #293 and dependency audit #89 passed on the current main SHA. M0 remains partially open because branch protection/required checks could not be verified through the connected integration and the manual accessibility audit remains open (issue #82). The separate cross-browser export workflow remediation is tracked in PR #102.
 
 **Recommended active milestone: M1 — Reliability and Security Hardening.**
 
