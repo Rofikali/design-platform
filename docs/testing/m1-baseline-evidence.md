@@ -69,6 +69,31 @@ The following runs were associated with PR #100 head commit `4dc85279d414a86df4c
 - [ ] Review document validation parity, import/render/export limits and dependency provenance as M1 work.
 - [ ] Record confirmed findings, owners and remediation PRs.
 
-## 5. Interpretation
+
+## 6. Follow-up CI evidence on the M1 evidence PR
+
+The documentation-only M1 evidence branch also triggered fresh PR workflows. Its changed files are only `docs/testing/m1-baseline-evidence.md` and `next.md`; no application source, lockfile, workflow, Dockerfile or runtime configuration changed. The tested application source therefore remains the same as the current main baseline.
+
+### CI — run #294
+
+- Run ID: `43737834551`
+- Tested commit: `530a957c6e3dd7437936e87c09782c21ead6930c`
+- URL: https://github.com/Rofikali/design-platform/actions/runs/43737834551
+- Overall result: **completed / success**
+- Rust core: formatting, workspace tests, Clippy and WASM target check all succeeded.
+- Nuxt frontend: install, typecheck, frontend tests, real-browser WASM smoke, real Nuxt editor browser smoke, production build, production Docker build and development Docker build all succeeded.
+
+### Dependency audit — run #90
+
+- Run ID: `43737834783`
+- Tested commit: `530a957c6e3dd7437936e87c09782c21ead6930c`
+- URL: https://github.com/Rofikali/design-platform/actions/runs/43737834783
+- Overall result: **completed / success**
+- Locked Rust dependency audit: succeeded.
+- Production JavaScript dependency audit: succeeded.
+
+**Interpretation:** This is fresh CI evidence for the same application source as main, executed on the documentation PR head. It is not a push-triggered workflow run on the main merge commit. No source-code delta was introduced by this PR.
+
+## 7. Interpretation
 
 Treat the current application test baseline as **CI-passing on the PR head snapshot**, with post-merge main verification and manual accessibility still open. Do not label M0 fully complete until the outstanding baseline checks are reconciled.
