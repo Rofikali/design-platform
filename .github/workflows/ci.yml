@@ -72,5 +72,14 @@ jobs:
         run: pnpm run test:editor-browser
       - name: Build
         run: pnpm run build
-      - name: Build Docker image
-        run: docker build --file ../Dockerfile --tag design-platform-ci ..
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build production Docker image
+        run: >-
+          docker buildx build
+          --file ../Dockerfile
+          --tag design-platform-ci
+          --load
+          --cache-from type=gha,scope=design-platform-production
+          --cache-to type=gha,scope=design-platform-production,mode=max
+          ..
