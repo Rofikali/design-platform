@@ -62,11 +62,11 @@ The following runs were associated with PR #100 head commit `4dc85279d414a86df4c
 
 ## 4. Outstanding baseline work
 
-- [ ] Confirm current CI status on the merge commit / latest main.
-- [ ] Inspect open PRs and branch protection / required status checks.
-- [ ] Run or obtain a fresh reproducible full test result on the current main SHA.
+- [x] Confirm current CI status on the latest main commit: push-triggered CI run #293 and dependency audit run #89 both passed on `91ff02d0c0c4c32396f83bcf083a9351d54065c9`.
+- [ ] Verify branch protection / required status checks. The connected GitHub API returned 403 for branch protection and ruleset reads; the integration cannot verify this setting.
+- [x] Obtain a fresh CI verification on the current main SHA (run #293); no local test run is claimed.
 - [ ] Complete the manual accessibility worksheet in `accessibility-manual-audit.md`.
-- [ ] Review document validation parity, import/render/export limits and dependency provenance as M1 work.
+- [ ] Complete document validation parity, import/render/export limits and dependency provenance review as M1 work.
 - [ ] Record confirmed findings, owners and remediation PRs.
 
 
@@ -94,6 +94,31 @@ The documentation-only M1 evidence PR triggered fresh PR workflows on commit `53
 
 **Interpretation:** This is fresh CI evidence for the same application source as main, executed on the documentation PR head. It is not a push-triggered workflow run on the main merge commit. No source-code delta was introduced by this PR.
 
-## 6. Interpretation
+
+## 6. Push-triggered verification on the current main commit
+
+- Main commit: `91ff02d0c0c4c32396f83bcf083a9351d54065c9`
+- CI run #293: [run 43737165093](https://github.com/Rofikali/design-platform/actions/runs/43737165093) — **completed / success**.
+- Dependency audit run #89: [run 43737165136](https://github.com/Rofikali/design-platform/actions/runs/43737165136) — **completed / success**.
+- The CI jobs completed Rust formatting/tests/Clippy/WASM checks and frontend typecheck/tests, Chrome WASM/editor browser smoke, production build, and both Docker builds.
+- The dependency audit completed the locked Rust audit and production JavaScript audit.
+
+This closes the post-merge CI verification item for the current main baseline. It does not close manual accessibility or branch-protection verification.
+
+## 7. Cross-browser workflow failure and remediation
+
+- Historical cross-browser run #2: [run 42631540312](https://github.com/Rofikali/design-platform/actions/runs/42631540312) — failed before test execution.
+- Job log shows `ubuntu-latest` resolved to Ubuntu 26.04; Playwright 1.56.1 rejected the runner during `playwright install --with-deps chromium firefox webkit`.
+- The browser export assertion step was skipped. This is a runner/tool compatibility failure, not a failed rendering assertion.
+- The workflow was previously scheduled/manual only, so this regression was not part of normal PR CI.
+- Remediation is proposed in [PR #102](https://github.com/Rofikali/design-platform/pull/102): pin Ubuntu 24.04 and trigger on relevant pull requests. Await its CI result before considering the remediation verified.
+
+## 8. Repository protection visibility
+
+- The connected GitHub integration returned HTTP 403 when reading `branches/main/protection`.
+- The repository rulesets endpoint also returned HTTP 403 (GitHub reports rulesets are unavailable for this private repository under its current plan).
+- Therefore branch protection, required checks, and ruleset enforcement remain **not verified**. Do not infer that protection is enabled or disabled.
+
+## 9. Interpretation
 
 Treat the current application test baseline as **CI-passing on the PR head snapshot**, with post-merge main verification and manual accessibility still open. Do not label M0 fully complete until the outstanding baseline checks are reconciled.
