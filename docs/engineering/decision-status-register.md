@@ -1,6 +1,6 @@
 # Project Status, Decisions and Evidence Register
 
-**Status:** Living, source-informed register. This is a snapshot guide, **not** a substitute for current GitHub PR state or `next.md`. Review date: 2026-11-16.
+**Status:** Dated decisions/evidence register, reconciled 2026-11-16 with live GitHub. **Current task selection belongs to the [NOW / NEXT / DONE board](../../next.md);** it overrides historical notes here, and live GitHub overrides both.
 
 ## Status definitions
 
@@ -26,8 +26,14 @@
 | Rust/Axum API, PostgreSQL, accounts | DEFERRED / PROPOSED | Not current runtime or permission to collect user data |
 | Payment, paid tier, collaboration | PROPOSED | No approved price, processor, billing model or demand proof |
 | Accessibility/keyboard/screen reader | PARTIAL / UNVERIFIED manual gate | Issue #82 / manual worksheet should be reconciled |
-| Cross-browser PNG CI improvement | IN REVIEW at PR #102 on review date | Do not infer latest CI or merge from this dated snapshot |
-| M1 baseline report | Historical evidence in testing docs | Revalidate current SHA before asserting up-to-date results |
+| Cross-browser PNG CI improvement | **OPEN / FAILED** [PR #102](https://github.com/Rofikali/design-platform/pull/102), head `00c926d651883f46783347e1e88cd7f223b99de0` | CI, audit and dev Docker success; [cross-browser #16](https://github.com/Rofikali/design-platform/actions/runs/43825386593) failed: export status overwritten by autosave announcement; do not merge on partial green |
+| M1 baseline report | [PR #101](https://github.com/Rofikali/design-platform/pull/101) **MERGED**, documentation evidence | Reports are dated; revalidate current SHA before claiming fresh test results |
+| Seven-level documentation handbook | [PR #103](https://github.com/Rofikali/design-platform/pull/103) **MERGED** at `c6a03ba5f378f237e442377e44bfefc28a52fcf6` | Docs only: it does not release a SaaS or fix runtime defects |
+| Semantic Tables v5 core | [Draft PR #93](https://github.com/Rofikali/design-platform/pull/93) **OPEN** on old head `e8cfcfd3539dfccd9986eabd82d1fb05a24f30b9` | Proposed partial core/readonly slice; migration/rebase and latest checks needed; not editable table functionality |
+| Nuxt major-version dependency bump | [PR #98](https://github.com/Rofikali/design-platform/pull/98) **OPEN** | [CI failed](https://github.com/Rofikali/design-platform/actions/runs/43826311389); [dependency audit passed](https://github.com/Rofikali/design-platform/actions/runs/43826311510) on its own SHA, not a merge gate pass |
+| Legacy background feature branch | [Draft PR #87](https://github.com/Rofikali/design-platform/pull/87) **OPEN** | Compare against main's already present background implementation; do not replay old migrations |
+| Manual accessibility | [Issue #82](https://github.com/Rofikali/design-platform/issues/82) **OPEN** | Screen reader, keyboard, focus, zoom and contrast remain to be verified |
+| Background-image acceptance | [Issue #85](https://github.com/Rofikali/design-platform/issues/85) **OPEN** | Existing implementation does not prove every remove/history/export/print acceptance case |
 
 ## Decision principles
 
