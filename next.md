@@ -6,6 +6,8 @@
 >
 > **Authority:** [AGENTS.md](AGENTS.md) = mandatory rules; [SKILLS.md](SKILLS.md) = recipes; **this live board** = task selection and current status; [documentation map](docs/engineering/documentation-map.md) = detailed contracts; [status register](docs/engineering/decision-status-register.md) = decisions and durable evidence.
 
+> **Hourly autopilot enabled (2026-11-16):** An independent ChatGPT scheduled task named **Design Platform Autopilot** runs the bounded "go ahead" workflow hourly while enabled. Its [runbook](docs/engineering/hourly-autopilot.md) defines status reconciliation, seven-level review, zero-unapproved-spend, exact-head checks, one task per run and owner approval gates. The task can be paused manually in ChatGPT. This file is a status board, not the scheduler.
+
 ## LIVE NOW / NEXT / LATER — authoritative task selector
 
 ### NOW — one first eligible engineering task
