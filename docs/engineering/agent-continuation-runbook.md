@@ -10,6 +10,33 @@ A markdown rule **does not** wake ChatGPT/Astra/Codex after a session ends, subm
 
 > Read AGENTS.md, SKILLS.md, next.md, docs/engineering/agent-continuation-runbook.md and current GitHub PR/CI state. Reconcile stale milestones and select one READY bounded task, preserving owner approval for merges/deployments. Report exact-SHA evidence, costs and open risks; do not invent results or rerun full CI unnecessarily.
 
+## "Go ahead" task-selection contract — use the live board
+
+When the owner writes **"go ahead"**, the agent should not ask them to repeat already-documented product goals. First fetch live GitHub, reconcile [the top of next.md](../../next.md), and perform **one** smallest READY/unfinished bounded action in the **NOW** lane within authorized repository access.
+
+1. **Continue before duplicating:** inspect an active feature/CI remediation PR and its exact latest head before opening a competing PR. If a regression has a failing latest-head job, it remains NOW even when other jobs pass. In the 2026-11-16 snapshot, PR #102 is the primary CI regression lane; this is not a permanent rule to target #102.
+2. **Do not confuse statuses:** DONE/IMPLEMENTED/VERIFIED/CI_PENDING/FAILED/MERGED/RELEASED are different; only GitHub confirms a merge, a real launch confirms release, and only exact-head executed checks prove CI success.
+3. **Do not invent time:** docs cannot trigger a background agent or future response; work happens only while the authorized runner is executing.
+4. **Change control:** never infer blanket authority for merging, deployment, visibility, billing, secrets, major schema/data deletion or security bypass from "go ahead." Small PRs and review remain standard.
+5. **Checkpoint sparingly:** update the live board after a meaningful status transition, not after every queued/running CI poll. Preserve durable evidence in PRs and linked reports, not duplicated logs.
+6. **Handoff once per bounded milestone:** include task ID, prior and current SHA, affected boundary, test status, known failures, PR link, next action, seven-level/security/SRE/product/finance review notes and owner gate.
+7. **Next after merge:** confirm merge SHA and exact associated checks, mark the task MERGED (not RELEASED), then choose the next READY item after prerequisites—not the oldest long-term bullet.
+
+### State transition example
+
+```text
+DP-M1-CB-01
+  READY → IN_PROGRESS → PR_OPEN → CI_PENDING
+  → FAILED (cross-browser status assertion; latest head)
+  → IN_PROGRESS (one scoped repair)
+  → CI_PENDING (new head, old evidence historical)
+  → READY_FOR_REVIEW (all required checks pass on that head)
+  → MERGED (GitHub confirms + owner approval)
+  → RELEASED (separate product/release gate, only if applicable)
+```
+
+**If the correct next task cannot proceed:** mark BLOCKED with exact reason, report it, and consider a separate independent READY task only when the owner has authorized that work and it cannot undermine the blocked milestone.
+
 ## Required sequence
 
 1. **Inspect the actual repository:** `git status --short`, current branch and HEAD, upstream main, changed files, open PRs and checks. Do not overwrite dirty worktrees.

@@ -1,19 +1,76 @@
-# NEXT — Product, Engineering, Security, Operations & Business Roadmap
+# Design Platform — LIVE Work Board and Master Roadmap
 
-> **Documentation expansion checkpoint (2026-11-16; PR in review):** This branch adds a Design Platform-specific [seven-level engineering model](docs/engineering/seven-level-operating-model.md), [agent continuation](docs/engineering/agent-continuation-runbook.md), [handoff template](docs/engineering/agent-milestone-handoff.md), [change-scoped test lanes](docs/engineering/change-scoped-verification.md), [CI evidence policy](docs/engineering/ci-evidence-policy.md), [document HLD/LLD](docs/architecture/document-editor-hld-lld.md), [product/free-paid strategy](docs/product/platform-business-strategy.md), [security/privacy operations](docs/security/security-and-privacy-operations.md), [release checklist](docs/operations/release-readiness.md) and [status register](docs/engineering/decision-status-register.md). These are **proposed documentation until merged**, not implemented product features or release approval. Review live GitHub head and CI for active PR #102; old baseline SHA below is historical, not a current-main claim.
-
-
-> **Purpose:** The single owner-facing map for what this product is, what we are building, why we are building it, what happens next, what can remain free, what may require paid services, and what must be true before launch.
+> **Live-board snapshot:** Reviewed 2026-11-16 from GitHub; main `c6a03ba5f378f237e442377e44bfefc28a52fcf6`. The snapshot is **dated**, not a live-updating dashboard. Re-fetch main/PRs/checks before executing or declaring completion.
 >
-> **Document status:** Living roadmap and governance contract — not proof that planned work is implemented.
-> **Last documentation review:** 2026-11-16
-> **Repository:** Rofikali/design-platform
-> **Historical CI baseline:** `main` at `91ff02d0c0c4c32396f83bcf083a9351d54065c9`; see the [M1 evidence report](docs/testing/m1-baseline-evidence.md). **This is not a claim about today's live `main` or the latest PR head.**
-> **Product status:** Prototype; not production-ready; no verified paying customers or product-market fit.
+> **Source discipline:** This board adopts the **NOW / NEXT / LATER**, evidence, priority and agent continuation pattern in `Rofikali/imgengine/next.md`, not its IMGENGINE C17, FFI, VPS or five image tools. Code/tests and GitHub state override stale descriptions.
+>
+> **Authority:** [AGENTS.md](AGENTS.md) = mandatory rules; [SKILLS.md](SKILLS.md) = recipes; **this live board** = task selection and current status; [documentation map](docs/engineering/documentation-map.md) = detailed contracts; [status register](docs/engineering/decision-status-register.md) = decisions and durable evidence.
 
-This file is deliberately broad so the owner and future agents do not need to repeat the product direction in every conversation. It is not permission to build every item immediately. Execute one bounded milestone at a time, in dependency order, with evidence and owner approval for consequential changes.
+## LIVE NOW / NEXT / LATER — authoritative task selector
+
+### NOW — one first eligible engineering task
+
+**DP-M1-CB-01 — Cross-browser PNG export reliability: FAILED latest PR head, remediation READY.**
+
+- [PR #102](https://github.com/Rofikali/design-platform/pull/102) remains **OPEN**, latest head `00c926d651883f46783347e1e88cd7f223b99de0`.
+- [CI run #319](https://github.com/Rofikali/design-platform/actions/runs/43825386565): **SUCCESS** on that head. [Dependency security audit #115](https://github.com/Rofikali/design-platform/actions/runs/43825386669): **SUCCESS**. [Development container #11](https://github.com/Rofikali/design-platform/actions/runs/43825386636): **SUCCESS**.
+- [Cross-browser export #16](https://github.com/Rofikali/design-platform/actions/runs/43825386593): **FAILURE** on the **same** head. Failing step: `Run cross-browser PNG export regression`; Chromium output status observed **"Auto-saved locally in this browser."** while the test expected the preceding export message. This is a message-timing/live-region assertion mismatch *observed in CI*; it does not establish incorrect PNG pixel content. The previous run also encountered ambiguous role=status selection, addressed in this head.
+- **Next bounded move:** inspect that failed step and `web/scripts/export-cross-browser.mjs`; assert the specific export completion at the correct point, preserving isolation and real PNG file signature/dimension checks. Avoid new infrastructure or test disabling. One narrow fix PR/update, followed by **fresh exact-head** CI, dependency and all 3 browsers × 2 template export results. PR #102 remains subject to owner merge approval.
+- **Stop gate:** if CI remains red/unknown, report blocker and do not advance to table implementation or declare M1 complete.
+
+### Parallel review lanes — not automatically the next implementation
+
+| Lane / ID | Verified state at snapshot | Next smallest action | Exit evidence |
+| --- | --- | --- | --- |
+| **DP-M1-ACC-02** | [Issue #82](https://github.com/Rofikali/design-platform/issues/82) **OPEN**; automated accessibility coverage exists but manual screen reader/keyboard/zoom review is not established | Perform/document NVDA+browser, keyboard-only, focus, live announcements, 200% zoom and contrast review; remediate reproduced failures | Device/tool versions, steps, results and linked regression PRs; manual audit signed off |
+| **DP-M1-BG-03** | [Issue #85](https://github.com/Rofikali/design-platform/issues/85) **OPEN**; page background functionality appears in current code/docs; full issue acceptance has not been signed off | Reconcile background implementation, schema/negative fixture parity, remove/undo/redo, autosave/reopen, JSON round-trip and image-backed PNG/print evidence | Full issue criteria verified; close issue only with owner/reviewer agreement |
+| **DP-M1-CI-04** | [PR #102](https://github.com/Rofikali/design-platform/pull/102) owns cross-browser, caching and conditional development-container work; **NOT MERGED** | Once all tests pass, review scope, required status enforcement and provenance; inspect cold/warm durations before claims | Latest head all required gates green, reviewed PR, owner approval; no invented cost/speed numbers |
+| **DP-M1-DOC-05** | [PR #101](https://github.com/Rofikali/design-platform/pull/101) **MERGED**; baseline evidence recorded | Reconcile old checklist when new release evidence exists; avoid rebuilding same documentation | Link historical reports as historical and reflect actual merged SHA |
+| **DP-M1-DEP-06** | [PR #98](https://github.com/Rofikali/design-platform/pull/98) **OPEN** Nuxt 3→4 dependency jump; [CI](https://github.com/Rofikali/design-platform/actions/runs/43826311389) **FAILED**, audit [PASSED](https://github.com/Rofikali/design-platform/actions/runs/43826311510) at its head `643799551a35373a92d7f9b9aae1729da04d7f40` | Evaluate migration compatibility, release-notes, lockfile, security and source changes in separate reviewed dependency work | Passing full current-head CI plus supported migration test and approval |
+| **DP-M2-TBL-01** | [PR #93](https://github.com/Rofikali/design-platform/pull/93) **DRAFT**, schema-v5 table core slice at `e8cfcfd3539dfccd9986eabd82d1fb05a24f30b9`; historic [CI](https://github.com/Rofikali/design-platform/actions/runs/42169509161) and [audit](https://github.com/Rofikali/design-platform/actions/runs/42169509332) passed on its then-head | Rebase/reconcile with latest main and M1 blockers; review first-class table model/migrations/readonly preview, then separately implement cell editing/keyboard/undo | Exact updated head tests; compatibility; owner review. **Not a complete table editor** |
+| **DP-LEGACY-87** | [PR #87](https://github.com/Rofikali/design-platform/pull/87) **DRAFT**, older schema-v3 background branch; background-related work already exists in main | Assess whether draft is superseded; avoid blindly merging an old migration branch or repeating its code | Explicit close/rebase decision after diff comparison |
+
+### DONE / MERGED — work must not be repeated
+
+| ID | Completed deliverable | Evidence / limits |
+| --- | --- | --- |
+| **DP-DOC-100** | Owner-facing product, free/paid, security, architecture and management roadmap `next.md` | [PR #100](https://github.com/Rofikali/design-platform/pull/100) **MERGED**; documentation, not shipped SaaS |
+| **DP-DOC-101** | CI baseline evidence and refreshed roadmap checkpoint | [PR #101](https://github.com/Rofikali/design-platform/pull/101) **MERGED**; reports are dated, not current universal verification |
+| **DP-DOC-103** | Seven-level handbook: agent handoff, continuation, HLD/LLD, cost/test/security/finance/release guides | [PR #103](https://github.com/Rofikali/design-platform/pull/103) **MERGED** as `c6a03ba5f378f237e442377e44bfefc28a52fcf6`; **docs only** |
+| **DP-MVP-BASE** | Local-first Nuxt/Vue editor, Rust design core + WASM, schema-v4 frames/visual grids, JSON import/export, bounded history, page backgrounds, PNG and browser-print path | **IMPLEMENTED in current source**, not a completed manual accessibility audit or paid/production release |
+
+### NEXT — dependent milestones, not automatically READY
+
+1. **DP-M1-EXIT:** once cross-browser PR and other necessary quality gates are verified, reconcile accessibility, background issue and security/resource evidence. Record any residual risks. M1 cannot be marked CLOSED until explicit exit criteria are met.
+2. **DP-M2-TBL-01:** finish review of *existing* draft table-core PR #93 before creating another implementation branch. Schema v5 must preserve v1–v4, Rust/TS/WASM parity, first-class cell ownership, export geometry and safe text escaping.
+3. **DP-M2-TBL-02:** implement table cell editing, row/column operations, history, keyboard accessibility and export in *separate bounded* PRs with real teacher/shop acceptance.
+4. **DP-M3:** document/editor-state modularization, layers, alignment/snapping and image elements only in response to tested user workflows.
+5. **DP-M4–M5:** typography, fonts/licensing, templates and direct PDF/print fidelity with actual exported artifact and print evidence.
+6. **DP-M6–M8:** customer validation, cost model, optional Rust/Axum accounts/storage, business packages and paid launch *only after* a separate owner-approved architecture/security/legal/finance gate.
+
+### LATER / DEFERRED — do not silently start
+
+Account sync, collaboration, a multi-tenant SaaS, paid subscriptions, metered API, desktop, marketplace and mobile apps are **proposals**. Audio, video, animation and unrelated spreadsheet functionality are **out of initial scope**. No price, cloud bill, domain purchase, new database or launch is authorized by this board.
+
+## Permanent status rules: "go ahead" and milestone reconciliation
+
+When the owner says **"go ahead"**, perform the **next smallest eligible bounded task in the NOW lane** rather than asking for a repeated product brief. **Do not treat "go ahead" as blanket permission to merge, change paid settings, deploy, change visibility, retire customer data, or bypass tests.**
+
+**Every new session, after a PR update, after checks complete and after a merge:**
+
+1. Fetch live `main` full SHA, current branch/worktree, open PRs/issues, latest PR head SHA and exact attached workflow/job statuses. GitHub checks from older commits are **HISTORICAL**.
+2. Reconcile milestone rows: `PLANNED → READY → IN_PROGRESS → PR_OPEN → CI_PENDING → READY_FOR_REVIEW → MERGED → RELEASE_CANDIDATE → RELEASED`; `FAILED`, `BLOCKED`, `CANCELLED`, `DEFERRED` are explicit. `IMPLEMENTED` and `VERIFIED` are *distinct attributes*; not substitute states.
+3. First choose verified P0 security/data-loss/release-blocking defects. Otherwise continue an existing **in-progress PR** before starting a duplicate feature. Then choose the first dependency-cleared READY task in NOW. Keep parallel tracks independent.
+4. Update the board with **task ID, priority, exact scope, owner, prerequisites, status, GitHub PR, commit SHA, exact test SHA/run URLs, known failure or skipped gate, next action and approval boundary**. Preserve original history in PRs/evidence docs rather than pasting long logs into `next.md`.
+5. Don't rewrite the main board for each CI tick; only update with meaningful state transitions. A failed check needs its job/step evidence, not a 10,000-line log.
+6. One small PR per bounded milestone, coherent commits, no redundant Docker/CI work. Read [agent continuation](docs/engineering/agent-continuation-runbook.md), [seven-level review](docs/engineering/seven-level-operating-model.md), [handoff](docs/engineering/agent-milestone-handoff.md), and [test lanes](docs/engineering/change-scoped-verification.md).
+7. Stop at owner approval gates. **CI success is not merge; merge is not release; a markdown rule cannot restart a stopped agent.**
 
 ---
+
+## Master product, engineering, finance and release reference (long-term)
+
+The sections below preserve the detailed product roadmap and backlog, **not** an alternative live task-selection list. If a statement below conflicts with the live board or current GitHub, reconcile it before acting. Long-term architecture and commercial items are explicitly conditional.
 
 ## 0. How to use this roadmap
 
