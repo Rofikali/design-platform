@@ -12,13 +12,13 @@
 
 ### NOW — one first eligible engineering task
 
-**DP-M1-CB-01 — Cross-browser PNG export reliability: FAILED latest PR head, remediation READY.**
+**DP-M1-CB-01 — Cross-browser PNG export reliability: READY_FOR_REVIEW; owner merge gate.**
 
-- [PR #102](https://github.com/Rofikali/design-platform/pull/102) remains **OPEN**, latest head `00c926d651883f46783347e1e88cd7f223b99de0`.
-- [CI run #319](https://github.com/Rofikali/design-platform/actions/runs/43825386565): **SUCCESS** on that head. [Dependency security audit #115](https://github.com/Rofikali/design-platform/actions/runs/43825386669): **SUCCESS**. [Development container #11](https://github.com/Rofikali/design-platform/actions/runs/43825386636): **SUCCESS**.
-- [Cross-browser export #16](https://github.com/Rofikali/design-platform/actions/runs/43825386593): **FAILURE** on the **same** head. Failing step: `Run cross-browser PNG export regression`; Chromium output status observed **"Auto-saved locally in this browser."** while the test expected the preceding export message. This is a message-timing/live-region assertion mismatch *observed in CI*; it does not establish incorrect PNG pixel content. The previous run also encountered ambiguous role=status selection, addressed in this head.
-- **Next bounded move:** inspect that failed step and `web/scripts/export-cross-browser.mjs`; assert the specific export completion at the correct point, preserving isolation and real PNG file signature/dimension checks. Avoid new infrastructure or test disabling. One narrow fix PR/update, followed by **fresh exact-head** CI, dependency and all 3 browsers × 2 template export results. PR #102 remains subject to owner merge approval.
-- **Stop gate:** if CI remains red/unknown, report blocker and do not advance to table implementation or declare M1 complete.
+- [PR #102](https://github.com/Rofikali/design-platform/pull/102) remains **OPEN**, latest head `17758278fedffcc7208891b27147e1089f5dffe0`. The prior failure on `00c926d651883f46783347e1e88cd7f223b99de0` is historical, not the current status.
+- **Exact-head verification on 2026-11-16:** [CI #329](https://github.com/Rofikali/design-platform/actions/runs/43891472124) **SUCCESS**; [dependency security audit #126](https://github.com/Rofikali/design-platform/actions/runs/43891472185) **SUCCESS**; [development container #12](https://github.com/Rofikali/design-platform/actions/runs/43891472013) **SUCCESS**; [cross-browser export #18](https://github.com/Rofikali/design-platform/actions/runs/43891472015) **SUCCESS**. The cross-browser job's `Run cross-browser PNG export regression` step completed successfully.
+- **Fix:** the test now records the export live-region announcement before clicking Download PNG; a later autosave update can no longer mask successful export. Downloaded PNG signature, dimensions and byte-length checks remain unchanged. The fix is in the existing PR, not a competing PR.
+- **Next bounded move:** owner review and explicit merge approval for PR #102. Re-check head/checks before merging. **Do not** mark MERGED, RELEASED or M1 fully complete from green CI alone. After an authorized merge, reconcile the board and select the next eligible NOW task.
+- **Autopilot stop gate:** do not merge, deploy, spend or bypass owner review. Other independent READY lanes may be assessed while this PR awaits approval.
 
 ### Parallel review lanes — not automatically the next implementation
 
