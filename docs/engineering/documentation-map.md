@@ -27,6 +27,19 @@ This index explains where project knowledge belongs. Keep each document focused 
 - [Repository instructions](../../AGENTS.md): mandatory implementation and review rules.
 - [README](../../README.md): project overview and developer quick start.
 
+## Deep-dive engineering, delivery, business and operations references
+
+- [Seven-level engineering operating model](seven-level-operating-model.md): junior through distinguished/principal review lenses plus security, QA, SRE, product and CA/MBA oversight.
+- [Agent continuation runbook](agent-continuation-runbook.md): resume from current PR/SHA, choose a bounded next milestone and checkpoint without autonomous merge or background promises.
+- [Agent milestone handoff](agent-milestone-handoff.md): task specification, PR evidence and exact-SHA CI/report template.
+- [Change-scoped verification](change-scoped-verification.md): Rust, WASM, Nuxt, renderer, Docker and security testing lanes and CI cost discipline.
+- [CI evidence policy](ci-evidence-policy.md): minimum logs, failed-step debugging, current-head versus historical results.
+- [Decision/status register](decision-status-register.md): source-informed implemented/proposed/in-review distinctions.
+- [Document editor HLD/LLD](../architecture/document-editor-hld-lld.md): current UI/Rust/WASM/browser lifecycle and proposed modularization.
+- [Platform/business strategy](../product/platform-business-strategy.md): jobs-to-be-done, browser-first free and conditional future paid plans.
+- [Security/privacy operations](../security/security-and-privacy-operations.md): threat-boundary, data lifecycle and response guidance.
+- [Release readiness](../operations/release-readiness.md): product, migration, accessibility, security, recovery and economics gates.
+
 ## Where to record new information
 
 | Information | Authoritative location |
