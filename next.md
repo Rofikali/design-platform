@@ -778,6 +778,19 @@ Each requires customer demand, architecture review, cost model, security model a
 
 ---
 
+## CI runtime and Docker build policy
+
+Keep CI proportional to the change while preserving release confidence:
+
+- Every relevant PR: Rust formatting/tests/Clippy, WASM compile check, frontend typecheck/tests, real-browser smoke tests, production build, production Docker image, and Rust/production-JavaScript dependency audits.
+- Development Docker image: build and smoke-test only when `Dockerfile.dev`, `compose.yaml`, `.dockerignore`, Rust workspace inputs, frontend dependency manifests, or the dedicated development workflow changes; also allow manual dispatch.
+- Cross-browser PNG regression: run when editor/export, Rust/WASM, fixture, or its workflow inputs change, plus the scheduled regression.
+- Use BuildKit GitHub Actions layer caching with separate cache scopes for production and development images. Keep dependency lockfiles before frequently changing source copies in Dockerfiles so stable dependency layers can be reused.
+- Do not remove the production image build from ordinary PR verification: it validates the deployable artifact. Do not rebuild the full development toolchain for unrelated UI changes.
+- Measure elapsed time per workflow and compare cache-hit versus cache-miss runs. Treat caching as an optimization, not a correctness guarantee; builds must still pass from an empty cache.
+
+Current implementation is in `.github/workflows/ci.yml`, `.github/workflows/development-container.yml`, and `.github/workflows/cross-browser-export.yml`. The policy is considered validated only after the latest PR head passes its fresh workflows.
+ 
 ## 16. Current execution queue — do this next, not everything
 
 **Recommended active milestone: M1 — Reliability and Security Hardening.**
