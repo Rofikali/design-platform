@@ -1,0 +1,44 @@
+name: Development container
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/development-container.yml"
+      - ".dockerignore"
+      - "Dockerfile.dev"
+      - "compose.yaml"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - "crates/**"
+      - "web/package.json"
+      - "web/pnpm-lock.yaml"
+  pull_request:
+    paths:
+      - ".github/workflows/development-container.yml"
+      - ".dockerignore"
+      - "Dockerfile.dev"
+      - "compose.yaml"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - "crates/**"
+      - "web/package.json"
+      - "web/pnpm-lock.yaml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: development-container-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-development-image:
+    name: Build development container
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build development image
+        run: docker build --file Dockerfile.dev --tag design-platform-dev-ci .
