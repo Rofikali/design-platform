@@ -4,7 +4,7 @@ use wasm_bindgen::prelude::*;
 
 const MAX_DOCUMENT_JSON_BYTES: usize = 2_000_000;
 
-/// Migrate supported legacy input, validate the current schema, and return normalized schema-v4 JSON.
+/// Migrate supported legacy input, validate the current schema, and return normalized schema-v5 JSON.
 #[wasm_bindgen]
 pub fn validate_document_json(input: &str) -> Result<String, JsValue> {
     if input.len() > MAX_DOCUMENT_JSON_BYTES {
@@ -30,10 +30,10 @@ mod tests {
         "kind":{"type":"text","text":"Exam Paper","font_size":28,"color":"#123456"}}]
     }"##;
     #[test]
-    fn migrates_v1_to_validated_v4() {
+    fn migrates_v1_to_validated_v5() {
         let result = validate_document_json(V1_DOCUMENT).expect("v1 migrates");
         let parsed: serde_json::Value = serde_json::from_str(&result).expect("output JSON");
-        assert_eq!(parsed["schema_version"], 4);
+        assert_eq!(parsed["schema_version"], 5);
         assert_eq!(parsed["page"]["width"].as_f64(), Some(800.0));
         assert!(parsed.get("output_size_mm").is_none());
         assert!(parsed.get("template").is_none());
@@ -43,8 +43,27 @@ mod tests {
         let input = include_str!("../../../fixtures/document-v3-background-image.json");
         let output = validate_document_json(input).expect("v3 fixture validates");
         let parsed: serde_json::Value = serde_json::from_str(&output).expect("normalized JSON");
-        assert_eq!(parsed["schema_version"], 4);
+        assert_eq!(parsed["schema_version"], 5);
         assert_eq!(parsed["page"]["background_image"]["fit"], "cover");
+    }
+
+    #[test]
+    fn validates_shared_schema_v5_table_fixture() {
+        let input = include_str!("../../../fixtures/document-v5-semantic-table.json");
+        let output = validate_document_json(input).expect("v5 table fixture validates");
+        let parsed: serde_json::Value = serde_json::from_str(&output).expect("normalized JSON");
+        assert_eq!(parsed["schema_version"], 5);
+        assert_eq!(parsed["elements"][0]["kind"]["cells"][1][2], "₹80");
+    }
+
+    #[test]
+    fn rejects_table_data_smuggled_into_schema_v4() {
+        let input = include_str!("../../../fixtures/document-v5-semantic-table.json");
+        let mut parsed: serde_json::Value = serde_json::from_str(input).expect("fixture JSON");
+        parsed["schema_version"] = serde_json::json!(4);
+        let document: DesignDocument =
+            serde_json::from_value(parsed).expect("deserialize legacy table document");
+        assert!(migrate_to_current(document).is_err());
     }
 
     #[test]

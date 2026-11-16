@@ -143,6 +143,38 @@ export function renderDesignSvg(
       }
       return `<g fill="none" stroke="${escapeXml(element.strokeColor)}" stroke-width="${element.strokeWidth}"><rect x="${element.x}" y="${element.y}" width="${element.width}" height="${element.height}"/>${lines.join("")}</g>`;
     }
+    if (element.type === "table") {
+      const cellWidth = element.width / element.columns;
+      const cellHeight = element.height / element.rows;
+      const cellFills: string[] = [];
+      const cellText: string[] = [];
+      for (let row = 0; row < element.rows; row += 1) {
+        for (let column = 0; column < element.columns; column += 1) {
+          const x = element.x + column * cellWidth;
+          const y = element.y + row * cellHeight;
+          const cell = element.cells[row]![column]!;
+          const clipId = `table-${elementIndex}-cell-${row}-${column}`;
+          const textX = x + element.cellPadding;
+          const textY = y + element.cellPadding + element.fontSize;
+          const textWidth = Math.max(0, cellWidth - element.cellPadding * 2);
+          const lines = wrapText(cell, textWidth, element.fontSize, measureText);
+          const fill = escapeXml(row < element.headerRows ? element.headerFill : element.cellFill);
+          cellFills.push(`<rect x="${x}" y="${y}" width="${cellWidth}" height="${cellHeight}" fill="${fill}"/>`);
+          cellText.push(`<defs><clipPath id="${clipId}"><rect x="${textX}" y="${y + element.cellPadding}" width="${textWidth}" height="${Math.max(0, cellHeight - element.cellPadding * 2)}"/></clipPath></defs><text clip-path="url(#${clipId})" x="${textX}" y="${textY}" fill="${escapeXml(element.textColor)}" font-family="Arial, Helvetica, sans-serif" font-size="${element.fontSize}">${lines.map((line, lineIndex) => `<tspan x="${textX}" dy="${lineIndex === 0 ? 0 : element.fontSize * 1.25}">${escapeXml(line)}</tspan>`).join("")}</text>`);
+        }
+      }
+      const lines: string[] = [];
+      for (let row = 1; row < element.rows; row += 1) {
+        const y = element.y + row * cellHeight;
+        lines.push(`<line x1="${element.x}" y1="${y}" x2="${element.x + element.width}" y2="${y}"/>`);
+      }
+      for (let column = 1; column < element.columns; column += 1) {
+        const x = element.x + column * cellWidth;
+        lines.push(`<line x1="${x}" y1="${element.y}" x2="${x}" y2="${element.y + element.height}"/>`);
+      }
+      const border = `<g fill="none" stroke="${escapeXml(element.strokeColor)}" stroke-width="${element.strokeWidth}"><rect x="${element.x}" y="${element.y}" width="${element.width}" height="${element.height}"/>${lines.join("")}</g>`;
+      return cellFills.join("") + border + cellText.join("");
+    }
     const fontSize = element.fontSize;
     const lines = wrapText(element.text, element.width, fontSize, measureText);
     // The editor element's box is its layout contract. Without clipping, wrapped

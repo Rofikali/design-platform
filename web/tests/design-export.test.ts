@@ -26,6 +26,22 @@ describe("design export renderer", () => {
     expect(svg.match(/<line /g)?.length).toBe(5);
   });
 
+  it("renders semantic table cells with header styling, clipping, and escaped plain text", () => {
+    const table: DesignElement = {
+      id: "table", type: "table", x: 10, y: 20, width: 300, height: 100,
+      rows: 2, columns: 2, cells: [["Product", "Price"], ["<script>", "₹80"]],
+      headerRows: 1, strokeColor: "#334155", strokeWidth: 1, cellPadding: 4,
+      fontSize: 12, textColor: "#111827", headerFill: "#dbeafe", cellFill: "#ffffff",
+    };
+    const svg = renderDesignSvg([table], 400, 200, "#fff");
+    expect(svg).toContain('fill="#dbeafe"');
+    expect(svg).toContain('fill="#ffffff"');
+    expect(svg).toContain('stroke="#334155"');
+    expect(svg).toContain("&lt;script&gt;");
+    expect(svg).not.toContain("<script>");
+    expect(svg).toContain('clipPath id="table-0-cell-0-0"');
+  });
+
   it("wraps text to the element width and escapes user text", () => {
     const svg = renderDesignSvg([
       { id: "text", type: "text", text: "one two three four five", x: 0, y: 0, width: 45, height: 80, fontSize: 12, color: "#000000" },
