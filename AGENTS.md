@@ -1,5 +1,8 @@
 # Engineering Constitution
 
+> **Engineering handbook / imgengine-style governance (2026-11-16):** All agents must start with [the document map](docs/engineering/documentation-map.md), [seven-level operating model](docs/engineering/seven-level-operating-model.md), [milestone continuation](docs/engineering/agent-continuation-runbook.md), [handoff template](docs/engineering/agent-milestone-handoff.md), [change-scoped verification](docs/engineering/change-scoped-verification.md) and [CI evidence policy](docs/engineering/ci-evidence-policy.md). Their decisions apply to this editor's existing **Nuxt + Rust document core + thin WASM adapter**, not imgengine's C17/ABI/FFI pipeline. The [status register](docs/engineering/decision-status-register.md) and [current roadmap](next.md) must be reconciled with live PRs and exact-SHA checks, not treated as eternal facts. Do not autonomously merge, deploy, spend, weaken tests, or claim a completed AI session continues itself. Docs-only additions do not implement features or certify release readiness.
+
+
 ## 1. Product mission and outcomes
 
 Build a trustworthy, maintainable browser-based design editor for exam papers and shop banners first. The product should help a real user create, edit, save, reopen, and export useful designs with predictable results.
