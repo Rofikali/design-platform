@@ -1,5 +1,8 @@
 # NEXT — Product, Engineering, Security, Operations & Business Roadmap
 
+> **Documentation expansion checkpoint (2026-11-16; PR in review):** This branch adds a Design Platform-specific [seven-level engineering model](docs/engineering/seven-level-operating-model.md), [agent continuation](docs/engineering/agent-continuation-runbook.md), [handoff template](docs/engineering/agent-milestone-handoff.md), [change-scoped test lanes](docs/engineering/change-scoped-verification.md), [CI evidence policy](docs/engineering/ci-evidence-policy.md), [document HLD/LLD](docs/architecture/document-editor-hld-lld.md), [product/free-paid strategy](docs/product/platform-business-strategy.md), [security/privacy operations](docs/security/security-and-privacy-operations.md), [release checklist](docs/operations/release-readiness.md) and [status register](docs/engineering/decision-status-register.md). These are **proposed documentation until merged**, not implemented product features or release approval. Review live GitHub head and CI for active PR #102; old baseline SHA below is historical, not a current-main claim.
+
+
 > **Purpose:** The single owner-facing map for what this product is, what we are building, why we are building it, what happens next, what can remain free, what may require paid services, and what must be true before launch.
 >
 > **Document status:** Living roadmap and governance contract — not proof that planned work is implemented.
