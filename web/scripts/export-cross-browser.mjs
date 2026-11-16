@@ -47,10 +47,9 @@ function stop(child) {
   if (child && child.exitCode === null) child.kill("SIGTERM");
 }
 
-async function verifyExport(browserName, browserType, template, expectedWidth, expectedHeight) {
-  const browser = await browserType.launch({ headless: true });
+async function verifyExport(browserName, browser, template, expectedWidth, expectedHeight) {
+  const context = await browser.newContext({ acceptDownloads: true });
   try {
-    const context = await browser.newContext({ acceptDownloads: true });
     const page = await context.newPage();
     await page.goto(baseUrl, { waitUntil: "networkidle" });
     await page.locator(".design-page").waitFor();
@@ -79,9 +78,8 @@ async function verifyExport(browserName, browserType, template, expectedWidth, e
       throw new Error(`${browserName} export status mismatch: ${status}`);
     }
     process.stdout.write(`PASS: ${browserName} ${template} PNG ${width}×${height} (${png.length} bytes)\n`);
-    await context.close();
   } finally {
-    await browser.close();
+    await context.close();
   }
 }
 
@@ -103,8 +101,15 @@ async function main() {
   try {
     await waitForServer(preview);
     for (const [name, type] of browsers) {
-      await verifyExport(name, type, "shop-banner-landscape", 2400, 1000);
-      await verifyExport(name, type, "exam-paper-a4", 1588, 2246);
+      // Reuse one browser process per engine; create an isolated context for
+      // each template so localStorage and page state cannot leak between cases.
+      const browser = await type.launch({ headless: true });
+      try {
+        await verifyExport(name, browser, "shop-banner-landscape", 2400, 1000);
+        await verifyExport(name, browser, "exam-paper-a4", 1588, 2246);
+      } finally {
+        await browser.close();
+      }
     }
     process.stdout.write("PASS: PNG export dimensions and downloaded-file integrity verified in Chromium, Firefox, and WebKit for both MVP templates.\n");
   } finally {
