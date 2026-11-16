@@ -74,5 +74,3 @@ jobs:
         run: pnpm run build
       - name: Build Docker image
         run: docker build --file ../Dockerfile --tag design-platform-ci ..
-      - name: Build Docker development image
-        run: docker build --file ../Dockerfile.dev --tag design-platform-dev-ci ..
