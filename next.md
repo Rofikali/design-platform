@@ -1,11 +1,14 @@
 # NEXT — Product, Engineering, Security, Operations & Business Roadmap
 
+> **Documentation expansion checkpoint (2026-11-16; PR in review):** This branch adds a Design Platform-specific [seven-level engineering model](docs/engineering/seven-level-operating-model.md), [agent continuation](docs/engineering/agent-continuation-runbook.md), [handoff template](docs/engineering/agent-milestone-handoff.md), [change-scoped test lanes](docs/engineering/change-scoped-verification.md), [CI evidence policy](docs/engineering/ci-evidence-policy.md), [document HLD/LLD](docs/architecture/document-editor-hld-lld.md), [product/free-paid strategy](docs/product/platform-business-strategy.md), [security/privacy operations](docs/security/security-and-privacy-operations.md), [release checklist](docs/operations/release-readiness.md) and [status register](docs/engineering/decision-status-register.md). These are **proposed documentation until merged**, not implemented product features or release approval. Review live GitHub head and CI for active PR #102; old baseline SHA below is historical, not a current-main claim.
+
+
 > **Purpose:** The single owner-facing map for what this product is, what we are building, why we are building it, what happens next, what can remain free, what may require paid services, and what must be true before launch.
 >
 > **Document status:** Living roadmap and governance contract — not proof that planned work is implemented.
-> **Last reviewed:** 2026-11-15
+> **Last documentation review:** 2026-11-16
 > **Repository:** Rofikali/design-platform
-> **Current baseline observed:** `main` at `91ff02d0c0c4c32396f83bcf083a9351d54065c9` (latest commit visible during this review).
+> **Historical CI baseline:** `main` at `91ff02d0c0c4c32396f83bcf083a9351d54065c9`; see the [M1 evidence report](docs/testing/m1-baseline-evidence.md). **This is not a claim about today's live `main` or the latest PR head.**
 > **Product status:** Prototype; not production-ready; no verified paying customers or product-market fit.
 
 This file is deliberately broad so the owner and future agents do not need to repeat the product direction in every conversation. It is not permission to build every item immediately. Execute one bounded milestone at a time, in dependency order, with evidence and owner approval for consequential changes.
