@@ -2,6 +2,8 @@
 
 This index explains where project knowledge belongs. **For the currently active NOW task, completed/merged work, blocked PRs and the next bounded move, start at the [top LIVE NOW / NEXT / DONE board](../../next.md).** This document maps detailed contracts; it is not a second status tracker. Keep each document focused and update the existing source of truth rather than creating competing copies.
 
+The [hourly autopilot operating agreement](hourly-autopilot.md) describes the owner's enabled recurring "go ahead" task. It supplements—rather than replaces—the live work board and human merge gates.
+
 ## Product and architecture
 
 - [MVP scope](../product/mvp.md): initial users, outcomes, and explicit non-goals.
