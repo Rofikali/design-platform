@@ -2,6 +2,10 @@
 
 **Status:** Standing procedure, not running automation. Inspired by imgengine's milestone-continuation model and adapted to Design Platform. [AGENTS](../../AGENTS.md), [next](../../next.md), [handoff template](agent-milestone-handoff.md) and current source/CI remain authoritative.
 
+## Enabled scheduled engineering autopilot
+
+The owner has separately enabled a ChatGPT hourly task named **Design Platform Autopilot**, which runs this repository's bounded "go ahead" workflow. See [hourly autopilot](hourly-autopilot.md) for precise task-selection, safety, spending and reporting rules. This runbook alone does not schedule anything. At each hourly execution re-check GitHub live state before continuing. The automation must be manually paused through ChatGPT when the owner wishes to stop it.
+
 ## Persistent instructions are not a persistent process
 
 A markdown rule **does not** wake ChatGPT/Astra/Codex after a session ends, submit work, monitor CI by itself or authorize a merge. Continuation happens either in a still-active authorized session, when the owner starts another session with the bootstrap line below, or when a separately approved actual agent runner/orchestrator exists. GitHub Actions merely runs configured workflows; it is not a coding agent.
