@@ -18,6 +18,9 @@ function start(command, args) {
     cwd: webRoot,
     stdio: ["ignore", "pipe", "pipe"],
     env: { ...process.env, NODE_ENV: "production" },
+    // Keep preview descendants in one process group on Unix. Without this,
+    // terminating pnpm can leave its Nuxt child running and keep CI alive.
+    detached: process.platform !== "win32",
   });
   let stdout = "";
   let stderr = "";
@@ -44,7 +47,16 @@ async function waitForServer(child) {
 }
 
 function stop(child) {
-  if (child && child.exitCode === null) child.kill("SIGTERM");
+  if (!child || child.exitCode !== null) return;
+  try {
+    if (process.platform !== "win32" && child.pid) {
+      process.kill(-child.pid, "SIGTERM");
+    } else {
+      child.kill("SIGTERM");
+    }
+  } catch (error) {
+    if (error?.code !== "ESRCH") throw error;
+  }
 }
 
 async function verifyExport(browserName, browser, template, expectedWidth, expectedHeight) {
@@ -73,7 +85,9 @@ async function verifyExport(browserName, browser, template, expectedWidth, expec
         width !== expectedWidth || height !== expectedHeight || png.length < 100) {
       throw new Error(`${browserName} ${template} PNG invalid: ${JSON.stringify({ validSignature, width, height, bytes: png.length })}`);
     }
-    const status = await page.locator('[role="status"]').innerText();
+    // The editor exposes separate export and selection live regions.
+    // Scope this assertion to the export message, not every role=status.
+    const status = await page.locator('p.hint[role="status"]').innerText();
     if (!status.includes(`${expectedWidth} × ${expectedHeight} pixels`)) {
       throw new Error(`${browserName} export status mismatch: ${status}`);
     }
