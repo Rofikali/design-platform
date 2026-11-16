@@ -3,6 +3,10 @@
 > **Engineering handbook / imgengine-style governance (2026-11-16):** All agents must start with [the document map](docs/engineering/documentation-map.md), [seven-level operating model](docs/engineering/seven-level-operating-model.md), [milestone continuation](docs/engineering/agent-continuation-runbook.md), [handoff template](docs/engineering/agent-milestone-handoff.md), [change-scoped verification](docs/engineering/change-scoped-verification.md) and [CI evidence policy](docs/engineering/ci-evidence-policy.md). Their decisions apply to this editor's existing **Nuxt + Rust document core + thin WASM adapter**, not imgengine's C17/ABI/FFI pipeline. The [status register](docs/engineering/decision-status-register.md) and [current roadmap](next.md) must be reconciled with live PRs and exact-SHA checks, not treated as eternal facts. Do not autonomously merge, deploy, spend, weaken tests, or claim a completed AI session continues itself. Docs-only additions do not implement features or certify release readiness.
 
 
+## Hourly Design Platform Autopilot (owner-enabled)
+
+An independent ChatGPT scheduled task named **Design Platform Autopilot** is enabled to process the same bounded **"go ahead"** request each hour until the owner manually pauses it. For each run, read [hourly-autopilot instructions](docs/engineering/hourly-autopilot.md), the top [live work board](next.md), [agent continuation](docs/engineering/agent-continuation-runbook.md), the seven-level model and exact-head CI evidence policy. Reconcile actual GitHub state, choose one eligible NOW task, work safely in a focused PR and report evidence. **Scheduling does not authorize merge, deployment, paid usage, secret changes or weakened CI.** Check existing tasks before creating duplicate scheduled automations.
+
 ## 1. Product mission and outcomes
 
 Build a trustworthy, maintainable browser-based design editor for exam papers and shop banners first. The product should help a real user create, edit, save, reopen, and export useful designs with predictable results.
