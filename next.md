@@ -788,6 +788,10 @@ Keep CI proportional to the change while preserving release confidence:
 - Use BuildKit GitHub Actions layer caching with separate cache scopes for production and development images. Keep dependency lockfiles before frequently changing source copies in Dockerfiles so stable dependency layers can be reused.
 - Do not remove the production image build from ordinary PR verification: it validates the deployable artifact. Do not rebuild the full development toolchain for unrelated UI changes.
 - Measure elapsed time per workflow and compare cache-hit versus cache-miss runs. Treat caching as an optimization, not a correctness guarantee; builds must still pass from an empty cache.
+- Cache pnpm's content-addressed store in the cross-browser workflow using the lockfile as its key input.
+- Cache Playwright browser downloads by OS and the pinned Playwright version; still run Playwright's system-dependency installation and the actual browser tests.
+- Prepare the pinned Corepack/pnpm version in the development image layer rather than downloading/activating it on every container start. Keep the lockfile install on startup so the mounted workspace remains consistent.
+- Do not introduce cargo-chef or more elaborate Rust build graph machinery until timing evidence shows Rust dependency compilation is a dominant cold/warm build cost. The current workspace is small; extra build tooling may cost more complexity than it saves.
 
 Current implementation is in `.github/workflows/ci.yml`, `.github/workflows/development-container.yml`, and `.github/workflows/cross-browser-export.yml`. The policy is considered validated only after the latest PR head passes its fresh workflows.
  
