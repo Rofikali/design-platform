@@ -71,6 +71,17 @@ async function verifyExport(browserName, browser, template, expectedWidth, expec
     await page.locator("#template-choice").selectOption(template);
     await page.getByRole("button", { name: "Use template" }).click();
     await page.locator(".design-page").waitFor();
+    // Capture live-region announcements from the moment export begins.
+    // The autosave watcher can update this same region ~300 ms later;
+    // checking only its final text after downloading causes a false failure.
+    await page.evaluate(() => {
+      const region = document.querySelector('p.hint[role="status"]');
+      if (!region) throw new Error("Export status live region not found");
+      window.__exportStatusMessages = [region.textContent || ""];
+      new MutationObserver(() => {
+        window.__exportStatusMessages.push(region.textContent || "");
+      }).observe(region, { subtree: true, childList: true, characterData: true });
+    });
     const downloadPromise = page.waitForEvent("download", { timeout: 30_000 });
     await page.getByRole("button", { name: "Download PNG" }).click();
     const download = await downloadPromise;
@@ -85,12 +96,16 @@ async function verifyExport(browserName, browser, template, expectedWidth, expec
         width !== expectedWidth || height !== expectedHeight || png.length < 100) {
       throw new Error(`${browserName} ${template} PNG invalid: ${JSON.stringify({ validSignature, width, height, bytes: png.length })}`);
     }
-    // The editor exposes separate export and selection live regions.
-    // Scope this assertion to the export message, not every role=status.
-    const status = await page.locator('p.hint[role="status"]').innerText();
-    if (!status.includes(`${expectedWidth} × ${expectedHeight} pixels`)) {
-      throw new Error(`${browserName} export status mismatch: ${status}`);
-    }
+    // The export announcement must have appeared even if a later autosave
+    // message replaced it. Check the recorded live-region changes, not a
+    // transient final text snapshot.
+    const expectedStatus = `PNG exported at ${expectedWidth} × ${expectedHeight} pixels.`;
+    await page.waitForFunction(expected =>
+      window.__exportStatusMessages?.some(message => message.includes(expected)),
+    expectedStatus, { timeout: 15_000 }).catch(async error => {
+      const messages = await page.evaluate(() => window.__exportStatusMessages || []);
+      throw new Error(`${browserName} ${template} export announcement missing: ${JSON.stringify(messages.slice(-10))}; ${error.message}`);
+    });
     process.stdout.write(`PASS: ${browserName} ${template} PNG ${width}×${height} (${png.length} bytes)\n`);
   } finally {
     await context.close();
