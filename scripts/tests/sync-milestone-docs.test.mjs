@@ -55,6 +55,16 @@ test("the guard rejects removed, duplicated and unordered generated markers", ()
   assert.throws(() => synchronizeDocument(block + "\n" + block, block), /exactly one/);
 });
 
+test("scoped owner authorization allows gated PR merges without publishing", () => {
+  const record = fixture();
+  record.approval_policy = "OWNER_APPROVED_GATED_MERGE";
+  const block = renderGeneratedBlock(record, "compact");
+  assert.match(block, /Owner-authorized autopilot may review and merge only after all exact-head\/integration CI/);
+  assert.match(block, /required independent-review gates pass/);
+  assert.match(block, /No automatic publishing or deployment/);
+  assert.doesNotMatch(block, /No automated merges/);
+});
+
 test("malformed records and unsafe merge policy fail before generation", () => {
   const mergedNow = fixture();
   mergedNow.milestones[0].status = "MERGED";
