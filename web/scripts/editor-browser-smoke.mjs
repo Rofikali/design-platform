@@ -488,6 +488,82 @@ async function main() {
     const savedBackgroundFit = await evaluate("JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null')?.page?.background_image?.fit || ''");
     if (savedBackgroundFit !== "contain") throw new Error(`Background image or fit mode was not preserved in local autosave: ${savedBackgroundFit}`);
 
+    // The image is document state, not just a canvas decoration: removing it
+    // must keep foreground elements intact, survive autosave, and be reversible
+    // through the real history UI. Undo/redo must also preserve the fit mode.
+    const backgroundBeforeRemoval = await evaluate(`(() => {
+      const saved = JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null');
+      return {
+        dataUrl: saved?.page?.background_image?.data_url || '',
+        fit: saved?.page?.background_image?.fit || '',
+        ids: (saved?.elements || []).map(item => item.id),
+      };
+    })()`);
+    if (!backgroundBeforeRemoval.dataUrl.startsWith("data:image/png;base64,") ||
+        backgroundBeforeRemoval.fit !== "contain" || backgroundBeforeRemoval.ids.length !== 2) {
+      throw new Error(`Background image prerequisite missing: ${JSON.stringify(backgroundBeforeRemoval)}`);
+    }
+    const expectedForegroundIds = JSON.stringify(backgroundBeforeRemoval.ids);
+    const expectedBackgroundUrl = JSON.stringify(backgroundBeforeRemoval.dataUrl);
+    const clickHistoryButton = async (label) => evaluate(`(() => {
+      const button = Array.from(document.querySelectorAll('.history-actions button'))
+        .find(item => item.textContent.trim() === ${JSON.stringify(label)});
+      if (!button || button.disabled) throw new Error(${JSON.stringify(label)} + ' is not enabled');
+      button.click();
+      return true;
+    })()`);
+
+    await evaluate(`(() => {
+      const button = Array.from(document.querySelectorAll('button'))
+        .find(item => item.textContent.trim() === 'Remove background image');
+      if (!button) throw new Error('Remove background image control is missing');
+      button.click();
+      return true;
+    })()`);
+    await waitForPage("background removal on the canvas",
+      "!document.querySelector('.page-background-image') && !Array.from(document.querySelectorAll('button')).some(item => item.textContent.trim() === 'Remove background image')");
+    await waitForPage("background removal autosave", `(() => {
+      const saved = JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null');
+      return saved && !saved.page.background_image &&
+        JSON.stringify(saved.elements.map(item => item.id)) === ${JSON.stringify(expectedForegroundIds)};
+    })()`);
+
+    await clickHistoryButton("Undo");
+    await waitForPage("undo restores image with contain fit", `(() => {
+      const image = document.querySelector('.page-background-image');
+      return image?.getAttribute('src') === ${expectedBackgroundUrl} &&
+        getComputedStyle(image).objectFit === 'contain';
+    })()`);
+    await clickHistoryButton("Redo");
+    await waitForPage("redo removes background again",
+      "!document.querySelector('.page-background-image')");
+    await clickHistoryButton("Undo");
+    await waitForPage("second undo restores background image", `(() => {
+      const image = document.querySelector('.page-background-image');
+      return image?.getAttribute('src') === ${expectedBackgroundUrl} &&
+        getComputedStyle(image).objectFit === 'contain';
+    })()`);
+    await waitForPage("restored image autosave after undo", `(() => {
+      const saved = JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null');
+      return saved?.page?.background_image?.data_url === ${expectedBackgroundUrl} &&
+        saved.page.background_image.fit === 'contain' &&
+        JSON.stringify(saved.elements.map(item => item.id)) === ${JSON.stringify(expectedForegroundIds)};
+    })()`);
+
+    // Reopen from actual browser persistence, not Vue in-memory state.
+    await evaluate("location.reload(); true");
+    await waitForPage("background image restored after browser reload", `(() => {
+      const image = document.querySelector('.page-background-image');
+      return image?.getAttribute('src') === ${expectedBackgroundUrl} &&
+        getComputedStyle(image).objectFit === 'contain';
+    })()`);
+    const restoredIds = await evaluate(
+      "Array.from(document.querySelectorAll('.design-element')).map(item => item.dataset.elementId)");
+    if (JSON.stringify(restoredIds) !== expectedForegroundIds) {
+      throw new Error(`Background image history/reopen altered foreground elements: ${JSON.stringify(restoredIds)}`);
+    }
+
+
     // A rejected import must not replace the currently loaded valid document.
     const invalidFixture = JSON.stringify({ ...JSON.parse(fixture), schema_version: 999 });
     const invalidImportExpression = `(() => {
