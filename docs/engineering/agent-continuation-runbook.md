@@ -48,7 +48,7 @@ DP-M1-CB-01
 3. **Classify work:** severity, customer value, dependencies, affected modules, schema/asset/export risk, data migration and operating cost.
 4. **Choose exactly one eligible task:** highest-priority verified security/data-loss/regression blocker, then a ready in-progress milestone, then a product feature validated by customer need.
 5. **Create bounded design:** user outcome; in/out of scope; changed files; HLD/LLD; negative/boundary tests; rollback; estimated CI and spending.
-6. **Execute in the authorized scope:** one small PR, no surprise payments, deployment, feature expansion or autonomous merge.
+6. **Execute in the authorized scope:** one small PR, no surprise payments, deployment or feature expansion; a safe merge is allowed only after the 2026-11-17 owner-authorized checklist and all repository review/check gates.
 7. **Verify:** local focused checks; automatic GitHub workflows at the **current** SHA; only failed-step excerpts in model context; label pending, cancelled, skipped and not-run accurately.
 8. **Checkpoint:** record task ID/status, repo/branch/commit, PR/CI links, commands/results, risks and the next action in the task handoff and appropriate register.
 9. **Wait at gates:** the reviewed/verified merge gate under owner standing permission; separate owner approval for breaking schema, customer data, paid infrastructure, release or pricing.
