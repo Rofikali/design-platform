@@ -2,6 +2,20 @@
 
 **Status:** Standing procedure, not running automation. Inspired by imgengine's milestone-continuation model and adapted to Design Platform. [AGENTS](../../AGENTS.md), [next](../../next.md), [handoff template](agent-milestone-handoff.md) and current source/CI remain authoritative.
 
+<!-- milestone-sync:start -->
+<!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
+### Milestone snapshot (generated: 2026-11-17)
+
+**Reference main:** f7f55126c34dc01cc2c86cb2fc9b611d9b75402a (dated snapshot; re-check live GitHub before acting).
+
+**NOW:** **DP-M1-ACC-03 — Keyboard-operated background image removal** [PR_OPEN]. [PR #115](https://github.com/Rofikali/design-platform/pull/115) [Issue #82](https://github.com/Rofikali/design-platform/issues/82)
+
+**NEXT:** DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
+
+**Review gate:** A human reviews and manually merges each PR. No automated merges, publishing or deployments.
+
+<!-- milestone-sync:end -->
+
 ## Enabled scheduled engineering autopilot
 
 The owner has separately enabled a ChatGPT hourly task named **Design Platform Autopilot**, which runs this repository's bounded "go ahead" workflow. See [hourly autopilot](hourly-autopilot.md) for precise task-selection, safety, spending and reporting rules. This runbook alone does not schedule anything. At each hourly execution re-check GitHub live state before continuing. The automation must be manually paused through ChatGPT when the owner wishes to stop it.
@@ -12,7 +26,7 @@ A markdown rule **does not** wake ChatGPT/Astra/Codex after a session ends, subm
 
 ## Bootstrap prompt for a new agent session
 
-> Read AGENTS.md, SKILLS.md, next.md, docs/engineering/agent-continuation-runbook.md and current GitHub PR/CI state. Reconcile stale milestones and select one READY bounded task, applying the owner's standing 2026-11-17 safe PR merge authorization and retaining separate deployment approval. Report exact-SHA evidence, costs and open risks; do not invent results or rerun full CI unnecessarily.
+> Read AGENTS.md, SKILLS.md, next.md, docs/engineering/agent-continuation-runbook.md and current GitHub PR/CI state. Reconcile stale milestones and select one READY bounded task, creating a reviewable PR only, with human review and manual merging/publishing required. Report exact-SHA evidence, costs and open risks; do not invent results or rerun full CI unnecessarily.
 
 ## "Go ahead" task-selection contract — use the live board
 
@@ -21,7 +35,7 @@ When the owner writes **"go ahead"**, the agent should not ask them to repeat al
 1. **Continue before duplicating:** inspect an active feature/CI remediation PR and its exact latest head before opening a competing PR. If a regression has a failing latest-head job, it remains NOW even when other jobs pass. In the 2026-11-16 snapshot, PR #102 is the primary CI regression lane; this is not a permanent rule to target #102.
 2. **Do not confuse statuses:** DONE/IMPLEMENTED/VERIFIED/CI_PENDING/FAILED/MERGED/RELEASED are different; only GitHub confirms a merge, a real launch confirms release, and only exact-head executed checks prove CI success.
 3. **Do not invent time:** docs cannot trigger a background agent or future response; work happens only while the authorized runner is executing.
-4. **Change control:** the owner's 2026-11-17 standing authorization permits safe reviewed PR merges; still never infer authority for deployment, visibility, billing, secrets, major schema/data deletion or security bypass. Small PRs and review remain standard.
+4. **Change control:** the latest owner rule prohibits automatic PR merges and publishing; never infer authority for deployment, visibility, billing, secrets, data deletion or security bypass. Small PRs and review remain standard.
 5. **Checkpoint sparingly:** update the live board after a meaningful status transition, not after every queued/running CI poll. Preserve durable evidence in PRs and linked reports, not duplicated logs.
 6. **Handoff once per bounded milestone:** include task ID, prior and current SHA, affected boundary, test status, known failures, PR link, next action, seven-level/security/SRE/product/finance review notes and owner gate.
 7. **Next after merge:** confirm merge SHA and exact associated checks, mark the task MERGED (not RELEASED), then choose the next READY item after prerequisites—not the oldest long-term bullet.
@@ -35,7 +49,7 @@ DP-M1-CB-01
   → IN_PROGRESS (one scoped repair)
   → CI_PENDING (new head, old evidence historical)
   → READY_FOR_REVIEW (all required checks pass on that head)
-  → MERGED (GitHub confirms; owner standing PR permission and merge checklist)
+  → MERGED (only after human-reviewed manual GitHub merge)
   → RELEASED (separate product/release gate, only if applicable)
 ```
 
@@ -48,10 +62,10 @@ DP-M1-CB-01
 3. **Classify work:** severity, customer value, dependencies, affected modules, schema/asset/export risk, data migration and operating cost.
 4. **Choose exactly one eligible task:** highest-priority verified security/data-loss/regression blocker, then a ready in-progress milestone, then a product feature validated by customer need.
 5. **Create bounded design:** user outcome; in/out of scope; changed files; HLD/LLD; negative/boundary tests; rollback; estimated CI and spending.
-6. **Execute in the authorized scope:** one small PR, no surprise payments, deployment or feature expansion; a safe merge is allowed only after the 2026-11-17 owner-authorized checklist and all repository review/check gates.
+6. **Execute in the authorized scope:** one small review-only PR, no surprise payments, deployment, feature expansion or autonomous merging. The human owner merges manually after review/check gates.
 7. **Verify:** local focused checks; automatic GitHub workflows at the **current** SHA; only failed-step excerpts in model context; label pending, cancelled, skipped and not-run accurately.
 8. **Checkpoint:** record task ID/status, repo/branch/commit, PR/CI links, commands/results, risks and the next action in the task handoff and appropriate register.
-9. **Wait at gates:** the reviewed/verified merge gate under owner standing permission; separate owner approval for breaking schema, customer data, paid infrastructure, release or pricing.
+9. **Wait at gates:** human review and manual merge, with separate owner approval for breaking schema, customer data, paid infrastructure, release or pricing.
 
 ## Task states
 
