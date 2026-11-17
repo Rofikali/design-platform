@@ -1,6 +1,6 @@
 # Design Platform — LIVE Work Board and Master Roadmap
 
-> **Live-board snapshot:** Reconciled 2026-11-17 against GitHub; main `3755b363605dc1cec62ea481578cfd6487ebed79` before the work on this branch. The snapshot is **dated**, not a live-updating dashboard. Re-fetch main/PRs/checks before executing or declaring completion.
+> **Live-board snapshot:** Reconciled 2026-11-17 against GitHub; main `5164b55bb602a021029915da23eb316fd5bffff4` before the work on this branch. The snapshot is **dated**, not a live-updating dashboard. Re-fetch main/PRs/checks before executing or declaring completion.
 >
 > **Source discipline:** This board adopts the **NOW / NEXT / LATER**, evidence, priority and agent continuation pattern in `Rofikali/imgengine/next.md`, not its IMGENGINE C17, FFI, VPS or five image tools. Code/tests and GitHub state override stale descriptions.
 >
@@ -12,19 +12,18 @@
 
 ### NOW — one first eligible engineering task
 
-**DP-M1-BG-04 — Embedded background-image validation bounds: IN_PROGRESS / PR REVIEW.**
+**DP-M1-BG-05 — Background-image remove / undo / redo / reopen browser regression: PR IN REVIEW.**
 
-- **Previous M1 milestone DP-M1-CB-01: DONE/MERGED.** [PR #102](https://github.com/Rofikali/design-platform/pull/102) passed cross-browser, core, frontend, Docker and audit checks; merge SHA `facf18b626fdc67eb56e4c94c2e86a68d09a1497`.
-- **New NOW task ([issue #85](https://github.com/Rofikali/design-platform/issues/85)):** add a 1 MiB encoded data-URL guard and canonical base64 validation in the exported `validateEmbeddedBackgroundImage` helper **before** base64 decoding or pixel allocation. Document parsing already bounds its own inputs, but the reusable helper must enforce that trust boundary independently. New tests must verify oversized and unpadded inputs are rejected *without* calling `atob` or `createImageBitmap`. No schema, API, or background-rendering changes.
-- **Exit gate:** review bounded diff, run current-head targeted/frontend/Rust/CI/security checks, merge only if all applicable gates pass and GitHub allows it. This does not complete all background-image, print or manual accessibility acceptance criteria.
-
+- **DONE / MERGED:** [PR #107](https://github.com/Rofikali/design-platform/pull/107) hardened embedded background-image input bounds and canonical base64 before decoding, merge SHA `5164b55bb602a021029915da23eb316fd5bffff4`. Exact PR-head [CI #340](https://github.com/Rofikali/design-platform/actions/runs/44005493058), [cross-browser #21](https://github.com/Rofikali/design-platform/actions/runs/44005493188) and [audit #137](https://github.com/Rofikali/design-platform/actions/runs/44005493009) all passed.
+- **NOW / [issue #85](https://github.com/Rofikali/design-platform/issues/85):** add a deterministic real-browser test to prove background removal preserves foreground elements, undo restores original image/contain fit, redo removes, a second undo restores, local autosave contains the original asset, and page reload reopens it intact. Test the actual UI and browser storage without adding a server or changing document schema.
+- **Exit:** latest PR-head frontend/browser/CI and security checks pass, focused diff reviewed, normal GitHub merge gates satisfied. Issue #85 remains open until remaining JSON round-trip, image-backed PNG/print and negative/compatibility acceptance evidence is collected; manual accessibility [#82](https://github.com/Rofikali/design-platform/issues/82) is distinct.
 
 ### Parallel review lanes — not automatically the next implementation
 
 | Lane / ID | Verified state at snapshot | Next smallest action | Exit evidence |
 | --- | --- | --- | --- |
 | **DP-M1-ACC-02** | [Issue #82](https://github.com/Rofikali/design-platform/issues/82) **OPEN**; automated accessibility coverage exists but manual screen reader/keyboard/zoom review is not established | Perform/document NVDA+browser, keyboard-only, focus, live announcements, 200% zoom and contrast review; remediate reproduced failures | Device/tool versions, steps, results and linked regression PRs; manual audit signed off |
-| **DP-M1-BG-03** | [Issue #85](https://github.com/Rofikali/design-platform/issues/85) **OPEN**; page background functionality appears in current code/docs; full issue acceptance has not been signed off | Reconcile background implementation, schema/negative fixture parity, remove/undo/redo, autosave/reopen, JSON round-trip and image-backed PNG/print evidence | Full issue criteria verified; close issue only with owner/reviewer agreement |
+| **DP-M1-BG-03** | [Issue #85](https://github.com/Rofikali/design-platform/issues/85) **OPEN**; background validation PR #107 MERGED, remove/history/reopen browser regression PR pending; full image-backed JSON/PNG/print acceptance remains | Reconcile background implementation, schema/negative fixture parity, remove/undo/redo, autosave/reopen, JSON round-trip and image-backed PNG/print evidence | Full issue criteria verified; close issue only with owner/reviewer agreement |
 | **DP-M1-CI-04** | [PR #102](https://github.com/Rofikali/design-platform/pull/102) owns cross-browser, caching and conditional development-container work; **MERGED** | Main and PR-head checks succeeded; measure actual cold/warm build times before claiming measured speed gains | Latest head all required gates green, reviewed PR, owner approval; no invented cost/speed numbers |
 | **DP-M1-DOC-05** | [PR #101](https://github.com/Rofikali/design-platform/pull/101) **MERGED**; baseline evidence recorded | Reconcile old checklist when new release evidence exists; avoid rebuilding same documentation | Link historical reports as historical and reflect actual merged SHA |
 | **DP-M1-DEP-06** | [PR #98](https://github.com/Rofikali/design-platform/pull/98) **OPEN** Nuxt 3→4 dependency jump; [CI](https://github.com/Rofikali/design-platform/actions/runs/43826311389) **FAILED**, audit [PASSED](https://github.com/Rofikali/design-platform/actions/runs/43826311510) at its head `643799551a35373a92d7f9b9aae1729da04d7f40` | Evaluate migration compatibility, release-notes, lockfile, security and source changes in separate reviewed dependency work | Passing full current-head CI plus supported migration test and approval |
@@ -39,6 +38,7 @@
 | **DP-DOC-101** | CI baseline evidence and refreshed roadmap checkpoint | [PR #101](https://github.com/Rofikali/design-platform/pull/101) **MERGED**; reports are dated, not current universal verification |
 | **DP-DOC-103** | Seven-level handbook: agent handoff, continuation, HLD/LLD, cost/test/security/finance/release guides | [PR #103](https://github.com/Rofikali/design-platform/pull/103) **MERGED** as `c6a03ba5f378f237e442377e44bfefc28a52fcf6`; **docs only** |
 | **DP-DOC-105** | Hourly autopilot, seven-level PR review/merge authority and governance links | [PR #105](https://github.com/Rofikali/design-platform/pull/105) **MERGED** as `872a2cb35db141b5e76a84d9bce3bc273542635b`; no deployment or spending permission |
+| **DP-M1-BG-107** | Bound encoded embedded raster input and reject noncanonical base64 before decoding | [PR #107](https://github.com/Rofikali/design-platform/pull/107) **MERGED** as `5164b55bb602a021029915da23eb316fd5bffff4`; does not close the full background workflow acceptance |
 | **DP-M1-A11Y-106** | Correct Table versus Grid accessible canvas-selection labels with regression tests | [PR #106](https://github.com/Rofikali/design-platform/pull/106) **MERGED** as `3755b363605dc1cec62ea481578cfd6487ebed79`; manual screen-reader/keyboard audit [issue #82](https://github.com/Rofikali/design-platform/issues/82) remains OPEN |
 | **DP-MVP-BASE** | Local-first Nuxt/Vue editor, Rust design core + WASM, schema-v4 frames/visual grids, JSON import/export, bounded history, page backgrounds, PNG and browser-print path | **IMPLEMENTED in current source**, not a completed manual accessibility audit or paid/production release |
 
