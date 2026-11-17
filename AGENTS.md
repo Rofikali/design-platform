@@ -1,25 +1,25 @@
 # Engineering Constitution
 
-> **Engineering handbook / imgengine-style governance (2026-11-16):** All agents must start with [the document map](docs/engineering/documentation-map.md), [seven-level operating model](docs/engineering/seven-level-operating-model.md), [milestone continuation](docs/engineering/agent-continuation-runbook.md), [handoff template](docs/engineering/agent-milestone-handoff.md), [change-scoped verification](docs/engineering/change-scoped-verification.md) and [CI evidence policy](docs/engineering/ci-evidence-policy.md). Their decisions apply to this editor's existing **Nuxt + Rust document core + thin WASM adapter**, not imgengine's C17/ABI/FFI pipeline. The [status register](docs/engineering/decision-status-register.md) and [current roadmap](next.md) must be reconciled with live PRs and exact-SHA checks, not treated as eternal facts. The owner's latest documentation workflow rule requires HUMAN review and manual merge; the hourly agent must never automatically merge or publish. Do not bypass independent-review rules, deploy, spend, weaken tests or claim a completed AI session continues itself. Docs-only additions do not implement features or certify release readiness.
+> **Engineering handbook / imgengine-style governance (2026-11-16):** All agents must start with [the document map](docs/engineering/documentation-map.md), [seven-level operating model](docs/engineering/seven-level-operating-model.md), [milestone continuation](docs/engineering/agent-continuation-runbook.md), [handoff template](docs/engineering/agent-milestone-handoff.md), [change-scoped verification](docs/engineering/change-scoped-verification.md) and [CI evidence policy](docs/engineering/ci-evidence-policy.md). Their decisions apply to this editor's existing **Nuxt + Rust document core + thin WASM adapter**, not imgengine's C17/ABI/FFI pipeline. The [status register](docs/engineering/decision-status-register.md) and [current roadmap](next.md) must be reconciled with live PRs and exact-SHA checks, not treated as eternal facts. The owner's latest authorization permits the autopilot to review and merge safe PRs after all latest-head CI, security, repository protections and required independent-review gates pass; never automatically publish or deploy. Do not bypass independent-review rules, deploy, spend, weaken tests or claim a completed AI session continues itself. Docs-only additions do not implement features or certify release readiness.
 
 
 <!-- milestone-sync:start -->
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-17)
 
-**Reference main:** f7f55126c34dc01cc2c86cb2fc9b611d9b75402a (dated snapshot; re-check live GitHub before acting).
+**Reference main:** 96d832c2af753248e6158345ebc49476dac8b7fc (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M1-ACC-03 — Keyboard-operated background image removal** [PR_OPEN]. [PR #115](https://github.com/Rofikali/design-platform/pull/115) [Issue #82](https://github.com/Rofikali/design-platform/issues/82)
+**NOW:** **DP-M1-ACC-04 — Automated 200% zoom and keyboard layout regression** [READY]. [Issue #82](https://github.com/Rofikali/design-platform/issues/82)
 
 **NEXT:** DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
-**Review gate:** A human reviews and manually merges each PR. No automated merges, publishing or deployments.
+**Review gate:** Owner-authorized autopilot may review and merge only after all exact-head/integration CI, security, branch protection and required independent-review gates pass. No automatic publishing or deployment.
 
 <!-- milestone-sync:end -->
 
 ## Hourly Design Platform Autopilot (owner-enabled)
 
-An independent ChatGPT scheduled task named **Design Platform Autopilot** is enabled to process the same bounded **"go ahead"** request each hour until the owner manually pauses it. For each run, read [hourly-autopilot instructions](docs/engineering/hourly-autopilot.md), the top [live work board](next.md), [agent continuation](docs/engineering/agent-continuation-runbook.md), the seven-level model and exact-head CI evidence policy. Reconcile actual GitHub state, choose one eligible NOW task, work safely in a focused PR and report evidence. **Latest owner rule: human-reviewed PRs only. No automatic merging, publishing, deployment, paid usage, secret changes or weakened CI.** Check existing tasks before creating duplicate scheduled automations.
+An independent ChatGPT scheduled task named **Design Platform Autopilot** is enabled to process the same bounded **"go ahead"** request each hour until the owner manually pauses it. For each run, read [hourly-autopilot instructions](docs/engineering/hourly-autopilot.md), the top [live work board](next.md), [agent continuation](docs/engineering/agent-continuation-runbook.md), the seven-level model and exact-head CI evidence policy. Reconcile actual GitHub state, choose one eligible NOW task, work safely in a focused PR and report evidence. **Latest owner rule: full PR creation/review/safe merge is authorized, only after required evidence and GitHub protections. No publishing, deployment, paid usage, secret changes or weakened CI.** Check existing tasks before creating duplicate scheduled automations.
 
 ## 1. Product mission and outcomes
 
