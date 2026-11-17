@@ -1,4 +1,4 @@
-import type { BackgroundImage } from "./document";
+import { MAX_BACKGROUND_IMAGE_DATA_URL_BYTES, type BackgroundImage } from "./document";
 
 export const MAX_BACKGROUND_IMAGE_DIMENSION = 4_096;
 export const MAX_BACKGROUND_IMAGE_PIXELS = 16_000_000;
@@ -30,8 +30,23 @@ async function validateDecodedBitmap(bitmap: ImageBitmap): Promise<void> {
 }
 
 export async function validateEmbeddedBackgroundImage(image: BackgroundImage): Promise<void> {
+  // Check the encoded payload before regex matching, base64 decoding or
+  // allocating a pixel buffer. This helper is exported and must defend its
+  // own resource boundary, even when called outside parseDocumentJson.
+  // Accepted data URLs are ASCII, so code-unit and UTF-8 byte lengths match.
+  if (typeof image?.data_url !== "string" ||
+      image.data_url.length > MAX_BACKGROUND_IMAGE_DATA_URL_BYTES) {
+    throw new Error("Embedded background image exceeds the 1 MiB document limit or is invalid.");
+  }
   const match = /^data:(image\/(?:png|jpeg|webp));base64,([A-Za-z0-9+/]+={0,2})$/.exec(image.data_url);
   if (!match) throw new Error("Embedded background image has an unsupported data URL.");
+  // atob can accept unpadded base64; require the canonical alphabet/padding
+  // already enforced by the versioned Rust/TypeScript document validators.
+  const payload = match[2]!;
+  if (payload.length % 4 !== 0 ||
+      !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(payload)) {
+    throw new Error("Embedded background image contains invalid base64 data.");
+  }
   let binary: string;
   try {
     binary = atob(match[2]!);
