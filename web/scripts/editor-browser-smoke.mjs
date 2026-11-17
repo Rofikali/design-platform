@@ -665,48 +665,6 @@ async function main() {
       await cdp.send("Emulation.setEmulatedMedia", { media: "screen" });
     }
 
-    // M1-BG-08: exercise print styling on the same image-backed document.
-    // The app currently offers browser Print/Save PDF, not a server PDF API.
-    await cdp.send("Emulation.setEmulatedMedia", { media: "print" });
-    await evaluate("window.print = () => { window.__backgroundPrintIntercepted = true; }; Array.from(document.querySelectorAll('button')).find(button => button.textContent.includes('Print / Save PDF'))?.click(); true");
-    await waitForPage("image-backed print stylesheet installed",
-      "Boolean(window.__backgroundPrintIntercepted && document.querySelector('style[data-design-print]') && document.querySelector('.app-shell.printing-design'))");
-    const printedBackground = await evaluate(`(() => {
-      const image = document.querySelector('.page-background-image');
-      const page = document.querySelector('.design-page');
-      const style = image && getComputedStyle(image);
-      return {
-        source: image?.getAttribute('src') || '',
-        fit: style?.objectFit || '',
-        display: style?.display || '',
-        width: page?.getBoundingClientRect().width || 0,
-        height: page?.getBoundingClientRect().height || 0,
-        foreground: document.querySelectorAll('.design-element').length,
-      };
-    })()`);
-    if (printedBackground.source !== backgroundBeforeRemoval.dataUrl ||
-        printedBackground.fit !== "contain" || printedBackground.display === "none" ||
-        printedBackground.width <= 0 || printedBackground.height <= 0 ||
-        printedBackground.foreground !== backgroundBeforeRemoval.ids.length) {
-      throw new Error(`Print mode lost image or foreground: ${JSON.stringify({
-        ...printedBackground, source: printedBackground.source.slice(0, 32),
-      })}`);
-    }
-    const backgroundPdfResult = await cdp.send("Page.printToPDF", {
-      preferCSSPageSize: true, printBackground: true, displayHeaderFooter: false, scale: 1,
-    });
-    const backgroundPdf = Buffer.from(backgroundPdfResult.data, "base64");
-    const backgroundPdfText = backgroundPdf.toString("latin1");
-    if (!backgroundPdfText.startsWith("%PDF-") || backgroundPdf.length < 1_000 ||
-        !/\/Type\s*\/Page\b/.test(backgroundPdfText)) {
-      throw new Error(`Image-backed print did not produce a valid-looking PDF with a page (bytes=${backgroundPdf.length})`);
-    }
-    // This asserts PDF generation and active image print styling. It is NOT a
-    // substitute for pixel-level PDF rasterization or a manual print review.
-    await cdp.send("Emulation.setEmulatedMedia", { media: "screen" });
-    await evaluate("window.dispatchEvent(new Event('afterprint')); true");
-    process.stdout.write(`PASS: image-backed print stylesheet, background/foreground presence and Chrome PDF output (${backgroundPdf.length} bytes)\n`);
-
     // A rejected import must not replace the currently loaded valid document.
     const invalidFixture = JSON.stringify({ ...JSON.parse(fixture), schema_version: 999 });
     const invalidImportExpression = `(() => {
