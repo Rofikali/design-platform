@@ -6,20 +6,33 @@
 >
 > **Authority:** [AGENTS.md](AGENTS.md) = mandatory rules; [SKILLS.md](SKILLS.md) = recipes; **this live board** = task selection and current status; [documentation map](docs/engineering/documentation-map.md) = detailed contracts; [status register](docs/engineering/decision-status-register.md) = decisions and durable evidence.
 
-> **Hourly autopilot enabled (2026-11-16):** An independent ChatGPT scheduled task named **Design Platform Autopilot** runs the bounded "go ahead" workflow hourly while enabled. Its [runbook](docs/engineering/hourly-autopilot.md) defines status reconciliation, seven-level review, zero-unapproved-spend, exact-head checks, one task per run and owner-approved safe PR merge gates (authorized 2026-11-17). The task can be paused manually in ChatGPT. This file is a status board, not the scheduler.
+> **Hourly autopilot enabled (2026-11-16):** An independent ChatGPT scheduled task named **Design Platform Autopilot** runs the bounded "go ahead" workflow hourly while enabled. Its [runbook](docs/engineering/hourly-autopilot.md) defines status reconciliation, seven-level review, zero-unapproved-spend, exact-head checks, one task per run and human-reviewed PR and manual-merge gates (latest owner rule, 2026-11-17). The task can be paused manually in ChatGPT. This file is a status board, not the scheduler.
 
 ## LIVE NOW / NEXT / LATER — authoritative task selector
 
-### NOW — one first eligible engineering task
+### Current milestone snapshot — generated
 
-**DP-M1-BG-08 — Image-backed Chrome print/PDF regression: IN REVIEW (issue #85 OPEN).**
+<!-- milestone-sync:start -->
+<!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
+### Milestone snapshot (generated: 2026-11-17)
 
-- **DONE / MERGED:** [PR #107](https://github.com/Rofikali/design-platform/pull/107) hardened embedded background-image input bounds and canonical base64 before decoding, merge SHA `5164b55bb602a021029915da23eb316fd5bffff4`. Exact PR-head [CI #340](https://github.com/Rofikali/design-platform/actions/runs/44005493058), [cross-browser #21](https://github.com/Rofikali/design-platform/actions/runs/44005493188) and [audit #137](https://github.com/Rofikali/design-platform/actions/runs/44005493009) all passed.
-- **DONE / MERGED:** [PR #108](https://github.com/Rofikali/design-platform/pull/108) added real-browser remove/undo/redo/reopen regression, merge SHA `8d72b8a85086dad94d4ba18c2b738e481db62302`. Exact PR-head `23a222b97606b0082489d285f93208aa2a4d2ab9` CI, cross-browser export and dependency security audit completed successfully; no post-merge main-head run was returned by the PR-triggered workflow lookup.
-- **DONE / MERGED:** [PR #110](https://github.com/Rofikali/design-platform/pull/110) added schema-v3 embedded-background JSON export/reopen regression (contain fit, foreground elements, page color) and merged as `adb6d3b6f020307412348d71ae27b80d6e6f18e8`. Exact PR head `ee2c401051c4ecdab62b3871f93b869f0976643e` passed [CI](https://github.com/Rofikali/design-platform/actions/runs/44027695180), [security audit](https://github.com/Rofikali/design-platform/actions/runs/44027695108) and [cross-browser export](https://github.com/Rofikali/design-platform/actions/runs/44027695107). This is JSON evidence, **not** image-backed PNG/print proof; post-merge main CI is not established by the PR-only lookup.
-- **DONE / MERGED:** [PR #112](https://github.com/Rofikali/design-platform/pull/112) verified actual downloaded background-image PNG pixels, white margins and preserved foreground. Merge `1c99b3dae0c9a8d568870406ff40341d708100d9`; tested PR-head `5064b41d2ec709f90ea2d8c6c090c93bc005c9e7` passed [CI #350](https://github.com/Rofikali/design-platform/actions/runs/44076774673), [cross-browser #24](https://github.com/Rofikali/design-platform/actions/runs/44076774652) and [security audit #147](https://github.com/Rofikali/design-platform/actions/runs/44076774828).
-- **NOW / [issue #85](https://github.com/Rofikali/design-platform/issues/85):** check the actual **Print / Save PDF** browser path while the embedded image and its foreground remain loaded. Assert Chrome's print CSS retains the background image and `contain` fit, foreground rectangle is visible, and `Page.printToPDF` generates one valid PDF page. Preserve the existing Shop Banner 300 × 125 mm geometry test. This is automated Chrome print evidence, **not** physical-printer/color/PDF cross-browser certification.
-- **Exit:** run current-head Rust, Nuxt real browser, cross-browser export and dependency security checks. Review and merge if safe. Keep physical print fidelity and manual accessibility [#82](https://github.com/Rofikali/design-platform/issues/82) as separate open gates.
+**Reference main:** f7f55126c34dc01cc2c86cb2fc9b611d9b75402a (dated snapshot; re-check live GitHub before acting).
+
+**NOW:** **DP-M1-ACC-03 — Keyboard-operated background image removal** [PR_OPEN]. [PR #115](https://github.com/Rofikali/design-platform/pull/115) [Issue #82](https://github.com/Rofikali/design-platform/issues/82)
+
+**NEXT:** DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
+
+**Review gate:** A human reviews and manually merges each PR. No automated merges, publishing or deployments.
+
+| Milestone | Status | PR / issue | Verified scope (not a live CI claim) |
+| --- | --- | --- | --- |
+| DP-M1-BG-07 — Image-backed PNG pixel acceptance | MERGED | [PR #112](https://github.com/Rofikali/design-platform/pull/112) | Downloaded PNG pixel and foreground regression merged |
+| DP-M1-BG-08 — Image-backed Chrome print/PDF regression | MERGED | [PR #113](https://github.com/Rofikali/design-platform/pull/113) | Chrome print stylesheet and one-page PDF regression merged; physical printer unverified |
+| DP-M1-ACC-03 — Keyboard-operated background image removal | PR_OPEN | [PR #115](https://github.com/Rofikali/design-platform/pull/115) [Issue #82](https://github.com/Rofikali/design-platform/issues/82) | Tab and Space browser regression is under review; latest-head CI must be checked |
+| DP-M1-ACC-02 — Manual editor accessibility audit | BLOCKED | [Issue #82](https://github.com/Rofikali/design-platform/issues/82) | Requires real keyboard, NVDA or VoiceOver, zoom and contrast observations; automation cannot certify |
+| DP-M1-BG-09 — Physical printer and PDF fidelity review | PLANNED | [Issue #85](https://github.com/Rofikali/design-platform/issues/85) | Automated Chrome PDF is not physical printer or cross-browser output certification |
+
+<!-- milestone-sync:end -->
 
 ### Parallel review lanes — not automatically the next implementation
 
