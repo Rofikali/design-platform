@@ -411,21 +411,24 @@ async function main() {
     }
 
     
+    // Nuxt 4 may render an independent route-announcement live region before
+    // the editor. Always assert the editor's own status rather than the first
+    // [role=status] in the whole document; preserve the route announcer.
     // Export must report WASM, not the TypeScript fallback.
     await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.includes('Download JSON'))?.click(); true");
     let exportStatus;
     try {
       exportStatus = await waitForPage(
         "JSON export status",
-        "document.querySelector('[role=status]')?.textContent || ''",
+        "document.querySelector('.tools-panel > p.hint[role=status]')?.textContent || ''",
         value => value.includes("validated with WebAssembly and downloaded") || value.includes("TypeScript fallback validation") || value.startsWith("Export failed:"),
       );
     } catch (error) {
-      const diagnostics = await evaluate("JSON.stringify({ status: document.querySelector('[role=status]')?.textContent || '', buttons: Array.from(document.querySelectorAll('button')).map(button => ({ text: button.textContent.trim(), hasVueComponent: Boolean(button.__vueParentComponent) })), wasmResources: performance.getEntriesByType('resource').map(entry => entry.name).filter(name => name.includes('design_wasm') || name.endsWith('.wasm')) })");
+      const diagnostics = await evaluate("JSON.stringify({ status: document.querySelector('.tools-panel > p.hint[role=status]')?.textContent || '', buttons: Array.from(document.querySelectorAll('button')).map(button => ({ text: button.textContent.trim(), hasVueComponent: Boolean(button.__vueParentComponent) })), wasmResources: performance.getEntriesByType('resource').map(entry => entry.name).filter(name => name.includes('design_wasm') || name.endsWith('.wasm')) })");
       throw new Error(`JSON export status never reached a terminal state: ${error.message}. Browser diagnostics: ${diagnostics}`);
     }
     if (!exportStatus.includes("validated with WebAssembly and downloaded")) {
-      const diagnostics = await evaluate("JSON.stringify({ status: document.querySelector('[role=status]')?.textContent || '', wasmResources: performance.getEntriesByType('resource').map(entry => entry.name).filter(name => name.includes('design_wasm') || name.endsWith('.wasm')) })");
+      const diagnostics = await evaluate("JSON.stringify({ status: document.querySelector('.tools-panel > p.hint[role=status]')?.textContent || '', wasmResources: performance.getEntriesByType('resource').map(entry => entry.name).filter(name => name.includes('design_wasm') || name.endsWith('.wasm')) })");
       throw new Error(`JSON export did not use WASM. Browser diagnostics: ${diagnostics}`);
     }
     const exportedPath = await waitFor("downloaded JSON file", async () => {
@@ -452,9 +455,9 @@ async function main() {
       return true;
     })()`;
     await evaluate(importExpression);
-    await waitForPage("WASM-backed JSON import", "document.querySelector('[role=status]')?.textContent || ''", value => value.includes("imported and validated with WebAssembly"));
+    await waitForPage("WASM-backed JSON import", "document.querySelector('.tools-panel > p.hint[role=status]')?.textContent || ''", value => value.includes("imported and validated with WebAssembly"));
     await waitForPage("imported fixture visible on canvas", "document.querySelector('.design-page')?.innerText || ''", value => value.includes("Exam Paper"));
-    await waitForPage("fixture import autosave", "document.querySelector('[role=status]')?.textContent || ''", value => value.includes("Auto-saved locally in this browser"));
+    await waitForPage("fixture import autosave", "document.querySelector('.tools-panel > p.hint[role=status]')?.textContent || ''", value => value.includes("Auto-saved locally in this browser"));
 
     // Upload a real raster fixture and verify the page image and fit control.
     const backgroundImageBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAFklEQVR4nGP8z8DAwMDAxMDAwMDAAAANHQEDasKb6QAAAABJRU5ErkJggg==";
@@ -470,7 +473,7 @@ async function main() {
     try {
       await waitFor("background image to render", () => evaluate("Boolean(document.querySelector('.page-background-image')?.getAttribute('src')?.startsWith('data:image/png;base64,'))"));
     } catch (error) {
-      const diagnostics = await evaluate("JSON.stringify({ status: document.querySelector('[role=status]')?.textContent || '', backgroundImage: Boolean(document.querySelector('.page-background-image')), fileInputs: document.querySelectorAll('input[type=file]').length })");
+      const diagnostics = await evaluate("JSON.stringify({ status: document.querySelector('.tools-panel > p.hint[role=status]')?.textContent || '', backgroundImage: Boolean(document.querySelector('.page-background-image')), fileInputs: document.querySelectorAll('input[type=file]').length })");
       throw new Error(`Background image did not render: ${error.message}. Browser diagnostics: ${diagnostics}`);
     }
     const backgroundVisible = await evaluate("Boolean(document.querySelector('.page-background-image')?.getAttribute('src')?.startsWith('data:image/png;base64,'))");
@@ -484,7 +487,7 @@ async function main() {
     })()`);
     const fitMode = await evaluate("document.querySelector('.page-background-image') ? getComputedStyle(document.querySelector('.page-background-image')).objectFit : ''");
     if (fitMode !== "contain") throw new Error(`Background image fit mode was not applied: ${fitMode}`);
-    await waitForPage("background image autosave", "document.querySelector('[role=status]')?.textContent || ''", value => value.includes("Auto-saved locally in this browser"));
+    await waitForPage("background image autosave", "document.querySelector('.tools-panel > p.hint[role=status]')?.textContent || ''", value => value.includes("Auto-saved locally in this browser"));
     const savedBackgroundFit = await evaluate("JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null')?.page?.background_image?.fit || ''");
     if (savedBackgroundFit !== "contain") throw new Error(`Background image or fit mode was not preserved in local autosave: ${savedBackgroundFit}`);
 
@@ -499,7 +502,7 @@ async function main() {
       return true;
     })()`;
     await evaluate(invalidImportExpression);
-    await waitForPage("invalid import to be rejected", "document.querySelector('[role=status]')?.textContent || ''", value => value.includes("Import failed:"));
+    await waitForPage("invalid import to be rejected", "document.querySelector('.tools-panel > p.hint[role=status]')?.textContent || ''", value => value.includes("Import failed:"));
     const preserved = await evaluate("document.querySelector('.design-page')?.innerText || ''");
     if (!preserved.includes("Exam Paper")) throw new Error("Invalid import changed the existing canvas document");
 
@@ -912,7 +915,7 @@ async function main() {
     await clickButtonContaining("Download PNG");
     const pngStatus = await waitForPage(
       "PNG export status",
-      "document.querySelector('[role=status]')?.textContent || ''",
+      "document.querySelector('.tools-panel > p.hint[role=status]')?.textContent || ''",
       value => value.includes("PNG exported at 2400 × 1000 pixels") || value.startsWith("PNG export failed:"),
     );
     if (!pngStatus.includes("PNG exported at 2400 × 1000 pixels")) {
@@ -1044,12 +1047,12 @@ async function main() {
     try {
       examPngStatus = await waitForPage(
         "Exam Paper PNG export status",
-        "document.querySelector('[role=status]')?.textContent || ''",
+        "document.querySelector('.tools-panel > p.hint[role=status]')?.textContent || ''",
         value => value.includes("PNG exported at 1588 × 2246 pixels") || value.startsWith("PNG export failed:"),
       );
     } catch (error) {
       const diagnostics = await evaluate(`JSON.stringify({
-        status: document.querySelector('[role=status]')?.textContent || '',
+        status: document.querySelector('.tools-panel > p.hint[role=status]')?.textContent || '',
         page: (() => { const page = document.querySelector('.design-page'); return page ? { width: page.style.width, height: page.style.height, text: page.innerText.slice(0, 300) } : null; })(),
         button: Array.from(document.querySelectorAll('button')).find(button => button.textContent.includes('Download PNG'))?.outerHTML || null,
         template: document.querySelector('.template-controls')?.innerText || '',
