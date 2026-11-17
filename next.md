@@ -6,7 +6,7 @@
 >
 > **Authority:** [AGENTS.md](AGENTS.md) = mandatory rules; [SKILLS.md](SKILLS.md) = recipes; **this live board** = task selection and current status; [documentation map](docs/engineering/documentation-map.md) = detailed contracts; [status register](docs/engineering/decision-status-register.md) = decisions and durable evidence.
 
-> **Hourly autopilot enabled (2026-11-16):** An independent ChatGPT scheduled task named **Design Platform Autopilot** runs the bounded "go ahead" workflow hourly while enabled. Its [runbook](docs/engineering/hourly-autopilot.md) defines status reconciliation, seven-level review, zero-unapproved-spend, exact-head checks, one task per run and human-reviewed PR and manual-merge gates (latest owner rule, 2026-11-17). The task can be paused manually in ChatGPT. This file is a status board, not the scheduler.
+> **Hourly autopilot enabled (2026-11-16):** An independent ChatGPT scheduled task named **Design Platform Autopilot** runs the bounded "go ahead" workflow hourly while enabled. Its [runbook](docs/engineering/hourly-autopilot.md) defines status reconciliation, seven-level review, zero-unapproved-spend, exact-head checks, one task per run and owner-authorized verified PR review and merge gates (latest owner rule, 2026-11-17). The task can be paused manually in ChatGPT. This file is a status board, not the scheduler.
 
 ## LIVE NOW / NEXT / LATER — authoritative task selector
 
@@ -16,21 +16,22 @@
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-17)
 
-**Reference main:** f7f55126c34dc01cc2c86cb2fc9b611d9b75402a (dated snapshot; re-check live GitHub before acting).
+**Reference main:** 96d832c2af753248e6158345ebc49476dac8b7fc (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M1-ACC-03 — Keyboard-operated background image removal** [PR_OPEN]. [PR #115](https://github.com/Rofikali/design-platform/pull/115) [Issue #82](https://github.com/Rofikali/design-platform/issues/82)
+**NOW:** **DP-M1-ACC-04 — Automated 200% zoom and keyboard layout regression** [READY]. [Issue #82](https://github.com/Rofikali/design-platform/issues/82)
 
 **NEXT:** DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
-**Review gate:** A human reviews and manually merges each PR. No automated merges, publishing or deployments.
+**Review gate:** Owner-authorized autopilot may review and merge only after all exact-head/integration CI, security, branch protection and required independent-review gates pass. No automatic publishing or deployment.
 
 | Milestone | Status | PR / issue | Verified scope (not a live CI claim) |
 | --- | --- | --- | --- |
 | DP-M1-BG-07 — Image-backed PNG pixel acceptance | MERGED | [PR #112](https://github.com/Rofikali/design-platform/pull/112) | Downloaded PNG pixel and foreground regression merged |
 | DP-M1-BG-08 — Image-backed Chrome print/PDF regression | MERGED | [PR #113](https://github.com/Rofikali/design-platform/pull/113) | Chrome print stylesheet and one-page PDF regression merged; physical printer unverified |
-| DP-M1-ACC-03 — Keyboard-operated background image removal | PR_OPEN | [PR #115](https://github.com/Rofikali/design-platform/pull/115) [Issue #82](https://github.com/Rofikali/design-platform/issues/82) | Tab and Space browser regression is under review; latest-head CI must be checked |
+| DP-M1-ACC-03 — Keyboard-operated background image removal | MERGED | [PR #115](https://github.com/Rofikali/design-platform/pull/115) [Issue #82](https://github.com/Rofikali/design-platform/issues/82) | Tab/Space background-removal browser regression merged; final-head CI, dependency audit and cross-browser export passed. Manual accessibility issue #82 remains open |
 | DP-M1-ACC-02 — Manual editor accessibility audit | BLOCKED | [Issue #82](https://github.com/Rofikali/design-platform/issues/82) | Requires real keyboard, NVDA or VoiceOver, zoom and contrast observations; automation cannot certify |
 | DP-M1-BG-09 — Physical printer and PDF fidelity review | PLANNED | [Issue #85](https://github.com/Rofikali/design-platform/issues/85) | Automated Chrome PDF is not physical printer or cross-browser output certification |
+| DP-M1-ACC-04 — Automated 200% zoom and keyboard layout regression | READY | [Issue #82](https://github.com/Rofikali/design-platform/issues/82) | Next bounded task: test zoom and keyboard focus in Chrome; no claim of manual screen-reader or contrast certification |
 
 <!-- milestone-sync:end -->
 
@@ -76,7 +77,7 @@ Account sync, collaboration, a multi-tenant SaaS, paid subscriptions, metered AP
 
 ## Permanent status rules: "go ahead" and milestone reconciliation
 
-When the owner says **"go ahead"**, perform the **next smallest eligible bounded task in the NOW lane** rather than asking for a repeated product brief. **The latest owner rule requires human review and manual merging; "go ahead" cannot merge PRs, publish or deploy automatically, even when CI passes.**
+When the owner says **"go ahead"**, perform the **next smallest eligible bounded task in the NOW lane** rather than asking for a repeated product brief. **Latest owner rule permits the autopilot to review and merge qualifying PRs after exact-head/integration CI, security, GitHub protection and any required independent-review gates. No publishing or deployment permission.**
 
 **Every new session, after a PR update, after checks complete and after a merge:**
 
@@ -86,7 +87,7 @@ When the owner says **"go ahead"**, perform the **next smallest eligible bounded
 4. Update **docs/engineering/milestone-record.json** with task ID, scope, status, PR, observed SHA and summary; run **node scripts/sync-milestone-docs.mjs** to synchronize all six generated sections. Preserve rich PR/CI evidence in GitHub and milestone handoffs. Preserve original history in PRs/evidence docs rather than pasting long logs into `next.md`.
 5. Don't rewrite the main board for each CI tick; only update with meaningful state transitions. A failed check needs its job/step evidence, not a 10,000-line log.
 6. One small PR per bounded milestone, coherent commits, no redundant Docker/CI work. Read [agent continuation](docs/engineering/agent-continuation-runbook.md), [seven-level review](docs/engineering/seven-level-operating-model.md), [handoff](docs/engineering/agent-milestone-handoff.md), and [test lanes](docs/engineering/change-scoped-verification.md).
-7. Never merge or publish automatically. Request genuine human review and leave the PR open; after a manual merge, reconcile GitHub and update the milestone record with evidence. **CI success is not merge; merge is not release; a markdown rule cannot restart a stopped agent.**
+7. Review the actual PR and merge only after every required latest-head/integration CI, security, independent-review (if required) and branch-protection gate passes. Reconcile GitHub and update the milestone record after a confirmed merge. Publishing/deployment is never automatic. **CI success is not merge; merge is not release; a markdown rule cannot restart a stopped agent.**
 
 ---
 
@@ -102,7 +103,7 @@ The sections below preserve the detailed product roadmap and backlog, **not** an
 4. Read the linked product, architecture, ADR, security, testing and operations documents before changing that area.
 5. Inspect the live repository and current CI. This roadmap can become stale; code and observed evidence outrank assumptions.
 6. Work only on the **Current execution queue** unless the owner explicitly reprioritizes.
-7. Create a small PR, report exact evidence and wait for approval before merge. Never merge merely because a task is marked complete in this file.
+7. Create a small PR, review the actual diff and exact-head evidence, then merge only if the owner's standing authorization and repository gates allow it. Never merge merely because a task is marked complete in this file.
 
 ### Status vocabulary
 
@@ -202,7 +203,7 @@ Before changing these statements, inspect current code and attach evidence. Neve
 9. **Paid does not automatically mean better.** Buy a service only when it reduces risk or total cost of ownership.
 10. **Evidence beats confidence.** A test plan is not a test result; a scanner is not a security audit; a benchmark without a workload is not a performance claim.
 11. **No architecture theatre.** Use SOLID, DRY, KISS, YAGNI, DDD, Hexagonal Architecture, CQRS and event-driven patterns only when they solve a demonstrated problem.
-12. **Owner approval.** Do not merge, deploy, incur paid charges, change pricing, introduce customer-data retention, or make irreversible schema/security decisions without the required approval.
+12. **Owner approval.** Standing authorization covers gated safe PR merges, not deployment, paid charges, pricing, customer-data retention or irreversible schema/security decisions.
 
 ### Technology direction
 
