@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "repository": "Rofikali/design-platform",
+  "snapshot_date": "2026-11-17",
+  "reference_main_sha": "f7f55126c34dc01cc2c86cb2fc9b611d9b75402a",
+  "now_id": "DP-M1-ACC-03",
+  "next_ids": [
+    "DP-M1-ACC-02",
+    "DP-M1-BG-09"
+  ],
+  "approval_policy": "HUMAN_REVIEW_REQUIRED",
+  "milestones": [
+    {
+      "id": "DP-M1-BG-07",
+      "title": "Image-backed PNG pixel acceptance",
+      "status": "MERGED",
+      "pr": 112,
+      "sha": "1c99b3dae0c9a8d568870406ff40341d708100d9",
+      "summary": "Downloaded PNG pixel and foreground regression merged"
+    },
+    {
+      "id": "DP-M1-BG-08",
+      "title": "Image-backed Chrome print/PDF regression",
+      "status": "MERGED",
+      "pr": 113,
+      "sha": "f7f55126c34dc01cc2c86cb2fc9b611d9b75402a",
+      "summary": "Chrome print stylesheet and one-page PDF regression merged; physical printer unverified"
+    },
+    {
+      "id": "DP-M1-ACC-03",
+      "title": "Keyboard-operated background image removal",
+      "status": "PR_OPEN",
+      "pr": 115,
+      "sha": "abbf883117c93b58be5815a35482027ae676033a",
+      "issue": 82,
+      "summary": "Tab and Space browser regression is under review; latest-head CI must be checked"
+    },
+    {
+      "id": "DP-M1-ACC-02",
+      "title": "Manual editor accessibility audit",
+      "status": "BLOCKED",
+      "issue": 82,
+      "summary": "Requires real keyboard, NVDA or VoiceOver, zoom and contrast observations; automation cannot certify"
+    },
+    {
+      "id": "DP-M1-BG-09",
+      "title": "Physical printer and PDF fidelity review",
+      "status": "PLANNED",
+      "issue": 85,
+      "summary": "Automated Chrome PDF is not physical printer or cross-browser output certification"
+    }
+  ]
+}
