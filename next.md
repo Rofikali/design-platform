@@ -1,29 +1,40 @@
 # Design Platform — LIVE Work Board and Master Roadmap
 
-> **Live-board snapshot:** Reconciled 2026-11-17 against GitHub; main `f7f55126c34dc01cc2c86cb2fc9b611d9b75402a` before the work on this branch. The snapshot is **dated**, not a live-updating dashboard. Re-fetch main/PRs/checks before executing or declaring completion.
+> **Live-board snapshot:** Reconciled 2026-11-17 against GitHub; main `1c99b3dae0c9a8d568870406ff40341d708100d9` before the work on this branch. The snapshot is **dated**, not a live-updating dashboard. Re-fetch main/PRs/checks before executing or declaring completion.
 >
 > **Source discipline:** This board adopts the **NOW / NEXT / LATER**, evidence, priority and agent continuation pattern in `Rofikali/imgengine/next.md`, not its IMGENGINE C17, FFI, VPS or five image tools. Code/tests and GitHub state override stale descriptions.
 >
 > **Authority:** [AGENTS.md](AGENTS.md) = mandatory rules; [SKILLS.md](SKILLS.md) = recipes; **this live board** = task selection and current status; [documentation map](docs/engineering/documentation-map.md) = detailed contracts; [status register](docs/engineering/decision-status-register.md) = decisions and durable evidence.
 
-> **Hourly autopilot enabled (2026-11-16):** An independent ChatGPT scheduled task named **Design Platform Autopilot** runs the bounded "go ahead" workflow hourly while enabled. Its [runbook](docs/engineering/hourly-autopilot.md) defines status reconciliation, seven-level review, zero-unapproved-spend, exact-head checks, one task per run and owner-approved safe PR merge gates (authorized 2026-11-17). The task can be paused manually in ChatGPT. This file is a status board, not the scheduler.
+> **Hourly autopilot enabled (2026-11-16):** An independent ChatGPT scheduled task named **Design Platform Autopilot** runs the bounded "go ahead" workflow hourly while enabled. Its [runbook](docs/engineering/hourly-autopilot.md) defines status reconciliation, seven-level review, zero-unapproved-spend, exact-head checks, one task per run and human-reviewed PR and manual-merge gates (latest owner rule, 2026-11-17). The task can be paused manually in ChatGPT. This file is a status board, not the scheduler.
 
 ## LIVE NOW / NEXT / LATER — authoritative task selector
 
-### NOW — one first eligible engineering task
+### Current milestone snapshot — generated
 
-**DP-M1-ACC-03 — Keyboard-operated background image removal: IN REVIEW (accessibility issue #82 remains OPEN).**
+<!-- milestone-sync:start -->
+<!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
+### Milestone snapshot (generated: 2026-11-17)
 
-- **DONE / MERGED:** [PR #107](https://github.com/Rofikali/design-platform/pull/107) hardened embedded background-image input bounds and canonical base64 before decoding, merge SHA `5164b55bb602a021029915da23eb316fd5bffff4`. Exact PR-head [CI #340](https://github.com/Rofikali/design-platform/actions/runs/44005493058), [cross-browser #21](https://github.com/Rofikali/design-platform/actions/runs/44005493188) and [audit #137](https://github.com/Rofikali/design-platform/actions/runs/44005493009) all passed.
-- **DONE / MERGED:** [PR #108](https://github.com/Rofikali/design-platform/pull/108) added real-browser remove/undo/redo/reopen regression, merge SHA `8d72b8a85086dad94d4ba18c2b738e481db62302`. Exact PR-head `23a222b97606b0082489d285f93208aa2a4d2ab9` CI, cross-browser export and dependency security audit completed successfully; no post-merge main-head run was returned by the PR-triggered workflow lookup.
-- **DONE / MERGED:** [PR #110](https://github.com/Rofikali/design-platform/pull/110) added schema-v3 embedded-background JSON export/reopen regression (contain fit, foreground elements, page color) and merged as `adb6d3b6f020307412348d71ae27b80d6e6f18e8`. Exact PR head `ee2c401051c4ecdab62b3871f93b869f0976643e` passed [CI](https://github.com/Rofikali/design-platform/actions/runs/44027695180), [security audit](https://github.com/Rofikali/design-platform/actions/runs/44027695108) and [cross-browser export](https://github.com/Rofikali/design-platform/actions/runs/44027695107). This is JSON evidence, **not** image-backed PNG/print proof; post-merge main CI is not established by the PR-only lookup.
-- **DONE / MERGED:** [PR #112](https://github.com/Rofikali/design-platform/pull/112) verified actual downloaded background-image PNG pixels, white margins and preserved foreground. Merge `1c99b3dae0c9a8d568870406ff40341d708100d9`; tested PR-head `5064b41d2ec709f90ea2d8c6c090c93bc005c9e7` passed [CI #350](https://github.com/Rofikali/design-platform/actions/runs/44076774673), [cross-browser #24](https://github.com/Rofikali/design-platform/actions/runs/44076774652) and [security audit #147](https://github.com/Rofikali/design-platform/actions/runs/44076774828).
-- **DONE / MERGED DP-M1-BG-08:** [PR #113](https://github.com/Rofikali/design-platform/pull/113) verified embedded-image Chrome print CSS, foreground preservation and one-page `Page.printToPDF` generation. Merge `f7f55126c34dc01cc2c86cb2fc9b611d9b75402a`; final-head [CI #354](https://github.com/Rofikali/design-platform/actions/runs/44078547237), [cross-browser #27](https://github.com/Rofikali/design-platform/actions/runs/44078547249) and [security audit #151](https://github.com/Rofikali/design-platform/actions/runs/44078547215) passed. This is not physical print fidelity or pixel-level PDF rendering proof.
-- **SUPERSEDED:** [PR #114](https://github.com/Rofikali/design-platform/pull/114) was an obsolete BG-07→BG-08 docs handoff and was closed without merge after PR #113 completed the work. No code or branch was deleted.
-- **NOW / [accessibility #82](https://github.com/Rofikali/design-platform/issues/82):** add a real-keyboard Tab/Space browser regression for the existing background-image removal button, confirm visible focus, preserve foreground and undo restoration. This is automated browser evidence, **not** manual NVDA/VoiceOver, zoom or contrast certification.
-- **Exit:** this keyboard regression and exact-head CI/security checks pass, then review/merge normally. Manual screen-reader, 200% zoom, contrast, and real-printer checks remain separate OPEN gates. Issue #85 cannot be closed by the Chrome print simulation alone.
+**Reference main:** f7f55126c34dc01cc2c86cb2fc9b611d9b75402a (dated snapshot; re-check live GitHub before acting).
 
-### Parallel review lanes — not automatically the next implementation
+**NOW:** **DP-M1-ACC-03 — Keyboard-operated background image removal** [PR_OPEN]. [PR #115](https://github.com/Rofikali/design-platform/pull/115) [Issue #82](https://github.com/Rofikali/design-platform/issues/82)
+
+**NEXT:** DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
+
+**Review gate:** A human reviews and manually merges each PR. No automated merges, publishing or deployments.
+
+| Milestone | Status | PR / issue | Verified scope (not a live CI claim) |
+| --- | --- | --- | --- |
+| DP-M1-BG-07 — Image-backed PNG pixel acceptance | MERGED | [PR #112](https://github.com/Rofikali/design-platform/pull/112) | Downloaded PNG pixel and foreground regression merged |
+| DP-M1-BG-08 — Image-backed Chrome print/PDF regression | MERGED | [PR #113](https://github.com/Rofikali/design-platform/pull/113) | Chrome print stylesheet and one-page PDF regression merged; physical printer unverified |
+| DP-M1-ACC-03 — Keyboard-operated background image removal | PR_OPEN | [PR #115](https://github.com/Rofikali/design-platform/pull/115) [Issue #82](https://github.com/Rofikali/design-platform/issues/82) | Tab and Space browser regression is under review; latest-head CI must be checked |
+| DP-M1-ACC-02 — Manual editor accessibility audit | BLOCKED | [Issue #82](https://github.com/Rofikali/design-platform/issues/82) | Requires real keyboard, NVDA or VoiceOver, zoom and contrast observations; automation cannot certify |
+| DP-M1-BG-09 — Physical printer and PDF fidelity review | PLANNED | [Issue #85](https://github.com/Rofikali/design-platform/issues/85) | Automated Chrome PDF is not physical printer or cross-browser output certification |
+
+<!-- milestone-sync:end -->
+
+### Historical parallel review lanes — recheck live GitHub (not generated)
 
 | Lane / ID | Verified state at snapshot | Next smallest action | Exit evidence |
 | --- | --- | --- | --- |
@@ -35,7 +46,7 @@
 | **DP-M2-TBL-01** | [PR #93](https://github.com/Rofikali/design-platform/pull/93) **MERGED** as `803e7f9edfe2ef5edd0f8234eac7a996dd8928d9`; first-class schema-v5 table core and readonly canvas support exist | Preserve v1–v4 migrations and distinguish data Tables from visual Grids; next user-facing milestone is cell editing/keyboard/history | Merged core **does not** establish a full accessible table editor or customer workflow |
 | **DP-LEGACY-87** | [PR #87](https://github.com/Rofikali/design-platform/pull/87) **DRAFT**, older schema-v3 background branch; background-related work already exists in main | Assess whether draft is superseded; avoid blindly merging an old migration branch or repeating its code | Explicit close/rebase decision after diff comparison |
 
-### DONE / MERGED — work must not be repeated
+### Historical completed work — generated status above takes precedence
 
 | ID | Completed deliverable | Evidence / limits |
 | --- | --- | --- |
@@ -65,17 +76,17 @@ Account sync, collaboration, a multi-tenant SaaS, paid subscriptions, metered AP
 
 ## Permanent status rules: "go ahead" and milestone reconciliation
 
-When the owner says **"go ahead"**, perform the **next smallest eligible bounded task in the NOW lane** rather than asking for a repeated product brief. **The owner authorized safe reviewed PR merges on 2026-11-17; "go ahead" still does not authorize bypassing checks, changing paid settings, deploying, changing visibility, retiring customer data, or weakening security.**
+When the owner says **"go ahead"**, perform the **next smallest eligible bounded task in the NOW lane** rather than asking for a repeated product brief. **The latest owner rule requires human review and manual merging; "go ahead" cannot merge PRs, publish or deploy automatically, even when CI passes.**
 
 **Every new session, after a PR update, after checks complete and after a merge:**
 
 1. Fetch live `main` full SHA, current branch/worktree, open PRs/issues, latest PR head SHA and exact attached workflow/job statuses. GitHub checks from older commits are **HISTORICAL**.
 2. Reconcile milestone rows: `PLANNED → READY → IN_PROGRESS → PR_OPEN → CI_PENDING → READY_FOR_REVIEW → MERGED → RELEASE_CANDIDATE → RELEASED`; `FAILED`, `BLOCKED`, `CANCELLED`, `DEFERRED` are explicit. `IMPLEMENTED` and `VERIFIED` are *distinct attributes*; not substitute states.
 3. First choose verified P0 security/data-loss/release-blocking defects. Otherwise continue an existing **in-progress PR** before starting a duplicate feature. Then choose the first dependency-cleared READY task in NOW. Keep parallel tracks independent.
-4. Update the board with **task ID, priority, exact scope, owner, prerequisites, status, GitHub PR, commit SHA, exact test SHA/run URLs, known failure or skipped gate, next action and approval boundary**. Preserve original history in PRs/evidence docs rather than pasting long logs into `next.md`.
+4. Update **docs/engineering/milestone-record.json** with task ID, scope, status, PR, observed SHA and summary; run **node scripts/sync-milestone-docs.mjs** to synchronize all six generated sections. Preserve rich PR/CI evidence in GitHub and milestone handoffs. Preserve original history in PRs/evidence docs rather than pasting long logs into `next.md`.
 5. Don't rewrite the main board for each CI tick; only update with meaningful state transitions. A failed check needs its job/step evidence, not a 10,000-line log.
 6. One small PR per bounded milestone, coherent commits, no redundant Docker/CI work. Read [agent continuation](docs/engineering/agent-continuation-runbook.md), [seven-level review](docs/engineering/seven-level-operating-model.md), [handoff](docs/engineering/agent-milestone-handoff.md), and [test lanes](docs/engineering/change-scoped-verification.md).
-7. At merge gates, apply the owner's 2026-11-17 standing authorization **only after** exact-head required CI, code review, security and GitHub restrictions pass. **CI success is not merge; merge is not release; a markdown rule cannot restart a stopped agent.**
+7. Never merge or publish automatically. Request genuine human review and leave the PR open; after a manual merge, reconcile GitHub and update the milestone record with evidence. **CI success is not merge; merge is not release; a markdown rule cannot restart a stopped agent.**
 
 ---
 
