@@ -2,13 +2,13 @@
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
   "snapshot_date": "2026-11-17",
-  "reference_main_sha": "f7f55126c34dc01cc2c86cb2fc9b611d9b75402a",
-  "now_id": "DP-M1-ACC-03",
+  "reference_main_sha": "96d832c2af753248e6158345ebc49476dac8b7fc",
+  "now_id": "DP-M1-ACC-04",
   "next_ids": [
     "DP-M1-ACC-02",
     "DP-M1-BG-09"
   ],
-  "approval_policy": "HUMAN_REVIEW_REQUIRED",
+  "approval_policy": "OWNER_APPROVED_GATED_MERGE",
   "milestones": [
     {
       "id": "DP-M1-BG-07",
@@ -29,11 +29,11 @@
     {
       "id": "DP-M1-ACC-03",
       "title": "Keyboard-operated background image removal",
-      "status": "PR_OPEN",
+      "status": "MERGED",
       "pr": 115,
-      "sha": "abbf883117c93b58be5815a35482027ae676033a",
+      "sha": "96d832c2af753248e6158345ebc49476dac8b7fc",
       "issue": 82,
-      "summary": "Tab and Space browser regression is under review; latest-head CI must be checked"
+      "summary": "Tab/Space background-removal browser regression merged; final-head CI, dependency audit and cross-browser export passed. Manual accessibility issue #82 remains open"
     },
     {
       "id": "DP-M1-ACC-02",
@@ -48,6 +48,13 @@
       "status": "PLANNED",
       "issue": 85,
       "summary": "Automated Chrome PDF is not physical printer or cross-browser output certification"
+    },
+    {
+      "id": "DP-M1-ACC-04",
+      "title": "Automated 200% zoom and keyboard layout regression",
+      "status": "READY",
+      "issue": 82,
+      "summary": "Next bounded task: test zoom and keyboard focus in Chrome; no claim of manual screen-reader or contrast certification"
     }
   ]
 }
