@@ -19,11 +19,6 @@
 - **Exit gate:** review bounded diff, run current-head targeted/frontend/Rust/CI/security checks, merge only if all applicable gates pass and GitHub allows it. This does not complete all background-image, print or manual accessibility acceptance criteria.
 
 
-- [PR #102](https://github.com/Rofikali/design-platform/pull/102) **MERGED** as `facf18b626fdc67eb56e4c94c2e86a68d09a1497`. Head `17758278fedffcc7208891b27147e1089f5dffe0` passed [CI #329](https://github.com/Rofikali/design-platform/actions/runs/43891472124), [security audit #126](https://github.com/Rofikali/design-platform/actions/runs/43891472185), [development container #12](https://github.com/Rofikali/design-platform/actions/runs/43891472013) and [cross-browser #18](https://github.com/Rofikali/design-platform/actions/runs/43891472015). Main push [CI](https://github.com/Rofikali/design-platform/actions/runs/43996517997) and [audit](https://github.com/Rofikali/design-platform/actions/runs/43996518103) also passed on merge SHA.
-- The test/CI reliability change is merged; it is **not** a manual accessibility certification, full print validation or public product release.
-- **Next NOW work:** reconcile [accessibility #82](https://github.com/Rofikali/design-platform/issues/82) and [background-image acceptance #85](https://github.com/Rofikali/design-platform/issues/85) with current source and focus on one demonstrable gap. Do not mark manual screen-reader testing complete without real manual evidence.
-- [PR #105](https://github.com/Rofikali/design-platform/pull/105) **MERGED** as `872a2cb35db141b5e76a84d9bce3bc273542635b`; standing safe review/merge authority remains conditional on CI, security, compatibility and GitHub restrictions. [PR #106](https://github.com/Rofikali/design-platform/pull/106) **MERGED** as `3755b363605dc1cec62ea481578cfd6487ebed79`, correcting the accessible selection label for semantic Tables.
-
 ### Parallel review lanes — not automatically the next implementation
 
 | Lane / ID | Verified state at snapshot | Next smallest action | Exit evidence |
@@ -62,7 +57,7 @@ Account sync, collaboration, a multi-tenant SaaS, paid subscriptions, metered AP
 
 ## Permanent status rules: "go ahead" and milestone reconciliation
 
-When the owner says **"go ahead"**, perform the **next smallest eligible bounded task in the NOW lane** rather than asking for a repeated product brief. **Do not treat "go ahead" as blanket permission to merge, change paid settings, deploy, change visibility, retire customer data, or bypass tests.**
+When the owner says **"go ahead"**, perform the **next smallest eligible bounded task in the NOW lane** rather than asking for a repeated product brief. **The owner authorized safe reviewed PR merges on 2026-11-17; "go ahead" still does not authorize bypassing checks, changing paid settings, deploying, changing visibility, retiring customer data, or weakening security.**
 
 **Every new session, after a PR update, after checks complete and after a merge:**
 
@@ -72,7 +67,7 @@ When the owner says **"go ahead"**, perform the **next smallest eligible bounded
 4. Update the board with **task ID, priority, exact scope, owner, prerequisites, status, GitHub PR, commit SHA, exact test SHA/run URLs, known failure or skipped gate, next action and approval boundary**. Preserve original history in PRs/evidence docs rather than pasting long logs into `next.md`.
 5. Don't rewrite the main board for each CI tick; only update with meaningful state transitions. A failed check needs its job/step evidence, not a 10,000-line log.
 6. One small PR per bounded milestone, coherent commits, no redundant Docker/CI work. Read [agent continuation](docs/engineering/agent-continuation-runbook.md), [seven-level review](docs/engineering/seven-level-operating-model.md), [handoff](docs/engineering/agent-milestone-handoff.md), and [test lanes](docs/engineering/change-scoped-verification.md).
-7. Stop at owner approval gates. **CI success is not merge; merge is not release; a markdown rule cannot restart a stopped agent.**
+7. At merge gates, apply the owner's 2026-11-17 standing authorization **only after** exact-head required CI, code review, security and GitHub restrictions pass. **CI success is not merge; merge is not release; a markdown rule cannot restart a stopped agent.**
 
 ---
 
