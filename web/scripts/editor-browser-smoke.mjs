@@ -665,6 +665,26 @@ async function main() {
       await cdp.send("Emulation.setEmulatedMedia", { media: "screen" });
     }
 
+    // Accessibility #82: reach background removal via real Tab navigation,
+    // activate with Space, and restore through Undo. Automated check only.
+    await evaluate("(() => { const upload = Array.from(document.querySelectorAll('button')).find(node => node.textContent.trim() === 'Upload background image'); if (!upload) throw new Error('Upload background button missing'); upload.focus(); return true; })()");
+    let removeFocus = null;
+    for (let tab = 0; tab < 16; tab += 1) {
+      await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
+      await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
+      removeFocus = await evaluate("(() => { const button = Array.from(document.querySelectorAll('button')).find(node => node.textContent.trim() === 'Remove background image'); const style = button ? getComputedStyle(button) : null; return { focused: document.activeElement === button, label: button?.textContent.trim() || '', outlineStyle: style?.outlineStyle || '', outlineWidth: style?.outlineWidth || '' }; })()");
+      if (removeFocus?.focused) break;
+    }
+    if (!removeFocus?.focused || removeFocus.outlineStyle === "none" ||
+        removeFocus.outlineWidth === "0px") {
+      throw new Error("Keyboard Tab could not reach Remove background image with visible focus: " + JSON.stringify(removeFocus));
+    }
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: " ", code: "Space", windowsVirtualKeyCode: 32, nativeVirtualKeyCode: 32 });
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: " ", code: "Space", windowsVirtualKeyCode: 32, nativeVirtualKeyCode: 32 });
+    await waitForPage("Space removes image without deleting foreground", "(() => { const saved = JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null'); return !document.querySelector('.page-background-image') && saved && !saved.page.background_image && JSON.stringify(saved.elements.map(item => item.id)) === " + JSON.stringify(expectedForegroundIds) + "; })()");
+    await clickHistoryButton("Undo");
+    await waitForPage("Undo restores keyboard-removed image with contain fit", "(() => { const image = document.querySelector('.page-background-image'); return image?.getAttribute('src') === " + expectedBackgroundUrl + " && getComputedStyle(image).objectFit === 'contain'; })()");
+
     // A rejected import must not replace the currently loaded valid document.
     const invalidFixture = JSON.stringify({ ...JSON.parse(fixture), schema_version: 999 });
     const invalidImportExpression = `(() => {
