@@ -6,13 +6,13 @@
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-17)
 
-**Reference main:** f7f55126c34dc01cc2c86cb2fc9b611d9b75402a (dated snapshot; re-check live GitHub before acting).
+**Reference main:** 96d832c2af753248e6158345ebc49476dac8b7fc (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M1-ACC-03 — Keyboard-operated background image removal** [PR_OPEN]. [PR #115](https://github.com/Rofikali/design-platform/pull/115) [Issue #82](https://github.com/Rofikali/design-platform/issues/82)
+**NOW:** **DP-M1-ACC-04 — Automated 200% zoom and keyboard layout regression** [READY]. [Issue #82](https://github.com/Rofikali/design-platform/issues/82)
 
 **NEXT:** DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
-**Review gate:** A human reviews and manually merges each PR. No automated merges, publishing or deployments.
+**Review gate:** Owner-authorized autopilot may review and merge only after all exact-head/integration CI, security, branch protection and required independent-review gates pass. No automatic publishing or deployment.
 
 <!-- milestone-sync:end -->
 
@@ -27,21 +27,21 @@
 5. Make a small, cohesive implementation, test or docs improvement when repository write permissions/tools and task prerequisites permit. Prefer targeted local/check evidence and one reviewed PR or update to an existing owned PR; never perform speculative broad refactors.
 6. For latest head, report **PASS/FAIL/RUNNING/QUEUED/CANCELLED/SKIPPED/NOT RUN** with checks/failed job and step URLs. Do not reuse successes from earlier heads. Inspect only focused failure logs, and never turn skipped security or unexecuted E2E tests into a pass.
 7. At meaningful transitions edit the **structured milestone record**, run the six-document generator, and keep detailed CI/tests/risks in the milestone handoff; never edit marked sections manually. Avoid pushing a commit just to say a run is still queued.
-8. Report what was actually accomplished and which approvals remain. If blocked (access denied, owner review needed, CI failure, unresolved design decision), report and stop that lane safely. An hourly run may open and review a PR, but must NEVER automatically merge, publish or deploy.
+8. Report what was actually accomplished and which approvals remain. If blocked (access denied, owner review needed, CI failure, unresolved design decision), report and stop that lane safely. An hourly run may open, review and merge a safe verified PR after all required gates; it must NEVER publish or deploy automatically.
 
-## Human-reviewed pull request workflow (latest owner rule, 2026-11-17)
+## Owner-authorized gated PR review and merge (latest owner rule, 2026-11-17)
 
-The owner now requires **human-reviewed PRs and manual merges**. This supersedes the earlier automatic-merge permission. The hourly autopilot may create/update branches, commits and PRs, inspect diffs and exact-head CI, and prepare review notes; it must **never** automatically merge, publish or deploy even after a green CI result.
+The owner now authorizes **the full bounded PR lifecycle including reviewing and merging**, superseding the prior review-only policy. The autopilot must inspect the current diff/head/base, check all required latest-head and integration CI/security, verify GitHub branch protections, and respect any required independent human review. Self-review is not independent review. Use the expected PR head SHA when merging and verify main afterward. Never merge failing, pending, skipped-required, or unknown work; never bypass checks, dismiss reviews or force push. Publishing and deployment remain prohibited.
 
 For milestone status changes edit [milestone-record.json](milestone-record.json) first, then run the six-document generator. GitHub CI rejects missing or stale generated sections. A dated snapshot never supersedes live GitHub evidence.
 
 ## Standing permission boundaries
 
-**Permitted within an hourly run:** source/code review, issue/PR inspection, tests, small branches and commits, creating/updating review PRs, reviewing checks, and updating the milestone record plus generated docs.
+**Permitted within an hourly run:** source/code review, issue/PR inspection, tests, small branches/commits, PR creation and updates, substantive review, safe gated merges into main, and updating the milestone record plus generated docs.
 
 **Still prohibited without separate owner approval:** dismissing reviews, force-pushing/rebasing others' work, unrelated branch/code deletion, changing visibility/security/secrets, spending money, paid resources, deployment, real customer document changes, new user-data collection, changing prices/billing, or weakening required tests/CI.
 
-The latest owner instruction explicitly prohibits automated merging/publishing, as well as spending or deployment. If a service connector requests authentication or a host needs approval, stop and surface the required action.
+The latest owner instruction permits safe gated merges only, not automatic publishing, spending or deployment. If a service connector requests authentication or a host needs approval, stop and surface the required action.
 
 ## CI cost and security rules
 
