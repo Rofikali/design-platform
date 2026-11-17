@@ -1,6 +1,28 @@
 # Project Status, Decisions and Evidence Register
 
-**Status:** Dated decisions/evidence register, reconciled 2026-11-16 with live GitHub. **Current task selection belongs to the [NOW / NEXT / DONE board](../../next.md);** it overrides historical notes here, and live GitHub overrides both.
+**Status:** Dated decisions/evidence register, reconciled 2026-11-16 with live GitHub. **Generated milestone status comes from [milestone-record.json](milestone-record.json);** historical boundary notes below are dated context, and live GitHub overrides all snapshots.
+
+<!-- milestone-sync:start -->
+<!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
+### Milestone snapshot (generated: 2026-11-17)
+
+**Reference main:** f7f55126c34dc01cc2c86cb2fc9b611d9b75402a (dated snapshot; re-check live GitHub before acting).
+
+**NOW:** **DP-M1-ACC-03 — Keyboard-operated background image removal** [PR_OPEN]. [PR #115](https://github.com/Rofikali/design-platform/pull/115) [Issue #82](https://github.com/Rofikali/design-platform/issues/82)
+
+**NEXT:** DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
+
+**Review gate:** A human reviews and manually merges each PR. No automated merges, publishing or deployments.
+
+| Milestone | Status | PR / issue | Verified scope (not a live CI claim) |
+| --- | --- | --- | --- |
+| DP-M1-BG-07 — Image-backed PNG pixel acceptance | MERGED | [PR #112](https://github.com/Rofikali/design-platform/pull/112) | Downloaded PNG pixel and foreground regression merged |
+| DP-M1-BG-08 — Image-backed Chrome print/PDF regression | MERGED | [PR #113](https://github.com/Rofikali/design-platform/pull/113) | Chrome print stylesheet and one-page PDF regression merged; physical printer unverified |
+| DP-M1-ACC-03 — Keyboard-operated background image removal | PR_OPEN | [PR #115](https://github.com/Rofikali/design-platform/pull/115) [Issue #82](https://github.com/Rofikali/design-platform/issues/82) | Tab and Space browser regression is under review; latest-head CI must be checked |
+| DP-M1-ACC-02 — Manual editor accessibility audit | BLOCKED | [Issue #82](https://github.com/Rofikali/design-platform/issues/82) | Requires real keyboard, NVDA or VoiceOver, zoom and contrast observations; automation cannot certify |
+| DP-M1-BG-09 — Physical printer and PDF fidelity review | PLANNED | [Issue #85](https://github.com/Rofikali/design-platform/issues/85) | Automated Chrome PDF is not physical printer or cross-browser output certification |
+
+<!-- milestone-sync:end -->
 
 ## Status definitions
 
@@ -11,7 +33,7 @@
 - **BLOCKED/UNKNOWN:** evidence or decision unavailable.
 - **RELEASED:** separately approved, shipped artifact/environment supported by release evidence.
 
-## Current source-informed boundaries
+## Historical source-informed boundaries (dated observations, not live state)
 
 | Area | Status / evidence | Important qualification |
 | --- | --- | --- |

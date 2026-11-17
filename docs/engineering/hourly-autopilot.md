@@ -2,6 +2,20 @@
 
 **Status:** A separate ChatGPT scheduled automation named **Design Platform Autopilot** was created and enabled on 2026-11-16, hourly in Asia/Kolkata. This document describes its owner-approved **bounded continuation workflow**, not a GitHub Actions workflow or a guarantee that every scheduled run can complete a PR. Pause it through ChatGPT task controls when desired.
 
+<!-- milestone-sync:start -->
+<!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
+### Milestone snapshot (generated: 2026-11-17)
+
+**Reference main:** f7f55126c34dc01cc2c86cb2fc9b611d9b75402a (dated snapshot; re-check live GitHub before acting).
+
+**NOW:** **DP-M1-ACC-03 — Keyboard-operated background image removal** [PR_OPEN]. [PR #115](https://github.com/Rofikali/design-platform/pull/115) [Issue #82](https://github.com/Rofikali/design-platform/issues/82)
+
+**NEXT:** DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
+
+**Review gate:** A human reviews and manually merges each PR. No automated merges, publishing or deployments.
+
+<!-- milestone-sync:end -->
+
 **Read first:** [AGENTS](../../AGENTS.md) → [SKILLS](../../SKILLS.md) → [live NOW / NEXT / DONE board](../../next.md) → [agent continuation](agent-continuation-runbook.md) → [seven-level operating model](seven-level-operating-model.md) → [milestone handoff](agent-milestone-handoff.md) → [change-scoped verification](change-scoped-verification.md) → [CI evidence policy](ci-evidence-policy.md).
 
 ## What "go ahead" means — manually or on an hourly run
@@ -12,30 +26,22 @@
 4. Assess scope using seven engineering levels, plus product, UX/accessibility, QA, security, DevOps/SRE, finance/CA/MBA and management review as justified. For small fixes, keep review proportional.
 5. Make a small, cohesive implementation, test or docs improvement when repository write permissions/tools and task prerequisites permit. Prefer targeted local/check evidence and one reviewed PR or update to an existing owned PR; never perform speculative broad refactors.
 6. For latest head, report **PASS/FAIL/RUNNING/QUEUED/CANCELLED/SKIPPED/NOT RUN** with checks/failed job and step URLs. Do not reuse successes from earlier heads. Inspect only focused failure logs, and never turn skipped security or unexecuted E2E tests into a pass.
-7. At meaningful transitions, update `next.md`, milestone handoff and relevant contract/evidence docs with task ID, scope, latest SHA, PR, CI, risks and exactly one next action. Avoid pushing a commit just to say a run is still queued.
-8. Report what was actually accomplished and which approvals remain. If blocked (access denied, owner review needed, CI failure, unresolved design decision), report and stop that lane safely. An hourly run may merge a qualifying reviewed PR but cannot guarantee a release.
+7. At meaningful transitions edit the **structured milestone record**, run the six-document generator, and keep detailed CI/tests/risks in the milestone handoff; never edit marked sections manually. Avoid pushing a commit just to say a run is still queued.
+8. Report what was actually accomplished and which approvals remain. If blocked (access denied, owner review needed, CI failure, unresolved design decision), report and stop that lane safely. An hourly run may open and review a PR, but must NEVER automatically merge, publish or deploy.
 
-## Approved PR review and merge authority — 2026-11-17
+## Human-reviewed pull request workflow (latest owner rule, 2026-11-17)
 
-The owner explicitly authorized **end-to-end PR review and merging** for Design Platform on 2026-11-17. This applies only to `Rofikali/design-platform`. No independent approval is needed for a safe merge if repository rules allow it, but the automation must not misrepresent its own review as an independent human approval.
+The owner now requires **human-reviewed PRs and manual merges**. This supersedes the earlier automatic-merge permission. The hourly autopilot may create/update branches, commits and PRs, inspect diffs and exact-head CI, and prepare review notes; it must **never** automatically merge, publish or deploy even after a green CI result.
 
-**Before any merge:**
-1. Inspect the actual diff, current head/base, changed contracts, dependency and license impact, open threads and change requests. Reconcile newer main changes.
-2. Verify all required latest-head / merge-context CI and security checks, plus affected Rust/WASM, Nuxt, accessibility, browser-export and Docker tests as appropriate. A skipped-required, pending, failed, cancelled or unknown result is not a pass.
-3. Confirm no material blocker, unapproved breaking data/schema migration, unreviewed risk, privacy breach, payment/deployment change or GitHub merge restriction.
-4. Mark a draft ready only when its requirements and checks are met; offer a substantive review and address feedback. **Self-review is not an independent reviewer approval.**
-5. Merge a safe PR through normal GitHub APIs, preferably squash where suitable. **Never** force push, bypass/admin-override branch protections, or dismiss reviews. Recheck head immediately before merging.
-6. Verify merge SHA and latest main, update task status on a meaningful transition, then choose the next eligible NOW task.
-
-If GitHub requires independent review, stop and request it rather than fabricating approval.
+For milestone status changes edit [milestone-record.json](milestone-record.json) first, then run the six-document generator. GitHub CI rejects missing or stale generated sections. A dated snapshot never supersedes live GitHub evidence.
 
 ## Standing permission boundaries
 
-**Permitted within an hourly run:** source/code review, issue/PR inspection, testing, small branch changes, PR creation/updates, substantive review, marking fully verified drafts ready, and merging safe PRs that satisfy the checklist and GitHub's required gates. The owner explicitly authorized PR merge on 2026-11-17.
+**Permitted within an hourly run:** source/code review, issue/PR inspection, tests, small branches and commits, creating/updating review PRs, reviewing checks, and updating the milestone record plus generated docs.
 
 **Still prohibited without separate owner approval:** dismissing reviews, force-pushing/rebasing others' work, unrelated branch/code deletion, changing visibility/security/secrets, spending money, paid resources, deployment, real customer document changes, new user-data collection, changing prices/billing, or weakening required tests/CI.
 
-The 2026-11-17 owner authorization permits safe PR merges under the checklist, **not** spending or deployment. If a service connector requests authentication or a host needs approval, stop and surface the required action.
+The latest owner instruction explicitly prohibits automated merging/publishing, as well as spending or deployment. If a service connector requests authentication or a host needs approval, stop and surface the required action.
 
 ## CI cost and security rules
 

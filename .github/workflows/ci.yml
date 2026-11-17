@@ -13,6 +13,19 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  milestone-docs:
+    name: Milestone documentation sync
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22.14.0"
+      - name: Verify milestone generator safeguards
+        run: node --test scripts/tests/sync-milestone-docs.test.mjs
+      - name: Reject stale generated milestone sections
+        run: node scripts/sync-milestone-docs.mjs --check
+
   rust:
     name: Rust core
     runs-on: ubuntu-latest
