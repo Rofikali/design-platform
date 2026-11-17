@@ -58,10 +58,14 @@ jobs:
         uses: browser-actions/setup-chrome@v2
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      # Build the WASM adapter once. pnpm run typecheck/test/build each invoke
+      # their pre-hooks, which would otherwise repeat this expensive compile.
+      - name: Build WASM adapter
+        run: pnpm run build:wasm
       - name: Type check
-        run: pnpm run typecheck
+        run: pnpm exec nuxt typecheck
       - name: Run frontend tests
-        run: pnpm test
+        run: pnpm exec vitest run
       - name: Run real-browser WASM smoke test
         env:
           CHROME_BIN: ${{ steps.setup-chrome.outputs.chrome-path }}
@@ -70,9 +74,14 @@ jobs:
         env:
           CHROME_BIN: ${{ steps.setup-chrome.outputs.chrome-path }}
         run: pnpm run test:editor-browser
-      - name: Build
-        run: pnpm run build
-      - name: Build Docker image
-        run: docker build --file ../Dockerfile --tag design-platform-ci ..
-      - name: Build Docker development image
-        run: docker build --file ../Dockerfile.dev --tag design-platform-dev-ci ..
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build production Docker image
+        run: >-
+          docker buildx build
+          --file ../Dockerfile
+          --tag design-platform-ci
+          --load
+          --cache-from type=gha,scope=design-platform-production
+          --cache-to type=gha,scope=design-platform-production,mode=max
+          ..

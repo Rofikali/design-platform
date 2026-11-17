@@ -1,0 +1,60 @@
+name: Development container
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/development-container.yml"
+      - ".dockerignore"
+      - "Dockerfile.dev"
+      - "compose.yaml"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - "crates/**"
+      - "web/package.json"
+      - "web/pnpm-lock.yaml"
+  pull_request:
+    paths:
+      - ".github/workflows/development-container.yml"
+      - ".dockerignore"
+      - "Dockerfile.dev"
+      - "compose.yaml"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - "crates/**"
+      - "web/package.json"
+      - "web/pnpm-lock.yaml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: development-container-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-development-image:
+    name: Build development container
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build development image
+        run: >-
+          docker buildx build
+          --file Dockerfile.dev
+          --tag design-platform-dev-ci
+          --load
+          --cache-from type=gha,scope=design-platform-development
+          --cache-to type=gha,scope=design-platform-development,mode=max
+          .
+      - name: Verify development container startup dependencies
+        run: |
+          docker run --rm \
+            --volume "$PWD:/workspace" \
+            --workdir /workspace/web \
+            design-platform-dev-ci \
+            sh -lc 'cd /workspace && cargo metadata --locked --format-version 1 > /dev/null && cd /workspace/web && corepack enable && corepack prepare pnpm@10.11.0 --activate && pnpm install --frozen-lockfile && pnpm run build:wasm'

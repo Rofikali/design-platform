@@ -838,6 +838,23 @@ Each requires customer demand, architecture review, cost model, security model a
 
 ---
 
+## CI runtime and Docker build policy
+
+Keep CI proportional to the change while preserving release confidence:
+
+- Every relevant PR: Rust formatting/tests/Clippy, WASM compile check, frontend typecheck/tests, real-browser smoke tests, production build, production Docker image, and Rust/production-JavaScript dependency audits.
+- Development Docker image: build and smoke-test only when `Dockerfile.dev`, `compose.yaml`, `.dockerignore`, Rust workspace inputs, frontend dependency manifests, or the dedicated development workflow changes; also allow manual dispatch.
+- Cross-browser PNG regression: run when editor/export, Rust/WASM, fixture, or its workflow inputs change, plus the scheduled regression.
+- Use BuildKit GitHub Actions layer caching with separate cache scopes for production and development images. Keep dependency lockfiles before frequently changing source copies in Dockerfiles so stable dependency layers can be reused.
+- Do not remove the production image build from ordinary PR verification: it validates the deployable artifact. Do not rebuild the full development toolchain for unrelated UI changes.
+- Measure elapsed time per workflow and compare cache-hit versus cache-miss runs. Treat caching as an optimization, not a correctness guarantee; builds must still pass from an empty cache.
+- Cache pnpm's content-addressed store in the cross-browser workflow using the lockfile as its key input.
+- Cache Playwright browser downloads by OS and the pinned Playwright version; still run Playwright's system-dependency installation and the actual browser tests.
+- Prepare the pinned Corepack/pnpm version in the development image layer rather than downloading/activating it on every container start. Keep the lockfile install on startup so the mounted workspace remains consistent.
+- Do not introduce cargo-chef or more elaborate Rust build graph machinery until timing evidence shows Rust dependency compilation is a dominant cold/warm build cost. The current workspace is small; extra build tooling may cost more complexity than it saves.
+
+Current implementation is in `.github/workflows/ci.yml`, `.github/workflows/development-container.yml`, and `.github/workflows/cross-browser-export.yml`. The policy is considered validated only after the latest PR head passes its fresh workflows.
+ 
 ## 16. Current execution queue — do this next, not everything
 
 Baseline evidence is recorded in [`docs/testing/m1-baseline-evidence.md`](docs/testing/m1-baseline-evidence.md). Push-triggered CI run #293 and dependency audit #89 passed on the current main SHA. M0 remains partially open because branch protection/required checks could not be verified through the connected integration and the manual accessibility audit remains open (issue #82). The separate cross-browser export workflow remediation is tracked in PR #102.
