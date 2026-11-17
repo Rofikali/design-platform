@@ -1,6 +1,6 @@
 # Design Platform — LIVE Work Board and Master Roadmap
 
-> **Live-board snapshot:** Reconciled 2026-11-17 against GitHub; main `8d72b8a85086dad94d4ba18c2b738e481db62302` before the work on this branch. The snapshot is **dated**, not a live-updating dashboard. Re-fetch main/PRs/checks before executing or declaring completion.
+> **Live-board snapshot:** Reconciled 2026-11-17 against GitHub; main `adb6d3b6f020307412348d71ae27b80d6e6f18e8` before the work on this branch. The snapshot is **dated**, not a live-updating dashboard. Re-fetch main/PRs/checks before executing or declaring completion.
 >
 > **Source discipline:** This board adopts the **NOW / NEXT / LATER**, evidence, priority and agent continuation pattern in `Rofikali/imgengine/next.md`, not its IMGENGINE C17, FFI, VPS or five image tools. Code/tests and GitHub state override stale descriptions.
 >
@@ -12,12 +12,13 @@
 
 ### NOW — one first eligible engineering task
 
-**DP-M1-BG-06 — Background-image JSON round-trip acceptance: READY.**
+**DP-M1-BG-07 — Background-image PNG/print fidelity acceptance: READY (test-first; issue #85 remains OPEN).**
 
 - **DONE / MERGED:** [PR #107](https://github.com/Rofikali/design-platform/pull/107) hardened embedded background-image input bounds and canonical base64 before decoding, merge SHA `5164b55bb602a021029915da23eb316fd5bffff4`. Exact PR-head [CI #340](https://github.com/Rofikali/design-platform/actions/runs/44005493058), [cross-browser #21](https://github.com/Rofikali/design-platform/actions/runs/44005493188) and [audit #137](https://github.com/Rofikali/design-platform/actions/runs/44005493009) all passed.
 - **DONE / MERGED:** [PR #108](https://github.com/Rofikali/design-platform/pull/108) added real-browser remove/undo/redo/reopen regression, merge SHA `8d72b8a85086dad94d4ba18c2b738e481db62302`. Exact PR-head `23a222b97606b0082489d285f93208aa2a4d2ab9` CI, cross-browser export and dependency security audit completed successfully; no post-merge main-head run was returned by the PR-triggered workflow lookup.
-- **NOW / [issue #85](https://github.com/Rofikali/design-platform/issues/85):** verify exported background-image JSON round-trip (including asset and fit) across import/reopen, negative malformed image inputs, and v1–v5 compatibility. Start with an existing focused test/fixture gap; do not duplicate PR #108 or claim PNG/print acceptance from JSON tests.
-- **Exit:** focused JSON round-trip/negative/compatibility evidence and applicable exact-head checks pass, reviewed PR merged under normal GitHub gates. Issue #85 remains open until image-backed PNG/print fidelity and all remaining acceptance evidence are established; manual accessibility [#82](https://github.com/Rofikali/design-platform/issues/82) is distinct.
+- **DONE / MERGED:** [PR #110](https://github.com/Rofikali/design-platform/pull/110) added schema-v3 embedded-background JSON export/reopen regression (contain fit, foreground elements, page color) and merged as `adb6d3b6f020307412348d71ae27b80d6e6f18e8`. Exact PR head `ee2c401051c4ecdab62b3871f93b869f0976643e` passed [CI](https://github.com/Rofikali/design-platform/actions/runs/44027695180), [security audit](https://github.com/Rofikali/design-platform/actions/runs/44027695108) and [cross-browser export](https://github.com/Rofikali/design-platform/actions/runs/44027695107). This is JSON evidence, **not** image-backed PNG/print proof; post-merge main CI is not established by the PR-only lookup.
+- **NOW / [issue #85](https://github.com/Rofikali/design-platform/issues/85):** inspect existing browser export tests, then add one deterministic, image-backed PNG acceptance assertion that exercises actual rendered output (not only JSON metadata). Keep print-dialog/PDF verification separately scoped where automation cannot establish browser-print fidelity. Preserve source/background and foreground, avoid pixel-perfect cross-browser claims without tolerance and documented fixtures.
+- **Exit:** deterministic image-backed PNG acceptance evidence and applicable exact-head checks pass on the actual PR head; review and merge only through normal GitHub gates. Browser print/PDF and remaining issue #85 acceptance criteria stay OPEN until separately verified; manual accessibility [#82](https://github.com/Rofikali/design-platform/issues/82) is distinct.
 
 ### Parallel review lanes — not automatically the next implementation
 
@@ -39,6 +40,7 @@
 | **DP-DOC-101** | CI baseline evidence and refreshed roadmap checkpoint | [PR #101](https://github.com/Rofikali/design-platform/pull/101) **MERGED**; reports are dated, not current universal verification |
 | **DP-DOC-103** | Seven-level handbook: agent handoff, continuation, HLD/LLD, cost/test/security/finance/release guides | [PR #103](https://github.com/Rofikali/design-platform/pull/103) **MERGED** as `c6a03ba5f378f237e442377e44bfefc28a52fcf6`; **docs only** |
 | **DP-DOC-105** | Hourly autopilot, seven-level PR review/merge authority and governance links | [PR #105](https://github.com/Rofikali/design-platform/pull/105) **MERGED** as `872a2cb35db141b5e76a84d9bce3bc273542635b`; no deployment or spending permission |
+| **DP-M1-BG-06** | Legacy background JSON import/export/reopen regression | [PR #110](https://github.com/Rofikali/design-platform/pull/110) **MERGED** as `adb6d3b6f020307412348d71ae27b80d6e6f18e8`; image-backed PNG/print fidelity remains OPEN |
 | **DP-M1-BG-108** | Real-browser background remove/undo/redo/reopen regression with foreground preservation | [PR #108](https://github.com/Rofikali/design-platform/pull/108) **MERGED** as `8d72b8a85086dad94d4ba18c2b738e481db62302`; full JSON/PNG/print acceptance remains OPEN |
 | **DP-M1-BG-107** | Bound encoded embedded raster input and reject noncanonical base64 before decoding | [PR #107](https://github.com/Rofikali/design-platform/pull/107) **MERGED** as `5164b55bb602a021029915da23eb316fd5bffff4`; does not close the full background workflow acceptance |
 | **DP-M1-A11Y-106** | Correct Table versus Grid accessible canvas-selection labels with regression tests | [PR #106](https://github.com/Rofikali/design-platform/pull/106) **MERGED** as `3755b363605dc1cec62ea481578cfd6487ebed79`; manual screen-reader/keyboard audit [issue #82](https://github.com/Rofikali/design-platform/issues/82) remains OPEN |
