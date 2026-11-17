@@ -147,6 +147,27 @@ describe("document parsing and validation", () => {
     expect(parseDocument(serialized).backgroundImage).toEqual(document.page.background_image);
   });
 
+  it("round-trips a legacy background image through exported JSON with contain fit and foreground elements", () => {
+    const legacy = structuredClone(schemaV3BackgroundFixture);
+    if (!legacy.page.background_image) throw new Error("Expected a background-image fixture");
+    legacy.page.background_image.fit = "contain";
+
+    const imported = parseDocumentJson(JSON.stringify(legacy));
+    const exported = toDocument(imported.elements, {
+      width: imported.width,
+      height: imported.height,
+      background: imported.background,
+      background_image: imported.backgroundImage,
+    }, imported.outputSizeMm, imported.template);
+    const reopened = parseDocumentJson(JSON.stringify(exported));
+
+    expect(exported.schema_version).toBe(5);
+    expect(exported.page.background_image).toEqual(legacy.page.background_image);
+    expect(reopened.backgroundImage).toEqual(legacy.page.background_image);
+    expect(reopened.elements).toEqual(imported.elements);
+    expect(reopened.background).toBe(imported.background);
+  });
+
   it("rejects remote, SVG, malformed base64 and oversized background assets", () => {
     const invalidValues = [
       "https://example.invalid/background.png",
