@@ -36,7 +36,7 @@ When the owner writes **"go ahead"**, the agent should not ask them to repeat al
 2. **Do not confuse statuses:** DONE/IMPLEMENTED/VERIFIED/CI_PENDING/FAILED/MERGED/RELEASED are different; only GitHub confirms a merge, a real launch confirms release, and only exact-head executed checks prove CI success.
 3. **Do not invent time:** docs cannot trigger a background agent or future response; work happens only while the authorized runner is executing.
 4. **Change control:** the latest owner rule prohibits automatic PR merges and publishing; never infer authority for deployment, visibility, billing, secrets, data deletion or security bypass. Small PRs and review remain standard.
-5. **Checkpoint sparingly:** update the live board after a meaningful status transition, not after every queued/running CI poll. Preserve durable evidence in PRs and linked reports, not duplicated logs.
+5. **Checkpoint sparingly:** update the structured milestone record and regenerate the six documentation views after a meaningful transition, not after every queued/running CI poll. Preserve durable evidence in PRs and linked reports, not duplicated logs.
 6. **Handoff once per bounded milestone:** include task ID, prior and current SHA, affected boundary, test status, known failures, PR link, next action, seven-level/security/SRE/product/finance review notes and owner gate.
 7. **Next after merge:** confirm merge SHA and exact associated checks, mark the task MERGED (not RELEASED), then choose the next READY item after prerequisites—not the oldest long-term bullet.
 
@@ -64,7 +64,7 @@ DP-M1-CB-01
 5. **Create bounded design:** user outcome; in/out of scope; changed files; HLD/LLD; negative/boundary tests; rollback; estimated CI and spending.
 6. **Execute in the authorized scope:** one small review-only PR, no surprise payments, deployment, feature expansion or autonomous merging. The human owner merges manually after review/check gates.
 7. **Verify:** local focused checks; automatic GitHub workflows at the **current** SHA; only failed-step excerpts in model context; label pending, cancelled, skipped and not-run accurately.
-8. **Checkpoint:** record task ID/status, repo/branch/commit, PR/CI links, commands/results, risks and the next action in the task handoff and appropriate register.
+8. **Checkpoint:** record task ID/status and observed PR/head in milestone-record.json, generate the six views, and keep detailed PR/CI evidence in the task handoff and GitHub.
 9. **Wait at gates:** human review and manual merge, with separate owner approval for breaking schema, customer data, paid infrastructure, release or pricing.
 
 ## Task states
