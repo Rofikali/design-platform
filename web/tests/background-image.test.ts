@@ -70,6 +70,30 @@ describe("background image preparation", () => {
     expect(close).toHaveBeenCalledOnce();
   });
 
+  it("rejects oversized embedded data before base64 decode or image allocation", async () => {
+    const decode = vi.fn(() => { throw new Error("Decoder must not run"); });
+    const createBitmap = vi.fn();
+    vi.stubGlobal("atob", decode);
+    vi.stubGlobal("createImageBitmap", createBitmap);
+    const image = {
+      data_url: `data:image/png;base64,${"A".repeat(1_048_576)}`,
+      fit: "cover" as const,
+    };
+    await expect(validateEmbeddedBackgroundImage(image)).rejects.toThrow(/1 MiB document limit/);
+    expect(decode).not.toHaveBeenCalled();
+    expect(createBitmap).not.toHaveBeenCalled();
+  });
+
+  it("rejects unpadded embedded base64 before decoding", async () => {
+    const decode = vi.fn(() => { throw new Error("Decoder must not run"); });
+    vi.stubGlobal("atob", decode);
+    await expect(validateEmbeddedBackgroundImage({
+      data_url: "data:image/png;base64,iVBORw0KGgo",
+      fit: "contain",
+    })).rejects.toThrow(/invalid base64/);
+    expect(decode).not.toHaveBeenCalled();
+  });
+
   it("rejects embedded image data whose declared MIME type disagrees with its bytes", async () => {
     const image = { data_url: "data:image/jpeg;base64,iVBORw0KGgo=", fit: "cover" as const };
     await expect(validateEmbeddedBackgroundImage(image)).rejects.toThrow(/MIME type does not match/);
