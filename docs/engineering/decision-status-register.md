@@ -33,7 +33,7 @@
 - **BLOCKED/UNKNOWN:** evidence or decision unavailable.
 - **RELEASED:** separately approved, shipped artifact/environment supported by release evidence.
 
-## Current source-informed boundaries
+## Historical source-informed boundaries (dated observations, not live state)
 
 | Area | Status / evidence | Important qualification |
 | --- | --- | --- |
