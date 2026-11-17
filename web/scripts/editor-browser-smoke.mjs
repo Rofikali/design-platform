@@ -564,6 +564,66 @@ async function main() {
     }
 
 
+    // M1-BG-07: download the image-backed document before changing templates.
+    // This is a real PNG pixel check, not just a JSON/schema or SVG-string check.
+    // Fixture: 2x2 solid red PNG on an 800x600 white page with contain fit.
+    // At 2x output, red occupies x=200..1399; white side margins remain.
+    // The original #abc rectangle occupies x=100..499, y=200..359.
+    await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.trim() === 'Download PNG')?.click(); true");
+    const imageBackedPngPath = await waitFor("downloaded image-backed PNG", async () => {
+      const names = await readdir(downloads);
+      if (names.some(name => name.endsWith(".crdownload"))) return null;
+      if (!names.includes("design-platform.png")) return null;
+      const path = resolve(downloads, "design-platform.png");
+      const info = await stat(path);
+      return info.size > 100 ? path : null;
+    });
+    const imageBackedPng = await readFile(imageBackedPngPath);
+    const imagePngSignature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
+    if (!imageBackedPng.subarray(0, 8).equals(imagePngSignature) ||
+        imageBackedPng.toString("ascii", 12, 16) !== "IHDR" ||
+        imageBackedPng.readUInt32BE(16) !== 1600 || imageBackedPng.readUInt32BE(20) !== 1200) {
+      throw new Error(`Image-backed PNG has invalid signature or geometry: ${JSON.stringify({
+        bytes: imageBackedPng.length, width: imageBackedPng.readUInt32BE(16),
+        height: imageBackedPng.readUInt32BE(20),
+      })}`);
+    }
+    const imageBackedPngBase64 = imageBackedPng.toString("base64");
+    const imageBackedSamples = await evaluate(`(async () => {
+      const image = new Image();
+      image.src = "data:image/png;base64,${imageBackedPngBase64}";
+      await image.decode();
+      const canvas = document.createElement('canvas');
+      canvas.width = image.naturalWidth;
+      canvas.height = image.naturalHeight;
+      const context = canvas.getContext('2d', { willReadFrequently: true });
+      if (!context) throw new Error('Could not inspect image-backed PNG pixels');
+      context.drawImage(image, 0, 0);
+      const sample = (x, y) => Array.from(context.getImageData(x, y, 1, 1).data);
+      const result = {
+        redCenter: sample(800, 1000),
+        whiteLeft: sample(30, 1000),
+        whiteRight: sample(1570, 1000),
+        foregroundRectangle: sample(150, 260),
+      };
+      canvas.width = 0;
+      canvas.height = 0;
+      image.src = '';
+      return result;
+    })()`);
+    const near = (actual, expected, tolerance = 2) =>
+      actual.length === 4 && expected.every((channel, i) => Math.abs(actual[i] - channel) <= tolerance);
+    if (!near(imageBackedSamples.redCenter, [255, 0, 0, 255]) ||
+        !near(imageBackedSamples.whiteLeft, [255, 255, 255, 255]) ||
+        !near(imageBackedSamples.whiteRight, [255, 255, 255, 255]) ||
+        !near(imageBackedSamples.foregroundRectangle, [170, 187, 204, 255])) {
+      throw new Error(`Image-backed PNG pixel/foreground mismatch: ${JSON.stringify(imageBackedSamples)}`);
+    }
+    process.stdout.write(`PASS: image-backed contain PNG bytes, red pixels, white margins, foreground rectangle ${JSON.stringify(imageBackedSamples)}\n`);
+    // Later template exports use this same filename. Do not let them pass by
+    // discovering the image-backed PNG from this earlier workflow.
+    await rm(imageBackedPngPath);
+
     // A rejected import must not replace the currently loaded valid document.
     const invalidFixture = JSON.stringify({ ...JSON.parse(fixture), schema_version: 999 });
     const invalidImportExpression = `(() => {
