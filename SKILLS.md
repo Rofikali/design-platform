@@ -286,18 +286,18 @@ The following guides are repository-specific counterparts of the owner's imgengi
 
 ## 18. Scheduled hourly "go ahead" engineering autopilot
 
-The owner enabled an independent ChatGPT task named **Design Platform Autopilot** (hourly, 24/7 until manually paused). When the task fires—or the owner manually says "go ahead"—follow the [hourly autopilot agreement](docs/engineering/hourly-autopilot.md) and [agent continuation](docs/engineering/agent-continuation-runbook.md). Fetch current GitHub and exact-head status; choose the highest-priority eligible unfinished NOW task; do one bounded change; record PR/CI/risks/next action. No repetitive full Docker/test builds. The latest owner rule requires human-reviewed PRs and manual merging/publishing, even when CI passes; no bypassed CI, fabricated independent review, paid services, deployment, credentials or customer-data changes. A scheduled task is separate from Markdown and from GitHub Actions.
+The owner enabled an independent ChatGPT task named **Design Platform Autopilot** (hourly, 24/7 until manually paused). When the task fires—or the owner manually says "go ahead"—follow the [hourly autopilot agreement](docs/engineering/hourly-autopilot.md) and [agent continuation](docs/engineering/agent-continuation-runbook.md). Fetch current GitHub and exact-head status; choose the highest-priority eligible unfinished NOW task; do one bounded change; record PR/CI/risks/next action. No repetitive full Docker/test builds. The latest owner rule authorizes the autopilot to review and merge PRs when current-head checks, security, protection and any independent-review requirements pass. Never fake independent review or bypass checks; no publishing, deployment, paid services, credentials or customer-data changes. A scheduled task is separate from Markdown and from GitHub Actions.
 
 <!-- milestone-sync:start -->
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-17)
 
-**Reference main:** f7f55126c34dc01cc2c86cb2fc9b611d9b75402a (dated snapshot; re-check live GitHub before acting).
+**Reference main:** 96d832c2af753248e6158345ebc49476dac8b7fc (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M1-ACC-03 — Keyboard-operated background image removal** [PR_OPEN]. [PR #115](https://github.com/Rofikali/design-platform/pull/115) [Issue #82](https://github.com/Rofikali/design-platform/issues/82)
+**NOW:** **DP-M1-ACC-04 — Automated 200% zoom and keyboard layout regression** [READY]. [Issue #82](https://github.com/Rofikali/design-platform/issues/82)
 
 **NEXT:** DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
-**Review gate:** A human reviews and manually merges each PR. No automated merges, publishing or deployments.
+**Review gate:** Owner-authorized autopilot may review and merge only after all exact-head/integration CI, security, branch protection and required independent-review gates pass. No automatic publishing or deployment.
 
 <!-- milestone-sync:end -->
