@@ -282,3 +282,8 @@ The following guides are repository-specific counterparts of the owner's imgengi
 7. [Business strategy](docs/product/platform-business-strategy.md), [security operations](docs/security/security-and-privacy-operations.md) and [release gates](docs/operations/release-readiness.md): free-versus-paid and customer-data decisions remain proposals until approved and verified.
 
 **Standing principle:** avoid expensive duplicate compilation and rapid speculative CI-triggering commits; batching unrelated milestones is not acceptable either. A single bounded coherent PR, with exact-head required tests, is the unit of review. A public repository's free standard Actions usage is not a reason to waste compute, and caching is not a correctness guarantee.
+
+
+## 18. Scheduled hourly "go ahead" engineering autopilot
+
+The owner enabled an independent ChatGPT task named **Design Platform Autopilot** (hourly, 24/7 until manually paused). When the task fires—or the owner manually says "go ahead"—follow the [hourly autopilot agreement](docs/engineering/hourly-autopilot.md) and [agent continuation](docs/engineering/agent-continuation-runbook.md). Fetch current GitHub and exact-head status; choose the highest-priority eligible unfinished NOW task; do one bounded change; record PR/CI/risks/next action. No repetitive full Docker/test builds. The 2026-11-17 owner approval authorizes PR review and safe merges under the [autopilot merge checklist](docs/engineering/hourly-autopilot.md); no bypassed CI, fabricated independent review, paid services, deployment, credentials or customer-data changes. A scheduled task is separate from Markdown and from GitHub Actions.
