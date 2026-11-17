@@ -26,7 +26,7 @@
 4. Assess scope using seven engineering levels, plus product, UX/accessibility, QA, security, DevOps/SRE, finance/CA/MBA and management review as justified. For small fixes, keep review proportional.
 5. Make a small, cohesive implementation, test or docs improvement when repository write permissions/tools and task prerequisites permit. Prefer targeted local/check evidence and one reviewed PR or update to an existing owned PR; never perform speculative broad refactors.
 6. For latest head, report **PASS/FAIL/RUNNING/QUEUED/CANCELLED/SKIPPED/NOT RUN** with checks/failed job and step URLs. Do not reuse successes from earlier heads. Inspect only focused failure logs, and never turn skipped security or unexecuted E2E tests into a pass.
-7. At meaningful transitions, update `next.md`, milestone handoff and relevant contract/evidence docs with task ID, scope, latest SHA, PR, CI, risks and exactly one next action. Avoid pushing a commit just to say a run is still queued.
+7. At meaningful transitions edit the **structured milestone record**, run the six-document generator, and keep detailed CI/tests/risks in the milestone handoff; never edit marked sections manually. Avoid pushing a commit just to say a run is still queued.
 8. Report what was actually accomplished and which approvals remain. If blocked (access denied, owner review needed, CI failure, unresolved design decision), report and stop that lane safely. An hourly run may open and review a PR, but must NEVER automatically merge, publish or deploy.
 
 ## Human-reviewed pull request workflow (latest owner rule, 2026-11-17)
