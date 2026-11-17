@@ -34,7 +34,7 @@
 
 <!-- milestone-sync:end -->
 
-### Parallel review lanes — not automatically the next implementation
+### Historical parallel review lanes — recheck live GitHub (not generated)
 
 | Lane / ID | Verified state at snapshot | Next smallest action | Exit evidence |
 | --- | --- | --- | --- |
@@ -46,7 +46,7 @@
 | **DP-M2-TBL-01** | [PR #93](https://github.com/Rofikali/design-platform/pull/93) **MERGED** as `803e7f9edfe2ef5edd0f8234eac7a996dd8928d9`; first-class schema-v5 table core and readonly canvas support exist | Preserve v1–v4 migrations and distinguish data Tables from visual Grids; next user-facing milestone is cell editing/keyboard/history | Merged core **does not** establish a full accessible table editor or customer workflow |
 | **DP-LEGACY-87** | [PR #87](https://github.com/Rofikali/design-platform/pull/87) **DRAFT**, older schema-v3 background branch; background-related work already exists in main | Assess whether draft is superseded; avoid blindly merging an old migration branch or repeating its code | Explicit close/rebase decision after diff comparison |
 
-### DONE / MERGED — work must not be repeated
+### Historical completed work — generated status above takes precedence
 
 | ID | Completed deliverable | Evidence / limits |
 | --- | --- | --- |
@@ -76,17 +76,17 @@ Account sync, collaboration, a multi-tenant SaaS, paid subscriptions, metered AP
 
 ## Permanent status rules: "go ahead" and milestone reconciliation
 
-When the owner says **"go ahead"**, perform the **next smallest eligible bounded task in the NOW lane** rather than asking for a repeated product brief. **The owner authorized safe reviewed PR merges on 2026-11-17; "go ahead" still does not authorize bypassing checks, changing paid settings, deploying, changing visibility, retiring customer data, or weakening security.**
+When the owner says **"go ahead"**, perform the **next smallest eligible bounded task in the NOW lane** rather than asking for a repeated product brief. **The latest owner rule requires human review and manual merging; "go ahead" cannot merge PRs, publish or deploy automatically, even when CI passes.**
 
 **Every new session, after a PR update, after checks complete and after a merge:**
 
 1. Fetch live `main` full SHA, current branch/worktree, open PRs/issues, latest PR head SHA and exact attached workflow/job statuses. GitHub checks from older commits are **HISTORICAL**.
 2. Reconcile milestone rows: `PLANNED → READY → IN_PROGRESS → PR_OPEN → CI_PENDING → READY_FOR_REVIEW → MERGED → RELEASE_CANDIDATE → RELEASED`; `FAILED`, `BLOCKED`, `CANCELLED`, `DEFERRED` are explicit. `IMPLEMENTED` and `VERIFIED` are *distinct attributes*; not substitute states.
 3. First choose verified P0 security/data-loss/release-blocking defects. Otherwise continue an existing **in-progress PR** before starting a duplicate feature. Then choose the first dependency-cleared READY task in NOW. Keep parallel tracks independent.
-4. Update the board with **task ID, priority, exact scope, owner, prerequisites, status, GitHub PR, commit SHA, exact test SHA/run URLs, known failure or skipped gate, next action and approval boundary**. Preserve original history in PRs/evidence docs rather than pasting long logs into `next.md`.
+4. Update **docs/engineering/milestone-record.json** with task ID, scope, status, PR, observed SHA and summary; run **node scripts/sync-milestone-docs.mjs** to synchronize all six generated sections. Preserve rich PR/CI evidence in GitHub and milestone handoffs. Preserve original history in PRs/evidence docs rather than pasting long logs into `next.md`.
 5. Don't rewrite the main board for each CI tick; only update with meaningful state transitions. A failed check needs its job/step evidence, not a 10,000-line log.
 6. One small PR per bounded milestone, coherent commits, no redundant Docker/CI work. Read [agent continuation](docs/engineering/agent-continuation-runbook.md), [seven-level review](docs/engineering/seven-level-operating-model.md), [handoff](docs/engineering/agent-milestone-handoff.md), and [test lanes](docs/engineering/change-scoped-verification.md).
-7. At merge gates, apply the owner's 2026-11-17 standing authorization **only after** exact-head required CI, code review, security and GitHub restrictions pass. **CI success is not merge; merge is not release; a markdown rule cannot restart a stopped agent.**
+7. Never merge or publish automatically. Request genuine human review and leave the PR open; after a manual merge, reconcile GitHub and update the milestone record with evidence. **CI success is not merge; merge is not release; a markdown rule cannot restart a stopped agent.**
 
 ---
 
