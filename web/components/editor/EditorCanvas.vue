@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { BackgroundImage, DesignElement } from "~/utils/document";
+import { getElementSelectionLabel } from "~/utils/element-accessibility";
 
 defineProps<{
   elements: DesignElement[];
@@ -63,7 +64,7 @@ const emit = defineEmits<{
             backgroundSize: element.type === 'grid' ? '100% ' + (100 / element.rows) + '%, ' + (100 / element.columns) + '% 100%' : undefined,
           }"
           type="button"
-          :aria-label="element.type === 'text' ? 'Select text element: ' + element.text.slice(0, 80) : element.type === 'rect' ? 'Select rectangle element' : element.type === 'frame' ? 'Select frame element' : 'Select grid element with ' + element.rows + ' rows and ' + element.columns + ' columns'"
+          :aria-label="getElementSelectionLabel(element)"
           :aria-pressed="selectedId === element.id"
           @pointerdown="emit('elementPointerDown', $event, element)"
           @pointermove="emit('elementPointerMove', $event)"
