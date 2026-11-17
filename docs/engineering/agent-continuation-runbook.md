@@ -12,7 +12,7 @@ A markdown rule **does not** wake ChatGPT/Astra/Codex after a session ends, subm
 
 ## Bootstrap prompt for a new agent session
 
-> Read AGENTS.md, SKILLS.md, next.md, docs/engineering/agent-continuation-runbook.md and current GitHub PR/CI state. Reconcile stale milestones and select one READY bounded task, preserving owner approval for merges/deployments. Report exact-SHA evidence, costs and open risks; do not invent results or rerun full CI unnecessarily.
+> Read AGENTS.md, SKILLS.md, next.md, docs/engineering/agent-continuation-runbook.md and current GitHub PR/CI state. Reconcile stale milestones and select one READY bounded task, applying the owner's standing 2026-11-17 safe PR merge authorization and retaining separate deployment approval. Report exact-SHA evidence, costs and open risks; do not invent results or rerun full CI unnecessarily.
 
 ## "Go ahead" task-selection contract — use the live board
 
@@ -21,7 +21,7 @@ When the owner writes **"go ahead"**, the agent should not ask them to repeat al
 1. **Continue before duplicating:** inspect an active feature/CI remediation PR and its exact latest head before opening a competing PR. If a regression has a failing latest-head job, it remains NOW even when other jobs pass. In the 2026-11-16 snapshot, PR #102 is the primary CI regression lane; this is not a permanent rule to target #102.
 2. **Do not confuse statuses:** DONE/IMPLEMENTED/VERIFIED/CI_PENDING/FAILED/MERGED/RELEASED are different; only GitHub confirms a merge, a real launch confirms release, and only exact-head executed checks prove CI success.
 3. **Do not invent time:** docs cannot trigger a background agent or future response; work happens only while the authorized runner is executing.
-4. **Change control:** never infer blanket authority for merging, deployment, visibility, billing, secrets, major schema/data deletion or security bypass from "go ahead." Small PRs and review remain standard.
+4. **Change control:** the owner's 2026-11-17 standing authorization permits safe reviewed PR merges; still never infer authority for deployment, visibility, billing, secrets, major schema/data deletion or security bypass. Small PRs and review remain standard.
 5. **Checkpoint sparingly:** update the live board after a meaningful status transition, not after every queued/running CI poll. Preserve durable evidence in PRs and linked reports, not duplicated logs.
 6. **Handoff once per bounded milestone:** include task ID, prior and current SHA, affected boundary, test status, known failures, PR link, next action, seven-level/security/SRE/product/finance review notes and owner gate.
 7. **Next after merge:** confirm merge SHA and exact associated checks, mark the task MERGED (not RELEASED), then choose the next READY item after prerequisites—not the oldest long-term bullet.
@@ -35,7 +35,7 @@ DP-M1-CB-01
   → IN_PROGRESS (one scoped repair)
   → CI_PENDING (new head, old evidence historical)
   → READY_FOR_REVIEW (all required checks pass on that head)
-  → MERGED (GitHub confirms + owner approval)
+  → MERGED (GitHub confirms; owner standing PR permission and merge checklist)
   → RELEASED (separate product/release gate, only if applicable)
 ```
 
@@ -51,7 +51,7 @@ DP-M1-CB-01
 6. **Execute in the authorized scope:** one small PR, no surprise payments, deployment, feature expansion or autonomous merge.
 7. **Verify:** local focused checks; automatic GitHub workflows at the **current** SHA; only failed-step excerpts in model context; label pending, cancelled, skipped and not-run accurately.
 8. **Checkpoint:** record task ID/status, repo/branch/commit, PR/CI links, commands/results, risks and the next action in the task handoff and appropriate register.
-9. **Wait at gates:** owner approval for merge, breaking schema, account/customer data handling, paid infrastructure, production release or material pricing decisions.
+9. **Wait at gates:** the reviewed/verified merge gate under owner standing permission; separate owner approval for breaking schema, customer data, paid infrastructure, release or pricing.
 
 ## Task states
 
