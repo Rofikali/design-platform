@@ -650,7 +650,7 @@ async function main() {
       });
       const imagePrintPdf = Buffer.from(imagePrintResult.data, "base64");
       const imagePrintText = imagePrintPdf.toString("latin1");
-      const imagePrintMediaBox = imagePrintText.match(/\/MediaBox\s*\[\s*([+-]?(?:\d+\.?\d*|\.\d+))\s+([+-]?(?:\d+\.?\d*|\.\d+))\s+([+-]?(?:\d+\.?\d*|\.\d+))\s*\]/);
+      const imagePrintMediaBox = imagePrintText.match(/\/MediaBox\s*\[\s*([+-]?(?:\d+\.?\d*|\.\d+))\s+([+-]?(?:\d+\.?\d*|\.\d+))\s+([+-]?(?:\d+\.?\d*|\.\d+))\s+([+-]?(?:\d+\.?\d*|\.\d+))\s*\]/);
       const imagePrintPages = (imagePrintText.match(/\/Type\s*\/Page\b/g) || []).length;
       if (!imagePrintText.startsWith("%PDF-") || imagePrintPdf.length < 1000 ||
           !imagePrintMediaBox || imagePrintPages !== 1) {
