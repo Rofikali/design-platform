@@ -624,6 +624,47 @@ async function main() {
     // discovering the image-backed PNG from this earlier workflow.
     await rm(imageBackedPngPath);
 
+    // M1-BG-08: exercise the same Print / Save PDF path with the image-backed
+    // document, not only the later shop-banner template. This validates Chrome
+    // PDF generation, not physical-printer or cross-browser color fidelity.
+    await cdp.send("Emulation.setEmulatedMedia", { media: "print" });
+    try {
+      await evaluate("window.__originalDesignPrint = window.print; window.print = () => { window.__imagePrintIntercepted = true; }; Array.from(document.querySelectorAll('button')).find(button => button.textContent.includes('Print / Save PDF'))?.click(); true");
+      await waitForPage("image-backed print stylesheet active",
+        "Boolean(window.__imagePrintIntercepted && document.querySelector('style[data-design-print]') && document.querySelector('.app-shell.printing-design'))");
+      const printContent = await evaluate("(() => { const background = document.querySelector('.page-background-image'); const foreground = document.querySelector('.design-element.rectangle'); const page = document.querySelector('.design-page'); return { backgroundUrl: background?.getAttribute('src') || '', imageFit: background ? getComputedStyle(background).objectFit : '', imageDisplay: background ? getComputedStyle(background).display : 'none', foregroundColor: foreground ? getComputedStyle(foreground).backgroundColor : '', foregroundDisplay: foreground ? getComputedStyle(foreground).display : 'none', pageWidth: page?.getBoundingClientRect().width || 0, pageHeight: page?.getBoundingClientRect().height || 0 }; })()");
+      if (printContent.backgroundUrl !== backgroundBeforeRemoval.dataUrl ||
+          printContent.imageFit !== "contain" || printContent.imageDisplay === "none" ||
+          printContent.foregroundColor !== "rgb(170, 187, 204)" ||
+          printContent.foregroundDisplay === "none" ||
+          printContent.pageWidth < 1 || printContent.pageHeight < 1) {
+        throw new Error("Image-backed content lost in Chrome print layout: " + JSON.stringify({
+          ...printContent, backgroundUrl: printContent.backgroundUrl.slice(0, 32),
+        }));
+      }
+      const imagePrintResult = await cdp.send("Page.printToPDF", {
+        preferCSSPageSize: true,
+        printBackground: true,
+        displayHeaderFooter: false,
+        scale: 1,
+      });
+      const imagePrintPdf = Buffer.from(imagePrintResult.data, "base64");
+      const imagePrintText = imagePrintPdf.toString("latin1");
+      const imagePrintMediaBox = imagePrintText.match(/\/MediaBox\s*\[\s*([+-]?(?:\d+\.?\d*|\.\d+))\s+([+-]?(?:\d+\.?\d*|\.\d+))\s+([+-]?(?:\d+\.?\d*|\.\d+))\s+([+-]?(?:\d+\.?\d*|\.\d+))\s*\]/);
+      const imagePrintPages = (imagePrintText.match(/\/Type\s*\/Page\b/g) || []).length;
+      if (!imagePrintText.startsWith("%PDF-") || imagePrintPdf.length < 1000 ||
+          !imagePrintMediaBox || imagePrintPages !== 1) {
+        throw new Error("Image-backed print did not produce one PDF page: " + JSON.stringify({
+          bytes: imagePrintPdf.length, pages: imagePrintPages, pageBox: imagePrintMediaBox?.slice(1),
+        }));
+      }
+      process.stdout.write("PASS: image-backed Chrome print preserved raster and foreground in print layout and produced a one-page PDF\n");
+    } finally {
+      // A later test prints another template: restore the screen state here.
+      await evaluate("window.dispatchEvent(new Event('afterprint')); if (window.__originalDesignPrint) window.print = window.__originalDesignPrint; delete window.__originalDesignPrint; delete window.__imagePrintIntercepted; true");
+      await cdp.send("Emulation.setEmulatedMedia", { media: "screen" });
+    }
+
     // A rejected import must not replace the currently loaded valid document.
     const invalidFixture = JSON.stringify({ ...JSON.parse(fixture), schema_version: 999 });
     const invalidImportExpression = `(() => {
