@@ -1455,6 +1455,21 @@ async function main() {
     await evaluate("Array.from(document.querySelectorAll('button')).find(b => b.textContent.trim() === 'Redo')?.click(); true");
     await waitForPage("redo cell edit", "document.querySelector('.table-preview > span:nth-child(5)')?.textContent === 'Rice & dal ₹80'");
 
+    // Undo/redo restores a document snapshot and intentionally resets selection
+    // to its first element. Re-select the table before exercising its controls.
+    await evaluate("document.querySelector('.design-element.table')?.click(); true");
+    await waitForPage("table editor restored after history navigation",
+      "Boolean(document.querySelector('.table-cell-editor select') && document.querySelector('.table-cell-actions button'))");
+    await evaluate(`(() => {
+      const selector = document.querySelector('.table-cell-editor select');
+      Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value').set.call(selector, '4');
+      selector.dispatchEvent(new Event('change', { bubbles: true }));
+      return true;
+    })()`);
+    await waitForPage("row 2 column 2 reselected for insertion",
+      "document.querySelector('.selected-name')?.textContent || ''",
+      value => value.includes("Cell row 2, column 2"));
+
     // Table row insertion: native keyboard activation, selected-cell coordinates,
     // persisted schema-v5 data, and history restoration on the actual editor.
     const insertionControl = await evaluate(`(() => {
