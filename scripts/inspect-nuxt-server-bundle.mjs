@@ -5,6 +5,9 @@ import { fileURLToPath } from "node:url";
 // Bound per-file memory use for the informational scan; oversized output is
 // an explicit failure, never silently treated as an absence of indicators.
 const MAX_JS_FILE_BYTES = 64 * 1024 * 1024;
+// Bound aggregate I/O as well: thousands of individually valid chunks must
+// never let this informational CI diagnostic scan an unbounded build.
+const MAX_TOTAL_JS_BYTES = 256 * 1024 * 1024;
 
 const INDICATORS = Object.freeze([
   { label: "picomatch package reference", needle: "picomatch" },
@@ -18,7 +21,10 @@ const INDICATORS = Object.freeze([
  * bundlers may rename or inline code, and only a runtime/threat-path audit
  * can establish whether attacker-controlled globs are evaluated.
  */
-export function inspectNuxtServerBundle(serverDir) {
+export function inspectNuxtServerBundle(serverDir, maxTotalBytes = MAX_TOTAL_JS_BYTES) {
+  if (!Number.isSafeInteger(maxTotalBytes) || maxTotalBytes < 1 || maxTotalBytes > MAX_TOTAL_JS_BYTES) {
+    throw new Error("Invalid JavaScript scan byte budget");
+  }
   const base = resolve(serverDir);
   if (!lstatSync(base).isDirectory()) throw new Error("Nuxt server output is not a directory");
   const files = [];
@@ -41,11 +47,17 @@ export function inspectNuxtServerBundle(serverDir) {
   if (files.length === 0) throw new Error("No JavaScript files found in Nuxt server output");
 
   let bytesScanned = 0;
+  let inputBytes = 0;
   const indicators = INDICATORS.map(item => ({ name: item.label, files: [] }));
   for (const file of files) {
-    if (statSync(file.absolute).size > MAX_JS_FILE_BYTES) {
+    const size = statSync(file.absolute).size;
+    if (size > MAX_JS_FILE_BYTES) {
       throw new Error(`JavaScript chunk exceeds 64 MiB scan limit: ${file.relativeName}`);
     }
+    if (inputBytes + size > maxTotalBytes) {
+      throw new Error(`Total JavaScript scan limit exceeded before reading: ${file.relativeName}`);
+    }
+    inputBytes += size;
     const source = readFileSync(file.absolute, "utf8");
     bytesScanned += Buffer.byteLength(source);
     INDICATORS.forEach((item, index) => {

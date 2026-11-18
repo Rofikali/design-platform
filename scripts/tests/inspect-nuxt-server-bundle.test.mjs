@@ -47,6 +47,19 @@ test("oversized generated JS files fail closed before reading into memory", () =
   assert.throws(() => inspectNuxtServerBundle(root), /JavaScript chunk exceeds 64 MiB scan limit: large\.mjs/);
 }));
 
+test("aggregate scan budget fails closed before reading another chunk", () => withBundle(root => {
+  writeFileSync(join(root, "a.js"), "const first = 1;");
+  writeFileSync(join(root, "b.js"), "const second = 2;");
+  assert.throws(
+    () => inspectNuxtServerBundle(root, 20),
+    /Total JavaScript scan limit exceeded before reading: b\\.js/,
+  );
+  const report = inspectNuxtServerBundle(root, 128);
+  assert.equal(report.filesScanned, 2);
+  assert.equal(report.bytesScanned, Buffer.byteLength("const first = 1;const second = 2;"));
+  assert.throws(() => inspectNuxtServerBundle(root, 0), /Invalid JavaScript scan byte budget/);
+}));
+
 test("symlinked content is never followed outside the build output", () => withBundle(root => {
   writeFileSync(join(root, "safe.js"), "export const ok = true;");
   const external = mkdtempSync(join(tmpdir(), "nuxt-runtime-external-"));
