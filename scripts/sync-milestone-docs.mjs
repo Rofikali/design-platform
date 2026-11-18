@@ -6,6 +6,7 @@ export const SOURCE = "docs/engineering/milestone-record.json";
 export const TARGETS = Object.freeze([
   { path: "AGENTS.md", view: "compact" },
   { path: "SKILLS.md", view: "compact" },
+  { path: "README.md", view: "compact" },
   { path: "next.md", view: "detailed" },
   { path: "docs/engineering/decision-status-register.md", view: "detailed" },
   { path: "docs/engineering/agent-continuation-runbook.md", view: "compact" },
