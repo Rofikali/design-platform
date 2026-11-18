@@ -52,7 +52,7 @@ test("aggregate scan budget fails closed before reading another chunk", () => wi
   writeFileSync(join(root, "b.js"), "const second = 2;");
   assert.throws(
     () => inspectNuxtServerBundle(root, 20),
-    /Total JavaScript scan limit exceeded before reading: b\\.js/,
+    /Total JavaScript scan limit exceeded before reading: b\.js/,
   );
   const report = inspectNuxtServerBundle(root, 128);
   assert.equal(report.filesScanned, 2);
