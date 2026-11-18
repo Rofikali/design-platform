@@ -5,9 +5,10 @@
 ## Four-gate workflow
 
 1. **Milestone record updated:** Edit only [milestone-record.json](milestone-record.json) to change the current NOW/NEXT IDs, status, PR/issue links, observed full commit SHA and evidence summary. A dated snapshot is not a live GitHub feed. Check GitHub before changing MERGED/PR_OPEN.
-2. **Documentation generator:** From the repository root run the Node 22 built-in-only generator. It synchronizes exactly six bounded generated sections while preserving the rest of each Markdown file:
+2. **Documentation generator:** From the repository root run the Node 22 built-in-only generator. It synchronizes exactly seven bounded generated sections while preserving the rest of each Markdown file:
    - AGENTS.md
    - SKILLS.md
+   - README.md
    - next.md
    - docs/engineering/decision-status-register.md
    - docs/engineering/agent-continuation-runbook.md
@@ -23,10 +24,10 @@ The generator and tests require only the existing Node.js runtime; no npm instal
 node scripts/sync-milestone-docs.mjs
 node --test scripts/tests/sync-milestone-docs.test.mjs
 node scripts/sync-milestone-docs.mjs --check
-git diff -- docs/engineering/milestone-record.json AGENTS.md SKILLS.md next.md docs/engineering/
+git diff -- docs/engineering/milestone-record.json AGENTS.md SKILLS.md README.md next.md docs/engineering/
 ~~~
 
-If CI reports stale documents, run the generator, review the six generated diffs for correctness, and commit them alongside the source record. Do **not** delete the CI check, add generated sections manually, or replace existing human-owned context.
+If CI reports stale documents, run the generator, review the seven generated diffs for correctness, and commit them alongside the source record. Do **not** delete the CI check, add generated sections manually, or replace existing human-owned context.
 
 ## Guardrails and review evidence
 
