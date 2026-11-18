@@ -2,12 +2,11 @@
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
   "snapshot_date": "2026-11-18",
-  "reference_main_sha": "96d832c2af753248e6158345ebc49476dac8b7fc",
-  "now_id": "DP-SEC-02",
+  "reference_main_sha": "adb3bd1f74202c8a343a41aceafcee0b05380973",
+  "now_id": "DP-M1-ACC-04",
   "next_ids": [
-    "DP-SEC-01",
     "DP-DEPS-01",
-    "DP-M1-ACC-04",
+    "DP-SEC-01",
     "DP-M1-ACC-02",
     "DP-M1-BG-09"
   ],
@@ -57,7 +56,7 @@
       "title": "Automated 200% zoom and keyboard layout regression",
       "status": "PR_OPEN",
       "issue": 82,
-      "summary": "PR #119 adds 320px/640px layout reflow and keyboard controls regression; latest-head application CI passes, cross-browser export remains in progress, required JS audit fails. Manual screen-reader audit still open.",
+      "summary": "PR #119 at 3de4f249 adds 320px/640px reflow and keyboard regression; application CI and cross-browser export PASS at old base; inherited JS audit failed before PR #120 development waiver merged. Revalidate current-base CI; manual screen-reader audit pending.",
       "pr": 119,
       "sha": "3de4f249739f42c8d401cb51fff32be7a0b9ce07"
     },
@@ -66,16 +65,16 @@
       "title": "Production JavaScript picomatch advisory remediation",
       "status": "BLOCKED",
       "issue": 118,
-      "summary": "Unpatched picomatch ReDoS remains unresolved. Owner accepted development-only CI risk until 2026-12-02 in PR #120; raw pnpm audit still fails. Strict security audit must be restored after verified patch; no production authorization."
+      "summary": "Unpatched picomatch ReDoS remains BLOCKED. Temporary owner-approved development-only audit exception is merged in PR #120, expires 2026-12-02. Raw pnpm audit still fails; restore strict gate on verified patch; no production authorization."
     },
     {
       "id": "DP-SEC-02",
       "title": "Built Nuxt bundle dependency indicator inventory",
-      "status": "PR_OPEN",
+      "status": "MERGED",
       "pr": 120,
-      "sha": "8e15cb15045808dde05bfa2dfb816aa588ce19da",
+      "sha": "adb3bd1f74202c8a343a41aceafcee0b05380973",
       "issue": 118,
-      "summary": "PR #120 fixes schema-v5 persisted-text assertion at head 8e15cb15. Rust core, doc-sync and development-only approved JS waiver pass; browser/Cross-browser/Rust audit pending. The raw pnpm audit still fails; no merge or production."
+      "summary": "PR #120 merged as adb3bd1f into main on 2026-11-18. Rust/Nuxt, browser, cross-browser, doc sync and Rust audit passed; JS audit passed ONLY with owner-approved development exception through 2026-12-02, not a fix or production approval."
     },
     {
       "id": "DP-DEPS-01",
@@ -84,7 +83,7 @@
       "pr": 98,
       "sha": "779b77eaadb0b0d399c71ae14690767b014348cd",
       "issue": 118,
-      "summary": "Nuxt 4.6.4 exact-head Nuxt/Rust CI and dev-container pass; cross-browser still in progress. Production JS audit fails on this PR and on main (inherited picomatch blocker). pnpm 12 diagnostic changes finding counts but is not remediation; do not merge."
+      "summary": "PR #98 Nuxt 4.6.4 at 779b77ea: application CI, cross-browser export, dev-container PASS at old base; audit FAIL. pnpm 12 changes reported counts but not vulnerable code. Requires compatible main-base update and exact-head security review."
     }
   ]
 }
