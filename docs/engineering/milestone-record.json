@@ -2,10 +2,9 @@
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
   "snapshot_date": "2026-11-18",
-  "reference_main_sha": "adb3bd1f74202c8a343a41aceafcee0b05380973",
-  "now_id": "DP-M1-ACC-04",
+  "reference_main_sha": "83f3945fe5437ee6bc91b9368faa37c6f0e2dfc9",
+  "now_id": "DP-DEPS-01",
   "next_ids": [
-    "DP-DEPS-01",
     "DP-SEC-01",
     "DP-M1-ACC-02",
     "DP-M1-BG-09"
@@ -54,11 +53,11 @@
     {
       "id": "DP-M1-ACC-04",
       "title": "Automated 200% zoom and keyboard layout regression",
-      "status": "PR_OPEN",
+      "status": "MERGED",
       "issue": 82,
-      "summary": "PR #119 at 3de4f249 adds 320px/640px reflow and keyboard regression; application CI and cross-browser export PASS at old base; inherited JS audit failed before PR #120 development waiver merged. Revalidate current-base CI; manual screen-reader audit pending.",
+      "summary": "PR #119 merged as 83f3945f on 2026-11-18; 320px/640px zoom/reflow and keyboard regressions integrated. PR-head application, cross-browser and dependency audit CI passed; manual screen-reader audit #82 remains open.",
       "pr": 119,
-      "sha": "3de4f249739f42c8d401cb51fff32be7a0b9ce07"
+      "sha": "83f3945fe5437ee6bc91b9368faa37c6f0e2dfc9"
     },
     {
       "id": "DP-SEC-01",
@@ -83,7 +82,7 @@
       "pr": 98,
       "sha": "779b77eaadb0b0d399c71ae14690767b014348cd",
       "issue": 118,
-      "summary": "PR #98 Nuxt 4.6.4 at 779b77ea: application CI, cross-browser export, dev-container PASS at old base; audit FAIL. pnpm 12 changes reported counts but not vulnerable code. Requires compatible main-base update and exact-head security review."
+      "summary": "PR #98 at 779b77ea conflicts with current main 83f3945f. PR-head Rust/Nuxt, browser, dev-container and docs checks PASS; production JavaScript dependency audit FAIL. Resolve conflicts, then verify current-base/exact-head CI and security before merge."
     }
   ]
 }

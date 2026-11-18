@@ -16,11 +16,11 @@
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-18)
 
-**Reference main:** adb3bd1f74202c8a343a41aceafcee0b05380973 (dated snapshot; re-check live GitHub before acting).
+**Reference main:** 83f3945fe5437ee6bc91b9368faa37c6f0e2dfc9 (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M1-ACC-04 — Automated 200% zoom and keyboard layout regression** [PR_OPEN]. [PR #119](https://github.com/Rofikali/design-platform/pull/119) [Issue #82](https://github.com/Rofikali/design-platform/issues/82)
+**NOW:** **DP-DEPS-01 — Nuxt 4 compatibility upgrade** [PR_OPEN]. [PR #98](https://github.com/Rofikali/design-platform/pull/98) [Issue #118](https://github.com/Rofikali/design-platform/issues/118)
 
-**NEXT:** DP-DEPS-01 [PR_OPEN] [PR #98](https://github.com/Rofikali/design-platform/pull/98) [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
+**NEXT:** DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
 **Review gate:** Owner-authorized autopilot may review and merge only after all exact-head/integration CI, security, branch protection and required independent-review gates pass. No automatic publishing or deployment.
 
@@ -31,10 +31,10 @@
 | DP-M1-ACC-03 — Keyboard-operated background image removal | MERGED | [PR #115](https://github.com/Rofikali/design-platform/pull/115) [Issue #82](https://github.com/Rofikali/design-platform/issues/82) | Tab/Space background-removal browser regression merged; final-head CI, dependency audit and cross-browser export passed. Manual accessibility issue #82 remains open |
 | DP-M1-ACC-02 — Manual editor accessibility audit | BLOCKED | [Issue #82](https://github.com/Rofikali/design-platform/issues/82) | Requires real keyboard, NVDA or VoiceOver, zoom and contrast observations; automation cannot certify |
 | DP-M1-BG-09 — Physical printer and PDF fidelity review | PLANNED | [Issue #85](https://github.com/Rofikali/design-platform/issues/85) | Automated Chrome PDF is not physical printer or cross-browser output certification |
-| DP-M1-ACC-04 — Automated 200% zoom and keyboard layout regression | PR_OPEN | [PR #119](https://github.com/Rofikali/design-platform/pull/119) [Issue #82](https://github.com/Rofikali/design-platform/issues/82) | PR #119 at 3de4f249 adds 320px/640px reflow and keyboard regression; application CI and cross-browser export PASS at old base; inherited JS audit failed before PR #120 development waiver merged. Revalidate current-base CI; manual screen-reader audit pending. |
+| DP-M1-ACC-04 — Automated 200% zoom and keyboard layout regression | MERGED | [PR #119](https://github.com/Rofikali/design-platform/pull/119) [Issue #82](https://github.com/Rofikali/design-platform/issues/82) | PR #119 merged as 83f3945f on 2026-11-18; 320px/640px zoom/reflow and keyboard regressions integrated. PR-head application, cross-browser and dependency audit CI passed; manual screen-reader audit #82 remains open. |
 | DP-SEC-01 — Production JavaScript picomatch advisory remediation | BLOCKED | [Issue #118](https://github.com/Rofikali/design-platform/issues/118) | Unpatched picomatch ReDoS remains BLOCKED. Temporary owner-approved development-only audit exception is merged in PR #120, expires 2026-12-02. Raw pnpm audit still fails; restore strict gate on verified patch; no production authorization. |
 | DP-SEC-02 — Built Nuxt bundle dependency indicator inventory | MERGED | [PR #120](https://github.com/Rofikali/design-platform/pull/120) [Issue #118](https://github.com/Rofikali/design-platform/issues/118) | PR #120 merged as adb3bd1f into main on 2026-11-18. Rust/Nuxt, browser, cross-browser, doc sync and Rust audit passed; JS audit passed ONLY with owner-approved development exception through 2026-12-02, not a fix or production approval. |
-| DP-DEPS-01 — Nuxt 4 compatibility upgrade | PR_OPEN | [PR #98](https://github.com/Rofikali/design-platform/pull/98) [Issue #118](https://github.com/Rofikali/design-platform/issues/118) | PR #98 Nuxt 4.6.4 at 779b77ea: application CI, cross-browser export, dev-container PASS at old base; audit FAIL. pnpm 12 changes reported counts but not vulnerable code. Requires compatible main-base update and exact-head security review. |
+| DP-DEPS-01 — Nuxt 4 compatibility upgrade | PR_OPEN | [PR #98](https://github.com/Rofikali/design-platform/pull/98) [Issue #118](https://github.com/Rofikali/design-platform/issues/118) | PR #98 at 779b77ea conflicts with current main 83f3945f. PR-head Rust/Nuxt, browser, dev-container and docs checks PASS; production JavaScript dependency audit FAIL. Resolve conflicts, then verify current-base/exact-head CI and security before merge. |
 
 <!-- milestone-sync:end -->
 
