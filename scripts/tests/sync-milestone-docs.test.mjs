@@ -18,10 +18,10 @@ function fixture() {
   };
 }
 
-test("the generator owns exactly six distinct documents", () => {
-  assert.equal(TARGETS.length, 6);
+test("the generator owns exactly seven distinct documents", () => {
+  assert.equal(TARGETS.length, 7);
   assert.equal(new Set(TARGETS.map(t => t.path)).size, 6);
-  assert.deepEqual(TARGETS.map(t => t.view), ["compact", "compact", "detailed", "detailed", "compact", "compact"]);
+  assert.deepEqual(TARGETS.map(t => t.view), ["compact", "compact", "compact", "detailed", "detailed", "compact", "compact"]);
 });
 
 test("one structured source creates stable compact and detailed sections", () => {
