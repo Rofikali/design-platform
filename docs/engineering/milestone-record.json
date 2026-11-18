@@ -1,10 +1,13 @@
 {
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
-  "snapshot_date": "2026-11-17",
+  "snapshot_date": "2026-11-18",
   "reference_main_sha": "96d832c2af753248e6158345ebc49476dac8b7fc",
   "now_id": "DP-M1-ACC-04",
   "next_ids": [
+    "DP-SEC-01",
+    "DP-DEPS-01",
+    "DP-SEC-02",
     "DP-M1-ACC-02",
     "DP-M1-BG-09"
   ],
@@ -52,9 +55,36 @@
     {
       "id": "DP-M1-ACC-04",
       "title": "Automated 200% zoom and keyboard layout regression",
-      "status": "READY",
+      "status": "PR_OPEN",
       "issue": 82,
-      "summary": "Next bounded task: test zoom and keyboard focus in Chrome; no claim of manual screen-reader or contrast certification"
+      "summary": "640px reflow and real Tab/Space keyboard regression passes application and cross-browser CI; PR #119 is OPEN, shared production JavaScript audit fails; manual screen-reader work remains open",
+      "pr": 119,
+      "sha": "0b7a7848c0c7381f4419587a3744ae2fbb184958"
+    },
+    {
+      "id": "DP-SEC-01",
+      "title": "Production JavaScript picomatch advisory remediation",
+      "status": "BLOCKED",
+      "issue": 118,
+      "summary": "Inherited production JavaScript security audit fails on main and open PRs; no verified patched picomatch release or accepted risk decision; keep audit mandatory"
+    },
+    {
+      "id": "DP-SEC-02",
+      "title": "Built Nuxt bundle dependency indicator inventory",
+      "status": "PR_OPEN",
+      "pr": 120,
+      "sha": "9e85ff11fcec1abb19209e0bb29fee2c4810ff3b",
+      "issue": 118,
+      "summary": "76 Nuxt server JavaScript files inspected and four diagnostic tests passed; none of three signature strings found; does not establish non-reachability; required security audit fails"
+    },
+    {
+      "id": "DP-DEPS-01",
+      "title": "Nuxt 4 compatibility upgrade",
+      "status": "PR_OPEN",
+      "pr": 98,
+      "sha": "00d69b6e42f7f5c0eead069f623290531abe6d8f",
+      "issue": 118,
+      "summary": "Nuxt 4 CI, cross-browser and development container pass; reduces audit findings from 21 to 7, but two high findings including picomatch block merge"
     }
   ]
 }
