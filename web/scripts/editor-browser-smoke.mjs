@@ -834,7 +834,7 @@ async function main() {
     await waitForPage("edited elements persisted before reload",
       "(() => { const saved = JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null'); return Array.isArray(saved?.elements) && saved.elements.length === " +
       (fixtureCount + 2) +
-      " && saved.elements.some(element => element.type === 'text' && element.text === 'Browser interaction proof'); })()");
+      " && saved.elements.some(element => element.kind?.type === 'text' && element.kind.text === 'Browser interaction proof'); })()");
     await evaluate("location.reload(); true");
     await waitForPage("locally saved document restored after reload", "document.querySelector('.design-page')?.innerText || ''", value => value.includes("Browser interaction proof"));
     const restoredCount = await evaluate("document.querySelector('.canvas-heading > span')?.textContent?.trim() || ''");
