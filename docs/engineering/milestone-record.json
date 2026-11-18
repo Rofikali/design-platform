@@ -1,14 +1,16 @@
 {
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
-  "snapshot_date": "2026-11-17",
-  "reference_main_sha": "f7f55126c34dc01cc2c86cb2fc9b611d9b75402a",
-  "now_id": "DP-M1-ACC-03",
+  "snapshot_date": "2026-11-18",
+  "reference_main_sha": "adb3bd1f74202c8a343a41aceafcee0b05380973",
+  "now_id": "DP-M1-ACC-04",
   "next_ids": [
+    "DP-DEPS-01",
+    "DP-SEC-01",
     "DP-M1-ACC-02",
     "DP-M1-BG-09"
   ],
-  "approval_policy": "HUMAN_REVIEW_REQUIRED",
+  "approval_policy": "OWNER_APPROVED_GATED_MERGE",
   "milestones": [
     {
       "id": "DP-M1-BG-07",
@@ -29,11 +31,11 @@
     {
       "id": "DP-M1-ACC-03",
       "title": "Keyboard-operated background image removal",
-      "status": "PR_OPEN",
+      "status": "MERGED",
       "pr": 115,
-      "sha": "abbf883117c93b58be5815a35482027ae676033a",
+      "sha": "96d832c2af753248e6158345ebc49476dac8b7fc",
       "issue": 82,
-      "summary": "Tab and Space browser regression is under review; latest-head CI must be checked"
+      "summary": "Tab/Space background-removal browser regression merged; final-head CI, dependency audit and cross-browser export passed. Manual accessibility issue #82 remains open"
     },
     {
       "id": "DP-M1-ACC-02",
@@ -48,6 +50,40 @@
       "status": "PLANNED",
       "issue": 85,
       "summary": "Automated Chrome PDF is not physical printer or cross-browser output certification"
+    },
+    {
+      "id": "DP-M1-ACC-04",
+      "title": "Automated 200% zoom and keyboard layout regression",
+      "status": "PR_OPEN",
+      "issue": 82,
+      "summary": "PR #119 at 3de4f249 adds 320px/640px reflow and keyboard regression; application CI and cross-browser export PASS at old base; inherited JS audit failed before PR #120 development waiver merged. Revalidate current-base CI; manual screen-reader audit pending.",
+      "pr": 119,
+      "sha": "3de4f249739f42c8d401cb51fff32be7a0b9ce07"
+    },
+    {
+      "id": "DP-SEC-01",
+      "title": "Production JavaScript picomatch advisory remediation",
+      "status": "BLOCKED",
+      "issue": 118,
+      "summary": "Unpatched picomatch ReDoS remains BLOCKED. Temporary owner-approved development-only audit exception is merged in PR #120, expires 2026-12-02. Raw pnpm audit still fails; restore strict gate on verified patch; no production authorization."
+    },
+    {
+      "id": "DP-SEC-02",
+      "title": "Built Nuxt bundle dependency indicator inventory",
+      "status": "MERGED",
+      "pr": 120,
+      "sha": "adb3bd1f74202c8a343a41aceafcee0b05380973",
+      "issue": 118,
+      "summary": "PR #120 merged as adb3bd1f into main on 2026-11-18. Rust/Nuxt, browser, cross-browser, doc sync and Rust audit passed; JS audit passed ONLY with owner-approved development exception through 2026-12-02, not a fix or production approval."
+    },
+    {
+      "id": "DP-DEPS-01",
+      "title": "Nuxt 4 compatibility upgrade",
+      "status": "PR_OPEN",
+      "pr": 98,
+      "sha": "779b77eaadb0b0d399c71ae14690767b014348cd",
+      "issue": 118,
+      "summary": "PR #98 Nuxt 4.6.4 at 779b77ea: application CI, cross-browser export, dev-container PASS at old base; audit FAIL. pnpm 12 changes reported counts but not vulnerable code. Requires compatible main-base update and exact-head security review."
     }
   ]
 }

@@ -59,7 +59,7 @@ The [hourly autopilot operating agreement](hourly-autopilot.md) describes the ow
 
 ## Generated milestone documentation
 
-- [Milestone workflow](milestone-workflow.md): update one structured source, generate six bounded sections, require GitHub CI freshness, and submit a human-reviewed PR.
+- [Milestone workflow](milestone-workflow.md): update one structured source, generate seven bounded sections including README.md, require GitHub CI freshness, and submit a human-reviewed PR.
 - [Milestone record](milestone-record.json): dated single source for the current NOW/NEXT and milestone status fields.
 - [Generator](../../scripts/sync-milestone-docs.mjs): Node script used in write or --check mode; do not manually edit marked sections.
 
