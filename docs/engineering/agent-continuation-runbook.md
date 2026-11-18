@@ -64,7 +64,7 @@ DP-M1-CB-01
 5. **Create bounded design:** user outcome; in/out of scope; changed files; HLD/LLD; negative/boundary tests; rollback; estimated CI and spending.
 6. **Execute in the authorized scope:** one small PR with substantive review and verified CI; owner-authorized safe merge is permitted only after normal GitHub gates. No surprise payments, deployment or feature expansion.
 7. **Verify:** local focused checks; automatic GitHub workflows at the **current** SHA; only failed-step excerpts in model context; label pending, cancelled, skipped and not-run accurately.
-8. **Checkpoint:** record task ID/status and observed PR/head in milestone-record.json, generate the six views, and keep detailed PR/CI evidence in the task handoff and GitHub.
+8. **Checkpoint:** record task ID/status and observed PR/head in milestone-record.json, generate the seven views, and keep detailed PR/CI evidence in the task handoff and GitHub.
 9. **Wait at gates:** all required checks, branch protections and independent approval when configured before a safe merge; separate owner approval for breaking schema, customer data, paid infrastructure, release or pricing.
 
 ## Task states
