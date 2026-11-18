@@ -33,7 +33,8 @@ describe("accessible table cell editing domain", () => {
     const parsed = parseDocumentJson(JSON.stringify(toDocument([updated])));
     expect(parsed.elements[0]).toMatchObject({ type: "table", rows: 3, columns: 3, cells: updated.cells });
     const svg = renderDesignSvg([updated], 800, 600, "#ffffff");
-    expect(svg).toContain("Rice &amp; &lt;dal&gt; ₹80");
+    expect(svg).toMatch(/<tspan[^>]*>Rice &amp;<\/tspan>/);
+    expect(svg).toMatch(/<tspan[^>]*>&lt;dal&gt; ₹80<\/tspan>/);
     expect(svg).not.toContain("Rice & <dal>");
   });
 
