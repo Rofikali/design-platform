@@ -7,7 +7,7 @@ export type ElementId = { id: string };
  * so element count alone is not a safe way to choose the next ID.
  */
 export function nextElementId(
-  prefix: "text" | "rect" | "frame" | "grid",
+  prefix: "text" | "rect" | "frame" | "grid" | "table",
   elements: readonly ElementId[],
   nextNumber: number,
 ): { id: string; nextNumber: number } {

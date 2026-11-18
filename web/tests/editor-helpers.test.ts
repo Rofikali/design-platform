@@ -16,6 +16,13 @@ describe("nextElementId", () => {
     });
   });
 
+  it("allocates table IDs after imported table collisions", () => {
+    expect(nextElementId("table", [{ id: "table-3" }, { id: "table-4" }], 3)).toEqual({
+      id: "table-5",
+      nextNumber: 6,
+    });
+  });
+
   it("keeps IDs unique across element types and normalizes invalid counters", () => {
     expect(nextElementId("rect", [{ id: "rect-1" }], 0)).toEqual({
       id: "rect-2",

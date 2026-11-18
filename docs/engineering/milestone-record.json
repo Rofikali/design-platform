@@ -2,7 +2,7 @@
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
   "snapshot_date": "2026-11-18",
-  "reference_main_sha": "9ccac618837dac660172d5cf2be08c2b51111737",
+  "reference_main_sha": "63a8151e022c15aeaf8935beddfa3b5b57e4f327",
   "now_id": "DP-M2-TBL-02A",
   "next_ids": [
     "DP-SEC-01",
@@ -87,8 +87,10 @@
     {
       "id": "DP-M2-TBL-02A",
       "title": "Accessible first table-cell editing workflow",
-      "status": "READY",
-      "summary": "Implement a bounded first schema-v5 table cell selection/editing flow with keyboard focus and regression tests, preserving current document, history, import/export and WASM parity. Row/column commands and full table UX are separate follow-on work."
+      "status": "PR_OPEN",
+      "summary": "PR #123 initial implementation 75019d0e adds table insertion, accessible cell selection, bounded plain-text edits, history/autosave and real-browser/unit regressions. Exact-head CI still pending; no merge or manual assistive-tech certification.",
+      "pr": 123,
+      "sha": "75019d0ee6b04d6d98c2fd6340e147c1e5486957"
     }
   ]
 }

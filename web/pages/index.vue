@@ -4,10 +4,12 @@ import EditorCanvas from "~/components/editor/EditorCanvas.vue";
 import { clampElementPosition, clampElementSize, nextElementId } from "~/utils/editor-helpers";
 import { loadLocalDocument, saveLocalDocument } from "~/utils/local-document-storage";
 import { createHistory, recordHistory, redoHistory, undoHistory } from "~/utils/document-history";
+import { replaceTableCell, tableCellPosition } from "~/utils/table-cells";
 
 import {
   MAX_ELEMENTS,
   MAX_FILE_CHARS,
+  MAX_TABLE_CELL_CHARS,
   PAGE_HEIGHT,
   PAGE_WIDTH,
   parseDocumentJson,
@@ -49,6 +51,35 @@ let historyTimer: ReturnType<typeof setTimeout> | undefined;
 let autosaveTimer: ReturnType<typeof setTimeout> | undefined;
 
 const selectedElement = computed(() => elements.value.find((element) => element.id === selectedId.value) ?? null);
+const selectedTable = computed(() => {
+  const element = selectedElement.value;
+  return element?.type === "table" ? element : null;
+});
+const selectedCellIndex = ref(0);
+function selectTableCell(index: number) {
+  const table = selectedTable.value;
+  if (!table || !Number.isInteger(index) || index < 0 || index >= table.rows * table.columns) return;
+  selectedCellIndex.value = index;
+}
+const selectedCellText = computed({
+  get(): string {
+    const table = selectedTable.value;
+    if (!table) return "";
+    const { row, column } = tableCellPosition(table, selectedCellIndex.value);
+    return table.cells[row]?.[column] ?? "";
+  },
+  set(value: string) {
+    const table = selectedTable.value;
+    if (!table) return;
+    try {
+      const { row, column } = tableCellPosition(table, selectedCellIndex.value);
+      const updated = replaceTableCell(table, row, column, value);
+      elements.value = elements.value.map((element) => element.id === table.id ? updated : element);
+    } catch (error) {
+      statusMessage.value = error instanceof Error ? error.message : "Invalid table cell edit.";
+    }
+  },
+});
 const selectionAnnouncement = ref("");
 function announceSelection(id: string | null) {
   const element = elements.value.find((candidate) => candidate.id === id);
@@ -58,9 +89,13 @@ function announceSelection(id: string | null) {
   }
   selectionAnnouncement.value = element.type === "text"
     ? `Selected text element: ${element.text.slice(0, 80)}${element.text.length > 80 ? "…" : ""}`
-     : element.type === "rect" ? "Selected rectangle element." : element.type === "frame" ? "Selected frame element." : element.type === "grid" ? `Selected grid element with ${element.rows} rows and ${element.columns} columns` : `Selected table with ${element.rows} rows and ${element.columns} columns`;
+     : element.type === "rect" ? "Selected rectangle element." : element.type === "frame" ? "Selected frame element." : element.type === "grid" ? `Selected grid element with ${element.rows} rows and ${element.columns} columns` : (() => {
+      const { row, column } = tableCellPosition(element, selectedCellIndex.value);
+      return `Selected table with ${element.rows} rows and ${element.columns} columns. Cell row ${row + 1}, column ${column + 1}.`;
+    })();
 }
-watch(selectedId, announceSelection, { immediate: true });
+watch(selectedId, () => { selectedCellIndex.value = 0; }, { flush: "sync" });
+watch([selectedId, selectedCellIndex], () => announceSelection(selectedId.value), { immediate: true });
 
 function snapshot(): string { return JSON.stringify(toDocument(elements.value, { width: pageWidth.value, height: pageHeight.value, background: pageBackground.value, ...(backgroundImage.value ? { background_image: backgroundImage.value } : {}) }, outputSizeMm.value, templateMetadata.value)); }
 const history = ref(createHistory(snapshot()));
@@ -75,6 +110,7 @@ function applySnapshot(json: string) {
   backgroundImage.value = parsed.backgroundImage;
   outputSizeMm.value = parsed.outputSizeMm;
   templateMetadata.value = parsed.template;
+  selectedCellIndex.value = 0;
   selectedId.value = parsed.elements[0]?.id ?? null;
   nextId.value = parsed.elements.length + 1;
   // A loaded document can reuse the same selected ID with different content.
@@ -123,6 +159,24 @@ function addGrid() {
   const id = generated.id;
   elements.value.push({ id, type: "grid", x: 90, y: 120, width: 300, height: 180, rows: 3, columns: 3, strokeColor: "#64748b", strokeWidth: 1 });
   selectedId.value = id;
+}
+function addTable() {
+  if (elements.value.length >= MAX_ELEMENTS) { statusMessage.value = "Element limit reached (1,000)."; return; }
+  const generated = nextElementId("table", elements.value, nextId.value);
+  nextId.value = generated.nextNumber;
+  const width = Math.min(360, pageWidth.value);
+  const height = Math.min(180, pageHeight.value);
+  elements.value.push({
+    id: generated.id, type: "table",
+    x: Math.min(80, Math.max(0, pageWidth.value - width)),
+    y: Math.min(120, Math.max(0, pageHeight.value - height)),
+    width, height, rows: 3, columns: 3,
+    cells: Array.from({ length: 3 }, () => ["", "", ""]),
+    headerRows: 1, strokeColor: "#334155", strokeWidth: 1, cellPadding: 6,
+    fontSize: 16, textColor: "#111827", headerFill: "#dbeafe", cellFill: "#ffffff",
+  });
+  selectedId.value = generated.id;
+  selectedCellIndex.value = 0;
 }
 function setSelectedStrokeWidth(value: string | number) {
   const element = selectedElement.value;
@@ -494,6 +548,7 @@ onMounted(async () => {
         <button type="button" @click="addRectangle">＋ Add rectangle</button>
         <button type="button" @click="addFrame">＋ Add frame</button>
         <button type="button" @click="addGrid">＋ Add grid</button>
+        <button type="button" @click="addTable">＋ Add table</button>
         <button type="button" @click="exportJson">Download JSON</button>
         <button type="button" @click="exportPng">Download PNG</button>
         <button type="button" @click="printToPdf">Print / Save PDF</button>
@@ -520,6 +575,26 @@ onMounted(async () => {
             Color
             <input v-model="selectedElement.color" type="color" />
           </label>
+          <fieldset v-if="selectedElement.type === 'table'" class="table-cell-editor">
+            <legend>Table cell editing</legend>
+            <label class="field">
+              Select table cell
+              <select :value="selectedCellIndex" aria-label="Select table cell" @change="selectTableCell(Number(($event.target as HTMLSelectElement).value))">
+                <option v-for="index in selectedElement.rows * selectedElement.columns" :key="index" :value="index - 1">
+                  Row {{ Math.floor((index - 1) / selectedElement.columns) + 1 }}, column {{ (index - 1) % selectedElement.columns + 1 }}
+                </option>
+              </select>
+            </label>
+            <div class="table-cell-actions">
+              <button type="button" :disabled="selectedCellIndex === 0" @click="selectTableCell(selectedCellIndex - 1)">Previous cell</button>
+              <button type="button" :disabled="selectedCellIndex >= selectedElement.rows * selectedElement.columns - 1" @click="selectTableCell(selectedCellIndex + 1)">Next cell</button>
+            </div>
+            <label class="field">
+              Cell text — row {{ Math.floor(selectedCellIndex / selectedElement.columns) + 1 }}, column {{ selectedCellIndex % selectedElement.columns + 1 }}
+              <textarea :key="selectedElement.id + ':' + selectedCellIndex" v-model="selectedCellText" rows="3" :maxlength="MAX_TABLE_CELL_CHARS" />
+            </label>
+            <p class="hint">Plain text only, up to 2,000 characters per cell and 20,000 per table. Use the cell selector or Previous/Next buttons; Tab and Shift+Tab move between controls.</p>
+          </fieldset>
           <template v-if="selectedElement.type === 'frame' || selectedElement.type === 'grid'">
             <label class="field">
               Stroke color
@@ -629,8 +704,13 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
 hr { margin: 20px 0; border: 0; border-top: 1px solid #e6eaf1; }
 .selected-name { color: #52617a; font-size: 12px; }
 .field { display: grid; gap: 6px; margin: 14px 0; color: #52617a; font-size: 12px; font-weight: 650; }
-.field textarea, .field input:not([type="color"]) { width: 100%; padding: 9px; border: 1px solid #d7deea; border-radius: 7px; color: #172033; }
+.field textarea, .field select, .field input:not([type="color"]) { width: 100%; padding: 9px; border: 1px solid #d7deea; border-radius: 7px; color: #172033; }
 .field textarea { resize: vertical; }
+.table-cell-editor { margin: 14px 0; padding: 10px; border: 1px solid #d7deea; border-radius: 8px; }
+.table-cell-editor legend { padding: 0 5px; font-size: 12px; font-weight: 650; }
+.table-cell-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.table-cell-actions button { padding: 8px 5px; border: 1px solid #d7deea; border-radius: 7px; background: white; }
+.table-cell-actions button:disabled { opacity: .45; cursor: not-allowed; }
 .field input[type="color"] { width: 100%; height: 38px; border: 1px solid #d7deea; border-radius: 7px; background: white; }
 .field-label { margin: 16px 0 8px; color: #52617a; font-size: 12px; font-weight: 650; }
 .move-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
