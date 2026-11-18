@@ -1481,8 +1481,10 @@ async function main() {
     if (!insertionControl.found || !insertionControl.focused || insertionControl.disabled) {
       throw new Error(`Table row insertion button is not keyboard-ready: ${JSON.stringify(insertionControl)}`);
     }
-    await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13 });
-    await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13 });
+    // Native button Space activation fires on key release in Chromium.
+    // Exercise the keyboard path without a synthetic DOM click.
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: " ", code: "Space", windowsVirtualKeyCode: 32, nativeVirtualKeyCode: 32 });
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: " ", code: "Space", windowsVirtualKeyCode: 32, nativeVirtualKeyCode: 32 });
     // Check the rendered row selector first: autosave is debounced independently.
     // On failure include live UI and persisted state so CI identifies whether
     // activation, rendering, or persistence is broken.
