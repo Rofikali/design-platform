@@ -65,6 +65,17 @@ test("scoped owner authorization allows gated PR merges without publishing", () 
   assert.doesNotMatch(block, /No automated merges/);
 });
 
+test("snapshot dates must exist on the calendar, including leap-day boundaries", () => {
+  for (const invalidDate of ["2026-02-29", "2026-02-31", "2026-04-31", "2026-13-01"]) {
+    const record = fixture();
+    record.snapshot_date = invalidDate;
+    assert.throws(() => validateRecord(record), /Invalid snapshot_date/, invalidDate);
+  }
+  const leapDay = fixture();
+  leapDay.snapshot_date = "2024-02-29";
+  assert.equal(validateRecord(leapDay), leapDay);
+});
+
 test("malformed records and unsafe merge policy fail before generation", () => {
   const mergedNow = fixture();
   mergedNow.milestones[0].status = "MERGED";

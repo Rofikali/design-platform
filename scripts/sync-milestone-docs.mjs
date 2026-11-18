@@ -24,8 +24,12 @@ const clean = s => s.replace(/\s+/g, " ").replace(/\|/g, "\\|").trim();
 export function validateRecord(r) {
   if (!r || typeof r !== "object" || Array.isArray(r)) fail("Record must be an object");
   if (r.schema_version !== 1 || r.repository !== "Rofikali/design-platform") fail("Unsupported milestone schema/repository");
-  if (typeof r.snapshot_date !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(r.snapshot_date) ||
-      !Number.isFinite(Date.parse(r.snapshot_date + "T00:00:00Z"))) fail("Invalid snapshot_date");
+  // Date.parse normalizes impossible calendar dates such as 2026-02-31.
+  // Require the parsed UTC date to round-trip exactly before publishing it.
+  const snapshotTime = typeof r.snapshot_date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(r.snapshot_date)
+    ? Date.parse(r.snapshot_date + "T00:00:00Z") : NaN;
+  if (!Number.isFinite(snapshotTime) ||
+      new Date(snapshotTime).toISOString().slice(0, 10) !== r.snapshot_date) fail("Invalid snapshot_date");
   if (!SHA.test(r.reference_main_sha)) fail("Invalid reference_main_sha");
   if (!["HUMAN_REVIEW_REQUIRED", "OWNER_APPROVED_GATED_MERGE"].includes(r.approval_policy)) {
     fail("Unknown merge authorization policy; unverified automatic merging is prohibited");
