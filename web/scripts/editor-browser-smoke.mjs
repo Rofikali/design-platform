@@ -1457,10 +1457,36 @@ async function main() {
 
     // Table row insertion: native keyboard activation, selected-cell coordinates,
     // persisted schema-v5 data, and history restoration on the actual editor.
-    await evaluate("Array.from(document.querySelectorAll('.table-cell-actions button')).find(b => b.textContent.includes('Insert row before'))?.focus(); true");
-    await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });
-    await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });
-    await waitFor("keyboard-inserted table row", async () => evaluate(
+    const insertionControl = await evaluate(`(() => {
+      const button = Array.from(document.querySelectorAll('.table-cell-actions button')).find(b => b.textContent.includes('Insert row before'));
+      if (!button) return { found: false };
+      button.focus();
+      return { found: true, focused: document.activeElement === button, disabled: button.disabled };
+    })()`);
+    if (!insertionControl.found || !insertionControl.focused || insertionControl.disabled) {
+      throw new Error(`Table row insertion button is not keyboard-ready: ${JSON.stringify(insertionControl)}`);
+    }
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13 });
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13 });
+    // Check the rendered row selector first: autosave is debounced independently.
+    // On failure include live UI and persisted state so CI identifies whether
+    // activation, rendering, or persistence is broken.
+    try {
+      await waitFor("keyboard-inserted table row", async () => evaluate(
+        "document.querySelector('.table-cell-editor select')?.options.length === 12"
+      ), 8_000);
+    } catch (error) {
+      const diagnostics = await evaluate(`(() => {
+        const button = Array.from(document.querySelectorAll('.table-cell-actions button')).find(b => b.textContent.includes('Insert row before'));
+        const saved = JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null');
+        return { buttonPresent: !!button, buttonDisabled: button?.disabled, focused: document.activeElement === button,
+          selectorOptions: document.querySelector('.table-cell-editor select')?.options.length,
+          savedRows: saved?.elements?.find(e => e.kind?.type === 'table')?.kind?.rows,
+          status: document.querySelector('[role="status"]')?.textContent?.trim() };
+      })()`);
+      throw new Error(`${error.message}; diagnostics: ${JSON.stringify(diagnostics)}`);
+    }
+    await waitFor("inserted table row autosaved", async () => evaluate(
       "JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null')?.elements.find(e => e.kind.type === 'table')?.kind.rows === 4"
     ));
     await waitForPage("inserted row keeps selected column",
