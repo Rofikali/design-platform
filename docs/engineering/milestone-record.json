@@ -66,16 +66,16 @@
       "title": "Production JavaScript picomatch advisory remediation",
       "status": "BLOCKED",
       "issue": 118,
-      "summary": "Inherited production JavaScript security audit fails on main and open PRs; no verified patched picomatch release or accepted risk decision; keep audit mandatory"
+      "summary": "Unpatched picomatch ReDoS remains unresolved. Owner accepted development-only CI risk until 2026-12-02 in PR #120; raw pnpm audit still fails. Strict security audit must be restored after verified patch; no production authorization."
     },
     {
       "id": "DP-SEC-02",
       "title": "Built Nuxt bundle dependency indicator inventory",
       "status": "PR_OPEN",
       "pr": 120,
-      "sha": "fad25391d80105496ec19575ea519c378054ebc8",
+      "sha": "52c54023413713593321bde9da27b7b5f47dc0c9",
       "issue": 118,
-      "summary": "At exact head fad25391, Nuxt/Rust CI, scanner regression, and milestone sync pass; production JS security audit fails. Main SHA 96d832c also fails the same required JS audit (inherited blocker). 76-file indicator scan is not non-reachability proof; 64 MiB/file and 256 MiB total limits tested. Await upstream picomatch remediation or owner/security risk decision; no merge."
+      "summary": "PR #120 head 52c54023: six waiver tests and production JS audit job pass only with owner-accepted exception through 2026-12-02; raw pnpm audit still exits 1. Scanner limits retained, Nuxt/Rust CI pending, no production or merge."
     },
     {
       "id": "DP-DEPS-01",
