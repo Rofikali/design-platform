@@ -16,9 +16,9 @@
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-18)
 
-**Reference main:** 83f3945fe5437ee6bc91b9368faa37c6f0e2dfc9 (dated snapshot; re-check live GitHub before acting).
+**Reference main:** 9ccac618837dac660172d5cf2be08c2b51111737 (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-DEPS-01 — Nuxt 4 compatibility upgrade** [PR_OPEN]. [PR #98](https://github.com/Rofikali/design-platform/pull/98) [Issue #118](https://github.com/Rofikali/design-platform/issues/118)
+**NOW:** **DP-M2-TBL-02A — Accessible first table-cell editing workflow** [READY].
 
 **NEXT:** DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
@@ -34,7 +34,8 @@
 | DP-M1-ACC-04 — Automated 200% zoom and keyboard layout regression | MERGED | [PR #119](https://github.com/Rofikali/design-platform/pull/119) [Issue #82](https://github.com/Rofikali/design-platform/issues/82) | PR #119 merged as 83f3945f on 2026-11-18; 320px/640px zoom/reflow and keyboard regressions integrated. PR-head application, cross-browser and dependency audit CI passed; manual screen-reader audit #82 remains open. |
 | DP-SEC-01 — Production JavaScript picomatch advisory remediation | BLOCKED | [Issue #118](https://github.com/Rofikali/design-platform/issues/118) | Unpatched picomatch ReDoS remains BLOCKED. Temporary owner-approved development-only audit exception is merged in PR #120, expires 2026-12-02. Raw pnpm audit still fails; restore strict gate on verified patch; no production authorization. |
 | DP-SEC-02 — Built Nuxt bundle dependency indicator inventory | MERGED | [PR #120](https://github.com/Rofikali/design-platform/pull/120) [Issue #118](https://github.com/Rofikali/design-platform/issues/118) | PR #120 merged as adb3bd1f into main on 2026-11-18. Rust/Nuxt, browser, cross-browser, doc sync and Rust audit passed; JS audit passed ONLY with owner-approved development exception through 2026-12-02, not a fix or production approval. |
-| DP-DEPS-01 — Nuxt 4 compatibility upgrade | PR_OPEN | [PR #98](https://github.com/Rofikali/design-platform/pull/98) [Issue #118](https://github.com/Rofikali/design-platform/issues/118) | PR #98 at 779b77ea conflicts with current main 83f3945f. PR-head Rust/Nuxt, browser, dev-container and docs checks PASS; production JavaScript dependency audit FAIL. Resolve conflicts, then verify current-base/exact-head CI and security before merge. |
+| DP-DEPS-01 — Nuxt 4 compatibility upgrade | MERGED | [PR #98](https://github.com/Rofikali/design-platform/pull/98) [Issue #118](https://github.com/Rofikali/design-platform/issues/118) | Nuxt 4.6.4 PR #98 merged into main as 9ccac618 on 2026-11-18. Nuxt/Rust, browser export, Docker, docs and dependency checks passed on integrated head b8d73662; JS audit passed with DEVELOPMENT-ONLY picomatch exception, not a vulnerability fix or release approval. |
+| DP-M2-TBL-02A — Accessible first table-cell editing workflow | READY | — | Implement a bounded first schema-v5 table cell selection/editing flow with keyboard focus and regression tests, preserving current document, history, import/export and WASM parity. Row/column commands and full table UX are separate follow-on work. |
 
 <!-- milestone-sync:end -->
 

@@ -292,9 +292,9 @@ The owner enabled an independent ChatGPT task named **Design Platform Autopilot*
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-18)
 
-**Reference main:** 83f3945fe5437ee6bc91b9368faa37c6f0e2dfc9 (dated snapshot; re-check live GitHub before acting).
+**Reference main:** 9ccac618837dac660172d5cf2be08c2b51111737 (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-DEPS-01 — Nuxt 4 compatibility upgrade** [PR_OPEN]. [PR #98](https://github.com/Rofikali/design-platform/pull/98) [Issue #118](https://github.com/Rofikali/design-platform/issues/118)
+**NOW:** **DP-M2-TBL-02A — Accessible first table-cell editing workflow** [READY].
 
 **NEXT:** DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 

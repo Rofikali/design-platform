@@ -2,8 +2,8 @@
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
   "snapshot_date": "2026-11-18",
-  "reference_main_sha": "83f3945fe5437ee6bc91b9368faa37c6f0e2dfc9",
-  "now_id": "DP-DEPS-01",
+  "reference_main_sha": "9ccac618837dac660172d5cf2be08c2b51111737",
+  "now_id": "DP-M2-TBL-02A",
   "next_ids": [
     "DP-SEC-01",
     "DP-M1-ACC-02",
@@ -78,11 +78,17 @@
     {
       "id": "DP-DEPS-01",
       "title": "Nuxt 4 compatibility upgrade",
-      "status": "PR_OPEN",
+      "status": "MERGED",
       "pr": 98,
-      "sha": "779b77eaadb0b0d399c71ae14690767b014348cd",
+      "sha": "9ccac618837dac660172d5cf2be08c2b51111737",
       "issue": 118,
-      "summary": "PR #98 at 779b77ea conflicts with current main 83f3945f. PR-head Rust/Nuxt, browser, dev-container and docs checks PASS; production JavaScript dependency audit FAIL. Resolve conflicts, then verify current-base/exact-head CI and security before merge."
+      "summary": "Nuxt 4.6.4 PR #98 merged into main as 9ccac618 on 2026-11-18. Nuxt/Rust, browser export, Docker, docs and dependency checks passed on integrated head b8d73662; JS audit passed with DEVELOPMENT-ONLY picomatch exception, not a vulnerability fix or release approval."
+    },
+    {
+      "id": "DP-M2-TBL-02A",
+      "title": "Accessible first table-cell editing workflow",
+      "status": "READY",
+      "summary": "Implement a bounded first schema-v5 table cell selection/editing flow with keyboard focus and regression tests, preserving current document, history, import/export and WASM parity. Row/column commands and full table UX are separate follow-on work."
     }
   ]
 }
