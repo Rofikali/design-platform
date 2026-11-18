@@ -73,9 +73,9 @@
       "title": "Built Nuxt bundle dependency indicator inventory",
       "status": "PR_OPEN",
       "pr": 120,
-      "sha": "52c54023413713593321bde9da27b7b5f47dc0c9",
+      "sha": "8e15cb15045808dde05bfa2dfb816aa588ce19da",
       "issue": 118,
-      "summary": "PR #120 head 52c54023: six waiver tests and production JS audit job pass only with owner-accepted exception through 2026-12-02; raw pnpm audit still exits 1. Scanner limits retained, Nuxt/Rust CI pending, no production or merge."
+      "summary": "PR #120 fixes schema-v5 persisted-text assertion at head 8e15cb15. Rust core, doc-sync and development-only approved JS waiver pass; browser/Cross-browser/Rust audit pending. The raw pnpm audit still fails; no merge or production."
     },
     {
       "id": "DP-DEPS-01",
