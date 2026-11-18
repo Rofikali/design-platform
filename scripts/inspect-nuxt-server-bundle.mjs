@@ -1,6 +1,10 @@
-import { lstatSync, readdirSync, readFileSync } from "node:fs";
+import { lstatSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+
+// Bound per-file memory use for the informational scan; oversized output is
+// an explicit failure, never silently treated as an absence of indicators.
+const MAX_JS_FILE_BYTES = 64 * 1024 * 1024;
 
 const INDICATORS = Object.freeze([
   { label: "picomatch package reference", needle: "picomatch" },
@@ -39,6 +43,9 @@ export function inspectNuxtServerBundle(serverDir) {
   let bytesScanned = 0;
   const indicators = INDICATORS.map(item => ({ name: item.label, files: [] }));
   for (const file of files) {
+    if (statSync(file.absolute).size > MAX_JS_FILE_BYTES) {
+      throw new Error(`JavaScript chunk exceeds 64 MiB scan limit: ${file.relativeName}`);
+    }
     const source = readFileSync(file.absolute, "utf8");
     bytesScanned += Buffer.byteLength(source);
     INDICATORS.forEach((item, index) => {

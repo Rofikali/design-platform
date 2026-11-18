@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, writeFileSync, symlinkSync, rmSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, symlinkSync, rmSync, truncateSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { inspectNuxtServerBundle } from "../inspect-nuxt-server-bundle.mjs";
@@ -37,6 +37,14 @@ test("missing or empty build outputs cause explicit failures", () => withBundle(
   assert.throws(() => inspectNuxtServerBundle(join(root, "missing")), /ENOENT/);
   writeFileSync(join(root, "only.txt"), "picomatch");
   assert.throws(() => inspectNuxtServerBundle(root), /No JavaScript files/);
+}));
+
+test("oversized generated JS files fail closed before reading into memory", () => withBundle(root => {
+  const file = join(root, "large.mjs");
+  writeFileSync(file, "");
+  // Sparse file keeps this resource-limit regression fast and inexpensive.
+  truncateSync(file, 64 * 1024 * 1024 + 1);
+  assert.throws(() => inspectNuxtServerBundle(root), /JavaScript chunk exceeds 64 MiB scan limit: large\.mjs/);
 }));
 
 test("symlinked content is never followed outside the build output", () => withBundle(root => {
