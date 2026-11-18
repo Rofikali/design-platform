@@ -1,6 +1,6 @@
 # ADR-0006: Semantic Tables as First-Class Document Elements
 
-- **Status:** Proposed
+- **Status:** Accepted for schema-v5 core contract
 - **Date:** 2026-11-06
 - **Decision owners:** Product owner and engineering owner
 - **Related:** ADR-0005 (Frames and Grids schema v4), Semantic Tables Milestone
@@ -13,9 +13,9 @@ Representing a table as a Grid plus independent text elements would split one us
 
 The document format is versioned and validated in both the framework-independent Rust core and TypeScript fallback. Imported JSON is untrusted. Browser/WASM validation is not a security boundary.
 
-## Decision proposed
+## Decision
 
-Add a first-class `Table` element in schema v5 when implementation begins.
+Add a first-class `Table` element in schema v5. The first implementation slice defines and validates the persisted contract and renders a read-only preview; cell-editing workflows remain a separate milestone.
 
 The table owns:
 - Stable element identity and page geometry.

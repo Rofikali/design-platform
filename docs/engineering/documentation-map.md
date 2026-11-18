@@ -1,6 +1,8 @@
 # Engineering Documentation Map
 
-This index explains where project knowledge belongs. Keep each document focused and update the existing source of truth rather than creating competing copies.
+This index explains where project knowledge belongs. **For the currently active NOW task, completed/merged work, blocked PRs and the next bounded move, start at the [top LIVE NOW / NEXT / DONE board](../../next.md).** This document maps detailed contracts; it is not a second status tracker. Keep each document focused and update the existing source of truth rather than creating competing copies.
+
+The [hourly autopilot operating agreement](hourly-autopilot.md) describes the owner's enabled recurring "go ahead" task. It supplements—rather than replaces—the live work board and human merge gates.
 
 ## Product and architecture
 
@@ -27,6 +29,19 @@ This index explains where project knowledge belongs. Keep each document focused 
 - [Repository instructions](../../AGENTS.md): mandatory implementation and review rules.
 - [README](../../README.md): project overview and developer quick start.
 
+## Deep-dive engineering, delivery, business and operations references
+
+- [Seven-level engineering operating model](seven-level-operating-model.md): junior through distinguished/principal review lenses plus security, QA, SRE, product and CA/MBA oversight.
+- [Agent continuation runbook](agent-continuation-runbook.md): resume from current PR/SHA, choose a bounded next milestone and checkpoint without autonomous merge or background promises.
+- [Agent milestone handoff](agent-milestone-handoff.md): task specification, PR evidence and exact-SHA CI/report template.
+- [Change-scoped verification](change-scoped-verification.md): Rust, WASM, Nuxt, renderer, Docker and security testing lanes and CI cost discipline.
+- [CI evidence policy](ci-evidence-policy.md): minimum logs, failed-step debugging, current-head versus historical results.
+- [Decision/status register](decision-status-register.md): source-informed implemented/proposed/in-review distinctions.
+- [Document editor HLD/LLD](../architecture/document-editor-hld-lld.md): current UI/Rust/WASM/browser lifecycle and proposed modularization.
+- [Platform/business strategy](../product/platform-business-strategy.md): jobs-to-be-done, browser-first free and conditional future paid plans.
+- [Security/privacy operations](../security/security-and-privacy-operations.md): threat-boundary, data lifecycle and response guidance.
+- [Release readiness](../operations/release-readiness.md): product, migration, accessibility, security, recovery and economics gates.
+
 ## Where to record new information
 
 | Information | Authoritative location |
@@ -41,6 +56,12 @@ This index explains where project knowledge belongs. Keep each document focused 
 | Cost assumptions, metrics, break-even model | Unit economics |
 | Actual validation evidence | Pull request and release record |
 | Public usage and quick-start commands | README |
+
+## Generated milestone documentation
+
+- [Milestone workflow](milestone-workflow.md): update one structured source, generate seven bounded sections including README.md, require GitHub CI freshness, and submit a human-reviewed PR.
+- [Milestone record](milestone-record.json): dated single source for the current NOW/NEXT and milestone status fields.
+- [Generator](../../scripts/sync-milestone-docs.mjs): Node script used in write or --check mode; do not manually edit marked sections.
 
 ## Documentation rules
 

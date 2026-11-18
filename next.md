@@ -1,16 +1,102 @@
-# NEXT — Product, Engineering, Security, Operations & Business Roadmap
+# Design Platform — LIVE Work Board and Master Roadmap
 
-> **Purpose:** The single owner-facing map for what this product is, what we are building, why we are building it, what happens next, what can remain free, what may require paid services, and what must be true before launch.
+> **Live-board snapshot:** Reconciled 2026-11-17 against GitHub; main `1c99b3dae0c9a8d568870406ff40341d708100d9` before the work on this branch. The snapshot is **dated**, not a live-updating dashboard. Re-fetch main/PRs/checks before executing or declaring completion.
 >
-> **Document status:** Living roadmap and governance contract — not proof that planned work is implemented.
-> **Last reviewed:** 2026-11-15
-> **Repository:** Rofikali/design-platform
-> **Current baseline observed:** `main` at `91ff02d0c0c4c32396f83bcf083a9351d54065c9` (latest commit visible during this review).
-> **Product status:** Prototype; not production-ready; no verified paying customers or product-market fit.
+> **Source discipline:** This board adopts the **NOW / NEXT / LATER**, evidence, priority and agent continuation pattern in `Rofikali/imgengine/next.md`, not its IMGENGINE C17, FFI, VPS or five image tools. Code/tests and GitHub state override stale descriptions.
+>
+> **Authority:** [AGENTS.md](AGENTS.md) = mandatory rules; [SKILLS.md](SKILLS.md) = recipes; **this live board** = task selection and current status; [documentation map](docs/engineering/documentation-map.md) = detailed contracts; [status register](docs/engineering/decision-status-register.md) = decisions and durable evidence.
 
-This file is deliberately broad so the owner and future agents do not need to repeat the product direction in every conversation. It is not permission to build every item immediately. Execute one bounded milestone at a time, in dependency order, with evidence and owner approval for consequential changes.
+> **Hourly autopilot enabled (2026-11-16):** An independent ChatGPT scheduled task named **Design Platform Autopilot** runs the bounded "go ahead" workflow hourly while enabled. Its [runbook](docs/engineering/hourly-autopilot.md) defines status reconciliation, seven-level review, zero-unapproved-spend, exact-head checks, one task per run and owner-authorized verified PR review and merge gates (latest owner rule, 2026-11-17). The task can be paused manually in ChatGPT. This file is a status board, not the scheduler.
+
+## LIVE NOW / NEXT / LATER — authoritative task selector
+
+### Current milestone snapshot — generated
+
+<!-- milestone-sync:start -->
+<!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
+### Milestone snapshot (generated: 2026-11-18)
+
+**Reference main:** 83f3945fe5437ee6bc91b9368faa37c6f0e2dfc9 (dated snapshot; re-check live GitHub before acting).
+
+**NOW:** **DP-DEPS-01 — Nuxt 4 compatibility upgrade** [PR_OPEN]. [PR #98](https://github.com/Rofikali/design-platform/pull/98) [Issue #118](https://github.com/Rofikali/design-platform/issues/118)
+
+**NEXT:** DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
+
+**Review gate:** Owner-authorized autopilot may review and merge only after all exact-head/integration CI, security, branch protection and required independent-review gates pass. No automatic publishing or deployment.
+
+| Milestone | Status | PR / issue | Verified scope (not a live CI claim) |
+| --- | --- | --- | --- |
+| DP-M1-BG-07 — Image-backed PNG pixel acceptance | MERGED | [PR #112](https://github.com/Rofikali/design-platform/pull/112) | Downloaded PNG pixel and foreground regression merged |
+| DP-M1-BG-08 — Image-backed Chrome print/PDF regression | MERGED | [PR #113](https://github.com/Rofikali/design-platform/pull/113) | Chrome print stylesheet and one-page PDF regression merged; physical printer unverified |
+| DP-M1-ACC-03 — Keyboard-operated background image removal | MERGED | [PR #115](https://github.com/Rofikali/design-platform/pull/115) [Issue #82](https://github.com/Rofikali/design-platform/issues/82) | Tab/Space background-removal browser regression merged; final-head CI, dependency audit and cross-browser export passed. Manual accessibility issue #82 remains open |
+| DP-M1-ACC-02 — Manual editor accessibility audit | BLOCKED | [Issue #82](https://github.com/Rofikali/design-platform/issues/82) | Requires real keyboard, NVDA or VoiceOver, zoom and contrast observations; automation cannot certify |
+| DP-M1-BG-09 — Physical printer and PDF fidelity review | PLANNED | [Issue #85](https://github.com/Rofikali/design-platform/issues/85) | Automated Chrome PDF is not physical printer or cross-browser output certification |
+| DP-M1-ACC-04 — Automated 200% zoom and keyboard layout regression | MERGED | [PR #119](https://github.com/Rofikali/design-platform/pull/119) [Issue #82](https://github.com/Rofikali/design-platform/issues/82) | PR #119 merged as 83f3945f on 2026-11-18; 320px/640px zoom/reflow and keyboard regressions integrated. PR-head application, cross-browser and dependency audit CI passed; manual screen-reader audit #82 remains open. |
+| DP-SEC-01 — Production JavaScript picomatch advisory remediation | BLOCKED | [Issue #118](https://github.com/Rofikali/design-platform/issues/118) | Unpatched picomatch ReDoS remains BLOCKED. Temporary owner-approved development-only audit exception is merged in PR #120, expires 2026-12-02. Raw pnpm audit still fails; restore strict gate on verified patch; no production authorization. |
+| DP-SEC-02 — Built Nuxt bundle dependency indicator inventory | MERGED | [PR #120](https://github.com/Rofikali/design-platform/pull/120) [Issue #118](https://github.com/Rofikali/design-platform/issues/118) | PR #120 merged as adb3bd1f into main on 2026-11-18. Rust/Nuxt, browser, cross-browser, doc sync and Rust audit passed; JS audit passed ONLY with owner-approved development exception through 2026-12-02, not a fix or production approval. |
+| DP-DEPS-01 — Nuxt 4 compatibility upgrade | PR_OPEN | [PR #98](https://github.com/Rofikali/design-platform/pull/98) [Issue #118](https://github.com/Rofikali/design-platform/issues/118) | PR #98 at 779b77ea conflicts with current main 83f3945f. PR-head Rust/Nuxt, browser, dev-container and docs checks PASS; production JavaScript dependency audit FAIL. Resolve conflicts, then verify current-base/exact-head CI and security before merge. |
+
+<!-- milestone-sync:end -->
+
+### Historical parallel review lanes — recheck live GitHub (not generated)
+
+| Lane / ID | Verified state at snapshot | Next smallest action | Exit evidence |
+| --- | --- | --- | --- |
+| **DP-M1-ACC-02** | [Issue #82](https://github.com/Rofikali/design-platform/issues/82) **OPEN**; automated accessibility coverage exists but manual screen reader/keyboard/zoom review is not established | Perform/document NVDA+browser, keyboard-only, focus, live announcements, 200% zoom and contrast review; remediate reproduced failures | Device/tool versions, steps, results and linked regression PRs; manual audit signed off |
+| **DP-M1-BG-03** | [Issue #85](https://github.com/Rofikali/design-platform/issues/85) **OPEN**; background validation PR #107 and remove/history/reopen PR #108 MERGED; JSON/PNG/print acceptance remains | Reconcile background implementation, schema/negative fixture parity, remove/undo/redo, autosave/reopen, JSON round-trip and image-backed PNG/print evidence | Full issue criteria verified; close issue only with owner/reviewer agreement |
+| **DP-M1-CI-04** | [PR #102](https://github.com/Rofikali/design-platform/pull/102) owns cross-browser, caching and conditional development-container work; **MERGED** | Main and PR-head checks succeeded; measure actual cold/warm build times before claiming measured speed gains | Latest head all required gates green, reviewed PR, owner approval; no invented cost/speed numbers |
+| **DP-M1-DOC-05** | [PR #101](https://github.com/Rofikali/design-platform/pull/101) **MERGED**; baseline evidence recorded | Reconcile old checklist when new release evidence exists; avoid rebuilding same documentation | Link historical reports as historical and reflect actual merged SHA |
+| **DP-M1-DEP-06** | [PR #98](https://github.com/Rofikali/design-platform/pull/98) **OPEN** Nuxt 3→4 dependency jump; [CI](https://github.com/Rofikali/design-platform/actions/runs/43826311389) **FAILED**, audit [PASSED](https://github.com/Rofikali/design-platform/actions/runs/43826311510) at its head `643799551a35373a92d7f9b9aae1729da04d7f40` | Evaluate migration compatibility, release-notes, lockfile, security and source changes in separate reviewed dependency work | Passing full current-head CI plus supported migration test and approval |
+| **DP-M2-TBL-01** | [PR #93](https://github.com/Rofikali/design-platform/pull/93) **MERGED** as `803e7f9edfe2ef5edd0f8234eac7a996dd8928d9`; first-class schema-v5 table core and readonly canvas support exist | Preserve v1–v4 migrations and distinguish data Tables from visual Grids; next user-facing milestone is cell editing/keyboard/history | Merged core **does not** establish a full accessible table editor or customer workflow |
+| **DP-LEGACY-87** | [PR #87](https://github.com/Rofikali/design-platform/pull/87) **DRAFT**, older schema-v3 background branch; background-related work already exists in main | Assess whether draft is superseded; avoid blindly merging an old migration branch or repeating its code | Explicit close/rebase decision after diff comparison |
+
+### Historical completed work — generated status above takes precedence
+
+| ID | Completed deliverable | Evidence / limits |
+| --- | --- | --- |
+| **DP-DOC-100** | Owner-facing product, free/paid, security, architecture and management roadmap `next.md` | [PR #100](https://github.com/Rofikali/design-platform/pull/100) **MERGED**; documentation, not shipped SaaS |
+| **DP-DOC-101** | CI baseline evidence and refreshed roadmap checkpoint | [PR #101](https://github.com/Rofikali/design-platform/pull/101) **MERGED**; reports are dated, not current universal verification |
+| **DP-DOC-103** | Seven-level handbook: agent handoff, continuation, HLD/LLD, cost/test/security/finance/release guides | [PR #103](https://github.com/Rofikali/design-platform/pull/103) **MERGED** as `c6a03ba5f378f237e442377e44bfefc28a52fcf6`; **docs only** |
+| **DP-DOC-105** | Hourly autopilot, seven-level PR review/merge authority and governance links | [PR #105](https://github.com/Rofikali/design-platform/pull/105) **MERGED** as `872a2cb35db141b5e76a84d9bce3bc273542635b`; no deployment or spending permission |
+| **DP-M1-BG-07** | Actual image-backed PNG pixels and foreground preservation | [PR #112](https://github.com/Rofikali/design-platform/pull/112) **MERGED** at `1c99b3dae0c9a8d568870406ff40341d708100d9`; print remains separate |
+| **DP-M1-BG-06** | Legacy background JSON import/export/reopen regression | [PR #110](https://github.com/Rofikali/design-platform/pull/110) **MERGED** as `adb6d3b6f020307412348d71ae27b80d6e6f18e8`; image-backed PNG/print fidelity remains OPEN |
+| **DP-M1-BG-108** | Real-browser background remove/undo/redo/reopen regression with foreground preservation | [PR #108](https://github.com/Rofikali/design-platform/pull/108) **MERGED** as `8d72b8a85086dad94d4ba18c2b738e481db62302`; full JSON/PNG/print acceptance remains OPEN |
+| **DP-M1-BG-107** | Bound encoded embedded raster input and reject noncanonical base64 before decoding | [PR #107](https://github.com/Rofikali/design-platform/pull/107) **MERGED** as `5164b55bb602a021029915da23eb316fd5bffff4`; does not close the full background workflow acceptance |
+| **DP-M1-A11Y-106** | Correct Table versus Grid accessible canvas-selection labels with regression tests | [PR #106](https://github.com/Rofikali/design-platform/pull/106) **MERGED** as `3755b363605dc1cec62ea481578cfd6487ebed79`; manual screen-reader/keyboard audit [issue #82](https://github.com/Rofikali/design-platform/issues/82) remains OPEN |
+| **DP-MVP-BASE** | Local-first Nuxt/Vue editor, Rust design core + WASM, schema-v4 frames/visual grids, JSON import/export, bounded history, page backgrounds, PNG and browser-print path | **IMPLEMENTED in current source**, not a completed manual accessibility audit or paid/production release |
+
+### NEXT — dependent milestones, not automatically READY
+
+1. **DP-M1-EXIT:** cross-browser PR #102 and accessibility label PR #106 are merged; reconcile remaining manual accessibility, background-image acceptance and security/resource evidence. Record any residual risks. M1 cannot be marked CLOSED until explicit exit criteria are met.
+2. **DP-M2-TBL-01:** first-class table-core PR #93 is merged; verify completeness and prioritize bounded editable table UX tasks after remaining M1 blockers. Schema v5 must preserve v1–v4, Rust/TS/WASM parity, first-class cell ownership, export geometry and safe text escaping.
+3. **DP-M2-TBL-02:** implement table cell editing, row/column operations, history, keyboard accessibility and export in *separate bounded* PRs with real teacher/shop acceptance.
+4. **DP-M3:** document/editor-state modularization, layers, alignment/snapping and image elements only in response to tested user workflows.
+5. **DP-M4–M5:** typography, fonts/licensing, templates and direct PDF/print fidelity with actual exported artifact and print evidence.
+6. **DP-M6–M8:** customer validation, cost model, optional Rust/Axum accounts/storage, business packages and paid launch *only after* a separate owner-approved architecture/security/legal/finance gate.
+
+### LATER / DEFERRED — do not silently start
+
+Account sync, collaboration, a multi-tenant SaaS, paid subscriptions, metered API, desktop, marketplace and mobile apps are **proposals**. Audio, video, animation and unrelated spreadsheet functionality are **out of initial scope**. No price, cloud bill, domain purchase, new database or launch is authorized by this board.
+
+## Permanent status rules: "go ahead" and milestone reconciliation
+
+When the owner says **"go ahead"**, perform the **next smallest eligible bounded task in the NOW lane** rather than asking for a repeated product brief. **Latest owner rule permits the autopilot to review and merge qualifying PRs after exact-head/integration CI, security, GitHub protection and any required independent-review gates. No publishing or deployment permission.**
+
+**Every new session, after a PR update, after checks complete and after a merge:**
+
+1. Fetch live `main` full SHA, current branch/worktree, open PRs/issues, latest PR head SHA and exact attached workflow/job statuses. GitHub checks from older commits are **HISTORICAL**.
+2. Reconcile milestone rows: `PLANNED → READY → IN_PROGRESS → PR_OPEN → CI_PENDING → READY_FOR_REVIEW → MERGED → RELEASE_CANDIDATE → RELEASED`; `FAILED`, `BLOCKED`, `CANCELLED`, `DEFERRED` are explicit. `IMPLEMENTED` and `VERIFIED` are *distinct attributes*; not substitute states.
+3. First choose verified P0 security/data-loss/release-blocking defects. Otherwise continue an existing **in-progress PR** before starting a duplicate feature. Then choose the first dependency-cleared READY task in NOW. Keep parallel tracks independent.
+4. Update **docs/engineering/milestone-record.json** with task ID, scope, status, PR, observed SHA and summary; run **node scripts/sync-milestone-docs.mjs** to synchronize all seven generated sections. Preserve rich PR/CI evidence in GitHub and milestone handoffs. Preserve original history in PRs/evidence docs rather than pasting long logs into `next.md`.
+5. Don't rewrite the main board for each CI tick; only update with meaningful state transitions. A failed check needs its job/step evidence, not a 10,000-line log.
+6. One small PR per bounded milestone, coherent commits, no redundant Docker/CI work. Read [agent continuation](docs/engineering/agent-continuation-runbook.md), [seven-level review](docs/engineering/seven-level-operating-model.md), [handoff](docs/engineering/agent-milestone-handoff.md), and [test lanes](docs/engineering/change-scoped-verification.md).
+7. Review the actual PR and merge only after every required latest-head/integration CI, security, independent-review (if required) and branch-protection gate passes. Reconcile GitHub and update the milestone record after a confirmed merge. Publishing/deployment is never automatic. **CI success is not merge; merge is not release; a markdown rule cannot restart a stopped agent.**
 
 ---
+
+## Master product, engineering, finance and release reference (long-term)
+
+The sections below preserve the detailed product roadmap and backlog, **not** an alternative live task-selection list. If a statement below conflicts with the live board or current GitHub, reconcile it before acting. Long-term architecture and commercial items are explicitly conditional.
 
 ## 0. How to use this roadmap
 
@@ -20,7 +106,7 @@ This file is deliberately broad so the owner and future agents do not need to re
 4. Read the linked product, architecture, ADR, security, testing and operations documents before changing that area.
 5. Inspect the live repository and current CI. This roadmap can become stale; code and observed evidence outrank assumptions.
 6. Work only on the **Current execution queue** unless the owner explicitly reprioritizes.
-7. Create a small PR, report exact evidence and wait for approval before merge. Never merge merely because a task is marked complete in this file.
+7. Create a small PR, review the actual diff and exact-head evidence, then merge only if the owner's standing authorization and repository gates allow it. Never merge merely because a task is marked complete in this file.
 
 ### Status vocabulary
 
@@ -120,7 +206,7 @@ Before changing these statements, inspect current code and attach evidence. Neve
 9. **Paid does not automatically mean better.** Buy a service only when it reduces risk or total cost of ownership.
 10. **Evidence beats confidence.** A test plan is not a test result; a scanner is not a security audit; a benchmark without a workload is not a performance claim.
 11. **No architecture theatre.** Use SOLID, DRY, KISS, YAGNI, DDD, Hexagonal Architecture, CQRS and event-driven patterns only when they solve a demonstrated problem.
-12. **Owner approval.** Do not merge, deploy, incur paid charges, change pricing, introduce customer-data retention, or make irreversible schema/security decisions without the required approval.
+12. **Owner approval.** Standing authorization covers gated safe PR merges, not deployment, paid charges, pricing, customer-data retention or irreversible schema/security decisions.
 
 ### Technology direction
 
@@ -778,6 +864,23 @@ Each requires customer demand, architecture review, cost model, security model a
 
 ---
 
+## CI runtime and Docker build policy
+
+Keep CI proportional to the change while preserving release confidence:
+
+- Every relevant PR: Rust formatting/tests/Clippy, WASM compile check, frontend typecheck/tests, real-browser smoke tests, production build, production Docker image, and Rust/production-JavaScript dependency audits.
+- Development Docker image: build and smoke-test only when `Dockerfile.dev`, `compose.yaml`, `.dockerignore`, Rust workspace inputs, frontend dependency manifests, or the dedicated development workflow changes; also allow manual dispatch.
+- Cross-browser PNG regression: run when editor/export, Rust/WASM, fixture, or its workflow inputs change, plus the scheduled regression.
+- Use BuildKit GitHub Actions layer caching with separate cache scopes for production and development images. Keep dependency lockfiles before frequently changing source copies in Dockerfiles so stable dependency layers can be reused.
+- Do not remove the production image build from ordinary PR verification: it validates the deployable artifact. Do not rebuild the full development toolchain for unrelated UI changes.
+- Measure elapsed time per workflow and compare cache-hit versus cache-miss runs. Treat caching as an optimization, not a correctness guarantee; builds must still pass from an empty cache.
+- Cache pnpm's content-addressed store in the cross-browser workflow using the lockfile as its key input.
+- Cache Playwright browser downloads by OS and the pinned Playwright version; still run Playwright's system-dependency installation and the actual browser tests.
+- Prepare the pinned Corepack/pnpm version in the development image layer rather than downloading/activating it on every container start. Keep the lockfile install on startup so the mounted workspace remains consistent.
+- Do not introduce cargo-chef or more elaborate Rust build graph machinery until timing evidence shows Rust dependency compilation is a dominant cold/warm build cost. The current workspace is small; extra build tooling may cost more complexity than it saves.
+
+Current implementation is in `.github/workflows/ci.yml`, `.github/workflows/development-container.yml`, and `.github/workflows/cross-browser-export.yml`. The policy is considered validated only after the latest PR head passes its fresh workflows.
+ 
 ## 16. Current execution queue — do this next, not everything
 
 Baseline evidence is recorded in [`docs/testing/m1-baseline-evidence.md`](docs/testing/m1-baseline-evidence.md). Push-triggered CI run #293 and dependency audit #89 passed on the current main SHA. M0 remains partially open because branch protection/required checks could not be verified through the connected integration and the manual accessibility audit remains open (issue #82). The separate cross-browser export workflow remediation is tracked in PR #102.

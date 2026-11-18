@@ -12,7 +12,13 @@ export type GridElement = {
   id: string; type: "grid"; x: number; y: number; width: number; height: number;
   rows: number; columns: number; strokeColor: string; strokeWidth: number;
 };
-export type DesignElement = TextElement | RectElement | FrameElement | GridElement;
+export type TableElement = {
+  id: string; type: "table"; x: number; y: number; width: number; height: number;
+  rows: number; columns: number; cells: string[][]; headerRows: number;
+  strokeColor: string; strokeWidth: number; cellPadding: number; fontSize: number;
+  textColor: string; headerFill: string; cellFill: string;
+};
+export type DesignElement = TextElement | RectElement | FrameElement | GridElement | TableElement;
 export type BackgroundImageFit = "cover" | "contain";
 export type BackgroundImage = { data_url: string; fit: BackgroundImageFit };
 export type PageGeometry = { width: number; height: number; background: string; background_image?: BackgroundImage };
@@ -25,12 +31,24 @@ export type DesignDocument = {
     id: string; x: number; y: number; width: number; height: number;
     kind: { type: "text"; text: string; font_size: number; color: string } | { type: "rect"; color: string } |
       { type: "frame"; stroke_color: string; stroke_width: number; fill_color?: string } |
-      { type: "grid"; rows: number; columns: number; stroke_color: string; stroke_width: number };
+      { type: "grid"; rows: number; columns: number; stroke_color: string; stroke_width: number } |
+      { type: "table"; rows: number; columns: number; cells: string[][]; header_rows: number;
+        stroke_color: string; stroke_width: number; cell_padding: number; font_size: number;
+        text_color: string; header_fill: string; cell_fill: string };
   }>;
   output_size_mm?: OutputSizeMm;
   template?: TemplateMetadata;
 };
-export const SCHEMA_VERSION = 4;
+export const SCHEMA_VERSION = 5;
+export const MAX_TABLE_ROWS = 20;
+export const MAX_TABLE_COLUMNS = 20;
+export const MAX_TABLE_CELLS = 400;
+export const MAX_TABLE_CELL_CHARS = 2_000;
+export const MAX_TABLE_TEXT_CHARS = 20_000;
+export const MIN_TABLE_PADDING = 2;
+export const MAX_TABLE_PADDING = 24;
+export const MIN_TABLE_FONT_SIZE = 8;
+export const MAX_TABLE_FONT_SIZE = 96;
 export const MAX_GRID_ROWS = 20;
 export const MAX_GRID_COLUMNS = 20;
 export const MAX_STROKE_WIDTH = 100;
@@ -59,7 +77,9 @@ export function toDocument(source: DesignElement[], page: PageGeometry = { width
           ? { type: "rect" as const, color: element.color }
           : element.type === "frame"
             ? { type: "frame" as const, stroke_color: element.strokeColor, stroke_width: element.strokeWidth, ...(element.fillColor ? { fill_color: element.fillColor } : {}) }
-            : { type: "grid" as const, rows: element.rows, columns: element.columns, stroke_color: element.strokeColor, stroke_width: element.strokeWidth },
+            : element.type === "grid"
+              ? { type: "grid" as const, rows: element.rows, columns: element.columns, stroke_color: element.strokeColor, stroke_width: element.strokeWidth }
+              : { type: "table" as const, rows: element.rows, columns: element.columns, cells: element.cells.map((row) => [...row]), header_rows: element.headerRows, stroke_color: element.strokeColor, stroke_width: element.strokeWidth, cell_padding: element.cellPadding, font_size: element.fontSize, text_color: element.textColor, header_fill: element.headerFill, cell_fill: element.cellFill },
     })),
     ...(outputSizeMm ? { output_size_mm: { ...outputSizeMm } } : {}),
     ...(template ? { template: { ...template } } : {}),
@@ -81,7 +101,7 @@ export function parseDocumentJson(json: string): ParsedDocument {
 export function parseDocument(input: unknown): ParsedDocument {
   if (!input || typeof input !== "object" || Array.isArray(input)) throw new Error("The file must contain a JSON document object.");
   const doc = input as Partial<DesignDocument>;
-  if (doc.schema_version !== 1 && doc.schema_version !== 2 && doc.schema_version !== 3 && doc.schema_version !== SCHEMA_VERSION) throw new Error("Unsupported document schema version. This editor supports versions 1, 2, 3 and 4.");
+  if (doc.schema_version !== 1 && doc.schema_version !== 2 && doc.schema_version !== 3 && doc.schema_version !== 4 && doc.schema_version !== SCHEMA_VERSION) throw new Error("Unsupported document schema version. This editor supports versions 1, 2, 3, 4 and 5.");
   if (!doc.page || !Number.isFinite(doc.page.width) || !Number.isFinite(doc.page.height) || !validColor(doc.page.background))
     throw new Error("The document must have finite page dimensions and a valid hexadecimal background color.");
   const width = doc.page.width; const height = doc.page.height;
@@ -162,6 +182,47 @@ export function parseDocument(input: unknown): ParsedDocument {
       if (!validColor(kind.stroke_color)) throw new Error("Grid stroke color must be a valid hexadecimal color.");
       if (typeof kind.stroke_width !== "number" || !Number.isFinite(kind.stroke_width) || kind.stroke_width < 0.1 || kind.stroke_width > MAX_STROKE_WIDTH) throw new Error("Grid stroke width must be between 0.1 and 100.");
       return { id: item.id, type: "grid" as const, x: item.x, y: item.y, width: item.width, height: item.height, rows: kind.rows, columns: kind.columns, strokeColor: kind.stroke_color, strokeWidth: kind.stroke_width };
+    }
+    if (kind.type === "table") {
+      if (doc.schema_version !== SCHEMA_VERSION) throw new Error("Tables require schema version 5.");
+      if (!Number.isInteger(kind.rows) || kind.rows < 1 || kind.rows > MAX_TABLE_ROWS ||
+          !Number.isInteger(kind.columns) || kind.columns < 1 || kind.columns > MAX_TABLE_COLUMNS ||
+          !Number.isInteger(kind.header_rows) || kind.header_rows < 0 || kind.header_rows > 1) {
+        throw new Error("Table rows and columns must be integers between 1 and 20; header_rows must be 0 or 1.");
+      }
+      if (!Array.isArray(kind.cells) || kind.cells.length !== kind.rows ||
+          kind.cells.some((row) => !Array.isArray(row) || row.length !== kind.columns) ||
+          kind.rows * kind.columns > MAX_TABLE_CELLS) {
+        throw new Error("Table cells must be a rectangular matrix matching the declared dimensions (maximum 400 cells).");
+      }
+      let totalChars = 0;
+      for (const row of kind.cells) {
+        for (const cell of row) {
+          if (typeof cell !== "string") throw new Error("Table cells must contain plain text strings only.");
+          const cellChars = [...cell].length;
+          totalChars += cellChars;
+          if (cellChars > MAX_TABLE_CELL_CHARS || totalChars > MAX_TABLE_TEXT_CHARS) {
+            throw new Error("Table text exceeds the 2,000-character per-cell or 20,000-character per-table limit.");
+          }
+        }
+      }
+      if (!validColor(kind.stroke_color) || !validColor(kind.text_color) ||
+          !validColor(kind.header_fill) || !validColor(kind.cell_fill) ||
+          typeof kind.stroke_width !== "number" || !Number.isFinite(kind.stroke_width) ||
+          kind.stroke_width < 0.1 || kind.stroke_width > MAX_STROKE_WIDTH ||
+          typeof kind.cell_padding !== "number" || !Number.isFinite(kind.cell_padding) ||
+          kind.cell_padding < MIN_TABLE_PADDING || kind.cell_padding > MAX_TABLE_PADDING ||
+          typeof kind.font_size !== "number" || !Number.isFinite(kind.font_size) ||
+          kind.font_size < MIN_TABLE_FONT_SIZE || kind.font_size > MAX_TABLE_FONT_SIZE) {
+        throw new Error("Table styles contain invalid colors or values outside the supported ranges.");
+      }
+      return {
+        id: item.id, type: "table" as const, x: item.x, y: item.y, width: item.width, height: item.height,
+        rows: kind.rows, columns: kind.columns, cells: kind.cells.map((row) => [...row]),
+        headerRows: kind.header_rows, strokeColor: kind.stroke_color, strokeWidth: kind.stroke_width,
+        cellPadding: kind.cell_padding, fontSize: kind.font_size, textColor: kind.text_color,
+        headerFill: kind.header_fill, cellFill: kind.cell_fill,
+      };
     }
     throw new Error("Unsupported element type.");
   });

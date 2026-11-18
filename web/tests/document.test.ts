@@ -3,6 +3,7 @@ import sharedDocumentFixture from "../../fixtures/document-v1.json";
 import schemaV2Fixture from "../../fixtures/document-v2-a4.json";
 import schemaV3BackgroundFixture from "../../fixtures/document-v3-background-image.json";
 import schemaV4FramesGridsFixture from "../../fixtures/document-v4-frames-grids.json";
+import schemaV5TableFixture from "../../fixtures/document-v5-semantic-table.json";
 import {
   MAX_ELEMENTS,
   MAX_FILE_CHARS,
@@ -18,7 +19,7 @@ import {
 
 function validDocument(): DesignDocument {
   return {
-    schema_version: 4,
+    schema_version: 5,
     page: { width: PAGE_WIDTH, height: PAGE_HEIGHT, background: "#ffffff" },
     elements: [
       {
@@ -47,7 +48,7 @@ describe("document parsing and validation", () => {
     expect(parsed.width).toBe(PAGE_WIDTH);
     expect(parsed.height).toBe(PAGE_HEIGHT);
     expect(parsed.elements).toHaveLength(2);
-    expect(toDocument(parsed.elements)).toMatchObject({ schema_version: 4, page: sharedDocumentFixture.page, elements: sharedDocumentFixture.elements });
+    expect(toDocument(parsed.elements)).toMatchObject({ schema_version: 5, page: sharedDocumentFixture.page, elements: sharedDocumentFixture.elements });
   });
 
   it("does not preserve schema-v2 metadata smuggled into a schema-v1 document", () => {
@@ -69,7 +70,7 @@ describe("document parsing and validation", () => {
     expect(parsed.template).toEqual({ id: "exam-paper-a4", version: 1 });
   });
 
-  it("accepts schema-v3 background image documents after v4 upgrade", () => {
+  it("accepts schema-v3 background image documents after v5 upgrade", () => {
     const parsed = parseDocument(schemaV3BackgroundFixture);
     expect(parsed.backgroundImage?.fit).toBe("cover");
     expect(parsed.elements).toHaveLength(1);
@@ -81,7 +82,44 @@ describe("document parsing and validation", () => {
       { id: "frame-1", type: "frame", x: 24, y: 32, width: 300, height: 180, strokeColor: "#2563eb", strokeWidth: 2, fillColor: "#ffffff" },
       { id: "grid-1", type: "grid", x: 360, y: 32, width: 240, height: 180, rows: 3, columns: 4, strokeColor: "#64748b", strokeWidth: 1 },
     ]);
-    expect(toDocument(parsed.elements).schema_version).toBe(4);
+    expect(toDocument(parsed.elements).schema_version).toBe(5);
+  });
+
+  it("accepts the shared schema-v5 semantic table fixture and preserves its matrix", () => {
+    const parsed = parseDocument(schemaV5TableFixture);
+    expect(parsed.elements).toEqual([{
+      id: "table-1", type: "table", x: 40, y: 80, width: 520, height: 180,
+      rows: 2, columns: 3,
+      cells: [["Product", "Quantity", "Price"], ["Rice", "1 kg", "₹80"]],
+      headerRows: 1, strokeColor: "#334155", strokeWidth: 1, cellPadding: 8,
+      fontSize: 16, textColor: "#111827", headerFill: "#dbeafe", cellFill: "#ffffff",
+    }]);
+    const serialized = toDocument(parsed.elements);
+    expect(serialized.schema_version).toBe(5);
+    expect(parseDocument(serialized).elements).toEqual(parsed.elements);
+  });
+
+  it("rejects tables in schema v4 and malformed or oversized table data", () => {
+    const legacy = { ...structuredClone(schemaV5TableFixture), schema_version: 4 };
+    expect(() => parseDocument(legacy)).toThrow(/Tables require schema version 5/);
+
+    const ragged = structuredClone(schemaV5TableFixture) as unknown as DesignDocument;
+    const raggedKind = ragged.elements[0]!.kind;
+    if (raggedKind.type !== "table") throw new Error("Expected table fixture");
+    raggedKind.cells[0]!.pop();
+    expect(() => parseDocument(ragged)).toThrow(/rectangular matrix/);
+
+    const excessiveCell = structuredClone(schemaV5TableFixture) as unknown as DesignDocument;
+    const excessiveKind = excessiveCell.elements[0]!.kind;
+    if (excessiveKind.type !== "table") throw new Error("Expected table fixture");
+    excessiveKind.cells[0]![0] = "x".repeat(2_001);
+    expect(() => parseDocument(excessiveCell)).toThrow(/Table text exceeds/);
+
+    const invalidStyle = structuredClone(schemaV5TableFixture) as unknown as DesignDocument;
+    const invalidStyleKind = invalidStyle.elements[0]!.kind;
+    if (invalidStyleKind.type !== "table") throw new Error("Expected table fixture");
+    invalidStyleKind.cell_padding = 25;
+    expect(() => parseDocument(invalidStyle)).toThrow(/Table styles/);
   });
 
   it("rejects invalid frame and grid styles", () => {
@@ -107,6 +145,27 @@ describe("document parsing and validation", () => {
       background_image: parsed.backgroundImage,
     });
     expect(parseDocument(serialized).backgroundImage).toEqual(document.page.background_image);
+  });
+
+  it("round-trips a legacy background image through exported JSON with contain fit and foreground elements", () => {
+    const legacy = structuredClone(schemaV3BackgroundFixture);
+    if (!legacy.page.background_image) throw new Error("Expected a background-image fixture");
+    legacy.page.background_image.fit = "contain";
+
+    const imported = parseDocumentJson(JSON.stringify(legacy));
+    const exported = toDocument(imported.elements, {
+      width: imported.width,
+      height: imported.height,
+      background: imported.background,
+      background_image: imported.backgroundImage,
+    }, imported.outputSizeMm, imported.template);
+    const reopened = parseDocumentJson(JSON.stringify(exported));
+
+    expect(exported.schema_version).toBe(5);
+    expect(exported.page.background_image).toEqual(legacy.page.background_image);
+    expect(reopened.backgroundImage).toEqual(legacy.page.background_image);
+    expect(reopened.elements).toEqual(imported.elements);
+    expect(reopened.background).toBe(imported.background);
   });
 
   it("rejects remote, SVG, malformed base64 and oversized background assets", () => {

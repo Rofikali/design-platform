@@ -411,10 +411,7 @@ async function main() {
     }
 
     
-    // Nuxt 4 may render an independent route-announcement live region before
-    // the editor. Always assert the editor's own status rather than the first
-    // [role=status] in the whole document; preserve the route announcer.
-    // Export must report WASM, not the TypeScript fallback.
+    // Nuxt 4 exposes a separate route-announcement live region; select the editor's\n    // own message instead of the first status element in the document.\n    // Export must report WASM, not the TypeScript fallback.
     await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.includes('Download JSON'))?.click(); true");
     let exportStatus;
     try {
@@ -440,7 +437,7 @@ async function main() {
       return info.size > 0 ? path : null;
     });
     const exported = JSON.parse(await readFile(exportedPath, "utf8"));
-    if (exported.schema_version !== 4 || exported.elements?.length !== 2) {
+    if (exported.schema_version !== 5 || exported.elements?.length !== 2) {
       throw new Error("Exported file did not contain the expected versioned two-element document");
     }
 
@@ -490,6 +487,252 @@ async function main() {
     await waitForPage("background image autosave", "document.querySelector('.tools-panel > p.hint[role=status]')?.textContent || ''", value => value.includes("Auto-saved locally in this browser"));
     const savedBackgroundFit = await evaluate("JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null')?.page?.background_image?.fit || ''");
     if (savedBackgroundFit !== "contain") throw new Error(`Background image or fit mode was not preserved in local autosave: ${savedBackgroundFit}`);
+
+    // The image is document state, not just a canvas decoration: removing it
+    // must keep foreground elements intact, survive autosave, and be reversible
+    // through the real history UI. Undo/redo must also preserve the fit mode.
+    const backgroundBeforeRemoval = await evaluate(`(() => {
+      const saved = JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null');
+      return {
+        dataUrl: saved?.page?.background_image?.data_url || '',
+        fit: saved?.page?.background_image?.fit || '',
+        ids: (saved?.elements || []).map(item => item.id),
+      };
+    })()`);
+    if (!backgroundBeforeRemoval.dataUrl.startsWith("data:image/png;base64,") ||
+        backgroundBeforeRemoval.fit !== "contain" || backgroundBeforeRemoval.ids.length !== 2) {
+      throw new Error(`Background image prerequisite missing: ${JSON.stringify(backgroundBeforeRemoval)}`);
+    }
+    const expectedForegroundIds = JSON.stringify(backgroundBeforeRemoval.ids);
+    const expectedBackgroundUrl = JSON.stringify(backgroundBeforeRemoval.dataUrl);
+    const clickHistoryButton = async (label) => evaluate(`(() => {
+      const button = Array.from(document.querySelectorAll('.history-actions button'))
+        .find(item => item.textContent.trim() === ${JSON.stringify(label)});
+      if (!button || button.disabled) throw new Error(${JSON.stringify(label)} + ' is not enabled');
+      button.click();
+      return true;
+    })()`);
+
+    await evaluate(`(() => {
+      const button = Array.from(document.querySelectorAll('button'))
+        .find(item => item.textContent.trim() === 'Remove background image');
+      if (!button) throw new Error('Remove background image control is missing');
+      button.click();
+      return true;
+    })()`);
+    await waitForPage("background removal on the canvas",
+      "!document.querySelector('.page-background-image') && !Array.from(document.querySelectorAll('button')).some(item => item.textContent.trim() === 'Remove background image')");
+    await waitForPage("background removal autosave", `(() => {
+      const saved = JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null');
+      return saved && !saved.page.background_image &&
+        JSON.stringify(saved.elements.map(item => item.id)) === ${JSON.stringify(expectedForegroundIds)};
+    })()`);
+
+    await clickHistoryButton("Undo");
+    await waitForPage("undo restores image with contain fit", `(() => {
+      const image = document.querySelector('.page-background-image');
+      return image?.getAttribute('src') === ${expectedBackgroundUrl} &&
+        getComputedStyle(image).objectFit === 'contain';
+    })()`);
+    await clickHistoryButton("Redo");
+    await waitForPage("redo removes background again",
+      "!document.querySelector('.page-background-image')");
+    await clickHistoryButton("Undo");
+    await waitForPage("second undo restores background image", `(() => {
+      const image = document.querySelector('.page-background-image');
+      return image?.getAttribute('src') === ${expectedBackgroundUrl} &&
+        getComputedStyle(image).objectFit === 'contain';
+    })()`);
+    await waitForPage("restored image autosave after undo", `(() => {
+      const saved = JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null');
+      return saved?.page?.background_image?.data_url === ${expectedBackgroundUrl} &&
+        saved.page.background_image.fit === 'contain' &&
+        JSON.stringify(saved.elements.map(item => item.id)) === ${JSON.stringify(expectedForegroundIds)};
+    })()`);
+
+    // Reopen from actual browser persistence, not Vue in-memory state.
+    await evaluate("location.reload(); true");
+    await waitForPage("background image restored after browser reload", `(() => {
+      const image = document.querySelector('.page-background-image');
+      return image?.getAttribute('src') === ${expectedBackgroundUrl} &&
+        getComputedStyle(image).objectFit === 'contain';
+    })()`);
+    const restoredIds = await evaluate(
+      "Array.from(document.querySelectorAll('.design-element')).map(item => item.dataset.elementId)");
+    if (JSON.stringify(restoredIds) !== expectedForegroundIds) {
+      throw new Error(`Background image history/reopen altered foreground elements: ${JSON.stringify(restoredIds)}`);
+    }
+
+
+    // M1-BG-07: download the image-backed document before changing templates.
+    // This is a real PNG pixel check, not just a JSON/schema or SVG-string check.
+    // Fixture: 2x2 solid red PNG on an 800x600 white page with contain fit.
+    // At 2x output, red occupies x=200..1399; white side margins remain.
+    // The original #abc rectangle occupies x=100..499, y=200..359.
+    await evaluate("Array.from(document.querySelectorAll('button')).find(button => button.textContent.trim() === 'Download PNG')?.click(); true");
+    const imageBackedPngPath = await waitFor("downloaded image-backed PNG", async () => {
+      const names = await readdir(downloads);
+      if (names.some(name => name.endsWith(".crdownload"))) return null;
+      if (!names.includes("design-platform.png")) return null;
+      const path = resolve(downloads, "design-platform.png");
+      const info = await stat(path);
+      return info.size > 100 ? path : null;
+    });
+    const imageBackedPng = await readFile(imageBackedPngPath);
+    const imagePngSignature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
+    if (!imageBackedPng.subarray(0, 8).equals(imagePngSignature) ||
+        imageBackedPng.toString("ascii", 12, 16) !== "IHDR" ||
+        imageBackedPng.readUInt32BE(16) !== 1600 || imageBackedPng.readUInt32BE(20) !== 1200) {
+      throw new Error(`Image-backed PNG has invalid signature or geometry: ${JSON.stringify({
+        bytes: imageBackedPng.length, width: imageBackedPng.readUInt32BE(16),
+        height: imageBackedPng.readUInt32BE(20),
+      })}`);
+    }
+    const imageBackedPngBase64 = imageBackedPng.toString("base64");
+    const imageBackedSamples = await evaluate(`(async () => {
+      const image = new Image();
+      image.src = "data:image/png;base64,${imageBackedPngBase64}";
+      await image.decode();
+      const canvas = document.createElement('canvas');
+      canvas.width = image.naturalWidth;
+      canvas.height = image.naturalHeight;
+      const context = canvas.getContext('2d', { willReadFrequently: true });
+      if (!context) throw new Error('Could not inspect image-backed PNG pixels');
+      context.drawImage(image, 0, 0);
+      const sample = (x, y) => Array.from(context.getImageData(x, y, 1, 1).data);
+      const result = {
+        redCenter: sample(800, 1000),
+        whiteLeft: sample(30, 1000),
+        whiteRight: sample(1570, 1000),
+        foregroundRectangle: sample(150, 260),
+      };
+      canvas.width = 0;
+      canvas.height = 0;
+      image.src = '';
+      return result;
+    })()`);
+    const near = (actual, expected, tolerance = 2) =>
+      actual.length === 4 && expected.every((channel, i) => Math.abs(actual[i] - channel) <= tolerance);
+    if (!near(imageBackedSamples.redCenter, [255, 0, 0, 255]) ||
+        !near(imageBackedSamples.whiteLeft, [255, 255, 255, 255]) ||
+        !near(imageBackedSamples.whiteRight, [255, 255, 255, 255]) ||
+        !near(imageBackedSamples.foregroundRectangle, [170, 187, 204, 255])) {
+      throw new Error(`Image-backed PNG pixel/foreground mismatch: ${JSON.stringify(imageBackedSamples)}`);
+    }
+    process.stdout.write(`PASS: image-backed contain PNG bytes, red pixels, white margins, foreground rectangle ${JSON.stringify(imageBackedSamples)}\n`);
+    // Later template exports use this same filename. Do not let them pass by
+    // discovering the image-backed PNG from this earlier workflow.
+    await rm(imageBackedPngPath);
+
+    // M1-BG-08: exercise the same Print / Save PDF path with the image-backed
+    // document, not only the later shop-banner template. This validates Chrome
+    // PDF generation, not physical-printer or cross-browser color fidelity.
+    await cdp.send("Emulation.setEmulatedMedia", { media: "print" });
+    try {
+      await evaluate("window.__originalDesignPrint = window.print; window.print = () => { window.__imagePrintIntercepted = true; }; Array.from(document.querySelectorAll('button')).find(button => button.textContent.includes('Print / Save PDF'))?.click(); true");
+      await waitForPage("image-backed print stylesheet active",
+        "Boolean(window.__imagePrintIntercepted && document.querySelector('style[data-design-print]') && document.querySelector('.app-shell.printing-design'))");
+      const printContent = await evaluate("(() => { const background = document.querySelector('.page-background-image'); const foreground = document.querySelector('.design-element.rectangle'); const page = document.querySelector('.design-page'); return { backgroundUrl: background?.getAttribute('src') || '', imageFit: background ? getComputedStyle(background).objectFit : '', imageDisplay: background ? getComputedStyle(background).display : 'none', foregroundColor: foreground ? getComputedStyle(foreground).backgroundColor : '', foregroundDisplay: foreground ? getComputedStyle(foreground).display : 'none', pageWidth: page?.getBoundingClientRect().width || 0, pageHeight: page?.getBoundingClientRect().height || 0 }; })()");
+      if (printContent.backgroundUrl !== backgroundBeforeRemoval.dataUrl ||
+          printContent.imageFit !== "contain" || printContent.imageDisplay === "none" ||
+          printContent.foregroundColor !== "rgb(170, 187, 204)" ||
+          printContent.foregroundDisplay === "none" ||
+          printContent.pageWidth < 1 || printContent.pageHeight < 1) {
+        throw new Error("Image-backed content lost in Chrome print layout: " + JSON.stringify({
+          ...printContent, backgroundUrl: printContent.backgroundUrl.slice(0, 32),
+        }));
+      }
+      const imagePrintResult = await cdp.send("Page.printToPDF", {
+        preferCSSPageSize: true,
+        printBackground: true,
+        displayHeaderFooter: false,
+        scale: 1,
+      });
+      const imagePrintPdf = Buffer.from(imagePrintResult.data, "base64");
+      const imagePrintText = imagePrintPdf.toString("latin1");
+      const imagePrintMediaBox = imagePrintText.match(/\/MediaBox\s*\[\s*([+-]?(?:\d+\.?\d*|\.\d+))\s+([+-]?(?:\d+\.?\d*|\.\d+))\s+([+-]?(?:\d+\.?\d*|\.\d+))\s+([+-]?(?:\d+\.?\d*|\.\d+))\s*\]/);
+      const imagePrintPages = (imagePrintText.match(/\/Type\s*\/Page\b/g) || []).length;
+      if (!imagePrintText.startsWith("%PDF-") || imagePrintPdf.length < 1000 ||
+          !imagePrintMediaBox || imagePrintPages !== 1) {
+        throw new Error("Image-backed print did not produce one PDF page: " + JSON.stringify({
+          bytes: imagePrintPdf.length, pages: imagePrintPages, pageBox: imagePrintMediaBox?.slice(1),
+        }));
+      }
+      process.stdout.write("PASS: image-backed Chrome print preserved raster and foreground in print layout and produced a one-page PDF\n");
+    } finally {
+      // A later test prints another template: restore the screen state here.
+      await evaluate("window.dispatchEvent(new Event('afterprint')); if (window.__originalDesignPrint) window.print = window.__originalDesignPrint; delete window.__originalDesignPrint; delete window.__imagePrintIntercepted; true");
+      await cdp.send("Emulation.setEmulatedMedia", { media: "screen" });
+    }
+
+    // A 640 CSS px viewport models the layout space of a 1280px browser at
+    // 200% zoom; this is a reflow proxy, NOT an actual browser zoom or an
+    // assistive-technology certification. The 800px canvas must scroll inside
+    // its own scroller without forcing the entire document to scroll sideways.
+    await cdp.send("Emulation.setDeviceMetricsOverride", {
+      width: 640, height: 450, deviceScaleFactor: 1, mobile: false,
+    });
+    try {
+      await waitForPage("narrow editor reflow and contained canvas overflow", `(() => {
+        const workspace = document.querySelector('.workspace');
+        const tools = document.querySelector('.tools-panel');
+        const canvas = document.querySelector('.canvas-scroller');
+        if (!workspace || !tools || !canvas || window.innerWidth !== 640) return false;
+        const columns = getComputedStyle(workspace).gridTemplateColumns.trim().split(/\\s+/);
+        return columns.length === 1 &&
+          document.documentElement.scrollWidth <= window.innerWidth + 2 &&
+          tools.getBoundingClientRect().width <= window.innerWidth &&
+          canvas.scrollWidth > canvas.clientWidth;
+      })()`);
+
+      // A 320 CSS px viewport represents 400% zoom of a 1280px-wide layout
+      // for horizontal-reflow testing only. It does not certify actual zoom
+      // rendering or screen-reader behavior. The header must wrap so the
+      // complete document stays within the viewport; the canvas alone scrolls.
+      await cdp.send("Emulation.setDeviceMetricsOverride", {
+        width: 320, height: 450, deviceScaleFactor: 1, mobile: false,
+      });
+      await waitForPage("320px layout reflow without page-level horizontal overflow", `(() => {
+        const workspace = document.querySelector('.workspace');
+        const header = document.querySelector('.topbar');
+        const tools = document.querySelector('.tools-panel');
+        const canvas = document.querySelector('.canvas-scroller');
+        if (!workspace || !header || !tools || !canvas || window.innerWidth !== 320) return false;
+        const columns = getComputedStyle(workspace).gridTemplateColumns.trim().split(/\\s+/);
+        return columns.length === 1 &&
+          document.documentElement.scrollWidth <= window.innerWidth + 2 &&
+          header.getBoundingClientRect().width <= window.innerWidth + 2 &&
+          tools.getBoundingClientRect().width <= window.innerWidth &&
+          canvas.scrollWidth > canvas.clientWidth;
+      })()`);
+      // Restore the verified 640px test viewport before keyboard interaction.
+      await cdp.send("Emulation.setDeviceMetricsOverride", {
+        width: 640, height: 450, deviceScaleFactor: 1, mobile: false,
+      });
+
+      // Accessibility #82: reach background removal via real Tab navigation,
+      // activate with Space, and restore through Undo. Automated check only.
+      await evaluate("(() => { const upload = Array.from(document.querySelectorAll('button')).find(node => node.textContent.trim() === 'Upload background image'); if (!upload) throw new Error('Upload background button missing'); upload.focus(); return true; })()");
+      let removeFocus = null;
+      for (let tab = 0; tab < 16; tab += 1) {
+        await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
+        await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
+        removeFocus = await evaluate("(() => { const button = Array.from(document.querySelectorAll('button')).find(node => node.textContent.trim() === 'Remove background image'); const style = button ? getComputedStyle(button) : null; return { focused: document.activeElement === button, label: button?.textContent.trim() || '', outlineStyle: style?.outlineStyle || '', outlineWidth: style?.outlineWidth || '' }; })()");
+        if (removeFocus?.focused) break;
+      }
+      if (!removeFocus?.focused || removeFocus.outlineStyle === "none" ||
+          removeFocus.outlineWidth === "0px") {
+        throw new Error("Keyboard Tab could not reach Remove background image with visible focus: " + JSON.stringify(removeFocus));
+      }
+      await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: " ", code: "Space", windowsVirtualKeyCode: 32, nativeVirtualKeyCode: 32 });
+      await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: " ", code: "Space", windowsVirtualKeyCode: 32, nativeVirtualKeyCode: 32 });
+      await waitForPage("Space removes image without deleting foreground", "(() => { const saved = JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null'); return !document.querySelector('.page-background-image') && saved && !saved.page.background_image && JSON.stringify(saved.elements.map(item => item.id)) === " + JSON.stringify(expectedForegroundIds) + "; })()");
+      await clickHistoryButton("Undo");
+      await waitForPage("Undo restores keyboard-removed image with contain fit", "(() => { const image = document.querySelector('.page-background-image'); return image?.getAttribute('src') === " + expectedBackgroundUrl + " && getComputedStyle(image).objectFit === 'contain'; })()");
+      process.stdout.write("PASS: 640px reflow proxy, contained canvas scroll, Tab/Space background removal and Undo\\n");
+    } finally {
+      await cdp.send("Emulation.clearDeviceMetricsOverride");
+    }
 
     // A rejected import must not replace the currently loaded valid document.
     const invalidFixture = JSON.stringify({ ...JSON.parse(fixture), schema_version: 999 });
@@ -629,7 +872,18 @@ async function main() {
     await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: " ", code: "Space", windowsVirtualKeyCode: 32, nativeVirtualKeyCode: 32 });
     await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: " ", code: "Space", windowsVirtualKeyCode: 32, nativeVirtualKeyCode: 32 });
     await waitForPage("keyboard redo restores edited text", "document.querySelector('.design-page')?.innerText || ''", value => value.includes("Browser interaction proof"));
-    await delay(500);
+    // Assert the live document still contains both newly added elements after
+    // keyboard undo/redo, then wait for the *persisted* debounced autosave
+    // before reloading. A fixed sleep can reload before the final save.
+    const expectedElementCount = `${fixtureCount + 2} elements`;
+    const liveCount = await evaluate("document.querySelector('.canvas-heading > span')?.textContent?.trim() || ''");
+    if (liveCount !== expectedElementCount) {
+      throw new Error(`Keyboard undo/redo lost added elements before autosave: ${liveCount}`);
+    }
+    await waitForPage("edited elements persisted before reload",
+      "(() => { const saved = JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null'); return Array.isArray(saved?.elements) && saved.elements.length === " +
+      (fixtureCount + 2) +
+      " && saved.elements.some(element => element.kind?.type === 'text' && element.kind.text === 'Browser interaction proof'); })()");
     await evaluate("location.reload(); true");
     await waitForPage("locally saved document restored after reload", "document.querySelector('.design-page')?.innerText || ''", value => value.includes("Browser interaction proof"));
     const restoredCount = await evaluate("document.querySelector('.canvas-heading > span')?.textContent?.trim() || ''");
@@ -843,7 +1097,7 @@ async function main() {
       const doc = JSON.parse(saved);
       const frame = doc.elements.find(item => item.id === expectedFrameGridIds.frame && item.kind.type === "frame");
       const grid = doc.elements.find(item => item.id === expectedFrameGridIds.grid && item.kind.type === "grid");
-      return doc.schema_version === 4 && doc.elements.length === expectedFrameGridIds.elementCount &&
+      return doc.schema_version === 5 && doc.elements.length === expectedFrameGridIds.elementCount &&
         frame && grid && grid.kind.rows === 4 && grid.kind.columns === 5 && grid.kind.stroke_width === 3.5 ? saved : null;
     });
     await evaluate("location.reload(); true");

@@ -18,6 +18,9 @@ function start(command, args) {
     cwd: webRoot,
     stdio: ["ignore", "pipe", "pipe"],
     env: { ...process.env, NODE_ENV: "production" },
+    // Keep preview descendants in one process group on Unix. Without this,
+    // terminating pnpm can leave its Nuxt child running and keep CI alive.
+    detached: process.platform !== "win32",
   });
   let stdout = "";
   let stderr = "";
@@ -44,13 +47,21 @@ async function waitForServer(child) {
 }
 
 function stop(child) {
-  if (child && child.exitCode === null) child.kill("SIGTERM");
+  if (!child || child.exitCode !== null) return;
+  try {
+    if (process.platform !== "win32" && child.pid) {
+      process.kill(-child.pid, "SIGTERM");
+    } else {
+      child.kill("SIGTERM");
+    }
+  } catch (error) {
+    if (error?.code !== "ESRCH") throw error;
+  }
 }
 
-async function verifyExport(browserName, browserType, template, expectedWidth, expectedHeight) {
-  const browser = await browserType.launch({ headless: true });
+async function verifyExport(browserName, browser, template, expectedWidth, expectedHeight) {
+  const context = await browser.newContext({ acceptDownloads: true });
   try {
-    const context = await browser.newContext({ acceptDownloads: true });
     const page = await context.newPage();
     await page.goto(baseUrl, { waitUntil: "networkidle" });
     await page.locator(".design-page").waitFor();
@@ -60,6 +71,17 @@ async function verifyExport(browserName, browserType, template, expectedWidth, e
     await page.locator("#template-choice").selectOption(template);
     await page.getByRole("button", { name: "Use template" }).click();
     await page.locator(".design-page").waitFor();
+    // Capture live-region announcements from the moment export begins.
+    // The autosave watcher can update this same region ~300 ms later;
+    // checking only its final text after downloading causes a false failure.
+    await page.evaluate(() => {
+      const region = document.querySelector('p.hint[role="status"]');
+      if (!region) throw new Error("Export status live region not found");
+      window.__exportStatusMessages = [region.textContent || ""];
+      new MutationObserver(() => {
+        window.__exportStatusMessages.push(region.textContent || "");
+      }).observe(region, { subtree: true, childList: true, characterData: true });
+    });
     const downloadPromise = page.waitForEvent("download", { timeout: 30_000 });
     await page.getByRole("button", { name: "Download PNG" }).click();
     const download = await downloadPromise;
@@ -74,29 +96,49 @@ async function verifyExport(browserName, browserType, template, expectedWidth, e
         width !== expectedWidth || height !== expectedHeight || png.length < 100) {
       throw new Error(`${browserName} ${template} PNG invalid: ${JSON.stringify({ validSignature, width, height, bytes: png.length })}`);
     }
-    const status = await page.locator('[role="status"]').innerText();
-    if (!status.includes(`${expectedWidth} × ${expectedHeight} pixels`)) {
-      throw new Error(`${browserName} export status mismatch: ${status}`);
-    }
+    // The export announcement must have appeared even if a later autosave
+    // message replaced it. Check the recorded live-region changes, not a
+    // transient final text snapshot.
+    const expectedStatus = `PNG exported at ${expectedWidth} × ${expectedHeight} pixels.`;
+    await page.waitForFunction(expected =>
+      window.__exportStatusMessages?.some(message => message.includes(expected)),
+    expectedStatus, { timeout: 15_000 }).catch(async error => {
+      const messages = await page.evaluate(() => window.__exportStatusMessages || []);
+      throw new Error(`${browserName} ${template} export announcement missing: ${JSON.stringify(messages.slice(-10))}; ${error.message}`);
+    });
     process.stdout.write(`PASS: ${browserName} ${template} PNG ${width}×${height} (${png.length} bytes)\n`);
-    await context.close();
   } finally {
-    await browser.close();
+    await context.close();
   }
 }
 
 async function main() {
-  const build = start("pnpm", ["exec", "nuxt", "build"]);
+  // Use the package build lifecycle so the prebuild hook generates the
+  // Rust/WASM adapter before Nuxt resolves its browser-only module import.
+  const build = start("pnpm", ["run", "build"]);
   await new Promise((resolveExit, rejectExit) => {
     build.once("error", rejectExit);
-    build.once("close", code => code === 0 ? resolveExit() : rejectExit(new Error(`Nuxt build failed (${code}): ${build.output().stderr.slice(-4000)}`)));
+    build.once("close", code => {
+      if (code === 0) return resolveExit();
+      const output = build.output();
+      rejectExit(new Error(
+        `Production build failed (${code}). stdout:\\n${output.stdout.slice(-4000)}\\nstderr:\\n${output.stderr.slice(-4000)}`,
+      ));
+    });
   });
   const preview = start("pnpm", ["exec", "nuxt", "preview", "--host=127.0.0.1", `--port=${port}`]);
   try {
     await waitForServer(preview);
     for (const [name, type] of browsers) {
-      await verifyExport(name, type, "shop-banner-landscape", 2400, 1000);
-      await verifyExport(name, type, "exam-paper-a4", 1588, 2246);
+      // Reuse one browser process per engine; create an isolated context for
+      // each template so localStorage and page state cannot leak between cases.
+      const browser = await type.launch({ headless: true });
+      try {
+        await verifyExport(name, browser, "shop-banner-landscape", 2400, 1000);
+        await verifyExport(name, browser, "exam-paper-a4", 1588, 2246);
+      } finally {
+        await browser.close();
+      }
     }
     process.stdout.write("PASS: PNG export dimensions and downloaded-file integrity verified in Chromium, Firefox, and WebKit for both MVP templates.\n");
   } finally {

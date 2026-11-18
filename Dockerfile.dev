@@ -9,8 +9,10 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* \
     && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.91.0 --profile minimal \
     && rustup target add wasm32-unknown-unknown \
-    && cargo install wasm-pack --version 0.15.0 --locked
+    && cargo install wasm-pack --version 0.15.0 --locked \
+    && corepack enable \
+    && corepack prepare pnpm@10.11.0 --activate
 
 WORKDIR /workspace/web
 
-CMD ["sh", "-lc", "cd /workspace && cargo metadata --locked --format-version 1 > /dev/null && cd /workspace/web && corepack enable && corepack prepare pnpm@10.11.0 --activate && pnpm install --frozen-lockfile && pnpm run dev"]
+CMD ["sh", "-lc", "cd /workspace && cargo metadata --locked --format-version 1 > /dev/null && cd /workspace/web && pnpm install --frozen-lockfile && pnpm run dev"]

@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "repository": "Rofikali/design-platform",
+  "snapshot_date": "2026-11-18",
+  "reference_main_sha": "83f3945fe5437ee6bc91b9368faa37c6f0e2dfc9",
+  "now_id": "DP-DEPS-01",
+  "next_ids": [
+    "DP-SEC-01",
+    "DP-M1-ACC-02",
+    "DP-M1-BG-09"
+  ],
+  "approval_policy": "OWNER_APPROVED_GATED_MERGE",
+  "milestones": [
+    {
+      "id": "DP-M1-BG-07",
+      "title": "Image-backed PNG pixel acceptance",
+      "status": "MERGED",
+      "pr": 112,
+      "sha": "1c99b3dae0c9a8d568870406ff40341d708100d9",
+      "summary": "Downloaded PNG pixel and foreground regression merged"
+    },
+    {
+      "id": "DP-M1-BG-08",
+      "title": "Image-backed Chrome print/PDF regression",
+      "status": "MERGED",
+      "pr": 113,
+      "sha": "f7f55126c34dc01cc2c86cb2fc9b611d9b75402a",
+      "summary": "Chrome print stylesheet and one-page PDF regression merged; physical printer unverified"
+    },
+    {
+      "id": "DP-M1-ACC-03",
+      "title": "Keyboard-operated background image removal",
+      "status": "MERGED",
+      "pr": 115,
+      "sha": "96d832c2af753248e6158345ebc49476dac8b7fc",
+      "issue": 82,
+      "summary": "Tab/Space background-removal browser regression merged; final-head CI, dependency audit and cross-browser export passed. Manual accessibility issue #82 remains open"
+    },
+    {
+      "id": "DP-M1-ACC-02",
+      "title": "Manual editor accessibility audit",
+      "status": "BLOCKED",
+      "issue": 82,
+      "summary": "Requires real keyboard, NVDA or VoiceOver, zoom and contrast observations; automation cannot certify"
+    },
+    {
+      "id": "DP-M1-BG-09",
+      "title": "Physical printer and PDF fidelity review",
+      "status": "PLANNED",
+      "issue": 85,
+      "summary": "Automated Chrome PDF is not physical printer or cross-browser output certification"
+    },
+    {
+      "id": "DP-M1-ACC-04",
+      "title": "Automated 200% zoom and keyboard layout regression",
+      "status": "MERGED",
+      "issue": 82,
+      "summary": "PR #119 merged as 83f3945f on 2026-11-18; 320px/640px zoom/reflow and keyboard regressions integrated. PR-head application, cross-browser and dependency audit CI passed; manual screen-reader audit #82 remains open.",
+      "pr": 119,
+      "sha": "83f3945fe5437ee6bc91b9368faa37c6f0e2dfc9"
+    },
+    {
+      "id": "DP-SEC-01",
+      "title": "Production JavaScript picomatch advisory remediation",
+      "status": "BLOCKED",
+      "issue": 118,
+      "summary": "Unpatched picomatch ReDoS remains BLOCKED. Temporary owner-approved development-only audit exception is merged in PR #120, expires 2026-12-02. Raw pnpm audit still fails; restore strict gate on verified patch; no production authorization."
+    },
+    {
+      "id": "DP-SEC-02",
+      "title": "Built Nuxt bundle dependency indicator inventory",
+      "status": "MERGED",
+      "pr": 120,
+      "sha": "adb3bd1f74202c8a343a41aceafcee0b05380973",
+      "issue": 118,
+      "summary": "PR #120 merged as adb3bd1f into main on 2026-11-18. Rust/Nuxt, browser, cross-browser, doc sync and Rust audit passed; JS audit passed ONLY with owner-approved development exception through 2026-12-02, not a fix or production approval."
+    },
+    {
+      "id": "DP-DEPS-01",
+      "title": "Nuxt 4 compatibility upgrade",
+      "status": "PR_OPEN",
+      "pr": 98,
+      "sha": "779b77eaadb0b0d399c71ae14690767b014348cd",
+      "issue": 118,
+      "summary": "PR #98 at 779b77ea conflicts with current main 83f3945f. PR-head Rust/Nuxt, browser, dev-container and docs checks PASS; production JavaScript dependency audit FAIL. Resolve conflicts, then verify current-base/exact-head CI and security before merge."
+    }
+  ]
+}

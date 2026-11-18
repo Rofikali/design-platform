@@ -267,3 +267,37 @@ At the end of a milestone, explain:
 7. PR/commit/live test links and the next smallest milestone.
 
 Use easy English alongside correct technical vocabulary. Teach the reason, not only the command.
+
+
+## 17. Permanent agent continuation and low-cost verification recipes
+
+The following guides are repository-specific counterparts of the owner's imgengine playbooks; **do not** import that repository's C17/FFI/ABI requirements into Design Platform.
+
+1. [Seven engineering review lenses](docs/engineering/seven-level-operating-model.md): proportional Junior → Mid → Senior → Tech Lead → Staff → Principal → Distinguished scrutiny with security/SRE/QA/finance.
+2. [Milestone continuation](docs/engineering/agent-continuation-runbook.md): reconcile latest `main`, PRs and checks, choose one READY task and checkpoint. Documentation cannot initiate an asynchronous agent or authorize an automatic merge.
+3. [Milestone handoff template](docs/engineering/agent-milestone-handoff.md): specify user outcome, in/out scope, schema, negative tests, threat boundaries, rollout, owner approval and exact SHA.
+4. [Change-scoped verification](docs/engineering/change-scoped-verification.md): select targeted Rust, WASM, TypeScript, browser, export, Docker and dependency checks without suppressing required CI.
+5. [CI evidence and minimal context](docs/engineering/ci-evidence-policy.md): report PASS/FAIL/PENDING/CANCELLED/SKIPPED/NOT RUN at current tested revision, link successful logs and read only failed steps when diagnosing.
+6. [Document editor HLD/LLD](docs/architecture/document-editor-hld-lld.md): code-level ownership and lifecycle of versioned documents, localStorage and browser exports.
+7. [Business strategy](docs/product/platform-business-strategy.md), [security operations](docs/security/security-and-privacy-operations.md) and [release gates](docs/operations/release-readiness.md): free-versus-paid and customer-data decisions remain proposals until approved and verified.
+
+**Standing principle:** avoid expensive duplicate compilation and rapid speculative CI-triggering commits; batching unrelated milestones is not acceptable either. A single bounded coherent PR, with exact-head required tests, is the unit of review. A public repository's free standard Actions usage is not a reason to waste compute, and caching is not a correctness guarantee.
+
+
+## 18. Scheduled hourly "go ahead" engineering autopilot
+
+The owner enabled an independent ChatGPT task named **Design Platform Autopilot** (hourly, 24/7 until manually paused). When the task fires—or the owner manually says "go ahead"—follow the [hourly autopilot agreement](docs/engineering/hourly-autopilot.md) and [agent continuation](docs/engineering/agent-continuation-runbook.md). Fetch current GitHub and exact-head status; choose the highest-priority eligible unfinished NOW task; do one bounded change; record PR/CI/risks/next action. No repetitive full Docker/test builds. The latest owner rule authorizes the autopilot to review and merge PRs when current-head checks, security, protection and any independent-review requirements pass. Never fake independent review or bypass checks; no publishing, deployment, paid services, credentials or customer-data changes. A scheduled task is separate from Markdown and from GitHub Actions.
+
+<!-- milestone-sync:start -->
+<!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
+### Milestone snapshot (generated: 2026-11-18)
+
+**Reference main:** 83f3945fe5437ee6bc91b9368faa37c6f0e2dfc9 (dated snapshot; re-check live GitHub before acting).
+
+**NOW:** **DP-DEPS-01 — Nuxt 4 compatibility upgrade** [PR_OPEN]. [PR #98](https://github.com/Rofikali/design-platform/pull/98) [Issue #118](https://github.com/Rofikali/design-platform/issues/118)
+
+**NEXT:** DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
+
+**Review gate:** Owner-authorized autopilot may review and merge only after all exact-head/integration CI, security, branch protection and required independent-review gates pass. No automatic publishing or deployment.
+
+<!-- milestone-sync:end -->

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { BackgroundImage, DesignElement } from "~/utils/document";
+import { getElementSelectionLabel } from "~/utils/element-accessibility";
 
 defineProps<{
   elements: DesignElement[];
@@ -49,7 +50,7 @@ const emit = defineEmits<{
           :key="element.id"
           :data-element-id="element.id"
           class="design-element"
-          :class="{ selected: selectedId === element.id, rectangle: element.type === 'rect', frame: element.type === 'frame', grid: element.type === 'grid' }"
+          :class="{ selected: selectedId === element.id, rectangle: element.type === 'rect', frame: element.type === 'frame', grid: element.type === 'grid', table: element.type === 'table' }"
           :style="{
             left: element.x + 'px',
             top: element.y + 'px',
@@ -63,7 +64,7 @@ const emit = defineEmits<{
             backgroundSize: element.type === 'grid' ? '100% ' + (100 / element.rows) + '%, ' + (100 / element.columns) + '% 100%' : undefined,
           }"
           type="button"
-          :aria-label="element.type === 'text' ? 'Select text element: ' + element.text.slice(0, 80) : element.type === 'rect' ? 'Select rectangle element' : element.type === 'frame' ? 'Select frame element' : 'Select grid element with ' + element.rows + ' rows and ' + element.columns + ' columns'"
+          :aria-label="getElementSelectionLabel(element)"
           :aria-pressed="selectedId === element.id"
           @pointerdown="emit('elementPointerDown', $event, element)"
           @pointermove="emit('elementPointerMove', $event)"
@@ -72,6 +73,18 @@ const emit = defineEmits<{
           @click="emit('select', element.id)"
         >
           <span v-if="element.type === 'text'">{{ element.text }}</span>
+          <div
+            v-else-if="element.type === 'table'"
+            class="table-preview"
+            :style="{ gridTemplateColumns: 'repeat(' + element.columns + ', minmax(0, 1fr))', gridTemplateRows: 'repeat(' + element.rows + ', minmax(0, 1fr))' }"
+            aria-hidden="true"
+          >
+            <span
+              v-for="(cell, cellIndex) in element.cells.flat()"
+              :key="cellIndex"
+              :style="{ backgroundColor: Math.floor(cellIndex / element.columns) < element.headerRows ? element.headerFill : element.cellFill, border: element.strokeWidth + 'px solid ' + element.strokeColor, color: element.textColor, fontSize: element.fontSize + 'px', padding: element.cellPadding + 'px' }"
+            >{{ cell }}</span>
+          </div>
           <span v-if="selectedId === element.id" class="resize-handle" aria-hidden="true" @pointerdown="emit('resizePointerDown', $event, element)" />
         </button>
       </div>
@@ -93,5 +106,8 @@ const emit = defineEmits<{
 .design-element.selected { border: 1px dashed #234bd6; outline: 1px solid #234bd6; }
 .resize-handle { position: absolute; right: -1px; bottom: -1px; width: 12px; height: 12px; border: 2px solid white; border-radius: 2px; background: #234bd6; box-shadow: 0 0 0 1px #234bd6; cursor: nwse-resize; touch-action: none; }
 .design-element.rectangle { border-radius: 0; }
+.design-element.table { padding: 0; overflow: hidden; }
+.table-preview { display: grid; width: 100%; height: 100%; overflow: hidden; }
+.table-preview > span { min-width: 0; min-height: 0; overflow: hidden; white-space: pre-wrap; overflow-wrap: anywhere; }
 .canvas-note { margin: 12px 0 0; color: #596780; font-size: 12px; line-height: 1.5; }
 </style>
