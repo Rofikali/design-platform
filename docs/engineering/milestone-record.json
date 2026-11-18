@@ -75,7 +75,7 @@
       "pr": 120,
       "sha": "fad25391d80105496ec19575ea519c378054ebc8",
       "issue": 118,
-      "summary": "Prior 76-file, 1.9 MB bundle scan found no indicators (not proof of non-reachability). PR #120 now bounds scanning to 64 MiB per file and 256 MiB total, with boundary tests; newest-head CI pending; required JS security audit remains failing."
+      "summary": "At exact head fad25391, Nuxt/Rust CI, scanner regression, and milestone sync pass; production JS security audit fails. Main SHA 96d832c also fails the same required JS audit (inherited blocker). 76-file indicator scan is not non-reachability proof; 64 MiB/file and 256 MiB total limits tested. Await upstream picomatch remediation or owner/security risk decision; no merge."
     },
     {
       "id": "DP-DEPS-01",
@@ -84,7 +84,7 @@
       "pr": 98,
       "sha": "779b77eaadb0b0d399c71ae14690767b014348cd",
       "issue": 118,
-      "summary": "PR #98 Nuxt 4 application and dev-container CI pass; cross-browser pending. pnpm 12.21.0 diagnostic reports 6 findings/1 high vs pnpm 10 audit 7/2 on same lockfile; both fail picomatch and neither remediates it."
+      "summary": "Nuxt 4.6.4 exact-head Nuxt/Rust CI and dev-container pass; cross-browser still in progress. Production JS audit fails on this PR and on main (inherited picomatch blocker). pnpm 12 diagnostic changes finding counts but is not remediation; do not merge."
     }
   ]
 }
