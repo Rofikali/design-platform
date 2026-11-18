@@ -26,14 +26,14 @@
 4. Assess scope using seven engineering levels, plus product, UX/accessibility, QA, security, DevOps/SRE, finance/CA/MBA and management review as justified. For small fixes, keep review proportional.
 5. Make a small, cohesive implementation, test or docs improvement when repository write permissions/tools and task prerequisites permit. Prefer targeted local/check evidence and one reviewed PR or update to an existing owned PR; never perform speculative broad refactors.
 6. For latest head, report **PASS/FAIL/RUNNING/QUEUED/CANCELLED/SKIPPED/NOT RUN** with checks/failed job and step URLs. Do not reuse successes from earlier heads. Inspect only focused failure logs, and never turn skipped security or unexecuted E2E tests into a pass.
-7. At meaningful transitions edit the **structured milestone record**, run the six-document generator, and keep detailed CI/tests/risks in the milestone handoff; never edit marked sections manually. Avoid pushing a commit just to say a run is still queued.
+7. At meaningful transitions edit the **structured milestone record**, run the seven-document generator, and keep detailed CI/tests/risks in the milestone handoff; never edit marked sections manually. Avoid pushing a commit just to say a run is still queued.
 8. Report what was actually accomplished and which approvals remain. If blocked (access denied, owner review needed, CI failure, unresolved design decision), report and stop that lane safely. An hourly run may open, review and merge a safe verified PR after all required gates; it must NEVER publish or deploy automatically.
 
 ## Owner-authorized gated PR review and merge (latest owner rule, 2026-11-17)
 
 The owner now authorizes **the full bounded PR lifecycle including reviewing and merging**, superseding the prior review-only policy. The autopilot must inspect the current diff/head/base, check all required latest-head and integration CI/security, verify GitHub branch protections, and respect any required independent human review. Self-review is not independent review. Use the expected PR head SHA when merging and verify main afterward. Never merge failing, pending, skipped-required, or unknown work; never bypass checks, dismiss reviews or force push. Publishing and deployment remain prohibited.
 
-For milestone status changes edit [milestone-record.json](milestone-record.json) first, then run the six-document generator. GitHub CI rejects missing or stale generated sections. A dated snapshot never supersedes live GitHub evidence.
+For milestone status changes edit [milestone-record.json](milestone-record.json) first, then run the seven-document generator. GitHub CI rejects missing or stale generated sections. A dated snapshot never supersedes live GitHub evidence.
 
 ## Standing permission boundaries
 
