@@ -28,3 +28,42 @@ export function replaceTableCell(table: TableElement, row: number, column: numbe
       : cells),
   };
 }
+
+/** Insert an empty row before the given boundary, preserving existing cell coordinates. */
+export function insertTableRow(table: TableElement, beforeRow: number): TableElement {
+  if (!Number.isInteger(beforeRow) || beforeRow < 0 || beforeRow > table.rows ||
+      !Number.isInteger(table.rows) || table.rows < 1 || table.rows >= 20 ||
+      !Number.isInteger(table.columns) || table.columns < 1 || table.columns > 20 ||
+      table.cells.length !== table.rows ||
+      table.cells.some((row) => row.length !== table.columns)) {
+    throw new Error("Invalid table row insertion.");
+  }
+  const cells = table.cells.map((row) => [...row]);
+  cells.splice(beforeRow, 0, Array.from({ length: table.columns }, () => ""));
+  return {
+    ...table,
+    rows: table.rows + 1,
+    headerRows: beforeRow < table.headerRows ? table.headerRows + 1 : table.headerRows,
+    cells,
+  };
+}
+
+/** Insert an empty column before a boundary without changing existing cell text. */
+export function insertTableColumn(table: TableElement, beforeColumn: number): TableElement {
+  if (!Number.isInteger(beforeColumn) || beforeColumn < 0 || beforeColumn > table.columns ||
+      !Number.isInteger(table.rows) || table.rows < 1 || table.rows > 20 ||
+      !Number.isInteger(table.columns) || table.columns < 1 || table.columns >= 20 ||
+      table.cells.length !== table.rows ||
+      table.cells.some((row) => !Array.isArray(row) || row.length !== table.columns)) {
+    throw new Error("Invalid table column insertion.");
+  }
+  return {
+    ...table,
+    columns: table.columns + 1,
+    cells: table.cells.map((row) => {
+      const cells = [...row];
+      cells.splice(beforeColumn, 0, "");
+      return cells;
+    }),
+  };
+}

@@ -1455,6 +1455,82 @@ async function main() {
     await evaluate("Array.from(document.querySelectorAll('button')).find(b => b.textContent.trim() === 'Redo')?.click(); true");
     await waitForPage("redo cell edit", "document.querySelector('.table-preview > span:nth-child(5)')?.textContent === 'Rice & dal ₹80'");
 
+    // Undo/redo restores a document snapshot and intentionally resets selection
+    // to its first element. Re-select the table before exercising its controls.
+    await evaluate("document.querySelector('.design-element.table')?.click(); true");
+    await waitForPage("table editor restored after history navigation",
+      "Boolean(document.querySelector('.table-cell-editor select') && document.querySelector('.table-cell-actions button'))");
+    await evaluate(`(() => {
+      const selector = document.querySelector('.table-cell-editor select');
+      Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value').set.call(selector, '4');
+      selector.dispatchEvent(new Event('change', { bubbles: true }));
+      return true;
+    })()`);
+    await waitForPage("row 2 column 2 reselected for insertion",
+      "document.querySelector('.selected-name')?.textContent || ''",
+      value => value.includes("Cell row 2, column 2"));
+
+    // Table row insertion: native keyboard activation, selected-cell coordinates,
+    // persisted schema-v5 data, and history restoration on the actual editor.
+    const insertionControl = await evaluate(`(() => {
+      const button = Array.from(document.querySelectorAll('.table-cell-actions button')).find(b => b.textContent.includes('Insert row before'));
+      if (!button) return { found: false };
+      button.focus();
+      return { found: true, focused: document.activeElement === button, disabled: button.disabled };
+    })()`);
+    if (!insertionControl.found || !insertionControl.focused || insertionControl.disabled) {
+      throw new Error(`Table row insertion button is not keyboard-ready: ${JSON.stringify(insertionControl)}`);
+    }
+    // Native button Space activation fires on key release in Chromium.
+    // Exercise the keyboard path without a synthetic DOM click.
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: " ", code: "Space", windowsVirtualKeyCode: 32, nativeVirtualKeyCode: 32 });
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: " ", code: "Space", windowsVirtualKeyCode: 32, nativeVirtualKeyCode: 32 });
+    // Check the rendered row selector first: autosave is debounced independently.
+    // On failure include live UI and persisted state so CI identifies whether
+    // activation, rendering, or persistence is broken.
+    try {
+      await waitFor("keyboard-inserted table row", async () => evaluate(
+        "document.querySelector('.table-cell-editor select')?.options.length === 12"
+      ), 8_000);
+    } catch (error) {
+      const diagnostics = await evaluate(`(() => {
+        const button = Array.from(document.querySelectorAll('.table-cell-actions button')).find(b => b.textContent.includes('Insert row before'));
+        const saved = JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null');
+        return { buttonPresent: !!button, buttonDisabled: button?.disabled, focused: document.activeElement === button,
+          selectorOptions: document.querySelector('.table-cell-editor select')?.options.length,
+          savedRows: saved?.elements?.find(e => e.kind?.type === 'table')?.kind?.rows,
+          status: document.querySelector('[role="status"]')?.textContent?.trim() };
+      })()`);
+      throw new Error(`${error.message}; diagnostics: ${JSON.stringify(diagnostics)}`);
+    }
+    await waitFor("inserted table row autosaved", async () => evaluate(
+      "JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null')?.elements.find(e => e.kind.type === 'table')?.kind.rows === 4"
+    ));
+    await waitForPage("inserted row keeps selected column",
+      "document.querySelector('.selected-name')?.textContent || ''",
+      value => value.includes("Cell row 2, column 2"));
+    const insertedTable = await evaluate("JSON.parse(localStorage.getItem('design-platform:document:v1')).elements.find(e => e.kind.type === 'table').kind");
+    if (insertedTable.cells[1][1] !== "" || insertedTable.cells[2][1] !== "Rice & dal ₹80") {
+      throw new Error("Inserted row did not preserve the original cell at its shifted coordinate");
+    }
+    // History recording is debounced; wait for the editor to expose the new undo entry.
+    await waitFor("row insertion history snapshot", async () => evaluate(
+      "Array.from(document.querySelectorAll('button')).some(b => b.textContent.trim() === 'Undo' && !b.disabled)"
+    ));
+    await delay(750);
+    await evaluate("Array.from(document.querySelectorAll('button')).find(b => b.textContent.trim() === 'Undo')?.click(); true");
+    await waitFor("undo row insertion", async () => evaluate(
+      "JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null')?.elements.find(e => e.kind.type === 'table')?.kind.rows === 3"
+    ));
+    await evaluate("Array.from(document.querySelectorAll('button')).find(b => b.textContent.trim() === 'Redo')?.click(); true");
+    await waitFor("redo row insertion", async () => evaluate(
+      "JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null')?.elements.find(e => e.kind.type === 'table')?.kind.rows === 4"
+    ));
+    const redoneTable = await evaluate("JSON.parse(localStorage.getItem('design-platform:document:v1')).elements.find(e => e.kind.type === 'table').kind");
+    if (redoneTable.cells[2][1] !== "Rice & dal ₹80") {
+      throw new Error("Redo row insertion lost the original table cell text");
+    }
+
     // Restore Shop Banner because the PDF geometry checks below intentionally
     // exercise the landscape 300 × 125 mm output, not the A4 Exam Paper.
     await evaluate(`(() => {

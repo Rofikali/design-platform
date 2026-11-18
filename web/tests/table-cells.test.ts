@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createHistory, recordHistory, redoHistory, undoHistory } from "../utils/document-history";
 import { parseDocumentJson, toDocument, type TableElement } from "../utils/document";
 import { renderDesignSvg } from "../utils/design-export";
-import { replaceTableCell, tableCellPosition } from "../utils/table-cells";
+import { insertTableColumn, insertTableRow, replaceTableCell, tableCellPosition } from "../utils/table-cells";
 
 function sampleTable(): TableElement {
   return {
@@ -57,5 +57,75 @@ describe("accessible table cell editing domain", () => {
     expect(() => replaceTableCell(full, 0, 0, "y".repeat(51))).toThrow(/20,000/);
     expect(replaceTableCell(full, 0, 0, "y".repeat(50)).cells[0]![0]).toHaveLength(50);
     expect(full.cells[0]![0]).toBe("x".repeat(50));
+  });
+});
+
+describe("table row insertion primitive", () => {
+  it("inserts an empty row without shifting existing cell values within rows", () => {
+    const original = replaceTableCell(sampleTable(), 1, 2, "Original");
+    const inserted = insertTableRow(original, 1);
+    expect(inserted.rows).toBe(4);
+    expect(inserted.cells[1]).toEqual(["", "", ""]);
+    expect(inserted.cells[2]![2]).toBe("Original");
+    expect(original.rows).toBe(3);
+    expect(original.cells[1]![2]).toBe("Original");
+    expect(parseDocumentJson(JSON.stringify(toDocument([inserted]))).elements[0])
+      .toMatchObject({ type: "table", rows: 4, cells: inserted.cells });
+  });
+
+  it("preserves header semantics when inserting before a header row", () => {
+    expect(insertTableRow(sampleTable(), 0).headerRows).toBe(2);
+    expect(insertTableRow(sampleTable(), 3).headerRows).toBe(1);
+  });
+
+  it("round-trips inserted rows through undo and redo without losing existing text", () => {
+    const original = replaceTableCell(sampleTable(), 2, 1, "Preserved");
+    const before = JSON.stringify(toDocument([original]));
+    const inserted = insertTableRow(original, 2);
+    const after = JSON.stringify(toDocument([inserted]));
+    const undo = undoHistory(recordHistory(createHistory(before), after), after);
+    expect(parseDocumentJson(undo.snapshot!).elements[0]).toMatchObject({
+      type: "table", rows: 3, cells: original.cells,
+    });
+    const redo = redoHistory(undo.history, undo.snapshot!);
+    expect(parseDocumentJson(redo.snapshot!).elements[0]).toMatchObject({
+      type: "table", rows: 4, cells: inserted.cells,
+    });
+    expect(inserted.cells[3]![1]).toBe("Preserved");
+  });
+
+  it("rejects invalid boundaries and the 20-row ceiling", () => {
+    const table = sampleTable();
+    for (const index of [-1, 4, 1.5, Number.NaN]) {
+      expect(() => insertTableRow(table, index)).toThrow(/Invalid/);
+    }
+    const full = { ...table, rows: 20, cells: Array.from({ length: 20 }, () => ["", "", ""]) };
+    expect(() => insertTableRow(full, 10)).toThrow(/Invalid/);
+  });
+});
+
+describe("table column insertion primitive", () => {
+  it("inserts an empty column and preserves source cells, headers, and schema-v5 serialization", () => {
+    const original = replaceTableCell(sampleTable(), 1, 1, "Rice & dal");
+    const inserted = insertTableColumn(original, 1);
+    expect(inserted.columns).toBe(4);
+    expect(inserted.rows).toBe(3);
+    expect(inserted.headerRows).toBe(1);
+    expect(inserted.cells[1]).toEqual(["", "", "Rice & dal", ""]);
+    expect(original.cells[1]).toEqual(["", "Rice & dal", ""]);
+    expect(parseDocumentJson(JSON.stringify(toDocument([inserted]))).elements[0])
+      .toMatchObject({ type: "table", columns: 4, cells: inserted.cells });
+  });
+
+  it("supports insertion at both edges and rejects invalid boundaries or a 20-column table", () => {
+    const table = replaceTableCell(sampleTable(), 0, 0, "First");
+    expect(insertTableColumn(table, 0).cells[0]).toEqual(["", "First", "", ""]);
+    expect(insertTableColumn(table, 3).cells[0]).toEqual(["First", "", "", ""]);
+    for (const index of [-1, 4, 1.5, Number.NaN, Infinity]) {
+      expect(() => insertTableColumn(table, index)).toThrow(/Invalid/);
+    }
+    const full = { ...table, columns: 20, cells: Array.from({ length: 3 }, () => Array(20).fill("")) };
+    expect(() => insertTableColumn(full, 10)).toThrow(/Invalid/);
+    expect(full.columns).toBe(20);
   });
 });

@@ -4,7 +4,7 @@ import EditorCanvas from "~/components/editor/EditorCanvas.vue";
 import { clampElementPosition, clampElementSize, nextElementId } from "~/utils/editor-helpers";
 import { loadLocalDocument, saveLocalDocument } from "~/utils/local-document-storage";
 import { createHistory, recordHistory, redoHistory, undoHistory } from "~/utils/document-history";
-import { replaceTableCell, tableCellPosition } from "~/utils/table-cells";
+import { insertTableColumn, insertTableRow, replaceTableCell, tableCellPosition } from "~/utils/table-cells";
 
 import {
   MAX_ELEMENTS,
@@ -60,6 +60,34 @@ function selectTableCell(index: number) {
   const table = selectedTable.value;
   if (!table || !Number.isInteger(index) || index < 0 || index >= table.rows * table.columns) return;
   selectedCellIndex.value = index;
+}
+/** Insert immediately before the selected cell's row; retain the selected column. */
+function insertRowBeforeSelection() {
+  const table = selectedTable.value;
+  if (!table || table.rows >= 20) return;
+  try {
+    const { row, column } = tableCellPosition(table, selectedCellIndex.value);
+    const updated = insertTableRow(table, row);
+    elements.value = elements.value.map((element) => element.id === table.id ? updated : element);
+    selectedCellIndex.value = row * updated.columns + column;
+    statusMessage.value = `Inserted row ${row + 1} of ${updated.rows}.`;
+  } catch (error) {
+    statusMessage.value = error instanceof Error ? error.message : "Could not insert table row.";
+  }
+}
+/** Insert before the selected column and keep the same row selected. */
+function insertColumnBeforeSelection() {
+  const table = selectedTable.value;
+  if (!table || table.columns >= 20) return;
+  try {
+    const { row, column } = tableCellPosition(table, selectedCellIndex.value);
+    const updated = insertTableColumn(table, column);
+    elements.value = elements.value.map((element) => element.id === table.id ? updated : element);
+    selectedCellIndex.value = row * updated.columns + column;
+    statusMessage.value = `Inserted column ${column + 1} of ${updated.columns}.`;
+  } catch (error) {
+    statusMessage.value = error instanceof Error ? error.message : "Could not insert table column.";
+  }
 }
 const selectedCellText = computed({
   get(): string {
@@ -588,6 +616,10 @@ onMounted(async () => {
             <div class="table-cell-actions">
               <button type="button" :disabled="selectedCellIndex === 0" @click="selectTableCell(selectedCellIndex - 1)">Previous cell</button>
               <button type="button" :disabled="selectedCellIndex >= selectedElement.rows * selectedElement.columns - 1" @click="selectTableCell(selectedCellIndex + 1)">Next cell</button>
+            </div>
+            <div class="table-cell-actions">
+              <button type="button" :disabled="selectedElement.rows >= 20" @click="insertRowBeforeSelection">Insert row before selected cell</button>
+              <button type="button" :disabled="selectedElement.columns >= 20" @click="insertColumnBeforeSelection">Insert column before selected cell</button>
             </div>
             <label class="field">
               Cell text — row {{ Math.floor(selectedCellIndex / selectedElement.columns) + 1 }}, column {{ selectedCellIndex % selectedElement.columns + 1 }}
