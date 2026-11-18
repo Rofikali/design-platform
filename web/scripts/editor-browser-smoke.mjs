@@ -1455,6 +1455,39 @@ async function main() {
     await evaluate("Array.from(document.querySelectorAll('button')).find(b => b.textContent.trim() === 'Redo')?.click(); true");
     await waitForPage("redo cell edit", "document.querySelector('.table-preview > span:nth-child(5)')?.textContent === 'Rice & dal ₹80'");
 
+    // Table row insertion: native keyboard activation, selected-cell coordinates,
+    // persisted schema-v5 data, and history restoration on the actual editor.
+    await evaluate("Array.from(document.querySelectorAll('.table-cell-actions button')).find(b => b.textContent.includes('Insert row before'))?.focus(); true");
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });
+    await waitFor("keyboard-inserted table row", async () => evaluate(
+      "JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null')?.elements.find(e => e.kind.type === 'table')?.kind.rows === 4"
+    ));
+    await waitForPage("inserted row keeps selected column",
+      "document.querySelector('.selected-name')?.textContent || ''",
+      value => value.includes("Cell row 2, column 2"));
+    const insertedTable = await evaluate("JSON.parse(localStorage.getItem('design-platform:document:v1')).elements.find(e => e.kind.type === 'table').kind");
+    if (insertedTable.cells[1][1] !== "" || insertedTable.cells[2][1] !== "Rice & dal ₹80") {
+      throw new Error("Inserted row did not preserve the original cell at its shifted coordinate");
+    }
+    // History recording is debounced; wait for the editor to expose the new undo entry.
+    await waitFor("row insertion history snapshot", async () => evaluate(
+      "Array.from(document.querySelectorAll('button')).some(b => b.textContent.trim() === 'Undo' && !b.disabled)"
+    ));
+    await delay(750);
+    await evaluate("Array.from(document.querySelectorAll('button')).find(b => b.textContent.trim() === 'Undo')?.click(); true");
+    await waitFor("undo row insertion", async () => evaluate(
+      "JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null')?.elements.find(e => e.kind.type === 'table')?.kind.rows === 3"
+    ));
+    await evaluate("Array.from(document.querySelectorAll('button')).find(b => b.textContent.trim() === 'Redo')?.click(); true");
+    await waitFor("redo row insertion", async () => evaluate(
+      "JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null')?.elements.find(e => e.kind.type === 'table')?.kind.rows === 4"
+    ));
+    const redoneTable = await evaluate("JSON.parse(localStorage.getItem('design-platform:document:v1')).elements.find(e => e.kind.type === 'table').kind");
+    if (redoneTable.cells[2][1] !== "Rice & dal ₹80") {
+      throw new Error("Redo row insertion lost the original table cell text");
+    }
+
     // Restore Shop Banner because the PDF geometry checks below intentionally
     // exercise the landscape 300 × 125 mm output, not the A4 Exam Paper.
     await evaluate(`(() => {
