@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createHistory, recordHistory, redoHistory, undoHistory } from "../utils/document-history";
 import { parseDocumentJson, toDocument, type TableElement } from "../utils/document";
 import { renderDesignSvg } from "../utils/design-export";
-import { replaceTableCell, tableCellPosition } from "../utils/table-cells";
+import { insertTableRow, replaceTableCell, tableCellPosition } from "../utils/table-cells";
 
 function sampleTable(): TableElement {
   return {
@@ -57,5 +57,33 @@ describe("accessible table cell editing domain", () => {
     expect(() => replaceTableCell(full, 0, 0, "y".repeat(51))).toThrow(/20,000/);
     expect(replaceTableCell(full, 0, 0, "y".repeat(50)).cells[0]![0]).toHaveLength(50);
     expect(full.cells[0]![0]).toBe("x".repeat(50));
+  });
+});
+
+describe("table row insertion primitive", () => {
+  it("inserts an empty row without shifting existing cell values within rows", () => {
+    const original = replaceTableCell(sampleTable(), 1, 2, "Original");
+    const inserted = insertTableRow(original, 1);
+    expect(inserted.rows).toBe(4);
+    expect(inserted.cells[1]).toEqual(["", "", ""]);
+    expect(inserted.cells[2]![2]).toBe("Original");
+    expect(original.rows).toBe(3);
+    expect(original.cells[1]![2]).toBe("Original");
+    expect(parseDocumentJson(JSON.stringify(toDocument([inserted]))).elements[0])
+      .toMatchObject({ type: "table", rows: 4, cells: inserted.cells });
+  });
+
+  it("preserves header semantics when inserting before a header row", () => {
+    expect(insertTableRow(sampleTable(), 0).headerRows).toBe(2);
+    expect(insertTableRow(sampleTable(), 3).headerRows).toBe(1);
+  });
+
+  it("rejects invalid boundaries and the 20-row ceiling", () => {
+    const table = sampleTable();
+    for (const index of [-1, 4, 1.5, Number.NaN]) {
+      expect(() => insertTableRow(table, index)).toThrow(/Invalid/);
+    }
+    const full = { ...table, rows: 20, cells: Array.from({ length: 20 }, () => ["", "", ""]) };
+    expect(() => insertTableRow(full, 10)).toThrow(/Invalid/);
   });
 });
