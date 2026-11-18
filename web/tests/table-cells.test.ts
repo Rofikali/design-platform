@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createHistory, recordHistory, redoHistory, undoHistory } from "../utils/document-history";
 import { parseDocumentJson, toDocument, type TableElement } from "../utils/document";
 import { renderDesignSvg } from "../utils/design-export";
-import { insertTableRow, replaceTableCell, tableCellPosition } from "../utils/table-cells";
+import { insertTableColumn, insertTableRow, replaceTableCell, tableCellPosition } from "../utils/table-cells";
 
 function sampleTable(): TableElement {
   return {
@@ -101,5 +101,31 @@ describe("table row insertion primitive", () => {
     }
     const full = { ...table, rows: 20, cells: Array.from({ length: 20 }, () => ["", "", ""]) };
     expect(() => insertTableRow(full, 10)).toThrow(/Invalid/);
+  });
+});
+
+describe("table column insertion primitive", () => {
+  it("inserts an empty column and preserves source cells, headers, and schema-v5 serialization", () => {
+    const original = replaceTableCell(sampleTable(), 1, 1, "Rice & dal");
+    const inserted = insertTableColumn(original, 1);
+    expect(inserted.columns).toBe(4);
+    expect(inserted.rows).toBe(3);
+    expect(inserted.headerRows).toBe(1);
+    expect(inserted.cells[1]).toEqual(["", "", "Rice & dal", ""]);
+    expect(original.cells[1]).toEqual(["", "Rice & dal", ""]);
+    expect(parseDocumentJson(JSON.stringify(toDocument([inserted]))).elements[0])
+      .toMatchObject({ type: "table", columns: 4, cells: inserted.cells });
+  });
+
+  it("supports insertion at both edges and rejects invalid boundaries or a 20-column table", () => {
+    const table = replaceTableCell(sampleTable(), 0, 0, "First");
+    expect(insertTableColumn(table, 0).cells[0]).toEqual(["", "First", "", ""]);
+    expect(insertTableColumn(table, 3).cells[0]).toEqual(["First", "", "", ""]);
+    for (const index of [-1, 4, 1.5, Number.NaN, Infinity]) {
+      expect(() => insertTableColumn(table, index)).toThrow(/Invalid/);
+    }
+    const full = { ...table, columns: 20, cells: Array.from({ length: 3 }, () => Array(20).fill("")) };
+    expect(() => insertTableColumn(full, 10)).toThrow(/Invalid/);
+    expect(full.columns).toBe(20);
   });
 });
