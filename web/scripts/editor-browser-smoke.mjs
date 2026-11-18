@@ -685,6 +685,31 @@ async function main() {
           canvas.scrollWidth > canvas.clientWidth;
       })()`);
 
+      // A 320 CSS px viewport represents 400% zoom of a 1280px-wide layout
+      // for horizontal-reflow testing only. It does not certify actual zoom
+      // rendering or screen-reader behavior. The header must wrap so the
+      // complete document stays within the viewport; the canvas alone scrolls.
+      await cdp.send("Emulation.setDeviceMetricsOverride", {
+        width: 320, height: 450, deviceScaleFactor: 1, mobile: false,
+      });
+      await waitForPage("320px layout reflow without page-level horizontal overflow", `(() => {
+        const workspace = document.querySelector('.workspace');
+        const header = document.querySelector('.topbar');
+        const tools = document.querySelector('.tools-panel');
+        const canvas = document.querySelector('.canvas-scroller');
+        if (!workspace || !header || !tools || !canvas || window.innerWidth !== 320) return false;
+        const columns = getComputedStyle(workspace).gridTemplateColumns.trim().split(/\\s+/);
+        return columns.length === 1 &&
+          document.documentElement.scrollWidth <= window.innerWidth + 2 &&
+          header.getBoundingClientRect().width <= window.innerWidth + 2 &&
+          tools.getBoundingClientRect().width <= window.innerWidth &&
+          canvas.scrollWidth > canvas.clientWidth;
+      })()`);
+      // Restore the verified 640px test viewport before keyboard interaction.
+      await cdp.send("Emulation.setDeviceMetricsOverride", {
+        width: 640, height: 450, deviceScaleFactor: 1, mobile: false,
+      });
+
       // Accessibility #82: reach background removal via real Tab navigation,
       // activate with Space, and restore through Undo. Automated check only.
       await evaluate("(() => { const upload = Array.from(document.querySelectorAll('button')).find(node => node.textContent.trim() === 'Upload background image'); if (!upload) throw new Error('Upload background button missing'); upload.focus(); return true; })()");
