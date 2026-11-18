@@ -665,25 +665,74 @@ async function main() {
       await cdp.send("Emulation.setEmulatedMedia", { media: "screen" });
     }
 
-    // Accessibility #82: reach background removal via real Tab navigation,
-    // activate with Space, and restore through Undo. Automated check only.
-    await evaluate("(() => { const upload = Array.from(document.querySelectorAll('button')).find(node => node.textContent.trim() === 'Upload background image'); if (!upload) throw new Error('Upload background button missing'); upload.focus(); return true; })()");
-    let removeFocus = null;
-    for (let tab = 0; tab < 16; tab += 1) {
-      await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
-      await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
-      removeFocus = await evaluate("(() => { const button = Array.from(document.querySelectorAll('button')).find(node => node.textContent.trim() === 'Remove background image'); const style = button ? getComputedStyle(button) : null; return { focused: document.activeElement === button, label: button?.textContent.trim() || '', outlineStyle: style?.outlineStyle || '', outlineWidth: style?.outlineWidth || '' }; })()");
-      if (removeFocus?.focused) break;
+    // A 640 CSS px viewport models the layout space of a 1280px browser at
+    // 200% zoom; this is a reflow proxy, NOT an actual browser zoom or an
+    // assistive-technology certification. The 800px canvas must scroll inside
+    // its own scroller without forcing the entire document to scroll sideways.
+    await cdp.send("Emulation.setDeviceMetricsOverride", {
+      width: 640, height: 450, deviceScaleFactor: 1, mobile: false,
+    });
+    try {
+      await waitForPage("narrow editor reflow and contained canvas overflow", `(() => {
+        const workspace = document.querySelector('.workspace');
+        const tools = document.querySelector('.tools-panel');
+        const canvas = document.querySelector('.canvas-scroller');
+        if (!workspace || !tools || !canvas || window.innerWidth !== 640) return false;
+        const columns = getComputedStyle(workspace).gridTemplateColumns.trim().split(/\\s+/);
+        return columns.length === 1 &&
+          document.documentElement.scrollWidth <= window.innerWidth + 2 &&
+          tools.getBoundingClientRect().width <= window.innerWidth &&
+          canvas.scrollWidth > canvas.clientWidth;
+      })()`);
+
+      // A 320 CSS px viewport represents 400% zoom of a 1280px-wide layout
+      // for horizontal-reflow testing only. It does not certify actual zoom
+      // rendering or screen-reader behavior. The header must wrap so the
+      // complete document stays within the viewport; the canvas alone scrolls.
+      await cdp.send("Emulation.setDeviceMetricsOverride", {
+        width: 320, height: 450, deviceScaleFactor: 1, mobile: false,
+      });
+      await waitForPage("320px layout reflow without page-level horizontal overflow", `(() => {
+        const workspace = document.querySelector('.workspace');
+        const header = document.querySelector('.topbar');
+        const tools = document.querySelector('.tools-panel');
+        const canvas = document.querySelector('.canvas-scroller');
+        if (!workspace || !header || !tools || !canvas || window.innerWidth !== 320) return false;
+        const columns = getComputedStyle(workspace).gridTemplateColumns.trim().split(/\\s+/);
+        return columns.length === 1 &&
+          document.documentElement.scrollWidth <= window.innerWidth + 2 &&
+          header.getBoundingClientRect().width <= window.innerWidth + 2 &&
+          tools.getBoundingClientRect().width <= window.innerWidth &&
+          canvas.scrollWidth > canvas.clientWidth;
+      })()`);
+      // Restore the verified 640px test viewport before keyboard interaction.
+      await cdp.send("Emulation.setDeviceMetricsOverride", {
+        width: 640, height: 450, deviceScaleFactor: 1, mobile: false,
+      });
+
+      // Accessibility #82: reach background removal via real Tab navigation,
+      // activate with Space, and restore through Undo. Automated check only.
+      await evaluate("(() => { const upload = Array.from(document.querySelectorAll('button')).find(node => node.textContent.trim() === 'Upload background image'); if (!upload) throw new Error('Upload background button missing'); upload.focus(); return true; })()");
+      let removeFocus = null;
+      for (let tab = 0; tab < 16; tab += 1) {
+        await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
+        await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
+        removeFocus = await evaluate("(() => { const button = Array.from(document.querySelectorAll('button')).find(node => node.textContent.trim() === 'Remove background image'); const style = button ? getComputedStyle(button) : null; return { focused: document.activeElement === button, label: button?.textContent.trim() || '', outlineStyle: style?.outlineStyle || '', outlineWidth: style?.outlineWidth || '' }; })()");
+        if (removeFocus?.focused) break;
+      }
+      if (!removeFocus?.focused || removeFocus.outlineStyle === "none" ||
+          removeFocus.outlineWidth === "0px") {
+        throw new Error("Keyboard Tab could not reach Remove background image with visible focus: " + JSON.stringify(removeFocus));
+      }
+      await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: " ", code: "Space", windowsVirtualKeyCode: 32, nativeVirtualKeyCode: 32 });
+      await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: " ", code: "Space", windowsVirtualKeyCode: 32, nativeVirtualKeyCode: 32 });
+      await waitForPage("Space removes image without deleting foreground", "(() => { const saved = JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null'); return !document.querySelector('.page-background-image') && saved && !saved.page.background_image && JSON.stringify(saved.elements.map(item => item.id)) === " + JSON.stringify(expectedForegroundIds) + "; })()");
+      await clickHistoryButton("Undo");
+      await waitForPage("Undo restores keyboard-removed image with contain fit", "(() => { const image = document.querySelector('.page-background-image'); return image?.getAttribute('src') === " + expectedBackgroundUrl + " && getComputedStyle(image).objectFit === 'contain'; })()");
+      process.stdout.write("PASS: 640px reflow proxy, contained canvas scroll, Tab/Space background removal and Undo\\n");
+    } finally {
+      await cdp.send("Emulation.clearDeviceMetricsOverride");
     }
-    if (!removeFocus?.focused || removeFocus.outlineStyle === "none" ||
-        removeFocus.outlineWidth === "0px") {
-      throw new Error("Keyboard Tab could not reach Remove background image with visible focus: " + JSON.stringify(removeFocus));
-    }
-    await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: " ", code: "Space", windowsVirtualKeyCode: 32, nativeVirtualKeyCode: 32 });
-    await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: " ", code: "Space", windowsVirtualKeyCode: 32, nativeVirtualKeyCode: 32 });
-    await waitForPage("Space removes image without deleting foreground", "(() => { const saved = JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null'); return !document.querySelector('.page-background-image') && saved && !saved.page.background_image && JSON.stringify(saved.elements.map(item => item.id)) === " + JSON.stringify(expectedForegroundIds) + "; })()");
-    await clickHistoryButton("Undo");
-    await waitForPage("Undo restores keyboard-removed image with contain fit", "(() => { const image = document.querySelector('.page-background-image'); return image?.getAttribute('src') === " + expectedBackgroundUrl + " && getComputedStyle(image).objectFit === 'contain'; })()");
 
     // A rejected import must not replace the currently loaded valid document.
     const invalidFixture = JSON.stringify({ ...JSON.parse(fixture), schema_version: 999 });

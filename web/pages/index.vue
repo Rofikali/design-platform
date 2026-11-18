@@ -635,7 +635,7 @@ hr { margin: 20px 0; border: 0; border-top: 1px solid #e6eaf1; }
 .field-label { margin: 16px 0 8px; color: #52617a; font-size: 12px; font-weight: 650; }
 .move-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
 .move-grid button { min-height: 34px; border: 1px solid #d7deea; border-radius: 7px; background: white; }
-@media (max-width: 760px) { .topbar { padding: 18px; } .workspace { grid-template-columns: 1fr; padding: 12px; gap: 12px; } .tools-panel { order: 2; } .canvas-area { order: 1; padding: 12px; } }
+@media (max-width: 760px) { .topbar { padding: 18px; flex-wrap: wrap; } .status { max-width: 100%; overflow-wrap: anywhere; } .workspace { grid-template-columns: 1fr; padding: 12px; gap: 12px; } .tools-panel { order: 2; } .canvas-area { order: 1; padding: 12px; } }
 @media print {
   body { margin: 0; }
   .app-shell.printing-design { min-height: 0; }
