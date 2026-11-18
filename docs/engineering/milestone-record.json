@@ -3,11 +3,11 @@
   "repository": "Rofikali/design-platform",
   "snapshot_date": "2026-11-18",
   "reference_main_sha": "96d832c2af753248e6158345ebc49476dac8b7fc",
-  "now_id": "DP-M1-ACC-04",
+  "now_id": "DP-SEC-02",
   "next_ids": [
     "DP-SEC-01",
     "DP-DEPS-01",
-    "DP-SEC-02",
+    "DP-M1-ACC-04",
     "DP-M1-ACC-02",
     "DP-M1-BG-09"
   ],
@@ -73,9 +73,9 @@
       "title": "Built Nuxt bundle dependency indicator inventory",
       "status": "PR_OPEN",
       "pr": 120,
-      "sha": "9e85ff11fcec1abb19209e0bb29fee2c4810ff3b",
+      "sha": "ca385d37f7ed824f37586b14b351e049861c9648",
       "issue": 118,
-      "summary": "76 Nuxt server JavaScript files inspected and four diagnostic tests passed; none of three signature strings found; does not establish non-reachability; required security audit fails"
+      "summary": "Prior 76-file scan found no indicators, not proof of non-reachability. PR #120 adds fail-closed 64 MiB per-file scan limit and sparse-file regression; exact-head scanner tests pass; required production JavaScript audit fails."
     },
     {
       "id": "DP-DEPS-01",

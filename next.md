@@ -18,9 +18,9 @@
 
 **Reference main:** 96d832c2af753248e6158345ebc49476dac8b7fc (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M1-ACC-04 — Automated 200% zoom and keyboard layout regression** [PR_OPEN]. [PR #119](https://github.com/Rofikali/design-platform/pull/119) [Issue #82](https://github.com/Rofikali/design-platform/issues/82)
+**NOW:** **DP-SEC-02 — Built Nuxt bundle dependency indicator inventory** [PR_OPEN]. [PR #120](https://github.com/Rofikali/design-platform/pull/120) [Issue #118](https://github.com/Rofikali/design-platform/issues/118)
 
-**NEXT:** DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-DEPS-01 [PR_OPEN] [PR #98](https://github.com/Rofikali/design-platform/pull/98) [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-SEC-02 [PR_OPEN] [PR #120](https://github.com/Rofikali/design-platform/pull/120) [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
+**NEXT:** DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-DEPS-01 [PR_OPEN] [PR #98](https://github.com/Rofikali/design-platform/pull/98) [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-04 [PR_OPEN] [PR #119](https://github.com/Rofikali/design-platform/pull/119) [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
 **Review gate:** Owner-authorized autopilot may review and merge only after all exact-head/integration CI, security, branch protection and required independent-review gates pass. No automatic publishing or deployment.
 
@@ -33,7 +33,7 @@
 | DP-M1-BG-09 — Physical printer and PDF fidelity review | PLANNED | [Issue #85](https://github.com/Rofikali/design-platform/issues/85) | Automated Chrome PDF is not physical printer or cross-browser output certification |
 | DP-M1-ACC-04 — Automated 200% zoom and keyboard layout regression | PR_OPEN | [PR #119](https://github.com/Rofikali/design-platform/pull/119) [Issue #82](https://github.com/Rofikali/design-platform/issues/82) | 640px reflow and real Tab/Space keyboard regression passes application and cross-browser CI; PR #119 is OPEN, shared production JavaScript audit fails; manual screen-reader work remains open |
 | DP-SEC-01 — Production JavaScript picomatch advisory remediation | BLOCKED | [Issue #118](https://github.com/Rofikali/design-platform/issues/118) | Inherited production JavaScript security audit fails on main and open PRs; no verified patched picomatch release or accepted risk decision; keep audit mandatory |
-| DP-SEC-02 — Built Nuxt bundle dependency indicator inventory | PR_OPEN | [PR #120](https://github.com/Rofikali/design-platform/pull/120) [Issue #118](https://github.com/Rofikali/design-platform/issues/118) | 76 Nuxt server JavaScript files inspected and four diagnostic tests passed; none of three signature strings found; does not establish non-reachability; required security audit fails |
+| DP-SEC-02 — Built Nuxt bundle dependency indicator inventory | PR_OPEN | [PR #120](https://github.com/Rofikali/design-platform/pull/120) [Issue #118](https://github.com/Rofikali/design-platform/issues/118) | Prior 76-file scan found no indicators, not proof of non-reachability. PR #120 adds fail-closed 64 MiB per-file scan limit and sparse-file regression; exact-head scanner tests pass; required production JavaScript audit fails. |
 | DP-DEPS-01 — Nuxt 4 compatibility upgrade | PR_OPEN | [PR #98](https://github.com/Rofikali/design-platform/pull/98) [Issue #118](https://github.com/Rofikali/design-platform/issues/118) | Nuxt 4 CI, cross-browser and development container pass; reduces audit findings from 21 to 7, but two high findings including picomatch block merge |
 
 <!-- milestone-sync:end -->
