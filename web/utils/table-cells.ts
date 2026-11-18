@@ -47,3 +47,23 @@ export function insertTableRow(table: TableElement, beforeRow: number): TableEle
     cells,
   };
 }
+
+/** Insert an empty column before a boundary without changing existing cell text. */
+export function insertTableColumn(table: TableElement, beforeColumn: number): TableElement {
+  if (!Number.isInteger(beforeColumn) || beforeColumn < 0 || beforeColumn > table.columns ||
+      !Number.isInteger(table.rows) || table.rows < 1 || table.rows > 20 ||
+      !Number.isInteger(table.columns) || table.columns < 1 || table.columns >= 20 ||
+      table.cells.length !== table.rows ||
+      table.cells.some((row) => !Array.isArray(row) || row.length !== table.columns)) {
+    throw new Error("Invalid table column insertion.");
+  }
+  return {
+    ...table,
+    columns: table.columns + 1,
+    cells: table.cells.map((row) => {
+      const cells = [...row];
+      cells.splice(beforeColumn, 0, "");
+      return cells;
+    }),
+  };
+}
