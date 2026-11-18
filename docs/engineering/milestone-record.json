@@ -57,9 +57,9 @@
       "title": "Automated 200% zoom and keyboard layout regression",
       "status": "PR_OPEN",
       "issue": 82,
-      "summary": "640px reflow and real Tab/Space keyboard regression passes application and cross-browser CI; PR #119 is OPEN, shared production JavaScript audit fails; manual screen-reader work remains open",
+      "summary": "PR #119 adds 320px/640px layout reflow and keyboard controls regression; latest-head application CI passes, cross-browser export remains in progress, required JS audit fails. Manual screen-reader audit still open.",
       "pr": 119,
-      "sha": "0b7a7848c0c7381f4419587a3744ae2fbb184958"
+      "sha": "3de4f249739f42c8d401cb51fff32be7a0b9ce07"
     },
     {
       "id": "DP-SEC-01",
@@ -73,18 +73,18 @@
       "title": "Built Nuxt bundle dependency indicator inventory",
       "status": "PR_OPEN",
       "pr": 120,
-      "sha": "ca385d37f7ed824f37586b14b351e049861c9648",
+      "sha": "fad25391d80105496ec19575ea519c378054ebc8",
       "issue": 118,
-      "summary": "Prior 76-file scan found no indicators, not proof of non-reachability. PR #120 adds fail-closed 64 MiB per-file scan limit and sparse-file regression; exact-head scanner tests pass; required production JavaScript audit fails."
+      "summary": "Prior 76-file, 1.9 MB bundle scan found no indicators (not proof of non-reachability). PR #120 now bounds scanning to 64 MiB per file and 256 MiB total, with boundary tests; newest-head CI pending; required JS security audit remains failing."
     },
     {
       "id": "DP-DEPS-01",
       "title": "Nuxt 4 compatibility upgrade",
       "status": "PR_OPEN",
       "pr": 98,
-      "sha": "00d69b6e42f7f5c0eead069f623290531abe6d8f",
+      "sha": "779b77eaadb0b0d399c71ae14690767b014348cd",
       "issue": 118,
-      "summary": "Nuxt 4 CI, cross-browser and development container pass; reduces audit findings from 21 to 7, but two high findings including picomatch block merge"
+      "summary": "PR #98 Nuxt 4 application and dev-container CI pass; cross-browser pending. pnpm 12.21.0 diagnostic reports 6 findings/1 high vs pnpm 10 audit 7/2 on same lockfile; both fail picomatch and neither remediates it."
     }
   ]
 }
