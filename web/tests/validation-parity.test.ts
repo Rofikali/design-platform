@@ -8,8 +8,12 @@ describe("shared Rust/TypeScript document validation cases", () => {
     expect(validationCases.cases.length).toBeGreaterThan(0);
   });
 
-  it.each(validationCases.cases)("$name", (...args) => {
-    const { document, valid } = args[0];
+  it.each(validationCases.cases)("$name", (testCase) => {
+    // Vitest's callback row is not guaranteed to be present under stricter
+    // TypeScript inference. Fail explicitly rather than dereferencing an
+    // unchecked array element or hiding it behind a non-null assertion.
+    if (!testCase) throw new Error("Validation fixture row is missing");
+    const { document, valid } = testCase;
 
     if (valid) {
       expect(() => parseDocument(document)).not.toThrow();
