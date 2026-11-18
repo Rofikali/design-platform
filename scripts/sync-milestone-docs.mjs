@@ -6,6 +6,7 @@ export const SOURCE = "docs/engineering/milestone-record.json";
 export const TARGETS = Object.freeze([
   { path: "AGENTS.md", view: "compact" },
   { path: "SKILLS.md", view: "compact" },
+  { path: "README.md", view: "compact" },
   { path: "next.md", view: "detailed" },
   { path: "docs/engineering/decision-status-register.md", view: "detailed" },
   { path: "docs/engineering/agent-continuation-runbook.md", view: "compact" },
@@ -23,10 +24,16 @@ const clean = s => s.replace(/\s+/g, " ").replace(/\|/g, "\\|").trim();
 export function validateRecord(r) {
   if (!r || typeof r !== "object" || Array.isArray(r)) fail("Record must be an object");
   if (r.schema_version !== 1 || r.repository !== "Rofikali/design-platform") fail("Unsupported milestone schema/repository");
-  if (typeof r.snapshot_date !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(r.snapshot_date) ||
-      !Number.isFinite(Date.parse(r.snapshot_date + "T00:00:00Z"))) fail("Invalid snapshot_date");
+  // Date.parse normalizes impossible calendar dates such as 2026-02-31.
+  // Require the parsed UTC date to round-trip exactly before publishing it.
+  const snapshotTime = typeof r.snapshot_date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(r.snapshot_date)
+    ? Date.parse(r.snapshot_date + "T00:00:00Z") : NaN;
+  if (!Number.isFinite(snapshotTime) ||
+      new Date(snapshotTime).toISOString().slice(0, 10) !== r.snapshot_date) fail("Invalid snapshot_date");
   if (!SHA.test(r.reference_main_sha)) fail("Invalid reference_main_sha");
-  if (r.approval_policy !== "HUMAN_REVIEW_REQUIRED") fail("Automated merging/publishing is prohibited");
+  if (!["HUMAN_REVIEW_REQUIRED", "OWNER_APPROVED_GATED_MERGE"].includes(r.approval_policy)) {
+    fail("Unknown merge authorization policy; unverified automatic merging is prohibited");
+  }
   if (!Array.isArray(r.milestones) || r.milestones.length < 1 || r.milestones.length > 100) fail("Invalid milestone list");
   const seen = new Set();
   for (const m of r.milestones) {
@@ -73,7 +80,9 @@ export function renderGeneratedBlock(record, view) {
     "",
     "**NEXT:** " + (next.length ? next.map(m => clean(m.id) + " [" + m.status + "]" + reference(m)).join("; ") : "None recorded."),
     "",
-    "**Review gate:** A human reviews and manually merges each PR. No automated merges, publishing or deployments.",
+    r.approval_policy === "OWNER_APPROVED_GATED_MERGE"
+      ? "**Review gate:** Owner-authorized autopilot may review and merge only after all exact-head/integration CI, security, branch protection and required independent-review gates pass. No automatic publishing or deployment."
+      : "**Review gate:** A human reviews and manually merges each PR. No automated merges, publishing or deployments.",
   ];
   if (view === "detailed") {
     out.push("", "| Milestone | Status | PR / issue | Verified scope (not a live CI claim) |",

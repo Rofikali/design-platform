@@ -18,10 +18,10 @@ function fixture() {
   };
 }
 
-test("the generator owns exactly six distinct documents", () => {
-  assert.equal(TARGETS.length, 6);
-  assert.equal(new Set(TARGETS.map(t => t.path)).size, 6);
-  assert.deepEqual(TARGETS.map(t => t.view), ["compact", "compact", "detailed", "detailed", "compact", "compact"]);
+test("the generator owns exactly seven distinct documents", () => {
+  assert.equal(TARGETS.length, 7);
+  assert.equal(new Set(TARGETS.map(t => t.path)).size, 7);
+  assert.deepEqual(TARGETS.map(t => t.view), ["compact", "compact", "compact", "detailed", "detailed", "compact", "compact"]);
 });
 
 test("one structured source creates stable compact and detailed sections", () => {
@@ -53,6 +53,27 @@ test("the guard rejects removed, duplicated and unordered generated markers", ()
   assert.throws(() => synchronizeDocument("Nothing here", block), /exactly one/);
   assert.throws(() => synchronizeDocument("<!-- milestone-sync:end -->\n<!-- milestone-sync:start -->", block), /exactly one/);
   assert.throws(() => synchronizeDocument(block + "\n" + block, block), /exactly one/);
+});
+
+test("scoped owner authorization allows gated PR merges without publishing", () => {
+  const record = fixture();
+  record.approval_policy = "OWNER_APPROVED_GATED_MERGE";
+  const block = renderGeneratedBlock(record, "compact");
+  assert.match(block, /Owner-authorized autopilot may review and merge only after all exact-head\/integration CI/);
+  assert.match(block, /required independent-review gates pass/);
+  assert.match(block, /No automatic publishing or deployment/);
+  assert.doesNotMatch(block, /No automated merges/);
+});
+
+test("snapshot dates must exist on the calendar, including leap-day boundaries", () => {
+  for (const invalidDate of ["2026-02-29", "2026-02-31", "2026-04-31", "2026-13-01"]) {
+    const record = fixture();
+    record.snapshot_date = invalidDate;
+    assert.throws(() => validateRecord(record), /Invalid snapshot_date/, invalidDate);
+  }
+  const leapDay = fixture();
+  leapDay.snapshot_date = "2024-02-29";
+  assert.equal(validateRecord(leapDay), leapDay);
 });
 
 test("malformed records and unsafe merge policy fail before generation", () => {
