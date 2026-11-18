@@ -78,6 +78,22 @@ describe("table row insertion primitive", () => {
     expect(insertTableRow(sampleTable(), 3).headerRows).toBe(1);
   });
 
+  it("round-trips inserted rows through undo and redo without losing existing text", () => {
+    const original = replaceTableCell(sampleTable(), 2, 1, "Preserved");
+    const before = JSON.stringify(toDocument([original]));
+    const inserted = insertTableRow(original, 2);
+    const after = JSON.stringify(toDocument([inserted]));
+    const undo = undoHistory(recordHistory(createHistory(before), after), after);
+    expect(parseDocumentJson(undo.snapshot!).elements[0]).toMatchObject({
+      type: "table", rows: 3, cells: original.cells,
+    });
+    const redo = redoHistory(undo.history, undo.snapshot!);
+    expect(parseDocumentJson(redo.snapshot!).elements[0]).toMatchObject({
+      type: "table", rows: 4, cells: inserted.cells,
+    });
+    expect(inserted.cells[3]![1]).toBe("Preserved");
+  });
+
   it("rejects invalid boundaries and the 20-row ceiling", () => {
     const table = sampleTable();
     for (const index of [-1, 4, 1.5, Number.NaN]) {
