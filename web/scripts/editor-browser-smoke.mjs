@@ -1421,6 +1421,40 @@ async function main() {
       throw new Error(`Exam Paper PNG pixels did not match expected white background, divider, and title: ${JSON.stringify(examPngVisual)}`);
     }
 
+    // Integration acceptance: accessible table controls, cell edit, autosave and history.
+    await evaluate("Array.from(document.querySelectorAll('.tools-panel > button')).find(b => b.textContent.includes('Add table'))?.click(); true");
+    await waitFor("table controls and canvas", async () => evaluate(
+      "Boolean(document.querySelector('.design-element.table') && document.querySelector('.table-cell-editor select')?.options.length === 9 && document.querySelector('.table-cell-editor textarea'))"
+    ));
+    await waitFor("inserted table autosaved", async () => evaluate(
+      "JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null')?.elements.some(e => e.kind.type === 'table')"
+    ));
+    await evaluate(`(() => {
+      const selector = document.querySelector('.table-cell-editor select');
+      Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value').set.call(selector, '4');
+      selector.dispatchEvent(new Event('change', { bubbles: true }));
+      return true;
+    })()`);
+    await waitForPage("table row 2 column 2 announced",
+      "document.querySelector('.selected-name')?.textContent || ''",
+      value => value.includes("Cell row 2, column 2"));
+    await evaluate(`(() => {
+      const area = document.querySelector('.table-cell-editor textarea');
+      Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set.call(area, 'Rice & dal ₹80');
+      area.dispatchEvent(new Event('input', { bubbles: true }));
+      return true;
+    })()`);
+    await waitFor("table cell autosaved", async () => evaluate(
+      "JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null')?.elements.find(e => e.kind.type === 'table')?.kind.cells[1][1] === 'Rice & dal ₹80'"
+    ));
+    if (await evaluate("document.querySelector('.table-preview > span:nth-child(5)')?.textContent || ''") !== "Rice & dal ₹80") {
+      throw new Error("The cell edit did not update the table canvas");
+    }
+    await evaluate("Array.from(document.querySelectorAll('button')).find(b => b.textContent.trim() === 'Undo')?.click(); true");
+    await waitForPage("undo cell edit", "document.querySelector('.table-preview > span:nth-child(5)')?.textContent === ''");
+    await evaluate("Array.from(document.querySelectorAll('button')).find(b => b.textContent.trim() === 'Redo')?.click(); true");
+    await waitForPage("redo cell edit", "document.querySelector('.table-preview > span:nth-child(5)')?.textContent === 'Rice & dal ₹80'");
+
     // Restore Shop Banner because the PDF geometry checks below intentionally
     // exercise the landscape 300 × 125 mm output, not the A4 Exam Paper.
     await evaluate(`(() => {
