@@ -24,9 +24,9 @@ The current prototype includes:
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-18)
 
-**Reference main:** 63a8151e022c15aeaf8935beddfa3b5b57e4f327 (dated snapshot; re-check live GitHub before acting).
+**Reference main:** 32e9c5a520338d45d52c5db78250e6dddde1cbee (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M2-TBL-02A — Accessible first table-cell editing workflow** [PR_OPEN]. [PR #123](https://github.com/Rofikali/design-platform/pull/123)
+**NOW:** **DP-M2-TBL-02B — Bounded accessible table row and column commands** [READY].
 
 **NEXT:** DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 

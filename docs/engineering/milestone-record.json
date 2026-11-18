@@ -2,8 +2,8 @@
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
   "snapshot_date": "2026-11-18",
-  "reference_main_sha": "63a8151e022c15aeaf8935beddfa3b5b57e4f327",
-  "now_id": "DP-M2-TBL-02A",
+  "reference_main_sha": "32e9c5a520338d45d52c5db78250e6dddde1cbee",
+  "now_id": "DP-M2-TBL-02B",
   "next_ids": [
     "DP-SEC-01",
     "DP-M1-ACC-02",
@@ -87,10 +87,16 @@
     {
       "id": "DP-M2-TBL-02A",
       "title": "Accessible first table-cell editing workflow",
-      "status": "PR_OPEN",
-      "summary": "PR #123 initial implementation 75019d0e adds table insertion, accessible cell selection, bounded plain-text edits, history/autosave and real-browser/unit regressions. Exact-head CI still pending; no merge or manual assistive-tech certification.",
+      "status": "MERGED",
+      "summary": "PR #123 merged as 32e9c5a5 on 2026-11-18: add table, accessible cell selection/editing, text bounds, JSON/history/autosave and browser regression. Exact-head Nuxt, Rust, PNG cross-browser, doc and audit checks passed; manual a11y remains open.",
       "pr": 123,
-      "sha": "75019d0ee6b04d6d98c2fd6340e147c1e5486957"
+      "sha": "32e9c5a520338d45d52c5db78250e6dddde1cbee"
+    },
+    {
+      "id": "DP-M2-TBL-02B",
+      "title": "Bounded accessible table row and column commands",
+      "status": "READY",
+      "summary": "Implement insert and remove row/column with stable cell positioning, 1-20 size limits, predictable selection, keyboard-operable controls, undo/redo, schema-v5 import/export and tests. No merged cells or spreadsheet formulas."
     }
   ]
 }

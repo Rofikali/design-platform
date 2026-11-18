@@ -6,9 +6,9 @@
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-18)
 
-**Reference main:** 63a8151e022c15aeaf8935beddfa3b5b57e4f327 (dated snapshot; re-check live GitHub before acting).
+**Reference main:** 32e9c5a520338d45d52c5db78250e6dddde1cbee (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M2-TBL-02A — Accessible first table-cell editing workflow** [PR_OPEN]. [PR #123](https://github.com/Rofikali/design-platform/pull/123)
+**NOW:** **DP-M2-TBL-02B — Bounded accessible table row and column commands** [READY].
 
 **NEXT:** DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
@@ -25,7 +25,8 @@
 | DP-SEC-01 — Production JavaScript picomatch advisory remediation | BLOCKED | [Issue #118](https://github.com/Rofikali/design-platform/issues/118) | Unpatched picomatch ReDoS remains BLOCKED. Temporary owner-approved development-only audit exception is merged in PR #120, expires 2026-12-02. Raw pnpm audit still fails; restore strict gate on verified patch; no production authorization. |
 | DP-SEC-02 — Built Nuxt bundle dependency indicator inventory | MERGED | [PR #120](https://github.com/Rofikali/design-platform/pull/120) [Issue #118](https://github.com/Rofikali/design-platform/issues/118) | PR #120 merged as adb3bd1f into main on 2026-11-18. Rust/Nuxt, browser, cross-browser, doc sync and Rust audit passed; JS audit passed ONLY with owner-approved development exception through 2026-12-02, not a fix or production approval. |
 | DP-DEPS-01 — Nuxt 4 compatibility upgrade | MERGED | [PR #98](https://github.com/Rofikali/design-platform/pull/98) [Issue #118](https://github.com/Rofikali/design-platform/issues/118) | Nuxt 4.6.4 PR #98 merged into main as 9ccac618 on 2026-11-18. Nuxt/Rust, browser export, Docker, docs and dependency checks passed on integrated head b8d73662; JS audit passed with DEVELOPMENT-ONLY picomatch exception, not a vulnerability fix or release approval. |
-| DP-M2-TBL-02A — Accessible first table-cell editing workflow | PR_OPEN | [PR #123](https://github.com/Rofikali/design-platform/pull/123) | PR #123 initial implementation 75019d0e adds table insertion, accessible cell selection, bounded plain-text edits, history/autosave and real-browser/unit regressions. Exact-head CI still pending; no merge or manual assistive-tech certification. |
+| DP-M2-TBL-02A — Accessible first table-cell editing workflow | MERGED | [PR #123](https://github.com/Rofikali/design-platform/pull/123) | PR #123 merged as 32e9c5a5 on 2026-11-18: add table, accessible cell selection/editing, text bounds, JSON/history/autosave and browser regression. Exact-head Nuxt, Rust, PNG cross-browser, doc and audit checks passed; manual a11y remains open. |
+| DP-M2-TBL-02B — Bounded accessible table row and column commands | READY | — | Implement insert and remove row/column with stable cell positioning, 1-20 size limits, predictable selection, keyboard-operable controls, undo/redo, schema-v5 import/export and tests. No merged cells or spreadsheet formulas. |
 
 <!-- milestone-sync:end -->
 
