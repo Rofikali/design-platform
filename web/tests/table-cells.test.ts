@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createHistory, recordHistory, redoHistory, undoHistory } from "../utils/document-history";
 import { parseDocumentJson, toDocument, type TableElement } from "../utils/document";
 import { renderDesignSvg } from "../utils/design-export";
-import { deleteTableRow, insertTableColumn, insertTableRow, replaceTableCell, tableCellPosition } from "../utils/table-cells";
+import { deleteTableColumn, deleteTableRow, insertTableColumn, insertTableRow, replaceTableCell, tableCellPosition } from "../utils/table-cells";
 
 function sampleTable(): TableElement {
   return {
@@ -167,5 +167,43 @@ describe("table row deletion primitive", () => {
     expect(parseDocumentJson(undo.snapshot!).elements[0]).toMatchObject({ rows: 3, cells: original.cells });
     const redo = redoHistory(undo.history, undo.snapshot!);
     expect(parseDocumentJson(redo.snapshot!).elements[0]).toMatchObject({ rows: 2, cells: deleted.cells });
+  });
+});
+
+
+describe("table column deletion primitive", () => {
+  it("removes a column immutably while preserving row text, headers and schema-v5 JSON", () => {
+    const original = replaceTableCell(replaceTableCell(sampleTable(), 0, 0, "Header"), 2, 2, "Keep");
+    const deleted = deleteTableColumn(original, 1);
+    expect(deleted.columns).toBe(2);
+    expect(deleted.rows).toBe(3);
+    expect(deleted.headerRows).toBe(1);
+    expect(deleted.cells).toEqual([["Header", ""], ["", ""], ["", "Keep"]]);
+    expect(original.columns).toBe(3);
+    expect(original.cells[2]).toEqual(["", "", "Keep"]);
+    expect(parseDocumentJson(JSON.stringify(toDocument([deleted]))).elements[0])
+      .toMatchObject({ type: "table", rows: 3, columns: 2, cells: deleted.cells });
+  });
+
+  it("handles first and last column boundaries and rejects invalid tables", () => {
+    const original = replaceTableCell(sampleTable(), 1, 1, "Middle");
+    expect(deleteTableColumn(original, 0).cells[1]).toEqual(["Middle", ""]);
+    expect(deleteTableColumn(original, 2).cells[1]).toEqual(["", "Middle"]);
+    for (const index of [-1, 3, 1.5, Number.NaN, Infinity]) {
+      expect(() => deleteTableColumn(original, index)).toThrow(/Invalid/);
+    }
+    expect(() => deleteTableColumn({ ...original, columns: 1, cells: [[""], [""], [""]] }, 0)).toThrow(/Invalid/);
+    expect(() => deleteTableColumn({ ...original, cells: [[]] }, 0)).toThrow(/Invalid/);
+  });
+
+  it("supports history undo and redo after removing a column", () => {
+    const original = replaceTableCell(sampleTable(), 2, 2, "Preserved");
+    const before = JSON.stringify(toDocument([original]));
+    const deleted = deleteTableColumn(original, 0);
+    const after = JSON.stringify(toDocument([deleted]));
+    const undo = undoHistory(recordHistory(createHistory(before), after), after);
+    expect(parseDocumentJson(undo.snapshot!).elements[0]).toMatchObject({ columns: 3, cells: original.cells });
+    const redo = redoHistory(undo.history, undo.snapshot!);
+    expect(parseDocumentJson(redo.snapshot!).elements[0]).toMatchObject({ columns: 2, cells: deleted.cells });
   });
 });
