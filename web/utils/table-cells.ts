@@ -11,7 +11,10 @@ export function tableCellPosition(table: Pick<TableElement, "rows" | "columns">,
 export function replaceTableCell(table: TableElement, row: number, column: number, value: string): TableElement {
   if (!Number.isInteger(row) || !Number.isInteger(column) ||
       row < 0 || row >= table.rows || column < 0 || column >= table.columns ||
-      typeof value !== "string") throw new Error("Invalid table cell edit.");
+      typeof value !== "string" || !Number.isInteger(table.rows) || table.rows < 1 || table.rows > 20 ||
+      !Number.isInteger(table.columns) || table.columns < 1 || table.columns > 20 ||
+      !Number.isInteger(table.headerRows) || (table.headerRows !== 0 && table.headerRows !== 1) ||
+      !validTableCellMatrix(table)) throw new Error("Invalid table cell edit.");
   const cellLength = [...value].length;
   if (cellLength > MAX_TABLE_CELL_CHARS) throw new Error("A table cell cannot exceed 2,000 characters.");
   let textLength = cellLength;
@@ -29,6 +32,23 @@ export function replaceTableCell(table: TableElement, row: number, column: numbe
   };
 }
 
+/** Structural edits must not preserve malformed imported text beyond schema-v5 limits. */
+function validTableCellMatrix(table: TableElement): boolean {
+  if (!Array.isArray(table.cells) || table.cells.length !== table.rows) return false;
+  let totalCodePoints = 0;
+  for (const row of table.cells) {
+    if (!Array.isArray(row) || row.length !== table.columns) return false;
+    for (const cell of row) {
+      if (typeof cell !== "string") return false;
+      const codePoints = [...cell].length;
+      if (codePoints > MAX_TABLE_CELL_CHARS) return false;
+      totalCodePoints += codePoints;
+      if (totalCodePoints > MAX_TABLE_TEXT_CHARS) return false;
+    }
+  }
+  return true;
+}
+
 /** Insert before a row; schema v5 permits at most one header row. If inserting
  * at row zero, the new row becomes the header and the old header moves to body. */
 export function insertTableRow(table: TableElement, beforeRow: number): TableElement {
@@ -36,8 +56,7 @@ export function insertTableRow(table: TableElement, beforeRow: number): TableEle
       !Number.isInteger(table.rows) || table.rows < 1 || table.rows >= 20 ||
       !Number.isInteger(table.columns) || table.columns < 1 || table.columns > 20 ||
       !Number.isInteger(table.headerRows) || (table.headerRows !== 0 && table.headerRows !== 1) ||
-      !Array.isArray(table.cells) || table.cells.length !== table.rows ||
-      table.cells.some((row) => !Array.isArray(row) || row.length !== table.columns)) {
+      !validTableCellMatrix(table)) {
     throw new Error("Invalid table row insertion.");
   }
   const cells = table.cells.map((row) => [...row]);
@@ -55,8 +74,8 @@ export function insertTableColumn(table: TableElement, beforeColumn: number): Ta
   if (!Number.isInteger(beforeColumn) || beforeColumn < 0 || beforeColumn > table.columns ||
       !Number.isInteger(table.rows) || table.rows < 1 || table.rows > 20 ||
       !Number.isInteger(table.columns) || table.columns < 1 || table.columns >= 20 ||
-      table.cells.length !== table.rows ||
-      table.cells.some((row) => !Array.isArray(row) || row.length !== table.columns)) {
+      !Number.isInteger(table.headerRows) || (table.headerRows !== 0 && table.headerRows !== 1) ||
+      !validTableCellMatrix(table)) {
     throw new Error("Invalid table column insertion.");
   }
   return {
@@ -75,8 +94,8 @@ export function deleteTableRow(table: TableElement, rowIndex: number): TableElem
   if (!Number.isInteger(rowIndex) || !Number.isInteger(table.rows) ||
       !Number.isInteger(table.columns) || rowIndex < 0 || rowIndex >= table.rows ||
       table.rows <= 1 || table.rows > 20 || table.columns < 1 || table.columns > 20 ||
-      table.cells.length !== table.rows ||
-      table.cells.some((row) => !Array.isArray(row) || row.length !== table.columns)) {
+      !Number.isInteger(table.headerRows) || (table.headerRows !== 0 && table.headerRows !== 1) ||
+      !validTableCellMatrix(table)) {
     throw new Error("Invalid table row deletion.");
   }
   return {
@@ -92,8 +111,8 @@ export function deleteTableColumn(table: TableElement, columnIndex: number): Tab
   if (!Number.isInteger(columnIndex) || !Number.isInteger(table.rows) ||
       !Number.isInteger(table.columns) || columnIndex < 0 || columnIndex >= table.columns ||
       table.rows < 1 || table.rows > 20 || table.columns <= 1 || table.columns > 20 ||
-      !Array.isArray(table.cells) || table.cells.length !== table.rows ||
-      table.cells.some((row) => !Array.isArray(row) || row.length !== table.columns)) {
+      !Number.isInteger(table.headerRows) || (table.headerRows !== 0 && table.headerRows !== 1) ||
+      !validTableCellMatrix(table)) {
     throw new Error("Invalid table column deletion.");
   }
   return {

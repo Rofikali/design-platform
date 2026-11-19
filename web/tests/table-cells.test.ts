@@ -47,6 +47,23 @@ describe("accessible table cell editing domain", () => {
     expect(parseDocumentJson(redo.snapshot!).elements[0]).toMatchObject({ type: "table", cells: [["", "", ""], ["", "", ""], ["Marks: 5", "", ""]] });
   });
 
+  it("rejects malformed source matrices and headers before editing a cell", () => {
+    const original = sampleTable();
+    const malformed = [
+      { ...original, cells: null as unknown as string[][] },
+      { ...original, cells: [[null as unknown as string, "", ""], ...original.cells.slice(1)] },
+      { ...original, cells: original.cells.slice(0, 2) },
+      { ...original, headerRows: 2 },
+      { ...original, rows: 0 },
+      { ...original, cells: original.cells.map((row) => [...row]) },
+    ];
+    malformed[5]!.cells[2]![2] = "😀".repeat(2001);
+    for (const table of malformed) {
+      expect(() => replaceTableCell(table, 0, 0, "Valid")).toThrow(/Invalid table cell edit/);
+    }
+    expect(original.cells[0]![0]).toBe("");
+  });
+
   it("enforces code-point, table-total, and index boundaries without mutating the source", () => {
     const table = sampleTable();
     expect(() => replaceTableCell(table, 3, 0, "x")).toThrow(/Invalid/);
@@ -138,9 +155,60 @@ describe("table column insertion primitive", () => {
     const full = { ...table, columns: 20, cells: Array.from({ length: 3 }, () => Array(20).fill("")) };
     expect(() => insertTableColumn(full, 10)).toThrow(/Invalid/);
     expect(full.columns).toBe(20);
+    for (const headerRows of [-1, 2, 0.5, Number.NaN]) {
+      expect(() => insertTableColumn({ ...table, headerRows }, 1)).toThrow(/Invalid/);
+    }
+    expect(() => insertTableColumn({ ...table, cells: null as unknown as string[][] }, 1)).toThrow(/Invalid/);
   });
 });
 
+
+describe("table structural mutation rejects malformed cell values", () => {
+  it("rejects non-string cells before insertion or deletion, preserving the source", () => {
+    const table = sampleTable();
+    const malformed: TableElement = {
+      ...table,
+      cells: table.cells.map((row) => [...row]),
+    };
+    (malformed.cells[1] as unknown[])[1] = null;
+    for (const mutate of [
+      (value: TableElement) => insertTableRow(value, 1),
+      (value: TableElement) => insertTableColumn(value, 1),
+      (value: TableElement) => deleteTableRow(value, 1),
+      (value: TableElement) => deleteTableColumn(value, 1),
+    ]) {
+      expect(() => mutate(malformed)).toThrow(/Invalid table/);
+    }
+    expect(malformed.cells[1]![1]).toBeNull();
+    expect(table.cells[1]![1]).toBe("");
+  });
+});
+
+describe("table structural mutation enforces schema-v5 text budgets", () => {
+  it("rejects oversized cell text and aggregate text before all four structural edits", () => {
+    const original = sampleTable();
+    const overCell = { ...original, cells: original.cells.map((row) => [...row]) };
+    overCell.cells[0]![0] = "😀".repeat(2001);
+    const overTotal = {
+      ...original,
+      rows: 11,
+      columns: 10,
+      cells: Array.from({ length: 11 }, () => Array.from({ length: 10 }, () => "x".repeat(200))),
+    };
+    for (const malformed of [overCell, overTotal]) {
+      for (const mutate of [
+        (table: TableElement) => insertTableRow(table, 1),
+        (table: TableElement) => insertTableColumn(table, 1),
+        (table: TableElement) => deleteTableRow(table, 1),
+        (table: TableElement) => deleteTableColumn(table, 1),
+      ]) {
+        expect(() => mutate(malformed)).toThrow(/Invalid table/);
+      }
+    }
+    expect(overCell.cells[0]![0]).toBe("😀".repeat(2001));
+    expect(overTotal.cells[0]![0]).toBe("x".repeat(200));
+  });
+});
 
 describe("table row deletion primitive", () => {
   it("removes a selected row immutably and preserves surviving cell text and schema-v5 serialization", () => {
@@ -167,6 +235,11 @@ describe("table row deletion primitive", () => {
     }
     expect(() => deleteTableRow({ ...table, rows: 1, cells: [table.cells[0]!] }, 0)).toThrow(/Invalid/);
     expect(() => deleteTableRow({ ...table, cells: [[]] }, 0)).toThrow(/Invalid/);
+    expect(() => deleteTableRow({ ...table, headerRows: 2 }, 1)).toThrow(/Invalid/);
+    expect(() => deleteTableRow({ ...table, headerRows: -1 }, 1)).toThrow(/Invalid/);
+    expect(() => deleteTableRow({ ...table, headerRows: 0.5 }, 1)).toThrow(/Invalid/);
+    expect(() => deleteTableRow({ ...table, cells: null as unknown as string[][] }, 1)).toThrow(/Invalid/);
+    expect(deleteTableRow({ ...table, headerRows: 0 }, 0).headerRows).toBe(0);
   });
 
   it("supports undo and redo without changing the original table", () => {
@@ -205,6 +278,11 @@ describe("table column deletion primitive", () => {
     }
     expect(() => deleteTableColumn({ ...original, columns: 1, cells: [[""], [""], [""]] }, 0)).toThrow(/Invalid/);
     expect(() => deleteTableColumn({ ...original, cells: [[]] }, 0)).toThrow(/Invalid/);
+    for (const headerRows of [-1, 2, 0.5, Number.NaN]) {
+      expect(() => deleteTableColumn({ ...original, headerRows }, 1)).toThrow(/Invalid/);
+    }
+    expect(() => deleteTableColumn({ ...original, cells: null as unknown as string[][] }, 1)).toThrow(/Invalid/);
+    expect(deleteTableColumn({ ...original, headerRows: 0 }, 1).headerRows).toBe(0);
   });
 
   it("supports history undo and redo after removing a column", () => {
