@@ -75,7 +75,8 @@ export function deleteTableRow(table: TableElement, rowIndex: number): TableElem
   if (!Number.isInteger(rowIndex) || !Number.isInteger(table.rows) ||
       !Number.isInteger(table.columns) || rowIndex < 0 || rowIndex >= table.rows ||
       table.rows <= 1 || table.rows > 20 || table.columns < 1 || table.columns > 20 ||
-      table.cells.length !== table.rows ||
+      !Number.isInteger(table.headerRows) || (table.headerRows !== 0 && table.headerRows !== 1) ||
+      !Array.isArray(table.cells) || table.cells.length !== table.rows ||
       table.cells.some((row) => !Array.isArray(row) || row.length !== table.columns)) {
     throw new Error("Invalid table row deletion.");
   }
