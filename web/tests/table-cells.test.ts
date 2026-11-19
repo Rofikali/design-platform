@@ -146,6 +146,27 @@ describe("table column insertion primitive", () => {
 });
 
 
+describe("table structural mutation rejects malformed cell values", () => {
+  it("rejects non-string cells before insertion or deletion, preserving the source", () => {
+    const table = sampleTable();
+    const malformed: TableElement = {
+      ...table,
+      cells: table.cells.map((row) => [...row]),
+    };
+    (malformed.cells[1] as unknown[])[1] = null;
+    for (const mutate of [
+      (value: TableElement) => insertTableRow(value, 1),
+      (value: TableElement) => insertTableColumn(value, 1),
+      (value: TableElement) => deleteTableRow(value, 1),
+      (value: TableElement) => deleteTableColumn(value, 1),
+    ]) {
+      expect(() => mutate(malformed)).toThrow(/Invalid table/);
+    }
+    expect(malformed.cells[1]![1]).toBeNull();
+    expect(table.cells[1]![1]).toBe("");
+  });
+});
+
 describe("table row deletion primitive", () => {
   it("removes a selected row immutably and preserves surviving cell text and schema-v5 serialization", () => {
     const original = replaceTableCell(replaceTableCell(sampleTable(), 0, 1, "Header"), 2, 2, "Keep");
