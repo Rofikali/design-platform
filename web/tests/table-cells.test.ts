@@ -73,9 +73,17 @@ describe("table row insertion primitive", () => {
       .toMatchObject({ type: "table", rows: 4, cells: inserted.cells });
   });
 
-  it("preserves header semantics when inserting before a header row", () => {
-    expect(insertTableRow(sampleTable(), 0).headerRows).toBe(2);
+  it("keeps the single-header schema-v5 contract when inserting above the first row", () => {
+    const original = replaceTableCell(sampleTable(), 0, 0, "Original header");
+    const inserted = insertTableRow(original, 0);
+    expect(inserted.headerRows).toBe(1);
+    expect(inserted.cells[0]).toEqual(["", "", ""]);
+    expect(inserted.cells[1]![0]).toBe("Original header");
+    expect(original.cells[0]![0]).toBe("Original header");
+    expect(parseDocumentJson(JSON.stringify(toDocument([inserted]))).elements[0])
+      .toMatchObject({ type: "table", rows: 4, headerRows: 1, cells: inserted.cells });
     expect(insertTableRow(sampleTable(), 3).headerRows).toBe(1);
+    expect(insertTableRow({ ...sampleTable(), headerRows: 0 }, 0).headerRows).toBe(0);
   });
 
   it("round-trips inserted rows through undo and redo without losing existing text", () => {
@@ -101,6 +109,9 @@ describe("table row insertion primitive", () => {
     }
     const full = { ...table, rows: 20, cells: Array.from({ length: 20 }, () => ["", "", ""]) };
     expect(() => insertTableRow(full, 10)).toThrow(/Invalid/);
+    expect(() => insertTableRow({ ...table, headerRows: 2 }, 0)).toThrow(/Invalid/);
+    expect(() => insertTableRow({ ...table, cells: [null as unknown as string[], ...table.cells.slice(1)] }, 0))
+      .toThrow(/Invalid/);
   });
 });
 
