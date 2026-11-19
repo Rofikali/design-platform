@@ -138,6 +138,10 @@ describe("table column insertion primitive", () => {
     const full = { ...table, columns: 20, cells: Array.from({ length: 3 }, () => Array(20).fill("")) };
     expect(() => insertTableColumn(full, 10)).toThrow(/Invalid/);
     expect(full.columns).toBe(20);
+    for (const headerRows of [-1, 2, 0.5, Number.NaN]) {
+      expect(() => insertTableColumn({ ...table, headerRows }, 1)).toThrow(/Invalid/);
+    }
+    expect(() => insertTableColumn({ ...table, cells: null as unknown as string[][] }, 1)).toThrow(/Invalid/);
   });
 });
 
@@ -210,6 +214,11 @@ describe("table column deletion primitive", () => {
     }
     expect(() => deleteTableColumn({ ...original, columns: 1, cells: [[""], [""], [""]] }, 0)).toThrow(/Invalid/);
     expect(() => deleteTableColumn({ ...original, cells: [[]] }, 0)).toThrow(/Invalid/);
+    for (const headerRows of [-1, 2, 0.5, Number.NaN]) {
+      expect(() => deleteTableColumn({ ...original, headerRows }, 1)).toThrow(/Invalid/);
+    }
+    expect(() => deleteTableColumn({ ...original, cells: null as unknown as string[][] }, 1)).toThrow(/Invalid/);
+    expect(deleteTableColumn({ ...original, headerRows: 0 }, 1).headerRows).toBe(0);
   });
 
   it("supports history undo and redo after removing a column", () => {
