@@ -47,6 +47,23 @@ describe("accessible table cell editing domain", () => {
     expect(parseDocumentJson(redo.snapshot!).elements[0]).toMatchObject({ type: "table", cells: [["", "", ""], ["", "", ""], ["Marks: 5", "", ""]] });
   });
 
+  it("rejects malformed source matrices and headers before editing a cell", () => {
+    const original = sampleTable();
+    const malformed = [
+      { ...original, cells: null as unknown as string[][] },
+      { ...original, cells: [[null as unknown as string, "", ""], ...original.cells.slice(1)] },
+      { ...original, cells: original.cells.slice(0, 2) },
+      { ...original, headerRows: 2 },
+      { ...original, rows: 0 },
+      { ...original, cells: original.cells.map((row) => [...row]) },
+    ];
+    malformed[5]!.cells[2]![2] = "😀".repeat(2001);
+    for (const table of malformed) {
+      expect(() => replaceTableCell(table, 0, 0, "Valid")).toThrow(/Invalid table cell edit/);
+    }
+    expect(original.cells[0]![0]).toBe("");
+  });
+
   it("enforces code-point, table-total, and index boundaries without mutating the source", () => {
     const table = sampleTable();
     expect(() => replaceTableCell(table, 3, 0, "x")).toThrow(/Invalid/);
