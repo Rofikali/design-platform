@@ -167,6 +167,11 @@ describe("table row deletion primitive", () => {
     }
     expect(() => deleteTableRow({ ...table, rows: 1, cells: [table.cells[0]!] }, 0)).toThrow(/Invalid/);
     expect(() => deleteTableRow({ ...table, cells: [[]] }, 0)).toThrow(/Invalid/);
+    expect(() => deleteTableRow({ ...table, headerRows: 2 }, 1)).toThrow(/Invalid/);
+    expect(() => deleteTableRow({ ...table, headerRows: -1 }, 1)).toThrow(/Invalid/);
+    expect(() => deleteTableRow({ ...table, headerRows: 0.5 }, 1)).toThrow(/Invalid/);
+    expect(() => deleteTableRow({ ...table, cells: null as unknown as string[][] }, 1)).toThrow(/Invalid/);
+    expect(deleteTableRow({ ...table, headerRows: 0 }, 0).headerRows).toBe(0);
   });
 
   it("supports undo and redo without changing the original table", () => {
