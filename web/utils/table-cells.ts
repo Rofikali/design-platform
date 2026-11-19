@@ -55,7 +55,8 @@ export function insertTableColumn(table: TableElement, beforeColumn: number): Ta
   if (!Number.isInteger(beforeColumn) || beforeColumn < 0 || beforeColumn > table.columns ||
       !Number.isInteger(table.rows) || table.rows < 1 || table.rows > 20 ||
       !Number.isInteger(table.columns) || table.columns < 1 || table.columns >= 20 ||
-      table.cells.length !== table.rows ||
+      !Number.isInteger(table.headerRows) || (table.headerRows !== 0 && table.headerRows !== 1) ||
+      !Array.isArray(table.cells) || table.cells.length !== table.rows ||
       table.cells.some((row) => !Array.isArray(row) || row.length !== table.columns)) {
     throw new Error("Invalid table column insertion.");
   }
@@ -93,6 +94,7 @@ export function deleteTableColumn(table: TableElement, columnIndex: number): Tab
   if (!Number.isInteger(columnIndex) || !Number.isInteger(table.rows) ||
       !Number.isInteger(table.columns) || columnIndex < 0 || columnIndex >= table.columns ||
       table.rows < 1 || table.rows > 20 || table.columns <= 1 || table.columns > 20 ||
+      !Number.isInteger(table.headerRows) || (table.headerRows !== 0 && table.headerRows !== 1) ||
       !Array.isArray(table.cells) || table.cells.length !== table.rows ||
       table.cells.some((row) => !Array.isArray(row) || row.length !== table.columns)) {
     throw new Error("Invalid table column deletion.");
