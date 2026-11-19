@@ -4,7 +4,7 @@ import EditorCanvas from "~/components/editor/EditorCanvas.vue";
 import { clampElementPosition, clampElementSize, nextElementId } from "~/utils/editor-helpers";
 import { loadLocalDocument, saveLocalDocument } from "~/utils/local-document-storage";
 import { createHistory, recordHistory, redoHistory, undoHistory } from "~/utils/document-history";
-import { deleteTableRow, insertTableColumn, insertTableRow, replaceTableCell, tableCellPosition } from "~/utils/table-cells";
+import { deleteTableColumn, deleteTableRow, insertTableColumn, insertTableRow, replaceTableCell, tableCellPosition } from "~/utils/table-cells";
 
 import {
   MAX_ELEMENTS,
@@ -101,6 +101,20 @@ function deleteSelectedTableRow() {
     statusMessage.value = `Deleted row ${row + 1}; ${updated.rows} rows remain.`;
   } catch (error) {
     statusMessage.value = error instanceof Error ? error.message : "Could not delete table row.";
+  }
+}
+/** Delete the selected column while retaining the row and clamping the selected column. */
+function deleteSelectedTableColumn() {
+  const table = selectedTable.value;
+  if (!table || table.columns <= 1) return;
+  try {
+    const { row, column } = tableCellPosition(table, selectedCellIndex.value);
+    const updated = deleteTableColumn(table, column);
+    elements.value = elements.value.map((element) => element.id === table.id ? updated : element);
+    selectedCellIndex.value = row * updated.columns + Math.min(column, updated.columns - 1);
+    statusMessage.value = `Deleted column ${column + 1}; ${updated.columns} columns remain.`;
+  } catch (error) {
+    statusMessage.value = error instanceof Error ? error.message : "Could not delete table column.";
   }
 }
 const selectedCellText = computed({
@@ -635,6 +649,7 @@ onMounted(async () => {
               <button type="button" :disabled="selectedElement.rows >= 20" @click="insertRowBeforeSelection">Insert row before selected cell</button>
               <button type="button" :disabled="selectedElement.rows <= 1" @click="deleteSelectedTableRow">Delete selected table row</button>
               <button type="button" :disabled="selectedElement.columns >= 20" @click="insertColumnBeforeSelection">Insert column before selected cell</button>
+              <button type="button" :disabled="selectedElement.columns <= 1" @click="deleteSelectedTableColumn">Delete selected table column</button>
             </div>
             <label class="field">
               Cell text — row {{ Math.floor(selectedCellIndex / selectedElement.columns) + 1 }}, column {{ selectedCellIndex % selectedElement.columns + 1 }}
