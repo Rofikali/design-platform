@@ -11,7 +11,10 @@ export function tableCellPosition(table: Pick<TableElement, "rows" | "columns">,
 export function replaceTableCell(table: TableElement, row: number, column: number, value: string): TableElement {
   if (!Number.isInteger(row) || !Number.isInteger(column) ||
       row < 0 || row >= table.rows || column < 0 || column >= table.columns ||
-      typeof value !== "string") throw new Error("Invalid table cell edit.");
+      typeof value !== "string" || !Number.isInteger(table.rows) || table.rows < 1 || table.rows > 20 ||
+      !Number.isInteger(table.columns) || table.columns < 1 || table.columns > 20 ||
+      !Number.isInteger(table.headerRows) || (table.headerRows !== 0 && table.headerRows !== 1) ||
+      !validTableCellMatrix(table)) throw new Error("Invalid table cell edit.");
   const cellLength = [...value].length;
   if (cellLength > MAX_TABLE_CELL_CHARS) throw new Error("A table cell cannot exceed 2,000 characters.");
   let textLength = cellLength;
