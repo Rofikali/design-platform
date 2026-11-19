@@ -4,7 +4,7 @@ import EditorCanvas from "~/components/editor/EditorCanvas.vue";
 import { clampElementPosition, clampElementSize, nextElementId } from "~/utils/editor-helpers";
 import { loadLocalDocument, saveLocalDocument } from "~/utils/local-document-storage";
 import { createHistory, recordHistory, redoHistory, undoHistory } from "~/utils/document-history";
-import { insertTableColumn, insertTableRow, replaceTableCell, tableCellPosition } from "~/utils/table-cells";
+import { deleteTableRow, insertTableColumn, insertTableRow, replaceTableCell, tableCellPosition } from "~/utils/table-cells";
 
 import {
   MAX_ELEMENTS,
@@ -87,6 +87,20 @@ function insertColumnBeforeSelection() {
     statusMessage.value = `Inserted column ${column + 1} of ${updated.columns}.`;
   } catch (error) {
     statusMessage.value = error instanceof Error ? error.message : "Could not insert table column.";
+  }
+}
+/** Delete the selected row without leaving selection outside the surviving table. */
+function deleteSelectedTableRow() {
+  const table = selectedTable.value;
+  if (!table || table.rows <= 1) return;
+  try {
+    const { row, column } = tableCellPosition(table, selectedCellIndex.value);
+    const updated = deleteTableRow(table, row);
+    elements.value = elements.value.map((element) => element.id === table.id ? updated : element);
+    selectedCellIndex.value = Math.min(row, updated.rows - 1) * updated.columns + column;
+    statusMessage.value = `Deleted row ${row + 1}; ${updated.rows} rows remain.`;
+  } catch (error) {
+    statusMessage.value = error instanceof Error ? error.message : "Could not delete table row.";
   }
 }
 const selectedCellText = computed({
@@ -619,6 +633,7 @@ onMounted(async () => {
             </div>
             <div class="table-cell-actions">
               <button type="button" :disabled="selectedElement.rows >= 20" @click="insertRowBeforeSelection">Insert row before selected cell</button>
+              <button type="button" :disabled="selectedElement.rows <= 1" @click="deleteSelectedTableRow">Delete selected table row</button>
               <button type="button" :disabled="selectedElement.columns >= 20" @click="insertColumnBeforeSelection">Insert column before selected cell</button>
             </div>
             <label class="field">
