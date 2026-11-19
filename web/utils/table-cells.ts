@@ -29,13 +29,15 @@ export function replaceTableCell(table: TableElement, row: number, column: numbe
   };
 }
 
-/** Insert an empty row before the given boundary, preserving existing cell coordinates. */
+/** Insert before a row; schema v5 permits at most one header row. If inserting
+ * at row zero, the new row becomes the header and the old header moves to body. */
 export function insertTableRow(table: TableElement, beforeRow: number): TableElement {
   if (!Number.isInteger(beforeRow) || beforeRow < 0 || beforeRow > table.rows ||
       !Number.isInteger(table.rows) || table.rows < 1 || table.rows >= 20 ||
       !Number.isInteger(table.columns) || table.columns < 1 || table.columns > 20 ||
-      table.cells.length !== table.rows ||
-      table.cells.some((row) => row.length !== table.columns)) {
+      !Number.isInteger(table.headerRows) || (table.headerRows !== 0 && table.headerRows !== 1) ||
+      !Array.isArray(table.cells) || table.cells.length !== table.rows ||
+      table.cells.some((row) => !Array.isArray(row) || row.length !== table.columns)) {
     throw new Error("Invalid table row insertion.");
   }
   const cells = table.cells.map((row) => [...row]);
@@ -43,7 +45,7 @@ export function insertTableRow(table: TableElement, beforeRow: number): TableEle
   return {
     ...table,
     rows: table.rows + 1,
-    headerRows: beforeRow < table.headerRows ? table.headerRows + 1 : table.headerRows,
+    headerRows: table.headerRows,
     cells,
   };
 }

@@ -70,7 +70,9 @@ function insertRowBeforeSelection() {
     const updated = insertTableRow(table, row);
     elements.value = elements.value.map((element) => element.id === table.id ? updated : element);
     selectedCellIndex.value = row * updated.columns + column;
-    statusMessage.value = `Inserted row ${row + 1} of ${updated.rows}.`;
+    statusMessage.value = row === 0 && table.headerRows === 1
+      ? "Inserted a new header row; the former header is now a body row."
+      : `Inserted row ${row + 1} of ${updated.rows}.`;
   } catch (error) {
     statusMessage.value = error instanceof Error ? error.message : "Could not insert table row.";
   }
@@ -151,7 +153,7 @@ function announceSelection(id: string | null) {
     })();
 }
 watch(selectedId, () => { selectedCellIndex.value = 0; }, { flush: "sync" });
-watch([selectedId, selectedCellIndex], () => announceSelection(selectedId.value), { immediate: true });
+watch([selectedId, selectedCellIndex, selectedTable], () => announceSelection(selectedId.value), { immediate: true });
 
 function snapshot(): string { return JSON.stringify(toDocument(elements.value, { width: pageWidth.value, height: pageHeight.value, background: pageBackground.value, ...(backgroundImage.value ? { background_image: backgroundImage.value } : {}) }, outputSizeMm.value, templateMetadata.value)); }
 const history = ref(createHistory(snapshot()));
