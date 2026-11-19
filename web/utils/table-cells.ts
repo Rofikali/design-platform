@@ -67,3 +67,20 @@ export function insertTableColumn(table: TableElement, beforeColumn: number): Ta
     }),
   };
 }
+
+/** Remove one row, retaining at least one row and preserving remaining cell values. */
+export function deleteTableRow(table: TableElement, rowIndex: number): TableElement {
+  if (!Number.isInteger(rowIndex) || !Number.isInteger(table.rows) ||
+      !Number.isInteger(table.columns) || rowIndex < 0 || rowIndex >= table.rows ||
+      table.rows <= 1 || table.rows > 20 || table.columns < 1 || table.columns > 20 ||
+      table.cells.length !== table.rows ||
+      table.cells.some((row) => !Array.isArray(row) || row.length !== table.columns)) {
+    throw new Error("Invalid table row deletion.");
+  }
+  return {
+    ...table,
+    rows: table.rows - 1,
+    headerRows: rowIndex < table.headerRows ? table.headerRows - 1 : table.headerRows,
+    cells: table.cells.filter((_, index) => index !== rowIndex).map((row) => [...row]),
+  };
+}
