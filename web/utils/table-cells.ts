@@ -1,7 +1,9 @@
 import { MAX_TABLE_CELL_CHARS, MAX_TABLE_TEXT_CHARS, type TableElement } from "./document";
 
 export function tableCellPosition(table: Pick<TableElement, "rows" | "columns">, index: number) {
-  if (!Number.isInteger(index) || index < 0 || index >= table.rows * table.columns) {
+  if (!Number.isInteger(table.rows) || table.rows < 1 || table.rows > 20 ||
+      !Number.isInteger(table.columns) || table.columns < 1 || table.columns > 20 ||
+      !Number.isInteger(index) || index < 0 || index >= table.rows * table.columns) {
     throw new Error("Selected table cell is out of range.");
   }
   return { row: Math.floor(index / table.columns), column: index % table.columns };

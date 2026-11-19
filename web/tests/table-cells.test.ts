@@ -24,6 +24,23 @@ describe("accessible table cell editing domain", () => {
     }
   });
 
+  it("rejects malformed table dimensions before mapping keyboard cell selection", () => {
+    const table = sampleTable();
+    for (const dimensions of [
+      { rows: 0, columns: 3 },
+      { rows: 3, columns: 0 },
+      { rows: Number.NaN, columns: 3 },
+      { rows: 3, columns: Number.POSITIVE_INFINITY },
+      { rows: 1.5, columns: 3 },
+      { rows: 3, columns: -1 },
+      { rows: 21, columns: 3 },
+      { rows: 3, columns: 21 },
+    ]) {
+      expect(() => tableCellPosition({ ...table, ...dimensions }, 0)).toThrow(/range/);
+    }
+    expect(tableCellPosition(table, 8)).toEqual({ row: 2, column: 2 });
+  });
+
   it("edits one cell immutably and persists through schema-v5 JSON and escaped SVG", () => {
     const initial = sampleTable();
     const updated = replaceTableCell(initial, 1, 1, "Rice & <dal> ₹80");
