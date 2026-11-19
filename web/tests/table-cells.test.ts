@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createHistory, recordHistory, redoHistory, undoHistory } from "../utils/document-history";
 import { parseDocumentJson, toDocument, type TableElement } from "../utils/document";
 import { renderDesignSvg } from "../utils/design-export";
-import { insertTableColumn, insertTableRow, replaceTableCell, tableCellPosition } from "../utils/table-cells";
+import { deleteTableRow, insertTableColumn, insertTableRow, replaceTableCell, tableCellPosition } from "../utils/table-cells";
 
 function sampleTable(): TableElement {
   return {
@@ -127,5 +127,45 @@ describe("table column insertion primitive", () => {
     const full = { ...table, columns: 20, cells: Array.from({ length: 3 }, () => Array(20).fill("")) };
     expect(() => insertTableColumn(full, 10)).toThrow(/Invalid/);
     expect(full.columns).toBe(20);
+  });
+});
+
+
+describe("table row deletion primitive", () => {
+  it("removes a selected row immutably and preserves surviving cell text and schema-v5 serialization", () => {
+    const original = replaceTableCell(replaceTableCell(sampleTable(), 0, 1, "Header"), 2, 2, "Keep");
+    const deleted = deleteTableRow(original, 1);
+    expect(deleted.rows).toBe(2);
+    expect(deleted.headerRows).toBe(1);
+    expect(deleted.cells).toEqual([original.cells[0], original.cells[2]]);
+    expect(original.rows).toBe(3);
+    expect(original.cells).toHaveLength(3);
+    expect(parseDocumentJson(JSON.stringify(toDocument([deleted]))).elements[0])
+      .toMatchObject({ type: "table", rows: 2, cells: deleted.cells });
+  });
+
+  it("adjusts header count only when deleting a header row", () => {
+    expect(deleteTableRow(sampleTable(), 0).headerRows).toBe(0);
+    expect(deleteTableRow(sampleTable(), 2).headerRows).toBe(1);
+  });
+
+  it("rejects invalid indices, malformed dimensions and deletion of the final row", () => {
+    const table = sampleTable();
+    for (const index of [-1, 3, 1.5, Number.NaN, Infinity]) {
+      expect(() => deleteTableRow(table, index)).toThrow(/Invalid/);
+    }
+    expect(() => deleteTableRow({ ...table, rows: 1, cells: [table.cells[0]!] }, 0)).toThrow(/Invalid/);
+    expect(() => deleteTableRow({ ...table, cells: [[]] }, 0)).toThrow(/Invalid/);
+  });
+
+  it("supports undo and redo without changing the original table", () => {
+    const original = replaceTableCell(sampleTable(), 2, 0, "Preserved");
+    const before = JSON.stringify(toDocument([original]));
+    const deleted = deleteTableRow(original, 1);
+    const after = JSON.stringify(toDocument([deleted]));
+    const undo = undoHistory(recordHistory(createHistory(before), after), after);
+    expect(parseDocumentJson(undo.snapshot!).elements[0]).toMatchObject({ rows: 3, cells: original.cells });
+    const redo = redoHistory(undo.history, undo.snapshot!);
+    expect(parseDocumentJson(redo.snapshot!).elements[0]).toMatchObject({ rows: 2, cells: deleted.cells });
   });
 });
