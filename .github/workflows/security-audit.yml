@@ -44,7 +44,7 @@ jobs:
           run_install: false
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Verify temporary security-exception guard
-        run: node --test ../scripts/tests/temporary-security-audit.test.mjs
-      - name: Audit production dependencies
-        run: node ../scripts/temporary-security-audit.mjs
+      # The previously waived picomatch advisory is no longer reported by the
+      # registry. Restore the native, unwaived production audit gate.
+      - name: Audit production dependencies (strict, no exceptions)
+        run: pnpm audit --prod --audit-level high
