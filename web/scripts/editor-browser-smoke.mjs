@@ -1631,6 +1631,44 @@ async function main() {
       "JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null')?.elements.find(e => e.kind.type === 'table')?.kind.columns === 2"
     ));
 
+    // Schema-v5 regression: inserting before the first header must not create
+    // header_rows=2, which would corrupt subsequent JSON import/reopen.
+    await evaluate("document.querySelector('.design-element.table')?.click(); true");
+    await waitFor("table editor ready for first-row insertion", async () => evaluate(
+      "Boolean(document.querySelector('.table-cell-editor select'))"
+    ));
+    await evaluate(`(() => {
+      const selector = document.querySelector('.table-cell-editor select');
+      Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value').set.call(selector, '0');
+      selector.dispatchEvent(new Event('change', { bubbles: true }));
+      return true;
+    })()`);
+    await waitForPage("first header cell selected",
+      "document.querySelector('.selected-name')?.textContent || ''",
+      value => value.includes("Cell row 1, column 1"));
+    const headerBefore = await evaluate("JSON.parse(localStorage.getItem('design-platform:document:v1')).elements.find(e => e.kind.type === 'table').kind");
+    await evaluate("Array.from(document.querySelectorAll('.table-cell-actions button')).find(b => b.textContent.includes('Insert row before'))?.click(); true");
+    await waitFor("new header row saved with valid schema", async () => evaluate(
+      "(() => { const t = JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null')?.elements.find(e => e.kind.type === 'table')?.kind; return t?.rows === 4 && t?.columns === 2 && t?.header_rows === 1; })()"
+    ));
+    const headerAfter = await evaluate("JSON.parse(localStorage.getItem('design-platform:document:v1')).elements.find(e => e.kind.type === 'table').kind");
+    if (JSON.stringify(headerAfter.cells.slice(1)) !== JSON.stringify(headerBefore.cells) ||
+        headerAfter.cells[0].some(cell => cell !== "")) {
+      throw new Error("Header insertion lost existing cell text or failed to add an empty first row");
+    }
+    await waitForPage("new table dimensions announced",
+      "document.querySelector('.selected-name')?.textContent || ''",
+      value => value.includes("4 rows and 2 columns") && value.includes("Cell row 1, column 1"));
+    await delay(750);
+    await evaluate("Array.from(document.querySelectorAll('button')).find(b => b.textContent.trim() === 'Undo')?.click(); true");
+    await waitFor("undo header insertion", async () => evaluate(
+      "JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null')?.elements.find(e => e.kind.type === 'table')?.kind.rows === 3"
+    ));
+    await evaluate("Array.from(document.querySelectorAll('button')).find(b => b.textContent.trim() === 'Redo')?.click(); true");
+    await waitFor("redo header insertion remains schema valid", async () => evaluate(
+      "(() => { const t = JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null')?.elements.find(e => e.kind.type === 'table')?.kind; return t?.rows === 4 && t?.header_rows === 1; })()"
+    ));
+
     // Restore Shop Banner because the PDF geometry checks below intentionally
     // exercise the landscape 300 × 125 mm output, not the A4 Exam Paper.
     await evaluate(`(() => {
