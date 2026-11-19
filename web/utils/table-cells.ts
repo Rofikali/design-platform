@@ -37,7 +37,8 @@ export function insertTableRow(table: TableElement, beforeRow: number): TableEle
       !Number.isInteger(table.columns) || table.columns < 1 || table.columns > 20 ||
       !Number.isInteger(table.headerRows) || (table.headerRows !== 0 && table.headerRows !== 1) ||
       !Array.isArray(table.cells) || table.cells.length !== table.rows ||
-      table.cells.some((row) => !Array.isArray(row) || row.length !== table.columns)) {
+      table.cells.some((row) => !Array.isArray(row) || row.length !== table.columns ||
+        row.some((cell) => typeof cell !== "string"))) {
     throw new Error("Invalid table row insertion.");
   }
   const cells = table.cells.map((row) => [...row]);
@@ -57,7 +58,8 @@ export function insertTableColumn(table: TableElement, beforeColumn: number): Ta
       !Number.isInteger(table.columns) || table.columns < 1 || table.columns >= 20 ||
       !Number.isInteger(table.headerRows) || (table.headerRows !== 0 && table.headerRows !== 1) ||
       !Array.isArray(table.cells) || table.cells.length !== table.rows ||
-      table.cells.some((row) => !Array.isArray(row) || row.length !== table.columns)) {
+      table.cells.some((row) => !Array.isArray(row) || row.length !== table.columns ||
+        row.some((cell) => typeof cell !== "string"))) {
     throw new Error("Invalid table column insertion.");
   }
   return {
@@ -78,7 +80,8 @@ export function deleteTableRow(table: TableElement, rowIndex: number): TableElem
       table.rows <= 1 || table.rows > 20 || table.columns < 1 || table.columns > 20 ||
       !Number.isInteger(table.headerRows) || (table.headerRows !== 0 && table.headerRows !== 1) ||
       !Array.isArray(table.cells) || table.cells.length !== table.rows ||
-      table.cells.some((row) => !Array.isArray(row) || row.length !== table.columns)) {
+      table.cells.some((row) => !Array.isArray(row) || row.length !== table.columns ||
+        row.some((cell) => typeof cell !== "string"))) {
     throw new Error("Invalid table row deletion.");
   }
   return {
@@ -96,7 +99,8 @@ export function deleteTableColumn(table: TableElement, columnIndex: number): Tab
       table.rows < 1 || table.rows > 20 || table.columns <= 1 || table.columns > 20 ||
       !Number.isInteger(table.headerRows) || (table.headerRows !== 0 && table.headerRows !== 1) ||
       !Array.isArray(table.cells) || table.cells.length !== table.rows ||
-      table.cells.some((row) => !Array.isArray(row) || row.length !== table.columns)) {
+      table.cells.some((row) => !Array.isArray(row) || row.length !== table.columns ||
+        row.some((cell) => typeof cell !== "string"))) {
     throw new Error("Invalid table column deletion.");
   }
   return {
