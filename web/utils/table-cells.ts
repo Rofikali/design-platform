@@ -84,3 +84,19 @@ export function deleteTableRow(table: TableElement, rowIndex: number): TableElem
     cells: table.cells.filter((_, index) => index !== rowIndex).map((row) => [...row]),
   };
 }
+
+/** Remove one column, preserving the remaining row-major cells and header rows. */
+export function deleteTableColumn(table: TableElement, columnIndex: number): TableElement {
+  if (!Number.isInteger(columnIndex) || !Number.isInteger(table.rows) ||
+      !Number.isInteger(table.columns) || columnIndex < 0 || columnIndex >= table.columns ||
+      table.rows < 1 || table.rows > 20 || table.columns <= 1 || table.columns > 20 ||
+      !Array.isArray(table.cells) || table.cells.length !== table.rows ||
+      table.cells.some((row) => !Array.isArray(row) || row.length !== table.columns)) {
+    throw new Error("Invalid table column deletion.");
+  }
+  return {
+    ...table,
+    columns: table.columns - 1,
+    cells: table.cells.map((row) => row.filter((_, index) => index !== columnIndex)),
+  };
+}
