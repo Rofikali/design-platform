@@ -1583,6 +1583,54 @@ async function main() {
       throw new Error("Redo row deletion lost surviving table cell text");
     }
 
+    // Column deletion: native keyboard activation, selected-row retention,
+    // autosave, surviving text, and history round-trip.
+    await evaluate("document.querySelector('.design-element.table')?.click(); true");
+    await waitForPage("table editor restored for column deletion",
+      "Boolean(document.querySelector('.table-cell-editor select'))");
+    await evaluate(`(() => {
+      const selector = document.querySelector('.table-cell-editor select');
+      Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value').set.call(selector, '4');
+      selector.dispatchEvent(new Event('change', { bubbles: true }));
+      return true;
+    })()`);
+    await waitForPage("row 2 column 2 selected for column deletion",
+      "document.querySelector('.selected-name')?.textContent || ''",
+      value => value.includes("Cell row 2, column 2"));
+    const columnDeleteControl = await evaluate(`(() => {
+      const button = Array.from(document.querySelectorAll('.table-cell-actions button')).find(b => b.textContent.includes('Delete selected table column'));
+      if (!button) return { found: false };
+      button.focus();
+      return { found: true, focused: document.activeElement === button, disabled: button.disabled };
+    })()`);
+    if (!columnDeleteControl.found || !columnDeleteControl.focused || columnDeleteControl.disabled) {
+      throw new Error(`Table column deletion button is not keyboard-ready: ${JSON.stringify(columnDeleteControl)}`);
+    }
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: " ", code: "Space", windowsVirtualKeyCode: 32, nativeVirtualKeyCode: 32 });
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: " ", code: "Space", windowsVirtualKeyCode: 32, nativeVirtualKeyCode: 32 });
+    await waitFor("keyboard-deleted table column", async () => evaluate(
+      "document.querySelector('.table-cell-editor select')?.options.length === 6"
+    ));
+    await waitForPage("column deletion preserves selected row",
+      "document.querySelector('.selected-name')?.textContent || ''",
+      value => value.includes("Cell row 2, column 2"));
+    await waitFor("deleted table column autosaved", async () => evaluate(
+      "JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null')?.elements.find(e => e.kind.type === 'table')?.kind.columns === 2"
+    ));
+    const columnDeletedTable = await evaluate("JSON.parse(localStorage.getItem('design-platform:document:v1')).elements.find(e => e.kind.type === 'table').kind");
+    if (columnDeletedTable.cells[1].length !== 2 || columnDeletedTable.cells[1][1] !== "") {
+      throw new Error("Column deletion did not preserve the surviving table matrix");
+    }
+    await delay(750);
+    await evaluate("Array.from(document.querySelectorAll('button')).find(b => b.textContent.trim() === 'Undo')?.click(); true");
+    await waitFor("undo column deletion", async () => evaluate(
+      "JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null')?.elements.find(e => e.kind.type === 'table')?.kind.columns === 3"
+    ));
+    await evaluate("Array.from(document.querySelectorAll('button')).find(b => b.textContent.trim() === 'Redo')?.click(); true");
+    await waitFor("redo column deletion", async () => evaluate(
+      "JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null')?.elements.find(e => e.kind.type === 'table')?.kind.columns === 2"
+    ));
+
     // Restore Shop Banner because the PDF geometry checks below intentionally
     // exercise the landscape 300 × 125 mm output, not the A4 Exam Paper.
     await evaluate(`(() => {
