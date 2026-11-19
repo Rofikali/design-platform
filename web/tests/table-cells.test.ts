@@ -167,6 +167,32 @@ describe("table structural mutation rejects malformed cell values", () => {
   });
 });
 
+describe("table structural mutation enforces schema-v5 text budgets", () => {
+  it("rejects oversized cell text and aggregate text before all four structural edits", () => {
+    const original = sampleTable();
+    const overCell = { ...original, cells: original.cells.map((row) => [...row]) };
+    overCell.cells[0]![0] = "😀".repeat(2001);
+    const overTotal = {
+      ...original,
+      rows: 11,
+      columns: 10,
+      cells: Array.from({ length: 11 }, () => Array.from({ length: 10 }, () => "x".repeat(200))),
+    };
+    for (const malformed of [overCell, overTotal]) {
+      for (const mutate of [
+        (table: TableElement) => insertTableRow(table, 1),
+        (table: TableElement) => insertTableColumn(table, 1),
+        (table: TableElement) => deleteTableRow(table, 1),
+        (table: TableElement) => deleteTableColumn(table, 1),
+      ]) {
+        expect(() => mutate(malformed)).toThrow(/Invalid table/);
+      }
+    }
+    expect(overCell.cells[0]![0]).toBe("😀".repeat(2001));
+    expect(overTotal.cells[0]![0]).toBe("x".repeat(200));
+  });
+});
+
 describe("table row deletion primitive", () => {
   it("removes a selected row immutably and preserves surviving cell text and schema-v5 serialization", () => {
     const original = replaceTableCell(replaceTableCell(sampleTable(), 0, 1, "Header"), 2, 2, "Keep");
