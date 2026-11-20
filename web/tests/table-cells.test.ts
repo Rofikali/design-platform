@@ -503,3 +503,30 @@ describe("headerless table row insertion contract", () => {
     });
   });
 });
+
+describe("headerless first-row deletion history contract", () => {
+  it("preserves body text, headerless identity, and undo/redo after deleting row zero", () => {
+    const source: TableElement = {
+      ...sampleTable(), headerRows: 0,
+      cells: [["Remove 😀", "", ""], ["Keep 界", "₹80", ""], ["Last <text>", "", ""]],
+    };
+    const before = JSON.stringify(toDocument([source]));
+    const deleted = deleteTableRow(source, 0);
+    expect(deleted.rows).toBe(2);
+    expect(deleted.headerRows).toBe(0);
+    expect(deleted.cells).toEqual([["Keep 界", "₹80", ""], ["Last <text>", "", ""]]);
+    expect(JSON.stringify(toDocument([source]))).toBe(before);
+    const after = JSON.stringify(toDocument([deleted]));
+    expect(parseDocumentJson(after).elements[0]).toMatchObject({
+      type: "table", rows: 2, headerRows: 0, cells: deleted.cells,
+    });
+    const undo = undoHistory(recordHistory(createHistory(before), after), after);
+    expect(parseDocumentJson(undo.snapshot!).elements[0]).toMatchObject({
+      rows: 3, headerRows: 0, cells: source.cells,
+    });
+    const redo = redoHistory(undo.history, undo.snapshot!);
+    expect(parseDocumentJson(redo.snapshot!).elements[0]).toMatchObject({
+      rows: 2, headerRows: 0, cells: deleted.cells,
+    });
+  });
+});
