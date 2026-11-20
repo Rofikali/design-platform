@@ -35,7 +35,7 @@ jobs:
       - name: Configure pnpm store
         run: pnpm config set store-dir ~/.pnpm-store
       - name: Cache pnpm store
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.pnpm-store
           key: pnpm-${{ runner.os }}-${{ hashFiles('web/pnpm-lock.yaml') }}
@@ -46,7 +46,7 @@ jobs:
         with:
           version: "v0.15.0"
       - name: Cache Playwright browsers
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-1.56.1-chromium-firefox-webkit
