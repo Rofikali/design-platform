@@ -2,8 +2,8 @@
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
   "snapshot_date": "2026-11-20",
-  "reference_main_sha": "66daafef2a897de9cfe7e64ea08b46c483ff7939",
-  "now_id": "DP-M2-TBL-02C",
+  "reference_main_sha": "b033a44d15b50001fd19f3e0884f994904c814db",
+  "now_id": "DP-M2-TBL-02D",
   "next_ids": [
     "DP-M2-TBL-02B",
     "DP-SEC-01",
@@ -97,15 +97,23 @@
       "id": "DP-M2-TBL-02B",
       "title": "Bounded accessible table row and column commands",
       "status": "IN_PROGRESS",
-      "summary": "Row/column editing and bounded schema-v5 validation merged through PRs #125-#137; issue #82 manual accessibility remains open. Open PR #138 adds malformed Unicode regression; no release."
+      "summary": "Row/column editing and bounded schema-v5 validation merged through PR #138; manual accessibility issue #82 remains open."
     },
     {
       "id": "DP-M2-TBL-02C",
       "title": "Over-budget imported table regression",
-      "status": "PR_OPEN",
+      "status": "MERGED",
       "pr": 138,
-      "sha": "d0b4436ce6b3da59854f2e713aef2b2bc1bafdb6",
-      "summary": "PR #138 adds 20,001-code-point malformed-table rejection, immutable source regressions; exact-head CI and merge review required, no manual screen-reader certification."
+      "sha": "b033a44d15b50001fd19f3e0884f994904c814db",
+      "summary": "PR #138 merged into main as b033a44d on 2026-11-20; malformed 20,001-code-point imported table rejection and source immutability regression integrated; manual accessibility remains open."
+    },
+    {
+      "id": "DP-M2-TBL-02D",
+      "title": "Header-row deletion schema-v5 history regression",
+      "status": "PR_OPEN",
+      "pr": 139,
+      "sha": "b21852e879425d73e495159e88a1d781c67ae1b9",
+      "summary": "PR #139 verifies deleting the only header row clears headerRows, preserves body cells and source, and round-trips JSON and undo/redo; CI passes on initial test head; docs reconciliation in this PR."
     }
   ]
 }

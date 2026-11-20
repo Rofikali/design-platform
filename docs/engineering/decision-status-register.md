@@ -6,9 +6,9 @@
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-20)
 
-**Reference main:** 66daafef2a897de9cfe7e64ea08b46c483ff7939 (dated snapshot; re-check live GitHub before acting).
+**Reference main:** b033a44d15b50001fd19f3e0884f994904c814db (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M2-TBL-02C — Over-budget imported table regression** [PR_OPEN]. [PR #138](https://github.com/Rofikali/design-platform/pull/138)
+**NOW:** **DP-M2-TBL-02D — Header-row deletion schema-v5 history regression** [PR_OPEN]. [PR #139](https://github.com/Rofikali/design-platform/pull/139)
 
 **NEXT:** DP-M2-TBL-02B [IN_PROGRESS]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
@@ -26,8 +26,9 @@
 | DP-SEC-02 — Built Nuxt bundle dependency indicator inventory | MERGED | [PR #120](https://github.com/Rofikali/design-platform/pull/120) [Issue #118](https://github.com/Rofikali/design-platform/issues/118) | PR #120 merged as adb3bd1f into main on 2026-11-18. Rust/Nuxt, browser, cross-browser, doc sync and Rust audit passed; JS audit passed ONLY with owner-approved development exception through 2026-12-02, not a fix or production approval. |
 | DP-DEPS-01 — Nuxt 4 compatibility upgrade | MERGED | [PR #98](https://github.com/Rofikali/design-platform/pull/98) [Issue #118](https://github.com/Rofikali/design-platform/issues/118) | Nuxt 4.6.4 PR #98 merged into main as 9ccac618 on 2026-11-18. Nuxt/Rust, browser export, Docker, docs and dependency checks passed on integrated head b8d73662; JS audit passed with DEVELOPMENT-ONLY picomatch exception, not a vulnerability fix or release approval. |
 | DP-M2-TBL-02A — Accessible first table-cell editing workflow | MERGED | [PR #123](https://github.com/Rofikali/design-platform/pull/123) | PR #123 merged as 32e9c5a5 on 2026-11-18: add table, accessible cell selection/editing, text bounds, JSON/history/autosave and browser regression. Exact-head Nuxt, Rust, PNG cross-browser, doc and audit checks passed; manual a11y remains open. |
-| DP-M2-TBL-02B — Bounded accessible table row and column commands | IN_PROGRESS | — | Row/column editing and bounded schema-v5 validation merged through PRs #125-#137; issue #82 manual accessibility remains open. Open PR #138 adds malformed Unicode regression; no release. |
-| DP-M2-TBL-02C — Over-budget imported table regression | PR_OPEN | [PR #138](https://github.com/Rofikali/design-platform/pull/138) | PR #138 adds 20,001-code-point malformed-table rejection, immutable source regressions; exact-head CI and merge review required, no manual screen-reader certification. |
+| DP-M2-TBL-02B — Bounded accessible table row and column commands | IN_PROGRESS | — | Row/column editing and bounded schema-v5 validation merged through PR #138; manual accessibility issue #82 remains open. |
+| DP-M2-TBL-02C — Over-budget imported table regression | MERGED | [PR #138](https://github.com/Rofikali/design-platform/pull/138) | PR #138 merged into main as b033a44d on 2026-11-20; malformed 20,001-code-point imported table rejection and source immutability regression integrated; manual accessibility remains open. |
+| DP-M2-TBL-02D — Header-row deletion schema-v5 history regression | PR_OPEN | [PR #139](https://github.com/Rofikali/design-platform/pull/139) | PR #139 verifies deleting the only header row clears headerRows, preserves body cells and source, and round-trips JSON and undo/redo; CI passes on initial test head; docs reconciliation in this PR. |
 
 <!-- milestone-sync:end -->
 
