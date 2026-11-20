@@ -108,6 +108,22 @@ describe("accessible table cell editing domain", () => {
       .toMatchObject({ type: "table", cells: accepted.cells });
   });
 
+  it("rejects a malformed imported matrix above the aggregate limit before replacement", () => {
+    const table = sampleTable();
+    const malformed: TableElement = {
+      ...table,
+      rows: 20,
+      columns: 20,
+      cells: Array.from({ length: 20 }, () => Array.from({ length: 20 }, () => "😀".repeat(50))),
+    };
+    malformed.cells[0]![0] = "😀".repeat(51);
+    expect(() => replaceTableCell(malformed, 0, 0, "safe")).toThrow(/Invalid table cell edit/);
+    expect(() => replaceTableCell(malformed, 19, 19, "")).toThrow(/Invalid table cell edit/);
+    expect(() => deleteTableRow(malformed, 0)).toThrow(/Invalid table/);
+    expect(malformed.cells[0]![0]).toBe("😀".repeat(51));
+    expect(malformed.cells[19]![19]).toBe("😀".repeat(50));
+  });
+
   it("enforces code-point, table-total, and index boundaries without mutating the source", () => {
     const table = sampleTable();
     expect(() => replaceTableCell(table, 3, 0, "x")).toThrow(/Invalid/);
