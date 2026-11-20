@@ -456,3 +456,22 @@ describe("header insertion history contract", () => {
     });
   });
 });
+
+
+describe("single-column table deletion safety", () => {
+  it("rejects removing the only column without changing schema-v5 content", () => {
+    const source: TableElement = {
+      ...sampleTable(),
+      columns: 1,
+      cells: [["Header 😀"], ["Rice ₹80"], ["<literal>"]],
+    };
+    const before = JSON.stringify(toDocument([source]));
+    expect(() => deleteTableColumn(source, 0)).toThrow(/Invalid table column deletion/);
+    expect(() => deleteTableColumn(source, -1)).toThrow(/Invalid table column deletion/);
+    expect(() => deleteTableColumn(source, 1)).toThrow(/Invalid table column deletion/);
+    expect(JSON.stringify(toDocument([source]))).toBe(before);
+    expect(parseDocumentJson(before).elements[0]).toMatchObject({
+      type: "table", columns: 1, headerRows: 1, cells: source.cells,
+    });
+  });
+});
