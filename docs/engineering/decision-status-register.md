@@ -8,7 +8,7 @@
 
 **Reference main:** 14bfe8265d622dd53147edf965c8473c8d9ba778 (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M2-TBL-02G — Headerless row insertion schema-v5 history regression** [IN_PROGRESS].
+**NOW:** **DP-M2-TBL-02G — Headerless row insertion schema-v5 history regression** [PR_OPEN]. [PR #147](https://github.com/Rofikali/design-platform/pull/147)
 
 **NEXT:** DP-M2-TBL-02B [IN_PROGRESS]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
@@ -31,7 +31,7 @@
 | DP-M2-TBL-02D — Header-row deletion schema-v5 history regression | MERGED | [PR #139](https://github.com/Rofikali/design-platform/pull/139) | PR #139 merged into main as ce249b53 on 2026-11-20; sole-header deletion, schema-v5 serialization and undo/redo regression integrated; manual accessibility remains open. |
 | DP-M2-TBL-02E — Maximum-width table column deletion history regression | MERGED | [PR #140](https://github.com/Rofikali/design-platform/pull/140) | PR #140 merged into main as d21215d4 on 2026-11-20; 20-column deletion Unicode, history and schema-v5 regression integrated; manual accessibility remains open. |
 | DP-M2-TBL-02F — First-row header insertion history regression | MERGED | [PR #141](https://github.com/Rofikali/design-platform/pull/141) | PR #141 merged into main as 92e25a6b on 2026-11-20; header insertion Unicode and undo/redo regression integrated; manual accessibility remains open. |
-| DP-M2-TBL-02G — Headerless row insertion schema-v5 history regression | IN_PROGRESS | — | Headerless row insertion regression implemented on branch: preserves zero headers, Unicode body cells, JSON and undo/redo; exact-head CI pending. |
+| DP-M2-TBL-02G — Headerless row insertion schema-v5 history regression | PR_OPEN | [PR #147](https://github.com/Rofikali/design-platform/pull/147) | PR #147 adds headerless row insertion Unicode/schema-v5/undo-redo regression; documentation synchronized in same PR. Recorded head is a dated checkpoint; exact-head CI pending. |
 | DP-M2-TBL-02H — Single-column deletion safety regression | MERGED | [PR #146](https://github.com/Rofikali/design-platform/pull/146) | PR #146 merged into main as 14bfe826 on 2026-11-20; invalid single-column deletion preserves Unicode, header and schema-v5 content; no production release. |
 
 <!-- milestone-sync:end -->
