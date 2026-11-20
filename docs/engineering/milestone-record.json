@@ -2,8 +2,8 @@
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
   "snapshot_date": "2026-11-20",
-  "reference_main_sha": "1cdcbc7edf319ffd39812762a0005ceb1b598924",
-  "now_id": "DP-M2-TBL-02I",
+  "reference_main_sha": "6a3f9d07aa2ef7c0b84f9dcb42b579138b92d9b0",
+  "now_id": "DP-M2-TBL-02J",
   "next_ids": [
     "DP-M2-TBL-02B",
     "DP-SEC-01",
@@ -150,8 +150,17 @@
     {
       "id": "DP-M2-TBL-02I",
       "title": "Headerless first-row deletion schema-v5 history regression",
+      "status": "MERGED",
+      "summary": "PR #148 merged at 6a3f9d07 on 2026-11-20; headerless first-row deletion Unicode/schema-v5 history regression integrated; manual accessibility remains open.",
+      "pr": 148,
+      "sha": "6a3f9d07aa2ef7c0b84f9dcb42b579138b92d9b0"
+    },
+    {
+      "id": "DP-M2-TBL-02J",
+      "title": "Maximum-height final-row deletion history regression",
       "status": "IN_PROGRESS",
-      "summary": "Regression committed on implementation branch: removing row zero from headerless table preserves Unicode body text, source immutability, schema-v5 JSON and undo/redo. Exact-head CI pending."
+      "pr": 149,
+      "summary": "PR #149 implements 20-row final-row deletion, Unicode/header preservation, schema-v5 JSON and undo/redo regression; exact-head CI pending, not merged."
     }
   ]
 }

@@ -530,3 +530,36 @@ describe("headerless first-row deletion history contract", () => {
     });
   });
 });
+
+
+describe("maximum-height table final-row deletion", () => {
+  it("preserves Unicode content, schema-v5 and undo/redo at the 20-row boundary", () => {
+    const original: TableElement = {
+      ...sampleTable(),
+      rows: 20,
+      cells: Array.from({ length: 20 }, (_, row) =>
+        [row === 0 ? "Header 🧾" : `Row ${row} 界`, "", row === 19 ? "Final ₹90" : ""]),
+    };
+    const before = JSON.stringify(toDocument([original]));
+    const updated = deleteTableRow(original, 19);
+    expect(updated.rows).toBe(19);
+    expect(updated.headerRows).toBe(1);
+    expect(updated.cells[0]![0]).toBe("Header 🧾");
+    expect(updated.cells[18]![0]).toBe("Row 18 界");
+    expect(updated.cells.some(row => row.includes("Final ₹90"))).toBe(false);
+    expect(original.rows).toBe(20);
+    expect(original.cells[19]![2]).toBe("Final ₹90");
+    const after = JSON.stringify(toDocument([updated]));
+    expect(parseDocumentJson(after).elements[0]).toMatchObject({
+      type: "table", rows: 19, headerRows: 1, cells: updated.cells,
+    });
+    const undone = undoHistory(recordHistory(createHistory(before), after), after);
+    expect(parseDocumentJson(undone.snapshot!).elements[0]).toMatchObject({
+      type: "table", rows: 20, cells: original.cells,
+    });
+    const redone = redoHistory(undone.history, undone.snapshot!);
+    expect(parseDocumentJson(redone.snapshot!).elements[0]).toMatchObject({
+      type: "table", rows: 19, cells: updated.cells,
+    });
+  });
+});
