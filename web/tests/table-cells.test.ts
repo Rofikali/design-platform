@@ -81,6 +81,16 @@ describe("accessible table cell editing domain", () => {
     expect(original.cells[0]![0]).toBe("");
   });
 
+  it("rejects enormous replacement strings without changing the source or Unicode boundaries", () => {
+    const original = sampleTable();
+    const huge = "😀".repeat(100_000);
+    expect(() => replaceTableCell(original, 1, 1, huge)).toThrow(/2,000/);
+    expect(original.cells[1]![1]).toBe("");
+    const valid = replaceTableCell(original, 1, 1, "😀".repeat(2000));
+    expect(valid.cells[1]![1]).toBe("😀".repeat(2000));
+    expect(original.cells[1]![1]).toBe("");
+  });
+
   it("enforces code-point, table-total, and index boundaries without mutating the source", () => {
     const table = sampleTable();
     expect(() => replaceTableCell(table, 3, 0, "x")).toThrow(/Invalid/);
