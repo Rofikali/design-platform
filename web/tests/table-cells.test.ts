@@ -372,3 +372,28 @@ describe("table column deletion primitive", () => {
     expect(parseDocumentJson(redo.snapshot!).elements[0]).toMatchObject({ columns: 2, cells: deleted.cells });
   });
 });
+
+describe("single-header row deletion contract", () => {
+  it("demotes the table to a headerless document when its only header is removed", () => {
+    const original = replaceTableCell(replaceTableCell(sampleTable(), 0, 0, "Header"), 1, 0, "Body");
+    const removed = deleteTableRow(original, 0);
+    expect(removed.headerRows).toBe(0);
+    expect(removed.rows).toBe(2);
+    expect(removed.cells[0]![0]).toBe("Body");
+    expect(original.headerRows).toBe(1);
+    expect(original.cells[0]![0]).toBe("Header");
+    expect(parseDocumentJson(JSON.stringify(toDocument([removed]))).elements[0]).toMatchObject({
+      type: "table", headerRows: 0, rows: 2, cells: removed.cells,
+    });
+    const before = JSON.stringify(toDocument([original]));
+    const after = JSON.stringify(toDocument([removed]));
+    const undo = undoHistory(recordHistory(createHistory(before), after), after);
+    expect(parseDocumentJson(undo.snapshot!).elements[0]).toMatchObject({
+      type: "table", headerRows: 1, rows: 3, cells: original.cells,
+    });
+    const redo = redoHistory(undo.history, undo.snapshot!);
+    expect(parseDocumentJson(redo.snapshot!).elements[0]).toMatchObject({
+      type: "table", headerRows: 0, rows: 2, cells: removed.cells,
+    });
+  });
+});
