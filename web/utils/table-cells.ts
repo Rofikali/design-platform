@@ -9,6 +9,15 @@ export function tableCellPosition(table: Pick<TableElement, "rows" | "columns">,
   return { row: Math.floor(index / table.columns), column: index % table.columns };
 }
 
+/** Count Unicode code points without allocating an array or scanning past the limit. */
+function boundedCodePointCount(value: string, limit: number): number {
+  let count = 0;
+  for (const _codePoint of value) {
+    if (++count > limit) return count;
+  }
+  return count;
+}
+
 /** Table cells are owned by their table; editing never adds free-floating text elements. */
 export function replaceTableCell(table: TableElement, row: number, column: number, value: string): TableElement {
   if (!Number.isInteger(row) || !Number.isInteger(column) ||
@@ -18,21 +27,18 @@ export function replaceTableCell(table: TableElement, row: number, column: numbe
       !Number.isInteger(table.headerRows) || (table.headerRows !== 0 && table.headerRows !== 1) ||
       !validTableCellMatrix(table)) throw new Error("Invalid table cell edit.");
   // Count only up to the cell limit; untrusted replacement text may be arbitrarily large.
-  let cellLength = 0;
-  for (const _codePoint of value) {
-    if (++cellLength > MAX_TABLE_CELL_CHARS) {
-      throw new Error("A table cell cannot exceed 2,000 characters.");
-    }
+  const cellLength = boundedCodePointCount(value, MAX_TABLE_CELL_CHARS);
+  if (cellLength > MAX_TABLE_CELL_CHARS) {
+    throw new Error("A table cell cannot exceed 2,000 characters.");
   }
   // The source matrix was already validated, so each existing cell is bounded.
   let textLength = cellLength;
   for (let r = 0; r < table.rows; r++) {
     for (let c = 0; c < table.columns; c++) {
       if (r !== row || c !== column) {
-        for (const _codePoint of table.cells[r]![c]!) {
-          if (++textLength > MAX_TABLE_TEXT_CHARS) {
-            throw new Error("A table cannot exceed 20,000 text characters.");
-          }
+        textLength += boundedCodePointCount(table.cells[r]![c]!, MAX_TABLE_TEXT_CHARS - textLength);
+        if (textLength > MAX_TABLE_TEXT_CHARS) {
+          throw new Error("A table cannot exceed 20,000 text characters.");
         }
       }
     }
@@ -54,10 +60,8 @@ function validTableCellMatrix(table: TableElement): boolean {
     for (const cell of row) {
       if (typeof cell !== "string") return false;
       // Count incrementally: malformed imported text must not allocate a code-point array.
-      let codePoints = 0;
-      for (const _codePoint of cell) {
-        if (++codePoints > MAX_TABLE_CELL_CHARS) return false;
-      }
+      const codePoints = boundedCodePointCount(cell, MAX_TABLE_CELL_CHARS);
+      if (codePoints > MAX_TABLE_CELL_CHARS) return false;
       totalCodePoints += codePoints;
       if (totalCodePoints > MAX_TABLE_TEXT_CHARS) return false;
     }

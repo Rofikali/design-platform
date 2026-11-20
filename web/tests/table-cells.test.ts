@@ -91,6 +91,23 @@ describe("accessible table cell editing domain", () => {
     expect(original.cells[1]![1]).toBe("");
   });
 
+  it("enforces aggregate Unicode code-point budget at the exact boundary", () => {
+    const table = sampleTable();
+    const full: TableElement = {
+      ...table,
+      rows: 20,
+      columns: 20,
+      cells: Array.from({ length: 20 }, () => Array.from({ length: 20 }, () => "😀".repeat(50))),
+    };
+    const accepted = replaceTableCell(full, 19, 19, "界".repeat(50));
+    expect(accepted.cells[19]![19]).toBe("界".repeat(50));
+    expect(full.cells[19]![19]).toBe("😀".repeat(50));
+    expect(() => replaceTableCell(full, 19, 19, "界".repeat(51))).toThrow(/20,000/);
+    expect(() => insertTableColumn(full, 0)).toThrow(/Invalid/);
+    expect(parseDocumentJson(JSON.stringify(toDocument([accepted]))).elements[0])
+      .toMatchObject({ type: "table", cells: accepted.cells });
+  });
+
   it("enforces code-point, table-total, and index boundaries without mutating the source", () => {
     const table = sampleTable();
     expect(() => replaceTableCell(table, 3, 0, "x")).toThrow(/Invalid/);
