@@ -95,7 +95,7 @@ jobs:
           node ../scripts/inspect-nuxt-server-bundle.mjs .output/server
           node --test ../scripts/tests/inspect-nuxt-server-bundle.test.mjs
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
       - name: Build production Docker image
         run: >-
           docker buildx build
