@@ -624,3 +624,38 @@ describe("headerless last-column deletion history contract", () => {
     });
   });
 });
+
+describe("table Unicode aggregate-budget structural history", () => {
+  it("preserves exactly 20,000 code points across empty row insertion and undo/redo", () => {
+    const source: TableElement = {
+      ...sampleTable(),
+      rows: 10,
+      columns: 10,
+      headerRows: 0,
+      cells: Array.from({ length: 10 }, (_, row) =>
+        Array.from({ length: 10 }, (_, column) =>
+          row === 0 && column === 0 ? "😀".repeat(200) : "界".repeat(200))),
+    };
+    const before = JSON.stringify(toDocument([source]));
+    const inserted = insertTableRow(source, 5);
+    expect(inserted.rows).toBe(11);
+    expect(inserted.headerRows).toBe(0);
+    expect(inserted.cells[5]).toEqual(Array(10).fill(""));
+    expect(inserted.cells[6]![0]).toBe("界".repeat(200));
+    expect(source.rows).toBe(10);
+    expect(JSON.stringify(toDocument([source]))).toBe(before);
+    const after = JSON.stringify(toDocument([inserted]));
+    expect(parseDocumentJson(after).elements[0]).toMatchObject({
+      type: "table", rows: 11, columns: 10, headerRows: 0, cells: inserted.cells,
+    });
+    expect(() => replaceTableCell(inserted, 5, 0, "x")).toThrow(/20,000/);
+    const undone = undoHistory(recordHistory(createHistory(before), after), after);
+    expect(parseDocumentJson(undone.snapshot!).elements[0]).toMatchObject({
+      rows: 10, cells: source.cells,
+    });
+    const redone = redoHistory(undone.history, undone.snapshot!);
+    expect(parseDocumentJson(redone.snapshot!).elements[0]).toMatchObject({
+      rows: 11, cells: inserted.cells,
+    });
+  });
+});
