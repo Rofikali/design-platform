@@ -1,10 +1,11 @@
 {
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
-  "snapshot_date": "2026-11-18",
-  "reference_main_sha": "32e9c5a520338d45d52c5db78250e6dddde1cbee",
-  "now_id": "DP-M2-TBL-02B",
+  "snapshot_date": "2026-11-20",
+  "reference_main_sha": "66daafef2a897de9cfe7e64ea08b46c483ff7939",
+  "now_id": "DP-M2-TBL-02C",
   "next_ids": [
+    "DP-M2-TBL-02B",
     "DP-SEC-01",
     "DP-M1-ACC-02",
     "DP-M1-BG-09"
@@ -64,7 +65,7 @@
       "title": "Production JavaScript picomatch advisory remediation",
       "status": "BLOCKED",
       "issue": 118,
-      "summary": "Unpatched picomatch ReDoS remains BLOCKED. Temporary owner-approved development-only audit exception is merged in PR #120, expires 2026-12-02. Raw pnpm audit still fails; restore strict gate on verified patch; no production authorization."
+      "summary": "PR #130 restored strict production dependency audit, but issue #118 remains open; independently verify actual advisory remediation and exposure before any production authorization."
     },
     {
       "id": "DP-SEC-02",
@@ -95,8 +96,16 @@
     {
       "id": "DP-M2-TBL-02B",
       "title": "Bounded accessible table row and column commands",
-      "status": "READY",
-      "summary": "Implement insert and remove row/column with stable cell positioning, 1-20 size limits, predictable selection, keyboard-operable controls, undo/redo, schema-v5 import/export and tests. No merged cells or spreadsheet formulas."
+      "status": "IN_PROGRESS",
+      "summary": "Row/column editing and bounded schema-v5 validation merged through PRs #125-#137; issue #82 manual accessibility remains open. Open PR #138 adds malformed Unicode regression; no release."
+    },
+    {
+      "id": "DP-M2-TBL-02C",
+      "title": "Over-budget imported table regression",
+      "status": "PR_OPEN",
+      "pr": 138,
+      "sha": "d0b4436ce6b3da59854f2e713aef2b2bc1bafdb6",
+      "summary": "PR #138 adds 20,001-code-point malformed-table rejection, immutable source regressions; exact-head CI and merge review required, no manual screen-reader certification."
     }
   ]
 }
