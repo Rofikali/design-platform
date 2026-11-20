@@ -42,8 +42,11 @@ function validTableCellMatrix(table: TableElement): boolean {
     if (!Array.isArray(row) || row.length !== table.columns) return false;
     for (const cell of row) {
       if (typeof cell !== "string") return false;
-      const codePoints = [...cell].length;
-      if (codePoints > MAX_TABLE_CELL_CHARS) return false;
+      // Count incrementally: malformed imported text must not allocate a code-point array.
+      let codePoints = 0;
+      for (const _codePoint of cell) {
+        if (++codePoints > MAX_TABLE_CELL_CHARS) return false;
+      }
       totalCodePoints += codePoints;
       if (totalCodePoints > MAX_TABLE_TEXT_CHARS) return false;
     }
