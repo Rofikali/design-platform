@@ -24,9 +24,9 @@ The current prototype includes:
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-20)
 
-**Reference main:** bd11eee6aef6647e9a8c5acb3053feee89221ef0 (dated snapshot; re-check live GitHub before acting).
+**Reference main:** be9a850ff14a938ec3d349a3e8cabe1b2e1b300a (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M2-TBL-02K — Headerless first-column insertion history regression** [IN_PROGRESS]. [PR #150](https://github.com/Rofikali/design-platform/pull/150)
+**NOW:** **DP-M2-TBL-02L — Headerless final-column deletion history regression** [IN_PROGRESS].
 
 **NEXT:** DP-M2-TBL-02B [IN_PROGRESS]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
