@@ -202,6 +202,22 @@ describe("table structural mutation rejects malformed cell values", () => {
 });
 
 describe("table structural mutation enforces schema-v5 text budgets", () => {
+  it("rejects very large untrusted Unicode cells before any structural edit", () => {
+    const table = sampleTable();
+    const huge = { ...table, cells: table.cells.map((row) => [...row]) };
+    huge.cells[1]![1] = "😀".repeat(100_000);
+    for (const edit of [
+      (value: TableElement) => insertTableRow(value, 1),
+      (value: TableElement) => insertTableColumn(value, 1),
+      (value: TableElement) => deleteTableRow(value, 1),
+      (value: TableElement) => deleteTableColumn(value, 1),
+      (value: TableElement) => replaceTableCell(value, 0, 0, "ok"),
+    ]) {
+      expect(() => edit(huge)).toThrow(/Invalid table/);
+    }
+    expect(huge.cells[1]![1]).toBe("😀".repeat(100_000));
+  });
+
   it("rejects oversized cell text and aggregate text before all four structural edits", () => {
     const original = sampleTable();
     const overCell = { ...original, cells: original.cells.map((row) => [...row]) };
