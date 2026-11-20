@@ -429,3 +429,30 @@ describe("maximum-width table column deletion contract", () => {
     });
   });
 });
+
+describe("header insertion history contract", () => {
+  it("preserves the old header as body and restores header identity across undo and redo", () => {
+    const original = replaceTableCell(replaceTableCell(sampleTable(), 0, 0, "Heading 界"), 1, 0, "Body 😀");
+    const inserted = insertTableRow(original, 0);
+    expect(inserted.headerRows).toBe(1);
+    expect(inserted.rows).toBe(4);
+    expect(inserted.cells[0]).toEqual(["", "", ""]);
+    expect(inserted.cells[1]![0]).toBe("Heading 界");
+    expect(inserted.cells[2]![0]).toBe("Body 😀");
+    expect(original.cells[0]![0]).toBe("Heading 界");
+
+    const before = JSON.stringify(toDocument([original]));
+    const after = JSON.stringify(toDocument([inserted]));
+    expect(parseDocumentJson(after).elements[0]).toMatchObject({
+      type: "table", rows: 4, headerRows: 1, cells: inserted.cells,
+    });
+    const undo = undoHistory(recordHistory(createHistory(before), after), after);
+    expect(parseDocumentJson(undo.snapshot!).elements[0]).toMatchObject({
+      type: "table", rows: 3, headerRows: 1, cells: original.cells,
+    });
+    const redo = redoHistory(undo.history, undo.snapshot!);
+    expect(parseDocumentJson(redo.snapshot!).elements[0]).toMatchObject({
+      type: "table", rows: 4, headerRows: 1, cells: inserted.cells,
+    });
+  });
+});

@@ -6,9 +6,9 @@
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-20)
 
-**Reference main:** ce249b530466720875e83dfeef9f62d9df6a5e6a (dated snapshot; re-check live GitHub before acting).
+**Reference main:** d21215d4895bafc1c4b46416b7dfc71a9a7b137c (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M2-TBL-02E — Maximum-width table column deletion history regression** [PR_OPEN]. [PR #140](https://github.com/Rofikali/design-platform/pull/140)
+**NOW:** **DP-M2-TBL-02F — First-row header insertion history regression** [PR_OPEN]. [PR #141](https://github.com/Rofikali/design-platform/pull/141)
 
 **NEXT:** DP-M2-TBL-02B [IN_PROGRESS]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
@@ -29,7 +29,8 @@
 | DP-M2-TBL-02B — Bounded accessible table row and column commands | IN_PROGRESS | — | Row/column editing and bounded schema-v5 validation merged through PR #138; manual accessibility issue #82 remains open. |
 | DP-M2-TBL-02C — Over-budget imported table regression | MERGED | [PR #138](https://github.com/Rofikali/design-platform/pull/138) | PR #138 merged into main as b033a44d on 2026-11-20; malformed 20,001-code-point imported table rejection and source immutability regression integrated; manual accessibility remains open. |
 | DP-M2-TBL-02D — Header-row deletion schema-v5 history regression | MERGED | [PR #139](https://github.com/Rofikali/design-platform/pull/139) | PR #139 merged into main as ce249b53 on 2026-11-20; sole-header deletion, schema-v5 serialization and undo/redo regression integrated; manual accessibility remains open. |
-| DP-M2-TBL-02E — Maximum-width table column deletion history regression | PR_OPEN | [PR #140](https://github.com/Rofikali/design-platform/pull/140) | PR #140 tests deleting the final column of a 20-column table while preserving Unicode cells, header count, immutable source, schema-v5 JSON and undo/redo; exact-head CI pending. |
+| DP-M2-TBL-02E — Maximum-width table column deletion history regression | MERGED | [PR #140](https://github.com/Rofikali/design-platform/pull/140) | PR #140 merged into main as d21215d4 on 2026-11-20; 20-column deletion Unicode, history and schema-v5 regression integrated; manual accessibility remains open. |
+| DP-M2-TBL-02F — First-row header insertion history regression | PR_OPEN | [PR #141](https://github.com/Rofikali/design-platform/pull/141) | PR #141 verifies first-row insertion preserves Unicode header and body text, schema-v5 JSON and undo/redo; exact-head CI pending. |
 
 <!-- milestone-sync:end -->
 
