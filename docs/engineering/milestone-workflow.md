@@ -37,3 +37,15 @@ If CI reports stale documents, run the generator, review the seven generated dif
 - **Failure safety:** --check reads but never writes. In normal mode, generated text replaces only marked ranges.
 - **Security and finance:** No customer documents, secrets, cloud credentials, network calls, extra paid services, publishing or deployment are part of this workflow. Only owner-authorized, verified PR merges are permitted.
 - **Branch protections:** The CI job is one workflow check; repository owners must configure any required-check / code-owner settings in GitHub separately. A workflow file alone does not establish enforced branch protection.
+
+## Milestone documentation impact, adapted from IMGENGINE (2026-11-20)
+
+**Why stale docs can still pass CI:** The existing sync check checks seven generated sections against a *dated JSON record*, not against live GitHub main, PR merges or exact-head checks. It cannot establish that a record is current. Do not infer freshness from a green generator check.
+
+**Each implementation milestone PR must perform this transaction:** (1) reconcile the live main SHA, open and merged PRs, exact-head CI and issues; (2) change the structured milestone record when the NOW/NEXT selection, milestone status, PR head/merge evidence or security decision materially changes; (3) regenerate and commit **all seven** marked sections in the same implementation PR; (4) review affected non-generated contracts and report UPDATED or N/A; (5) run the generator unit tests and `--check` before merge. Do not fabricate a merged SHA while a PR is still open. After an actual merge, record the real merge SHA in the next authorized implementation milestone, not in a repetitive timestamp-only PR.
+
+**Impact lenses:** review root and scoped AGENTS, SKILLS, README and the docs map; schema-v5 and older import migrations, Rust/WASM/TS parity, undo/redo, local-only persistence, PNG/print/a11y/security, Docker/CI and the relevant HLD/LLD/ADR. Only update business/finance/CA/MBA/management documentation for changed product or economic facts. No C ABI/IMGENGINE architecture should be copied into this editor.
+
+**Connector-only contingency:** If an editable checkout is unavailable, write exactly the canonical generated sections from the verified source and let latest-head CI run `node --test scripts/tests/sync-milestone-docs.test.mjs` and `node scripts/sync-milestone-docs.mjs --check`. Mark local generator and tests **NOT RUN** rather than treating written output as executed tests. Do not merge partial synchronization or waive the CI gate.
+
+**Evidence:** every PR records base/head SHA, actual changes, observed PASS/FAIL/PENDING/NOT RUN per check, reviewed documents updated versus N/A, risks and one next READY job. Distinguish PR_OPEN, CI_PASS, MERGED and RELEASED. The independently enabled hourly ChatGPT autopilot is not run by this file and remains subject to GitHub protections and required independent review.
