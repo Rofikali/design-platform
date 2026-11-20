@@ -595,3 +595,32 @@ describe("headerless first-column insertion history contract", () => {
     });
   });
 });
+
+describe("headerless last-column deletion history contract", () => {
+  it("retains remaining Unicode cells and headerless identity through schema-v5 undo/redo", () => {
+    const original: TableElement = {
+      ...sampleTable(),
+      columns: 2,
+      headerRows: 0,
+      cells: [["Keep 😀", "Remove A"], ["界 ₹80", "Remove B"], ["<literal>", "Remove C"]],
+    };
+    const before = JSON.stringify(toDocument([original]));
+    const deleted = deleteTableColumn(original, 1);
+    expect(deleted.columns).toBe(1);
+    expect(deleted.headerRows).toBe(0);
+    expect(deleted.cells).toEqual([["Keep 😀"], ["界 ₹80"], ["<literal>"]]);
+    expect(JSON.stringify(toDocument([original]))).toBe(before);
+    const after = JSON.stringify(toDocument([deleted]));
+    expect(parseDocumentJson(after).elements[0]).toMatchObject({
+      type: "table", columns: 1, headerRows: 0, cells: deleted.cells,
+    });
+    const undone = undoHistory(recordHistory(createHistory(before), after), after);
+    expect(parseDocumentJson(undone.snapshot!).elements[0]).toMatchObject({
+      columns: 2, headerRows: 0, cells: original.cells,
+    });
+    const redone = redoHistory(undone.history, undone.snapshot!);
+    expect(parseDocumentJson(redone.snapshot!).elements[0]).toMatchObject({
+      columns: 1, headerRows: 0, cells: deleted.cells,
+    });
+  });
+});
