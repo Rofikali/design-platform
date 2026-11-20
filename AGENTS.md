@@ -7,9 +7,9 @@
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-20)
 
-**Reference main:** 14bfe8265d622dd53147edf965c8473c8d9ba778 (dated snapshot; re-check live GitHub before acting).
+**Reference main:** 1cdcbc7edf319ffd39812762a0005ceb1b598924 (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M2-TBL-02G — Headerless row insertion schema-v5 history regression** [PR_OPEN]. [PR #147](https://github.com/Rofikali/design-platform/pull/147)
+**NOW:** **DP-M2-TBL-02I — Headerless first-row deletion schema-v5 history regression** [IN_PROGRESS].
 
 **NEXT:** DP-M2-TBL-02B [IN_PROGRESS]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
