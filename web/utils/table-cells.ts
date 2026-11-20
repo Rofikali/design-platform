@@ -17,15 +17,26 @@ export function replaceTableCell(table: TableElement, row: number, column: numbe
       !Number.isInteger(table.columns) || table.columns < 1 || table.columns > 20 ||
       !Number.isInteger(table.headerRows) || (table.headerRows !== 0 && table.headerRows !== 1) ||
       !validTableCellMatrix(table)) throw new Error("Invalid table cell edit.");
-  const cellLength = [...value].length;
-  if (cellLength > MAX_TABLE_CELL_CHARS) throw new Error("A table cell cannot exceed 2,000 characters.");
+  // Count only up to the cell limit; untrusted replacement text may be arbitrarily large.
+  let cellLength = 0;
+  for (const _codePoint of value) {
+    if (++cellLength > MAX_TABLE_CELL_CHARS) {
+      throw new Error("A table cell cannot exceed 2,000 characters.");
+    }
+  }
+  // The source matrix was already validated, so each existing cell is bounded.
   let textLength = cellLength;
   for (let r = 0; r < table.rows; r++) {
     for (let c = 0; c < table.columns; c++) {
-      if (r !== row || c !== column) textLength += [...table.cells[r]![c]!].length;
+      if (r !== row || c !== column) {
+        for (const _codePoint of table.cells[r]![c]!) {
+          if (++textLength > MAX_TABLE_TEXT_CHARS) {
+            throw new Error("A table cannot exceed 20,000 text characters.");
+          }
+        }
+      }
     }
   }
-  if (textLength > MAX_TABLE_TEXT_CHARS) throw new Error("A table cannot exceed 20,000 text characters.");
   return {
     ...table,
     cells: table.cells.map((cells, r) => r === row
