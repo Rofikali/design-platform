@@ -2,8 +2,8 @@
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
   "snapshot_date": "2026-11-20",
-  "reference_main_sha": "ce249b530466720875e83dfeef9f62d9df6a5e6a",
-  "now_id": "DP-M2-TBL-02E",
+  "reference_main_sha": "d21215d4895bafc1c4b46416b7dfc71a9a7b137c",
+  "now_id": "DP-M2-TBL-02F",
   "next_ids": [
     "DP-M2-TBL-02B",
     "DP-SEC-01",
@@ -118,10 +118,18 @@
     {
       "id": "DP-M2-TBL-02E",
       "title": "Maximum-width table column deletion history regression",
-      "status": "PR_OPEN",
+      "status": "MERGED",
       "pr": 140,
-      "sha": "af16ba921bd79d74400eeb1fef17e0503ed42487",
-      "summary": "PR #140 tests deleting the final column of a 20-column table while preserving Unicode cells, header count, immutable source, schema-v5 JSON and undo/redo; exact-head CI pending."
+      "sha": "d21215d4895bafc1c4b46416b7dfc71a9a7b137c",
+      "summary": "PR #140 merged into main as d21215d4 on 2026-11-20; 20-column deletion Unicode, history and schema-v5 regression integrated; manual accessibility remains open."
+    },
+    {
+      "id": "DP-M2-TBL-02F",
+      "title": "First-row header insertion history regression",
+      "status": "PR_OPEN",
+      "pr": 141,
+      "sha": "a527af8f7797f549c38ea90e427c3a262d303a9f",
+      "summary": "PR #141 verifies first-row insertion preserves Unicode header and body text, schema-v5 JSON and undo/redo; exact-head CI pending."
     }
   ]
 }
