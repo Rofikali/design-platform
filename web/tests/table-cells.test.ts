@@ -563,3 +563,35 @@ describe("maximum-height table final-row deletion", () => {
     });
   });
 });
+
+describe("headerless first-column insertion history contract", () => {
+  it("keeps body cells in order and restores Unicode text through schema-v5 undo/redo", () => {
+    const original: TableElement = {
+      ...sampleTable(),
+      headerRows: 0,
+      cells: [["First 😀", "界", "₹80"], ["Second", "<text>", ""], ["Third", "", "Last"]],
+    };
+    const before = JSON.stringify(toDocument([original]));
+    const inserted = insertTableColumn(original, 0);
+    expect(inserted.columns).toBe(4);
+    expect(inserted.headerRows).toBe(0);
+    expect(inserted.cells).toEqual([
+      ["", "First 😀", "界", "₹80"],
+      ["", "Second", "<text>", ""],
+      ["", "Third", "", "Last"],
+    ]);
+    expect(JSON.stringify(toDocument([original]))).toBe(before);
+    const after = JSON.stringify(toDocument([inserted]));
+    expect(parseDocumentJson(after).elements[0]).toMatchObject({
+      type: "table", columns: 4, headerRows: 0, cells: inserted.cells,
+    });
+    const undone = undoHistory(recordHistory(createHistory(before), after), after);
+    expect(parseDocumentJson(undone.snapshot!).elements[0]).toMatchObject({
+      columns: 3, headerRows: 0, cells: original.cells,
+    });
+    const redone = redoHistory(undone.history, undone.snapshot!);
+    expect(parseDocumentJson(redone.snapshot!).elements[0]).toMatchObject({
+      columns: 4, headerRows: 0, cells: inserted.cells,
+    });
+  });
+});
