@@ -637,7 +637,12 @@ describe("table Unicode aggregate-budget structural history", () => {
           row === 0 && column === 0 ? "😀".repeat(200) : "界".repeat(200))),
     };
     const before = JSON.stringify(toDocument([source]));
+    // Astral symbols count as one Unicode code point, not two UTF-16 code units.
+    const codePointCount = (cells: string[][]) =>
+      cells.reduce((total, row) => total + row.reduce((sum, cell) => sum + Array.from(cell).length, 0), 0);
+    expect(codePointCount(source.cells)).toBe(20_000);
     const inserted = insertTableRow(source, 5);
+    expect(codePointCount(inserted.cells)).toBe(20_000);
     expect(inserted.rows).toBe(11);
     expect(inserted.headerRows).toBe(0);
     expect(inserted.cells[5]).toEqual(Array(10).fill(""));
@@ -649,6 +654,8 @@ describe("table Unicode aggregate-budget structural history", () => {
       type: "table", rows: 11, columns: 10, headerRows: 0, cells: inserted.cells,
     });
     expect(() => replaceTableCell(inserted, 5, 0, "x")).toThrow(/20,000/);
+    expect(codePointCount(inserted.cells)).toBe(20_000);
+    expect(JSON.stringify(toDocument([inserted]))).toBe(after);
     const undone = undoHistory(recordHistory(createHistory(before), after), after);
     expect(parseDocumentJson(undone.snapshot!).elements[0]).toMatchObject({
       rows: 10, cells: source.cells,
