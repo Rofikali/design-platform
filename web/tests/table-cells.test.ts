@@ -653,6 +653,11 @@ describe("table Unicode aggregate-budget structural history", () => {
     expect(parseDocumentJson(after).elements[0]).toMatchObject({
       type: "table", rows: 11, columns: 10, headerRows: 0, cells: inserted.cells,
     });
+    // Replacing one astral code point with another remains valid at the exact budget.
+    const sameBudget = replaceTableCell(inserted, 0, 0, "🚀" + "😀".repeat(199));
+    expect(codePointCount(sameBudget.cells)).toBe(20_000);
+    expect(sameBudget.cells[0]![0]).toBe("🚀" + "😀".repeat(199));
+    expect(inserted.cells[0]![0]).toBe("😀".repeat(200));
     expect(() => replaceTableCell(inserted, 5, 0, "x")).toThrow(/20,000/);
     expect(codePointCount(inserted.cells)).toBe(20_000);
     expect(JSON.stringify(toDocument([inserted]))).toBe(after);
