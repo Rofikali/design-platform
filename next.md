@@ -16,9 +16,9 @@
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-20)
 
-**Reference main:** 1cdcbc7edf319ffd39812762a0005ceb1b598924 (dated snapshot; re-check live GitHub before acting).
+**Reference main:** 6a3f9d07aa2ef7c0b84f9dcb42b579138b92d9b0 (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M2-TBL-02I — Headerless first-row deletion schema-v5 history regression** [IN_PROGRESS].
+**NOW:** **DP-M2-TBL-02J — Maximum-height final-row deletion history regression** [IN_PROGRESS]. [PR #149](https://github.com/Rofikali/design-platform/pull/149)
 
 **NEXT:** DP-M2-TBL-02B [IN_PROGRESS]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
@@ -43,7 +43,8 @@
 | DP-M2-TBL-02F — First-row header insertion history regression | MERGED | [PR #141](https://github.com/Rofikali/design-platform/pull/141) | PR #141 merged into main as 92e25a6b on 2026-11-20; header insertion Unicode and undo/redo regression integrated; manual accessibility remains open. |
 | DP-M2-TBL-02G — Headerless row insertion schema-v5 history regression | MERGED | [PR #147](https://github.com/Rofikali/design-platform/pull/147) | PR #147 merged as 1cdcbc7e on 2026-11-20; headerless row insertion Unicode/schema-v5 history regression integrated; manual accessibility remains open. |
 | DP-M2-TBL-02H — Single-column deletion safety regression | MERGED | [PR #146](https://github.com/Rofikali/design-platform/pull/146) | PR #146 merged into main as 14bfe826 on 2026-11-20; invalid single-column deletion preserves Unicode, header and schema-v5 content; no production release. |
-| DP-M2-TBL-02I — Headerless first-row deletion schema-v5 history regression | IN_PROGRESS | — | Regression committed on implementation branch: removing row zero from headerless table preserves Unicode body text, source immutability, schema-v5 JSON and undo/redo. Exact-head CI pending. |
+| DP-M2-TBL-02I — Headerless first-row deletion schema-v5 history regression | MERGED | [PR #148](https://github.com/Rofikali/design-platform/pull/148) | PR #148 merged at 6a3f9d07 on 2026-11-20; headerless first-row deletion Unicode/schema-v5 history regression integrated; manual accessibility remains open. |
+| DP-M2-TBL-02J — Maximum-height final-row deletion history regression | IN_PROGRESS | [PR #149](https://github.com/Rofikali/design-platform/pull/149) | PR #149 implements 20-row final-row deletion, Unicode/header preservation, schema-v5 JSON and undo/redo regression; exact-head CI pending, not merged. |
 
 <!-- milestone-sync:end -->
 
