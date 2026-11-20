@@ -475,3 +475,31 @@ describe("single-column table deletion safety", () => {
     });
   });
 });
+
+describe("headerless table row insertion contract", () => {
+  it("keeps headerRows zero when inserting before row zero and preserves history", () => {
+    const source: TableElement = {
+      ...sampleTable(), headerRows: 0,
+      cells: [["Body 😀", "", ""], ["Second 界", "", ""], ["Rice ₹80", "", ""]],
+    };
+    const inserted = insertTableRow(source, 0);
+    expect(inserted.headerRows).toBe(0);
+    expect(inserted.rows).toBe(4);
+    expect(inserted.cells[0]).toEqual(["", "", ""]);
+    expect(inserted.cells[1]![0]).toBe("Body 😀");
+    expect(source.cells[0]![0]).toBe("Body 😀");
+    const before = JSON.stringify(toDocument([source]));
+    const after = JSON.stringify(toDocument([inserted]));
+    expect(parseDocumentJson(after).elements[0]).toMatchObject({
+      type: "table", headerRows: 0, rows: 4, cells: inserted.cells,
+    });
+    const undo = undoHistory(recordHistory(createHistory(before), after), after);
+    expect(parseDocumentJson(undo.snapshot!).elements[0]).toMatchObject({
+      headerRows: 0, rows: 3, cells: source.cells,
+    });
+    const redo = redoHistory(undo.history, undo.snapshot!);
+    expect(parseDocumentJson(redo.snapshot!).elements[0]).toMatchObject({
+      headerRows: 0, rows: 4, cells: inserted.cells,
+    });
+  });
+});
