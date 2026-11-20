@@ -626,6 +626,40 @@ describe("headerless last-column deletion history contract", () => {
 });
 
 describe("table Unicode aggregate-budget structural history", () => {
+  it("preserves a full Unicode budget when inserting an empty column and restoring history", () => {
+    const source: TableElement = {
+      ...sampleTable(), rows: 10, columns: 10, headerRows: 0,
+      cells: Array.from({ length: 10 }, (_, row) =>
+        Array.from({ length: 10 }, (_, column) =>
+          row === 9 && column === 9 ? "😀".repeat(200) : "界".repeat(200))),
+    };
+    const count = (table: TableElement) =>
+      table.cells.flat().reduce((sum, value) => sum + Array.from(value).length, 0);
+    const before = JSON.stringify(toDocument([source]));
+    expect(count(source)).toBe(20_000);
+    const inserted = insertTableColumn(source, 0);
+    expect(inserted.columns).toBe(11);
+    expect(inserted.headerRows).toBe(0);
+    expect(inserted.cells.every(row => row[0] === "")).toBe(true);
+    expect(inserted.cells[9]![10]).toBe("😀".repeat(200));
+    expect(count(inserted)).toBe(20_000);
+    expect(JSON.stringify(toDocument([source]))).toBe(before);
+    const after = JSON.stringify(toDocument([inserted]));
+    expect(parseDocumentJson(after).elements[0]).toMatchObject({
+      type: "table", columns: 11, headerRows: 0, cells: inserted.cells,
+    });
+    expect(() => replaceTableCell(inserted, 0, 0, "x")).toThrow(/20,000/);
+    expect(JSON.stringify(toDocument([inserted]))).toBe(after);
+    const undone = undoHistory(recordHistory(createHistory(before), after), after);
+    expect(parseDocumentJson(undone.snapshot!).elements[0]).toMatchObject({
+      columns: 10, cells: source.cells,
+    });
+    const redone = redoHistory(undone.history, undone.snapshot!);
+    expect(parseDocumentJson(redone.snapshot!).elements[0]).toMatchObject({
+      columns: 11, cells: inserted.cells,
+    });
+  });
+
   it("preserves exactly 20,000 code points across empty row insertion and undo/redo", () => {
     const source: TableElement = {
       ...sampleTable(),
