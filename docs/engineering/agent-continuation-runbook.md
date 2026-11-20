@@ -4,13 +4,13 @@
 
 <!-- milestone-sync:start -->
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
-### Milestone snapshot (generated: 2026-11-18)
+### Milestone snapshot (generated: 2026-11-20)
 
-**Reference main:** 32e9c5a520338d45d52c5db78250e6dddde1cbee (dated snapshot; re-check live GitHub before acting).
+**Reference main:** 66daafef2a897de9cfe7e64ea08b46c483ff7939 (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M2-TBL-02B — Bounded accessible table row and column commands** [READY].
+**NOW:** **DP-M2-TBL-02C — Over-budget imported table regression** [PR_OPEN]. [PR #138](https://github.com/Rofikali/design-platform/pull/138)
 
-**NEXT:** DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
+**NEXT:** DP-M2-TBL-02B [IN_PROGRESS]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
 **Review gate:** Owner-authorized autopilot may review and merge only after all exact-head/integration CI, security, branch protection and required independent-review gates pass. No automatic publishing or deployment.
 
