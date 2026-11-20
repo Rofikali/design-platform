@@ -397,3 +397,35 @@ describe("single-header row deletion contract", () => {
     });
   });
 });
+
+describe("maximum-width table column deletion contract", () => {
+  it("removes the last column from a 20-column table without losing Unicode, headers or history", () => {
+    const original: TableElement = {
+      ...sampleTable(),
+      columns: 20,
+      cells: Array.from({ length: 3 }, (_, row) =>
+        Array.from({ length: 20 }, (_, column) =>
+          column === 18 ? (row === 0 ? "Header 界" : "😀 Body " + row) : "")),
+    };
+    const deleted = deleteTableColumn(original, 19);
+    expect(deleted.columns).toBe(19);
+    expect(deleted.headerRows).toBe(1);
+    expect(deleted.cells[0]![18]).toBe("Header 界");
+    expect(deleted.cells[2]![18]).toBe("😀 Body 2");
+    expect(original.columns).toBe(20);
+    expect(original.cells[2]).toHaveLength(20);
+    const before = JSON.stringify(toDocument([original]));
+    const after = JSON.stringify(toDocument([deleted]));
+    expect(parseDocumentJson(after).elements[0]).toMatchObject({
+      type: "table", columns: 19, headerRows: 1, cells: deleted.cells,
+    });
+    const undo = undoHistory(recordHistory(createHistory(before), after), after);
+    expect(parseDocumentJson(undo.snapshot!).elements[0]).toMatchObject({
+      type: "table", columns: 20, cells: original.cells,
+    });
+    const redo = redoHistory(undo.history, undo.snapshot!);
+    expect(parseDocumentJson(redo.snapshot!).elements[0]).toMatchObject({
+      type: "table", columns: 19, cells: deleted.cells,
+    });
+  });
+});
