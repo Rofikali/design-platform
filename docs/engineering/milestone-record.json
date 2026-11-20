@@ -134,8 +134,10 @@
     {
       "id": "DP-M2-TBL-02G",
       "title": "Headerless row insertion schema-v5 history regression",
-      "status": "IN_PROGRESS",
-      "summary": "Headerless row insertion regression implemented on branch: preserves zero headers, Unicode body cells, JSON and undo/redo; exact-head CI pending."
+      "status": "PR_OPEN",
+      "summary": "PR #147 adds headerless row insertion Unicode/schema-v5/undo-redo regression; documentation synchronized in same PR. Recorded head is a dated checkpoint; exact-head CI pending.",
+      "pr": 147,
+      "sha": "aebdb411e8f688b80675379cb008dc8ef5857bda"
     },
     {
       "id": "DP-M2-TBL-02H",
