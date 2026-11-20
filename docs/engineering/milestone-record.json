@@ -2,8 +2,8 @@
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
   "snapshot_date": "2026-11-20",
-  "reference_main_sha": "d21215d4895bafc1c4b46416b7dfc71a9a7b137c",
-  "now_id": "DP-M2-TBL-02F",
+  "reference_main_sha": "14bfe8265d622dd53147edf965c8473c8d9ba778",
+  "now_id": "DP-M2-TBL-02G",
   "next_ids": [
     "DP-M2-TBL-02B",
     "DP-SEC-01",
@@ -126,10 +126,26 @@
     {
       "id": "DP-M2-TBL-02F",
       "title": "First-row header insertion history regression",
-      "status": "PR_OPEN",
+      "status": "MERGED",
       "pr": 141,
-      "sha": "a527af8f7797f549c38ea90e427c3a262d303a9f",
-      "summary": "PR #141 verifies first-row insertion preserves Unicode header and body text, schema-v5 JSON and undo/redo; exact-head CI pending."
+      "sha": "92e25a6be86ef81c8f5cc57457cdb96f8af381d9",
+      "summary": "PR #141 merged into main as 92e25a6b on 2026-11-20; header insertion Unicode and undo/redo regression integrated; manual accessibility remains open."
+    },
+    {
+      "id": "DP-M2-TBL-02G",
+      "title": "Headerless row insertion schema-v5 history regression",
+      "status": "PR_OPEN",
+      "summary": "PR #147 adds headerless row insertion Unicode/schema-v5/undo-redo regression; documentation synchronized in same PR. Recorded head is a dated checkpoint; exact-head CI pending.",
+      "pr": 147,
+      "sha": "aebdb411e8f688b80675379cb008dc8ef5857bda"
+    },
+    {
+      "id": "DP-M2-TBL-02H",
+      "title": "Single-column deletion safety regression",
+      "status": "MERGED",
+      "pr": 146,
+      "sha": "14bfe8265d622dd53147edf965c8473c8d9ba778",
+      "summary": "PR #146 merged into main as 14bfe826 on 2026-11-20; invalid single-column deletion preserves Unicode, header and schema-v5 content; no production release."
     }
   ]
 }
