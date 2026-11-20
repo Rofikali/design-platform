@@ -2,8 +2,8 @@
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
   "snapshot_date": "2026-11-20",
-  "reference_main_sha": "14bfe8265d622dd53147edf965c8473c8d9ba778",
-  "now_id": "DP-M2-TBL-02G",
+  "reference_main_sha": "1cdcbc7edf319ffd39812762a0005ceb1b598924",
+  "now_id": "DP-M2-TBL-02I",
   "next_ids": [
     "DP-M2-TBL-02B",
     "DP-SEC-01",
@@ -134,10 +134,10 @@
     {
       "id": "DP-M2-TBL-02G",
       "title": "Headerless row insertion schema-v5 history regression",
-      "status": "PR_OPEN",
-      "summary": "PR #147 adds headerless row insertion Unicode/schema-v5/undo-redo regression; documentation synchronized in same PR. Recorded head is a dated checkpoint; exact-head CI pending.",
+      "status": "MERGED",
+      "summary": "PR #147 merged as 1cdcbc7e on 2026-11-20; headerless row insertion Unicode/schema-v5 history regression integrated; manual accessibility remains open.",
       "pr": 147,
-      "sha": "aebdb411e8f688b80675379cb008dc8ef5857bda"
+      "sha": "1cdcbc7edf319ffd39812762a0005ceb1b598924"
     },
     {
       "id": "DP-M2-TBL-02H",
@@ -146,6 +146,12 @@
       "pr": 146,
       "sha": "14bfe8265d622dd53147edf965c8473c8d9ba778",
       "summary": "PR #146 merged into main as 14bfe826 on 2026-11-20; invalid single-column deletion preserves Unicode, header and schema-v5 content; no production release."
+    },
+    {
+      "id": "DP-M2-TBL-02I",
+      "title": "Headerless first-row deletion schema-v5 history regression",
+      "status": "IN_PROGRESS",
+      "summary": "Regression committed on implementation branch: removing row zero from headerless table preserves Unicode body text, source immutability, schema-v5 JSON and undo/redo. Exact-head CI pending."
     }
   ]
 }
