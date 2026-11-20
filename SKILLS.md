@@ -292,9 +292,9 @@ The owner enabled an independent ChatGPT task named **Design Platform Autopilot*
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-20)
 
-**Reference main:** 66daafef2a897de9cfe7e64ea08b46c483ff7939 (dated snapshot; re-check live GitHub before acting).
+**Reference main:** b033a44d15b50001fd19f3e0884f994904c814db (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M2-TBL-02C — Over-budget imported table regression** [PR_OPEN]. [PR #138](https://github.com/Rofikali/design-platform/pull/138)
+**NOW:** **DP-M2-TBL-02D — Header-row deletion schema-v5 history regression** [PR_OPEN]. [PR #139](https://github.com/Rofikali/design-platform/pull/139)
 
 **NEXT:** DP-M2-TBL-02B [IN_PROGRESS]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
