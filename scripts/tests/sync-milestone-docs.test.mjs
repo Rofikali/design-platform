@@ -11,8 +11,14 @@ function fixture() {
     approval_policy: "HUMAN_REVIEW_REQUIRED",
     now_id: "DP-M1-ACC-03",
     next_ids: ["DP-M1-ACC-02"],
+    feature_delivery: {
+      policy_start: "2026-11-21",
+      max_prs_per_feature: 5,
+      active_feature_id: "DP-M1-ACC",
+      features: [{ id: "DP-M1-ACC", title: "Accessibility", state: "ACTIVE", prs: [115], notes: "Test fixture" }],
+    },
     milestones: [
-      { id: "DP-M1-ACC-03", title: "Keyboard operation", status: "PR_OPEN", pr: 115, sha: "b".repeat(40), summary: "Pending human review" },
+      { id: "DP-M1-ACC-03", feature_id: "DP-M1-ACC", title: "Keyboard operation", status: "PR_OPEN", pr: 115, sha: "b".repeat(40), summary: "Pending human review" },
       { id: "DP-M1-ACC-02", title: "Manual audit", status: "BLOCKED", issue: 82, summary: "Manual evidence required" },
     ],
   };
@@ -89,4 +95,25 @@ test("malformed records and unsafe merge policy fail before generation", () => {
   const invalidSha = fixture();
   invalidSha.milestones[0].sha = "bad";
   assert.throws(() => validateRecord(invalidSha), /commit SHA/);
+});
+
+test("feature budget is generated and bounded at five distinct PRs", () => {
+  const r = fixture();
+  assert.match(renderGeneratedBlock(r, "compact"), /1\/5 PRs recorded/);
+  r.feature_delivery.features[0].prs = [1, 2, 3, 4, 5];
+  assert.equal(validateRecord(r), r);
+  r.feature_delivery.features[0].prs.push(6);
+  assert.throws(() => validateRecord(r), /Five-PR feature budget exceeded/);
+});
+
+test("feature IDs, ownership, active state and PR uniqueness are validated", () => {
+  const r = fixture();
+  r.feature_delivery.features.push({ id: "DP-NEXT", title: "Next", state: "PLANNED", prs: [115], notes: "Next work" });
+  assert.throws(() => validateRecord(r), /Duplicate or invalid feature PR/);
+  r.feature_delivery.features[1].prs = [];
+  r.feature_delivery.active_feature_id = "DP-NEXT";
+  assert.throws(() => validateRecord(r), /Active feature must have ACTIVE state/);
+  r.feature_delivery.features[1].state = "ACTIVE";
+  r.feature_delivery.features[0].state = "PLANNED";
+  assert.throws(() => validateRecord(r), /NOW must belong to active feature/);
 });

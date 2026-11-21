@@ -6,7 +6,7 @@
 - Development container: Ubuntu 24.04.
 - Editor: VS Code connected to the container.
 
-This is the target workflow; it has not been validated by this documentation change.
+This remains the intended owner workflow. As of 2026-11-21 the owner has not run/verified the app in a real local Ubuntu/Docker Compose environment. GitHub-hosted Ubuntu workflow and CI production Docker image builds have passed, but are NOT equivalent to local `docker compose up --build` or functional acceptance. Record exact host, image digest, commands, expected ports and results once actually executed.
 
 ## Repository and filesystem
 Prefer keeping the active checkout in the Linux filesystem used by Docker Desktop/WSL2 rather than under a Windows-mounted path such as `/mnt/c`, when practical. This commonly improves Linux tool behavior and file I/O. Back up work and understand where the files physically live before moving an existing checkout.

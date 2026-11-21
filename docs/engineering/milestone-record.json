@@ -2,10 +2,11 @@
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
   "snapshot_date": "2026-11-21",
-  "reference_main_sha": "6be18e9280b5380e76627805f38431c0c89951fc",
-  "now_id": "DP-M2-TBL-02N",
+  "reference_main_sha": "535cd059429d814fac0cfa200d33f0fa9d7064e9",
+  "now_id": "DP-M3-LAYERS-01",
   "next_ids": [
-    "DP-M2-TBL-02B",
+    "DP-M3-ALIGN-01",
+    "DP-M3-IMAGE-01",
     "DP-SEC-01",
     "DP-M1-ACC-02",
     "DP-M1-BG-09"
@@ -96,8 +97,8 @@
     {
       "id": "DP-M2-TBL-02B",
       "title": "Bounded accessible table row and column commands",
-      "status": "IN_PROGRESS",
-      "summary": "Row/column editing and bounded schema-v5 validation merged through PR #138; manual accessibility issue #82 remains open."
+      "status": "DEFERRED",
+      "summary": "Row/column add/delete, Unicode bounds, history and browser regression are merged; residual manual usability, accessibility and fidelity acceptance is deferred to issues #82/#85. No more table-only PRs in this cycle."
     },
     {
       "id": "DP-M2-TBL-02C",
@@ -190,8 +191,66 @@
     {
       "id": "DP-M2-TBL-02N",
       "title": "Column deletion Unicode budget recovery history regression",
-      "status": "IN_PROGRESS",
-      "summary": "Verify 20,000-code-point headerless table column deletion reclaims text budget, preserves immutable source and schema-v5 undo/redo; exact-head CI pending."
+      "status": "MERGED",
+      "summary": "PR #153 merged as 535cd059 on 2026-11-21. Column removal recovers Unicode aggregate budget; code/history regression integrated. Manual user, native Ubuntu Compose and physical print NOT RUN.",
+      "pr": 153,
+      "sha": "535cd059429d814fac0cfa200d33f0fa9d7064e9"
+    },
+    {
+      "id": "DP-M3-LAYERS-01",
+      "feature_id": "DP-M3-LAYERS",
+      "title": "Accessible element layering and ordering",
+      "status": "READY",
+      "summary": "Next independent feature: bounded move-forward/back operations, named layer list, keyboard controls, undo/redo, JSON and PNG/print stacking tests. Zero PRs yet; no user-environment acceptance claim."
+    },
+    {
+      "id": "DP-M3-ALIGN-01",
+      "feature_id": "DP-M3-ALIGN",
+      "title": "Basic alignment and optional snapping",
+      "status": "PLANNED",
+      "summary": "After layer feature exits, implement bounded alignment/snapping for text, shapes, frames, grids and tables without breaking saved geometry; <=5 PRs."
+    },
+    {
+      "id": "DP-M3-IMAGE-01",
+      "feature_id": "DP-M3-IMAGE",
+      "title": "Foreground image element authoring",
+      "status": "PLANNED",
+      "summary": "After alignment, plan bounded movable image elements, resource limits, history, import/export and accessible controls; distinct from existing page background images."
     }
-  ]
+  ],
+  "feature_delivery": {
+    "policy_start": "2026-11-21",
+    "max_prs_per_feature": 5,
+    "active_feature_id": "DP-M3-LAYERS",
+    "features": [
+      {
+        "id": "DP-M2-TABLE",
+        "title": "Semantic table editing",
+        "state": "CLOSED_LEGACY",
+        "prs": [],
+        "notes": "Historical feature used more than five PRs (notably #123 and #125-#153). Closed to further table-only iterations; shipped code is not manual acceptance."
+      },
+      {
+        "id": "DP-M3-LAYERS",
+        "title": "Layer order and selection",
+        "state": "ACTIVE",
+        "prs": [],
+        "notes": "First post-policy feature; preserve stacking parity, history, local-only privacy and keyboard operability."
+      },
+      {
+        "id": "DP-M3-ALIGN",
+        "title": "Alignment and snapping",
+        "state": "PLANNED",
+        "prs": [],
+        "notes": "Start after layers exit; no implicit coordinate migration."
+      },
+      {
+        "id": "DP-M3-IMAGE",
+        "title": "Foreground image elements",
+        "state": "PLANNED",
+        "prs": [],
+        "notes": "Start after alignment exits; preserve size limits and browser privacy."
+      }
+    ]
+  }
 }

@@ -6,17 +6,23 @@
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-21)
 
-**Reference main:** 6be18e9280b5380e76627805f38431c0c89951fc (dated snapshot; re-check live GitHub before acting).
+**Reference main:** 535cd059429d814fac0cfa200d33f0fa9d7064e9 (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M2-TBL-02N — Column deletion Unicode budget recovery history regression** [IN_PROGRESS].
+**NOW:** **DP-M3-LAYERS-01 — Accessible element layering and ordering** [READY].
 
-**NEXT:** DP-M2-TBL-02B [IN_PROGRESS]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
+**NEXT:** DP-M3-ALIGN-01 [PLANNED]; DP-M3-IMAGE-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
+
+**Feature budget:** DP-M3-LAYERS — 0/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
 
 **Review gate:** Owner-authorized autopilot may review and merge only after all exact-head/integration CI, security, branch protection and required independent-review gates pass. No automatic publishing or deployment.
 
 <!-- milestone-sync:end -->
 
 **Read first:** [AGENTS](../../AGENTS.md) → [SKILLS](../../SKILLS.md) → [live NOW / NEXT / DONE board](../../next.md) → [agent continuation](agent-continuation-runbook.md) → [seven-level operating model](seven-level-operating-model.md) → [milestone handoff](agent-milestone-handoff.md) → [change-scoped verification](change-scoped-verification.md) → [CI evidence policy](ci-evidence-policy.md).
+
+## Five-PR feature progression (owner rule, 2026-11-21)
+
+**Hard cap:** one feature ID gets no more than five opened feature PRs, including closed or failed attempts; changes within an existing PR do not cost additional slots. Read [feature delivery policy](feature-delivery-policy.md) and `feature_delivery` in the milestone record every run. Prefer the smallest actual customer-visible vertical slice and stop early if accepted. On the fifth PR, finish its gates, close as DONE/PARTIAL/BLOCKED with exact evidence and switch to next independent READY feature. Never open a sixth table regression PR; the historic table lane is CLOSED_LEGACY. **Current NOW is DP-M3-LAYERS-01.** Manual screen reader, physical print and owner-run Ubuntu/Compose remain NOT RUN until observed; do not block independent editor feature work on those checks or declare release-ready.
 
 ## What "go ahead" means — manually or on an hourly run
 

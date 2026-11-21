@@ -2,6 +2,12 @@
 
 **Status:** Release checklist/runbook proposal. A GitHub green PR is not a public deployment or security/accessibility certificate. Sources: [quality gates](../engineering/quality-gates.md), [testing strategy](../testing/strategy.md), [threat model](../security/threat-model.md) and [roadmap](../../next.md).
 
+## Verification boundary and five-PR handoff (2026-11-21)
+
+PR #153 is merged into main `535cd059429d814fac0cfa200d33f0fa9d7064e9`; hosted CI and dependency audits passed on main. Automated GitHub Ubuntu jobs and production Docker image builds are observed evidence only for their configured checks. The owner has **not** verified a local Ubuntu/Docker Compose app run, real-device screen-reader behavior, physical printer output or final customer acceptance; mark these **NOT RUN** until witnessed. Security issue #118 remains open notwithstanding a passing dependency-security workflow. Do not mark the product release-ready or fully tested.
+
+The [feature-delivery policy](../engineering/feature-delivery-policy.md) caps new feature iterations at five PRs; unresolved release acceptance remains on the release checklist independently and does not justify additional feature-only PRs without a new scoped decision.
+
 ## 1. Product readiness matrix
 
 | Gate | Evidence required | Current default |
