@@ -4,6 +4,7 @@ import EditorCanvas from "~/components/editor/EditorCanvas.vue";
 import { clampElementPosition, clampElementSize, nextElementId } from "~/utils/editor-helpers";
 import { loadLocalDocument, saveLocalDocument } from "~/utils/local-document-storage";
 import { createHistory, recordHistory, redoHistory, undoHistory } from "~/utils/document-history";
+import { moveElementLayer } from "~/utils/element-layers";
 import { deleteTableColumn, deleteTableRow, insertTableColumn, insertTableRow, replaceTableCell, tableCellPosition } from "~/utils/table-cells";
 
 import {
@@ -250,6 +251,14 @@ function setGridColumns(value: string | number) {
   const element = selectedElement.value;
   if (element?.type === "grid") element.columns = Math.min(20, Math.max(1, Math.round(Number(value) || 1)));
 }
+function reorderSelectedLayer(direction: "forward" | "backward") {
+  if (!selectedId.value) return;
+  const reordered = moveElementLayer(elements.value, selectedId.value, direction);
+  if (reordered === elements.value) return;
+  elements.value = [...reordered];
+  statusMessage.value = direction === "forward" ? "Moved selection one layer forward." : "Moved selection one layer backward.";
+}
+const selectedLayerIndex = computed(() => elements.value.findIndex(element => element.id === selectedId.value));
 function moveSelected(dx: number, dy: number) {
   const element = selectedElement.value;
   if (!element) return;
@@ -623,6 +632,20 @@ onMounted(async () => {
         <p class="hint">Select an element on the page to edit it.</p>
         <hr />
         <h2>Selection</h2>
+        <fieldset class="layer-controls" aria-label="Element layers">
+          <legend>Layer order (back to front)</legend>
+          <label class="field" for="layer-selection">Select layer
+            <select id="layer-selection" :value="selectedId ?? ''" @change="selectedId = ($event.target as HTMLSelectElement).value || null">
+              <option value="">No selection</option>
+              <option v-for="element in elements" :key="element.id" :value="element.id">{{ element.type }} · {{ element.id }}</option>
+            </select>
+          </label>
+          <div class="history-actions">
+            <button type="button" :disabled="selectedLayerIndex <= 0" @click="reorderSelectedLayer('backward')">Send backward</button>
+            <button type="button" :disabled="selectedLayerIndex < 0 || selectedLayerIndex >= elements.length - 1" @click="reorderSelectedLayer('forward')">Bring forward</button>
+          </div>
+          <p class="hint">Later items render in front. Changes are included in undo and local autosave.</p>
+        </fieldset>
         <template v-if="selectedElement">
           <p class="selected-name" role="status" aria-live="polite" aria-atomic="true">{{ selectionAnnouncement }}</p>
           <label v-if="selectedElement.type === 'text'" class="field">
