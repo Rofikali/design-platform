@@ -201,7 +201,7 @@
       "feature_id": "DP-M3-LAYERS",
       "title": "Accessible element layering and ordering",
       "status": "PR_OPEN",
-      "summary": "PR #155 merged as 8235c50b on 2026-11-21 with immutable adjacent ordering and schema-v5 tests; PR #156 draft wires accessible selection and boundary-disabled reorder controls into Nuxt editor. Exact-head CI pending, local/manual tests NOT RUN; history/export and screen-reader acceptance pending.",
+      "summary": "PR #155 merged as 8235c50b. PR #156 adds accessible layer controls; CI pending. Local/manual tests NOT RUN; history, export and screen-reader acceptance pending.",
       "pr": 156,
       "sha": "63ee8d363bdabcf8d3384435b26672e895a3a71e"
     },
