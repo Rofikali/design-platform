@@ -625,6 +625,44 @@ describe("headerless last-column deletion history contract", () => {
   });
 });
 
+describe("table Unicode budget recovery after row deletion", () => {
+  it("reclaims deleted code points for a subsequent bounded cell edit without mutating history", () => {
+    const source: TableElement = {
+      ...sampleTable(),
+      rows: 10,
+      columns: 10,
+      headerRows: 0,
+      cells: Array.from({ length: 10 }, (_, row) =>
+        Array.from({ length: 10 }, (_, column) =>
+          row === 0 && column === 0 ? "😀".repeat(200) : "界".repeat(200))),
+    };
+    const count = (table: TableElement) =>
+      table.cells.flat().reduce((total, cell) => total + Array.from(cell).length, 0);
+    const before = JSON.stringify(toDocument([source]));
+    expect(count(source)).toBe(20_000);
+    const deleted = deleteTableRow(source, 0);
+    expect(deleted.rows).toBe(9);
+    expect(deleted.headerRows).toBe(0);
+    expect(count(deleted)).toBe(18_000);
+    const edited = replaceTableCell(deleted, 0, 0, "🚀".repeat(2_000));
+    expect(count(edited)).toBe(20_000);
+    expect(() => replaceTableCell(edited, 0, 1, "界".repeat(201))).toThrow(/20,000/);
+    expect(JSON.stringify(toDocument([source]))).toBe(before);
+    const after = JSON.stringify(toDocument([edited]));
+    expect(parseDocumentJson(after).elements[0]).toMatchObject({
+      type: "table", rows: 9, columns: 10, headerRows: 0, cells: edited.cells,
+    });
+    const undone = undoHistory(recordHistory(createHistory(before), after), after);
+    expect(parseDocumentJson(undone.snapshot!).elements[0]).toMatchObject({
+      rows: 10, cells: source.cells,
+    });
+    const redone = redoHistory(undone.history, undone.snapshot!);
+    expect(parseDocumentJson(redone.snapshot!).elements[0]).toMatchObject({
+      rows: 9, cells: edited.cells,
+    });
+  });
+});
+
 describe("table Unicode aggregate-budget structural history", () => {
   it("preserves a full Unicode budget when inserting an empty column and restoring history", () => {
     const source: TableElement = {
