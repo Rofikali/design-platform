@@ -47,7 +47,7 @@ test("missing, malformed, duplicated or invalid PR metadata fails", () => {
   e.pull_request.body = "Feature-ID: bad";
   assert.throws(() => validatePrEvent(record(), e), /Malformed/);
   e.pull_request.body = "Feature-ID : DP-M3-ALIGN";
-  assert.throws(() => validatePrEvent(record(), e), /exactly one/);
+  assert.throws(() => validatePrEvent(record(), e), /Malformed/);
   e.pull_request.body = "Feature-ID: DP-M3-ALIGN"; e.pull_request.number = 0;
   assert.throws(() => validatePrEvent(record(), e), /Invalid GitHub PR number/);
 });
