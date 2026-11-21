@@ -2,7 +2,7 @@
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
   "snapshot_date": "2026-11-21",
-  "reference_main_sha": "8235c50b49d9831ac28c378940877f785d7d1a76",
+  "reference_main_sha": "e6fa7cf7cc8972be9224f448de58590db11057b8",
   "now_id": "DP-M3-LAYERS-01",
   "next_ids": [
     "DP-M3-ALIGN-01",
@@ -201,9 +201,9 @@
       "feature_id": "DP-M3-LAYERS",
       "title": "Accessible element layering and ordering",
       "status": "PR_OPEN",
-      "summary": "PR #155 merged as 8235c50b. PR #156 adds accessible layer controls; CI pending. Local/manual tests NOT RUN; history, export and screen-reader acceptance pending.",
-      "pr": 156,
-      "sha": "63ee8d363bdabcf8d3384435b26672e895a3a71e"
+      "summary": "PRs #155 and #156 merged; PR #157 adds direct front/back layer controls and immutable order tests. Exact-head CI pending; manual history, export, screen-reader acceptance NOT RUN.",
+      "pr": 157,
+      "sha": "92e2f5524c9dec2c76e904caab14b4d0e7851a48"
     },
     {
       "id": "DP-M3-ALIGN-01",
@@ -238,7 +238,8 @@
         "state": "ACTIVE",
         "prs": [
           155,
-          156
+          156,
+          157
         ],
         "notes": "First post-policy feature; preserve stacking parity, history, local-only privacy and keyboard operability."
       },
