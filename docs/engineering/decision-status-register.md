@@ -44,7 +44,7 @@
 | DP-M2-TBL-02M — Exact Unicode aggregate-budget row insertion history regression | MERGED | [PR #152](https://github.com/Rofikali/design-platform/pull/152) | PR #152 merged as 6be18e92 on 2026-11-21; Unicode aggregate-budget row/column insertion, deletion recovery and schema-v5 history regressions integrated; manual accessibility remains open. |
 | DP-M2-TBL-02N — Column deletion Unicode budget recovery history regression | MERGED | [PR #153](https://github.com/Rofikali/design-platform/pull/153) | PR #153 merged as 535cd059 on 2026-11-21. Column removal recovers Unicode aggregate budget; code/history regression integrated. Manual user, native Ubuntu Compose and physical print NOT RUN. |
 | DP-M3-LAYERS-01 — Accessible element layering and ordering | READY | — | Next independent feature: bounded move-forward/back operations, named layer list, keyboard controls, undo/redo, JSON and PNG/print stacking tests. Zero PRs yet; no user-environment acceptance claim. |
-| DP-M3-ALIGN-01 — Basic alignment and optional snapping | PLANNED | — | After layer feature exits, implement bounded alignment/snapping for text, shapes, frames, grids and tables without breaking saved geometry; <=5 PRs. |
+| DP-M3-ALIGN-01 — Basic alignment and optional snapping | PLANNED | — | After layer feature exits, implement bounded alignment/snapping for text, shapes, frames, grids and tables without breaking saved geometry; no more than five PRs. |
 | DP-M3-IMAGE-01 — Foreground image element authoring | PLANNED | — | After alignment, plan bounded movable image elements, resource limits, history, import/export and accessible controls; distinct from existing page background images. |
 
 <!-- milestone-sync:end -->

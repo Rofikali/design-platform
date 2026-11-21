@@ -208,7 +208,7 @@
       "feature_id": "DP-M3-ALIGN",
       "title": "Basic alignment and optional snapping",
       "status": "PLANNED",
-      "summary": "After layer feature exits, implement bounded alignment/snapping for text, shapes, frames, grids and tables without breaking saved geometry; <=5 PRs."
+      "summary": "After layer feature exits, implement bounded alignment/snapping for text, shapes, frames, grids and tables without breaking saved geometry; no more than five PRs."
     },
     {
       "id": "DP-M3-IMAGE-01",
