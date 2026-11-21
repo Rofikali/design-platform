@@ -8,14 +8,16 @@ import type { DesignElement } from "./document";
 export function moveElementLayer(
   elements: readonly DesignElement[],
   selectedId: string,
-  direction: "forward" | "backward",
+  direction: "forward" | "backward" | "front" | "back",
 ): readonly DesignElement[] {
   const index = elements.findIndex((element) => element.id === selectedId);
   if (index === -1) return elements;
-  const destination = index + (direction === "forward" ? 1 : -1);
+  const destination = direction === "front" ? elements.length - 1 : direction === "back" ? 0 : index + (direction === "forward" ? 1 : -1);
   if (destination < 0 || destination >= elements.length) return elements;
 
+  if (destination === index) return elements;
   const reordered = [...elements];
-  [reordered[index], reordered[destination]] = [reordered[destination]!, reordered[index]!];
+  const [selected] = reordered.splice(index, 1);
+  reordered.splice(destination, 0, selected!);
   return reordered;
 }
