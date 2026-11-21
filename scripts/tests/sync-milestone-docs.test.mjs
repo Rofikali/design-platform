@@ -112,8 +112,8 @@ test("feature IDs, ownership, active state and PR uniqueness are validated", () 
   assert.throws(() => validateRecord(r), /Duplicate or invalid feature PR/);
   r.feature_delivery.features[1].prs = [];
   r.feature_delivery.active_feature_id = "DP-NEXT";
+  r.feature_delivery.features[0].state = "PLANNED";
   assert.throws(() => validateRecord(r), /Active feature must have ACTIVE state/);
   r.feature_delivery.features[1].state = "ACTIVE";
-  r.feature_delivery.features[0].state = "PLANNED";
   assert.throws(() => validateRecord(r), /NOW must belong to active feature/);
 });
