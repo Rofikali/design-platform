@@ -251,12 +251,12 @@ function setGridColumns(value: string | number) {
   const element = selectedElement.value;
   if (element?.type === "grid") element.columns = Math.min(20, Math.max(1, Math.round(Number(value) || 1)));
 }
-function reorderSelectedLayer(direction: "forward" | "backward") {
+function reorderSelectedLayer(direction: "forward" | "backward" | "front" | "back") {
   if (!selectedId.value) return;
   const reordered = moveElementLayer(elements.value, selectedId.value, direction);
   if (reordered === elements.value) return;
   elements.value = [...reordered];
-  statusMessage.value = direction === "forward" ? "Moved selection one layer forward." : "Moved selection one layer backward.";
+  statusMessage.value = direction === "front" ? "Moved selection to front." : direction === "back" ? "Moved selection to back." : direction === "forward" ? "Moved selection one layer forward." : "Moved selection one layer backward.";
 }
 const selectedLayerIndex = computed(() => elements.value.findIndex(element => element.id === selectedId.value));
 function moveSelected(dx: number, dy: number) {
@@ -643,6 +643,8 @@ onMounted(async () => {
           <div class="history-actions">
             <button type="button" :disabled="selectedLayerIndex <= 0" @click="reorderSelectedLayer('backward')">Send backward</button>
             <button type="button" :disabled="selectedLayerIndex < 0 || selectedLayerIndex >= elements.length - 1" @click="reorderSelectedLayer('forward')">Bring forward</button>
+            <button type="button" :disabled="selectedLayerIndex <= 0" @click="reorderSelectedLayer('back')">Send to back</button>
+            <button type="button" :disabled="selectedLayerIndex < 0 || selectedLayerIndex >= elements.length - 1" @click="reorderSelectedLayer('front')">Bring to front</button>
           </div>
           <p class="hint">Later items render in front. Changes are included in undo and local autosave.</p>
         </fieldset>
