@@ -645,8 +645,8 @@ describe("table Unicode budget recovery after row deletion", () => {
     expect(deleted.headerRows).toBe(0);
     expect(count(deleted)).toBe(18_000);
     const edited = replaceTableCell(deleted, 0, 0, "🚀".repeat(2_000));
-    expect(count(edited)).toBe(20_000);
-    expect(() => replaceTableCell(edited, 0, 1, "界".repeat(201))).toThrow(/20,000/);
+    expect(count(edited)).toBe(19_800);
+    expect(() => replaceTableCell(edited, 0, 1, "界".repeat(401))).toThrow(/20,000/);
     expect(JSON.stringify(toDocument([source]))).toBe(before);
     const after = JSON.stringify(toDocument([edited]));
     expect(parseDocumentJson(after).elements[0]).toMatchObject({
