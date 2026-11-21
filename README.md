@@ -24,13 +24,13 @@ The current prototype includes:
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-21)
 
-**Reference main:** d88455f600fd286b175462c8e384c9e7e3653b54 (dated snapshot; re-check live GitHub before acting).
+**Reference main:** 8235c50b49d9831ac28c378940877f785d7d1a76 (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M3-LAYERS-01 — Accessible element layering and ordering** [PR_OPEN]. [PR #155](https://github.com/Rofikali/design-platform/pull/155)
+**NOW:** **DP-M3-LAYERS-01 — Accessible element layering and ordering** [PR_OPEN]. [PR #156](https://github.com/Rofikali/design-platform/pull/156)
 
 **NEXT:** DP-M3-ALIGN-01 [PLANNED]; DP-M3-IMAGE-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
-**Feature budget:** DP-M3-LAYERS — 1/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
+**Feature budget:** DP-M3-LAYERS — 2/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
 
 **Review gate:** Owner-authorized autopilot may review and merge only after all exact-head/integration CI, security, branch protection and required independent-review gates pass. No automatic publishing or deployment.
 
