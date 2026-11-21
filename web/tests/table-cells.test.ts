@@ -743,3 +743,33 @@ describe("table Unicode aggregate-budget structural history", () => {
     });
   });
 });
+
+
+describe("table column deletion recovers aggregate Unicode budget", () => {
+  it("reclaims exactly one column and preserves schema-v5 history without mutating the source", () => {
+    const original: TableElement = {
+      ...sampleTable(),
+      rows: 10,
+      columns: 10,
+      headerRows: 0,
+      cells: Array.from({ length: 10 }, () => Array.from({ length: 10 }, () => "😀".repeat(200))),
+    };
+    const before = JSON.stringify(toDocument([original]));
+    const deleted = deleteTableColumn(original, 9);
+    expect(deleted.columns).toBe(9);
+    expect(deleted.cells.every(row => row.length === 9)).toBe(true);
+    expect(deleted.cells.flat().reduce((sum, cell) => sum + [...cell].length, 0)).toBe(18_000);
+    const edited = replaceTableCell(deleted, 0, 0, "界".repeat(2000));
+    expect(edited.cells[0]![0]).toBe("界".repeat(2000));
+    expect(edited.cells.flat().reduce((sum, cell) => sum + [...cell].length, 0)).toBe(19_800);
+    expect(() => replaceTableCell(deleted, 0, 0, "界".repeat(2001))).toThrow(/2,000/);
+    expect(() => replaceTableCell(edited, 0, 1, "界".repeat(401))).toThrow(/20,000/);
+    expect(JSON.stringify(toDocument([original]))).toBe(before);
+    const after = JSON.stringify(toDocument([edited]));
+    expect(parseDocumentJson(after).elements[0]).toMatchObject({ type: "table", rows: 10, columns: 9, headerRows: 0, cells: edited.cells });
+    const undo = undoHistory(recordHistory(createHistory(before), after), after);
+    expect(parseDocumentJson(undo.snapshot!).elements[0]).toMatchObject({ type: "table", columns: 10, cells: original.cells });
+    const redo = redoHistory(undo.history, undo.snapshot!);
+    expect(parseDocumentJson(redo.snapshot!).elements[0]).toMatchObject({ type: "table", columns: 9, cells: edited.cells });
+  });
+});
