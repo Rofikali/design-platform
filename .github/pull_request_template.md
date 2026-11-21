@@ -2,6 +2,8 @@
 
 ## Scope and evidence
 - Milestone / customer problem / selected READY item:
+- Stable feature ID / existing opened PR count (0–5) / this PR slot / remaining budget: 
+- Previous feature DONE/PARTIAL/BLOCKED and any deferred acceptance links:
 - Base main SHA, actual PR head SHA, related issue:
 - Changed editor (Nuxt/Vue/TypeScript) / Rust/WASM files, compatibility and rollback:
 - Tested commands actually run and exact-head GitHub CI / security / browser / export run URLs:
@@ -10,6 +12,7 @@
 
 ## IMGENGINE-derived milestone documentation transaction
 - [ ] Reconciled `main`, existing PRs and merged SHAs from live GitHub before updating dated documentation.
+- [ ] Applied feature-delivery-policy.md: no more than five opened PR attempts for this feature; track this PR number in the milestone source after creation, do not reset counts for abandoned PRs, and close/advance when budget is exhausted.
 - [ ] Material milestone status, NOW/NEXT, selected PR head or merge evidence updated in `docs/engineering/milestone-record.json`; ran generator and included **all seven generated views in the same PR**, or explained N/A for an immaterial change.
 - [ ] Ran `node --test scripts/tests/sync-milestone-docs.test.mjs` and `node scripts/sync-milestone-docs.mjs --check` or recorded local NOT RUN and awaited exact-head CI.
 - [ ] Assessed AGENTS.md, SKILLS.md, README.md, next.md, docs index and scoped instructions; updated only affected facts.

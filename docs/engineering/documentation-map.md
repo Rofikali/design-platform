@@ -57,6 +57,12 @@ The [hourly autopilot operating agreement](hourly-autopilot.md) describes the ow
 | Actual validation evidence | Pull request and release record |
 | Public usage and quick-start commands | README |
 
+## Feature progression and acceptance
+
+- [Five-PR feature delivery policy](feature-delivery-policy.md): current feature ID, PR counting semantics, table closure, DONE/PARTIAL versus manual-acceptance debt and next feature order.
+- [Milestone source](milestone-record.json): machine-validated feature PR counts and active feature, in addition to NOW/NEXT snapshots.
+- [Release readiness](../operations/release-readiness.md): manual Ubuntu/Compose, assistive technology and print/physical-evidence gates are explicitly distinct from GitHub-hosted CI.
+
 ## Generated milestone documentation
 
 - [Milestone workflow](milestone-workflow.md): update one structured source, generate seven bounded sections including README.md, require GitHub CI freshness, and submit a human-reviewed PR.

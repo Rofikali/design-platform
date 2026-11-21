@@ -24,11 +24,13 @@ The current prototype includes:
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-21)
 
-**Reference main:** 6be18e9280b5380e76627805f38431c0c89951fc (dated snapshot; re-check live GitHub before acting).
+**Reference main:** 535cd059429d814fac0cfa200d33f0fa9d7064e9 (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M2-TBL-02N — Column deletion Unicode budget recovery history regression** [IN_PROGRESS].
+**NOW:** **DP-M3-LAYERS-01 — Accessible element layering and ordering** [READY].
 
-**NEXT:** DP-M2-TBL-02B [IN_PROGRESS]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
+**NEXT:** DP-M3-ALIGN-01 [PLANNED]; DP-M3-IMAGE-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
+
+**Feature budget:** DP-M3-LAYERS — 0/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
 
 **Review gate:** Owner-authorized autopilot may review and merge only after all exact-head/integration CI, security, branch protection and required independent-review gates pass. No automatic publishing or deployment.
 
@@ -36,15 +38,19 @@ The current prototype includes:
 
 For detailed CI and status decisions, see [the milestone workflow](docs/engineering/milestone-workflow.md) and [the full work board](next.md). The snapshot above is dated; always verify GitHub before claiming a PR is merged.
 
+## Evidence and feature progression (2026-11-21)
+
+The next feature is **accessible element ordering/layers**. The [five-PR delivery policy](docs/engineering/feature-delivery-policy.md) records per-feature PR budgets, completed software versus remaining acceptance, and the next lane. The old table iteration loop is closed; manual accessibility and print gates remain open. GitHub CI has run in hosted Ubuntu and includes a production Docker **image build**; this does not establish a user's local Ubuntu/Docker Compose run, physical printer output, manual screen-reader behavior or a production release.
+
 ## Current limitations
 
 This is still a prototype, **not production-ready**.
 
-- Frame and grid primitives are now part of the editor model. Grid cells remain visual regions. Schema v5 defines bounded semantic table data; imported tables can be previewed on the canvas and rendered to SVG/PNG, but cell editing and structural table commands are not yet implemented. The starter templates remain foundations, not complete exam-paper or shop-banner authoring workflows.
+- Frame and grid primitives are now part of the editor model. Grid cells remain visual regions. Schema v5 includes semantic tables with accessible cell-selection/edit controls and bounded row/column insert/delete commands. Automated serialization/history and browser regressions exist; manual screen-reader and physical-print acceptance remain outstanding. The starter templates remain foundations, not complete exam-paper or shop-banner authoring workflows.
 - PNG export is implemented from the document model; Chrome CI verifies real 2× PNG downloads and compares both MVP template exports against checked-in SVG visual references with a pixel-difference tolerance. This is a deterministic regression gate for the current Chrome renderer, not proof of cross-browser font parity or user-validated print quality.
 - PDF currently uses the browser's print dialog. The user must choose “Save as PDF”; this is not a direct PDF download. Chrome CI checks the Shop Banner print layout scale and generated PDF page box (one 300 × 125 mm page), but visual fidelity and cross-browser behavior remain unverified.
 - There is no account system, server-side persistence, cross-device synchronization, billing, or collaboration.
-- Schema-v1 through v4 documents migrate to v5 while preserving supported geometry, physical output-size metadata, page background images, frames, and grids. Schema v5 adds a first-class semantic Table variant with a bounded rectangular plain-text cell matrix. The table contract enforces at most 20 rows, 20 columns, 400 cells, 2,000 characters per cell, and 20,000 characters per table. Table cell editing and structural commands are not yet implemented; the current implementation provides bounded validation, a read-only canvas preview, and SVG/PNG table rendering. Background uploads are decoded in the browser, checked against 4,096-pixel edge and 16-million-pixel limits, and constrained by the 1 MiB embedded-data limit. PNG export includes the page background. Browser-side checks are usability and data-integrity safeguards, not a server-side trust boundary.
+- Schema-v1 through v4 documents migrate to v5 while preserving supported geometry, physical output-size metadata, page background images, frames, and grids. Schema v5 adds a first-class semantic Table variant with a bounded rectangular plain-text cell matrix. The table contract enforces at most 20 rows, 20 columns, 400 cells, 2,000 Unicode code points per cell, and 20,000 Unicode code points per table. Table cell editing and structural commands are now implemented, with bounded validation, canvas preview and SVG/PNG table rendering. Manual accessibility and physical print acceptance are not established. Background uploads are decoded in the browser, checked against 4,096-pixel edge and 16-million-pixel limits, and constrained by the 1 MiB embedded-data limit. PNG export includes the page background. Browser-side checks are usability and data-integrity safeguards, not a server-side trust boundary.
 - The real-browser suite covers WASM-backed JSON import/export, rejection safety, adding text/rectangles/frames/grids, text/style editing, directional movement, keyboard-driven width editing, undo/redo, local autosave/restore, pointer drag/resize, page-boundary limits, template creation, actual 2× PNG file integrity/dimensions, pixel-level checks and checked-in SVG reference-image comparisons for both MVP templates, plus one-page PDF geometry. Focus indicators, keyboard activation, named canvas elements/group, labeled form controls, and keyboard-accessible width/height controls have targeted regression checks. Full screen-reader/manual accessibility review, cross-browser export fidelity, and performance gates remain open work. The [manual accessibility audit worksheet](docs/testing/accessibility-manual-audit.md) is prepared but not yet completed.
 - Browser-side validation improves feedback and data consistency; it is not an authorization boundary. A future trusted API must validate documents independently.
 - Local browser storage is not a backup. Users should download a JSON copy if they need a portable copy.

@@ -7,15 +7,23 @@
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-21)
 
-**Reference main:** 6be18e9280b5380e76627805f38431c0c89951fc (dated snapshot; re-check live GitHub before acting).
+**Reference main:** 535cd059429d814fac0cfa200d33f0fa9d7064e9 (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M2-TBL-02N — Column deletion Unicode budget recovery history regression** [IN_PROGRESS].
+**NOW:** **DP-M3-LAYERS-01 — Accessible element layering and ordering** [READY].
 
-**NEXT:** DP-M2-TBL-02B [IN_PROGRESS]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
+**NEXT:** DP-M3-ALIGN-01 [PLANNED]; DP-M3-IMAGE-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
+
+**Feature budget:** DP-M3-LAYERS — 0/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
 
 **Review gate:** Owner-authorized autopilot may review and merge only after all exact-head/integration CI, security, branch protection and required independent-review gates pass. No automatic publishing or deployment.
 
 <!-- milestone-sync:end -->
+
+## Feature-delivery gate: five PRs maximum (effective 2026-11-21)
+
+The current feature is **element layers and ordering**, not more table-only regression iterations. The [feature delivery policy](docs/engineering/feature-delivery-policy.md) defines the hard **five-PR cap per feature**, outcome-based completion, bounded acceptance and next-feature handoff. Each PR must record its feature ID and count against the same five slots, including failed/closed feature attempts; never reset the count by renaming submilestones. A security P0 fix must be handled in its own tracked remediation lane, not hidden as a sixth feature PR.
+
+The table feature's earlier iterations predate this rule and are explicitly closed to new feature-scope PRs. Merged code ≠ CI proof ≠ manually tested ≠ released. Manual Ubuntu/Docker Compose, screen-reader and physical printer evidence remain **NOT RUN** until observed; do not stall independent READY features because those manual gates have not been exercised.
 
 ## Hourly Design Platform Autopilot (owner-enabled)
 

@@ -48,7 +48,7 @@ Documentation describes intended tests; it is not evidence that they have run. R
 - The reference comparisons are checked-in visual baselines for the current Chrome renderer and catch layout, text, color, and clipping regressions beyond targeted pixel counts. They do not prove cross-browser font parity or guarantee that the design meets real users' print expectations; baseline changes require deliberate visual review.
 - Intercept the print-dialog call while preserving the app's print stylesheet, request a PDF from Chrome DevTools, and assert the Shop Banner fits the requested 300 × 125 mm physical size on exactly one PDF page.
 - These checks prove file integrity and page geometry only; they do not prove visual fidelity, font/wrapping quality, or cross-browser print consistency.
-- Focus indicators, keyboard activation, canvas accessible names, and keyboard-editable width controls have targeted browser regression checks. Full accessibility auditing (including screen-reader/manual review and contrast review), cross-browser export regression, and performance testing remain separate open gates. Use [`accessibility-manual-audit.md`](./accessibility-manual-audit.md) to record hands-on results; leave checks as Not run until performed and evidence is captured.
+- Focus indicators, keyboard activation, canvas accessible names, and keyboard-editable width controls have targeted browser regression checks. Full manual accessibility auditing (including screen-reader/manual review and contrast), owner-run Ubuntu/Docker Compose, physical printer output and measured performance remain separate open gates. A cross-browser export CI workflow exists, but CI coverage is not proof of manually accepted font/print fidelity across all browser/device environments. Use [`accessibility-manual-audit.md`](./accessibility-manual-audit.md) to record hands-on results; leave checks as Not run until performed and evidence is captured.
 
 ### Persistence and API (when introduced)
 - Schema-v1-to-v2 migration tests, configurable page geometry, physical-output aspect-ratio checks, and resource-boundary tests.
@@ -68,6 +68,10 @@ Documentation describes intended tests; it is not evidence that they have run. R
 - Dependency and secret scanning in CI.
 - Fuzzing parsers or core serialization where useful and supported.
 - Load tests only after defining a target workload and a realistic resource budget.
+
+## Feature acceptance and five-PR boundary
+
+For each new feature, tests and documentation must stay within the stable ID and [five-PR cap](../engineering/feature-delivery-policy.md). Capture actual PR numbers; do not spin indefinitely on one type of regression. After at most five PRs, record implemented behavior, automated verification and real untested manual steps separately, link unresolved cases, and move to the next independent READY feature. For **DP-M3-LAYERS**, verify immutable order transitions, selected identity, undo/redo, JSON round-trip, stacking in real browser PNG/print and keyboard/assistive-tech behavior as evidence permits; never invent manual validation.
 
 ## CI expectations
 CI should install pinned toolchains, run formatting and lint checks, execute tests, and report failures clearly. Keep the initial workflow appropriate for the files that exist; do not create a green-looking workflow that silently skips all tests.

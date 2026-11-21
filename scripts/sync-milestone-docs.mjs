@@ -50,6 +50,37 @@ export function validateRecord(r) {
     if (m.status === "MERGED" && (!m.pr || !m.sha)) fail("Merged milestones require PR and merge SHA: " + m.id);
     if (m.status === "PR_OPEN" && (!m.pr || !m.sha)) fail("PR_OPEN requires PR and exact observed head: " + m.id);
   }
+  const delivery = r.feature_delivery;
+  if (!delivery || delivery.max_prs_per_feature !== 5 || delivery.policy_start !== "2026-11-21" ||
+      !Array.isArray(delivery.features) || !delivery.features.length ||
+      !ID.test(delivery.active_feature_id)) fail("Invalid five-PR feature delivery policy");
+  const featureIds = new Set();
+  const assignedPrs = new Set();
+  let activeFeature;
+  for (const f of delivery.features) {
+    if (!f || !ID.test(f.id) || featureIds.has(f.id) ||
+        typeof f.title !== "string" || !f.title.trim() ||
+        typeof f.notes !== "string" || !f.notes.trim() ||
+        !["ACTIVE", "PLANNED", "CLOSED", "CLOSED_LEGACY"].includes(f.state) ||
+        !Array.isArray(f.prs)) fail("Invalid feature delivery entry");
+    featureIds.add(f.id);
+    if (f.prs.length > delivery.max_prs_per_feature) fail("Five-PR feature budget exceeded: " + f.id);
+    for (const pr of f.prs) {
+      if (!Number.isSafeInteger(pr) || pr < 1 || assignedPrs.has(pr)) fail("Duplicate or invalid feature PR");
+      assignedPrs.add(pr);
+    }
+    if (f.state === "CLOSED_LEGACY" && f.prs.length) fail("Legacy PRs must not be falsely counted as post-policy");
+    if (f.id === delivery.active_feature_id) {
+      if (f.state !== "ACTIVE") fail("Active feature must have ACTIVE state");
+      activeFeature = f;
+    } else if (f.state === "ACTIVE") fail("Only one feature can be ACTIVE");
+  }
+  if (!activeFeature) fail("Active feature not found");
+  for (const m of r.milestones) {
+    if (m.feature_id !== undefined && !featureIds.has(m.feature_id)) fail("Unknown milestone feature_id: " + m.id);
+  }
+  const selectedNow = r.milestones.find(m => m.id === r.now_id);
+  if (selectedNow?.feature_id !== delivery.active_feature_id) fail("NOW must belong to active feature");
   if (!seen.has(r.now_id) || !Array.isArray(r.next_ids) ||
       r.next_ids.some(id => !seen.has(id) || id === r.now_id) ||
       new Set(r.next_ids).size !== r.next_ids.length) fail("Invalid NOW/NEXT references");
@@ -79,6 +110,11 @@ export function renderGeneratedBlock(record, view) {
     "**NOW:** **" + clean(now.id) + " — " + clean(now.title) + "** [" + now.status + "]." + reference(now),
     "",
     "**NEXT:** " + (next.length ? next.map(m => clean(m.id) + " [" + m.status + "]" + reference(m)).join("; ") : "None recorded."),
+    "",
+    "**Feature budget:** " + clean(r.feature_delivery.active_feature_id) + " — " +
+      r.feature_delivery.features.find(f => f.id === r.feature_delivery.active_feature_id).prs.length +
+      "/5 PRs recorded since " + r.feature_delivery.policy_start +
+      ". No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.",
     "",
     r.approval_policy === "OWNER_APPROVED_GATED_MERGE"
       ? "**Review gate:** Owner-authorized autopilot may review and merge only after all exact-head/integration CI, security, branch protection and required independent-review gates pass. No automatic publishing or deployment."

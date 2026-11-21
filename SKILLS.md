@@ -1,5 +1,7 @@
 # Engineering Skills and Playbooks
 
+**Feature execution rule (2026-11-21):** Follow [feature-delivery-policy.md](docs/engineering/feature-delivery-policy.md). Maximum **five PRs per feature**, count abandoned feature PR attempts, and after the budget is used close as DONE/PARTIAL/BLOCKED and advance to a different READY feature. Evidence labels are separate: merged source, exact-head CI, local Ubuntu/Docker Compose, manual accessibility, print, and release. Do not repeat table-only tests while the new layers feature is NOW.
+
 This file is the practical companion to `AGENTS.md`. It describes how an agent should apply professional engineering, security, architecture, product, and management skills to this repository.
 
 The goal is to build a real product and help the owner understand the decisions in easy English. A checklist is a prompt for investigation, not proof that the work was completed.
@@ -292,11 +294,13 @@ The owner enabled an independent ChatGPT task named **Design Platform Autopilot*
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-21)
 
-**Reference main:** 6be18e9280b5380e76627805f38431c0c89951fc (dated snapshot; re-check live GitHub before acting).
+**Reference main:** 535cd059429d814fac0cfa200d33f0fa9d7064e9 (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M2-TBL-02N — Column deletion Unicode budget recovery history regression** [IN_PROGRESS].
+**NOW:** **DP-M3-LAYERS-01 — Accessible element layering and ordering** [READY].
 
-**NEXT:** DP-M2-TBL-02B [IN_PROGRESS]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
+**NEXT:** DP-M3-ALIGN-01 [PLANNED]; DP-M3-IMAGE-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
+
+**Feature budget:** DP-M3-LAYERS — 0/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
 
 **Review gate:** Owner-authorized autopilot may review and merge only after all exact-head/integration CI, security, branch protection and required independent-review gates pass. No automatic publishing or deployment.
 

@@ -1,6 +1,6 @@
 # Semantic Tables Milestone — Product and Engineering Contract
 
-**Status:** Schema-v5 core contract, validation, and read-only canvas/SVG rendering are implemented in the current implementation PR. Cell editing, structural commands, undo/redo integration, and full export/accessibility acceptance remain future slices.
+**Status (2026-11-21):** Schema-v5 table validation, canvas/SVG/PNG rendering, accessible cell editing, bounded row/column insert/delete, JSON/history regressions and Unicode budget tests are merged through PR #153. The engineering iteration lane is now CLOSED (legacy feature exceeded the newly introduced five-PR rule). Manual screen-reader/usability issue #82, physical print/PDF issue #85, and real owner-run Ubuntu/Docker Compose acceptance remain NOT RUN, so this is not customer acceptance or release certification.
 **Target:** First editable, data-bearing table primitive after schema v4 Frames and Grids.
 **Product scope:** Exam-paper and shop-banner authoring. This milestone does not expand into spreadsheet software.
 

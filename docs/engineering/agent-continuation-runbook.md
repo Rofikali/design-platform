@@ -6,11 +6,13 @@
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-21)
 
-**Reference main:** 6be18e9280b5380e76627805f38431c0c89951fc (dated snapshot; re-check live GitHub before acting).
+**Reference main:** 535cd059429d814fac0cfa200d33f0fa9d7064e9 (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M2-TBL-02N — Column deletion Unicode budget recovery history regression** [IN_PROGRESS].
+**NOW:** **DP-M3-LAYERS-01 — Accessible element layering and ordering** [READY].
 
-**NEXT:** DP-M2-TBL-02B [IN_PROGRESS]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
+**NEXT:** DP-M3-ALIGN-01 [PLANNED]; DP-M3-IMAGE-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
+
+**Feature budget:** DP-M3-LAYERS — 0/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
 
 **Review gate:** Owner-authorized autopilot may review and merge only after all exact-head/integration CI, security, branch protection and required independent-review gates pass. No automatic publishing or deployment.
 
@@ -27,6 +29,10 @@ A markdown rule **does not** wake ChatGPT/Astra/Codex after a session ends, subm
 ## Bootstrap prompt for a new agent session
 
 > Read AGENTS.md, SKILLS.md, next.md, docs/engineering/agent-continuation-runbook.md and current GitHub PR/CI state. Reconcile stale milestones and select one READY bounded task, performing a bounded PR creation, review and merge when all exact-head/integration CI, security, repository and required independent-review gates pass; publishing/deployment remain separately gated. Report exact-SHA evidence, costs and open risks; do not invent results or rerun full CI unnecessarily.
+
+## Five-PR feature budget and handoff
+
+The current feature is **DP-M3-LAYERS**, not table-only work. Check [the five-PR feature ledger](feature-delivery-policy.md) and `milestone-record.json` before creating a PR. Record every PR attempt under the stable feature ID. Never open a sixth PR for one feature. Close the feature as DONE, PARTIAL or BLOCKED, carry real gaps to independent acceptance issues, and advance to alignment/snapping when layers exits. Local owner Ubuntu/Docker Compose, manual accessibility and real print remain NOT RUN without actual execution.
 
 ## "Go ahead" task-selection contract — use the live board
 
