@@ -31,6 +31,17 @@ describe("immutable element layering", () => {
     expect(moveElementLayer([], "missing", "backward")).toEqual([]);
   });
 
+  it("moves directly to the front or back while preserving stable identities and schema-v5 JSON", () => {
+    const front = moveElementLayer(elements, "bottom", "front");
+    expect(front.map((element) => element.id)).toEqual(["middle", "top", "bottom"]);
+    expect(front[2]).toBe(elements[0]);
+    const back = moveElementLayer(front, "bottom", "back");
+    expect(back.map((element) => element.id)).toEqual(["bottom", "middle", "top"]);
+    expect(parseDocument(toDocument([...front])).elements).toEqual(front);
+    expect(moveElementLayer(front, "bottom", "front")).toBe(front);
+    expect(moveElementLayer(elements, "bottom", "back")).toBe(elements);
+  });
+
   it("does not mutate frozen source arrays", () => {
     const frozen = Object.freeze([...elements]);
     const moved = moveElementLayer(frozen, "top", "backward");
