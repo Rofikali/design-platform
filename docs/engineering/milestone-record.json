@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
-  "snapshot_date": "2026-11-20",
-  "reference_main_sha": "89089548e8e9926fa3237343124721a18265115f",
-  "now_id": "DP-M2-TBL-02M",
+  "snapshot_date": "2026-11-21",
+  "reference_main_sha": "6be18e9280b5380e76627805f38431c0c89951fc",
+  "now_id": "DP-M2-TBL-02N",
   "next_ids": [
     "DP-M2-TBL-02B",
     "DP-SEC-01",
@@ -182,8 +182,16 @@
     {
       "id": "DP-M2-TBL-02M",
       "title": "Exact Unicode aggregate-budget row insertion history regression",
+      "status": "MERGED",
+      "summary": "PR #152 merged as 6be18e92 on 2026-11-21; Unicode aggregate-budget row/column insertion, deletion recovery and schema-v5 history regressions integrated; manual accessibility remains open.",
+      "pr": 152,
+      "sha": "6be18e9280b5380e76627805f38431c0c89951fc"
+    },
+    {
+      "id": "DP-M2-TBL-02N",
+      "title": "Column deletion Unicode budget recovery history regression",
       "status": "IN_PROGRESS",
-      "summary": "Test 20,000-code-point headerless table row insertion, schema-v5 history, immutability and rejection of over-budget replacement; exact-head CI pending."
+      "summary": "Verify 20,000-code-point headerless table column deletion reclaims text budget, preserves immutable source and schema-v5 undo/redo; exact-head CI pending."
     }
   ]
 }
