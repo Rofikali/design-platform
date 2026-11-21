@@ -16,13 +16,13 @@
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-21)
 
-**Reference main:** 1b2ddd759d6efd2d67ea70cc66a5b203a54768be (dated snapshot; re-check live GitHub before acting).
+**Reference main:** 423028d15ff221d7505a408fbd8be73618617a2e (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M3-LAYERS-01 — Accessible element layering and ordering** [PR_OPEN]. [PR #159](https://github.com/Rofikali/design-platform/pull/159)
+**NOW:** **DP-M3-ALIGN-01 — Basic alignment and optional snapping** [PR_OPEN]. [PR #160](https://github.com/Rofikali/design-platform/pull/160)
 
-**NEXT:** DP-M3-ALIGN-01 [PLANNED]; DP-M3-IMAGE-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
+**NEXT:** DP-M3-IMAGE-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
-**Feature budget:** DP-M3-LAYERS — 4/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
+**Feature budget:** DP-M3-ALIGN — 1/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
 
 **Review gate:** Owner-authorized autopilot may review and merge only after all exact-head/integration CI, security, branch protection and required independent-review gates pass. No automatic publishing or deployment.
 
@@ -51,8 +51,8 @@
 | DP-M2-TBL-02L — Headerless final-column deletion history regression | MERGED | [PR #151](https://github.com/Rofikali/design-platform/pull/151) | PR #151 merged as 89089548 on 2026-11-20; headerless final-column deletion schema-v5 Unicode and undo/redo regression integrated; manual accessibility remains open. |
 | DP-M2-TBL-02M — Exact Unicode aggregate-budget row insertion history regression | MERGED | [PR #152](https://github.com/Rofikali/design-platform/pull/152) | PR #152 merged as 6be18e92 on 2026-11-21; Unicode aggregate-budget row/column insertion, deletion recovery and schema-v5 history regressions integrated; manual accessibility remains open. |
 | DP-M2-TBL-02N — Column deletion Unicode budget recovery history regression | MERGED | [PR #153](https://github.com/Rofikali/design-platform/pull/153) | PR #153 merged as 535cd059 on 2026-11-21. Column removal recovers Unicode aggregate budget; code/history regression integrated. Manual user, native Ubuntu Compose and physical print NOT RUN. |
-| DP-M3-LAYERS-01 — Accessible element layering and ordering | PR_OPEN | [PR #159](https://github.com/Rofikali/design-platform/pull/159) | PRs #155-#157 merged; PR #159 adds schema-v5 layer ordering history tests for issue #158. Browser, manual screen-reader, native Ubuntu Compose and physical print NOT RUN. |
-| DP-M3-ALIGN-01 — Basic alignment and optional snapping | PLANNED | — | After layer feature exits, implement bounded alignment/snapping for text, shapes, frames, grids and tables without breaking saved geometry; no more than five PRs. |
+| DP-M3-LAYERS-01 — Accessible element layering and ordering | DEFERRED | [PR #159](https://github.com/Rofikali/design-platform/pull/159) [Issue #158](https://github.com/Rofikali/design-platform/issues/158) | Four Layers PRs merged with CI evidence; browser stacking, keyboard and export acceptance remains partial in issue #158. Manual #82/#85 and native Ubuntu Compose NOT RUN. |
+| DP-M3-ALIGN-01 — Basic alignment and optional snapping | PR_OPEN | [PR #160](https://github.com/Rofikali/design-platform/pull/160) | PR #160 adds immutable page-alignment geometry and tests; editor wiring and snapping partial, CI/manual checks NOT RUN. |
 | DP-M3-IMAGE-01 — Foreground image element authoring | PLANNED | — | After alignment, plan bounded movable image elements, resource limits, history, import/export and accessible controls; distinct from existing page background images. |
 
 <!-- milestone-sync:end -->
