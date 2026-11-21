@@ -1,6 +1,6 @@
 # Design Platform — LIVE Work Board and Master Roadmap
 
-> **Live-board snapshot:** Reconciled 2026-11-21 against GitHub; main `535cd059429d814fac0cfa200d33f0fa9d7064e9` after merge of PR #153. The snapshot is **dated**, not a live-updating dashboard. Re-fetch main/PRs/checks before executing or declaring completion.
+> **Live-board snapshot:** Reconciled 2026-11-21 against GitHub; main `a26acfd2b7108d48a8d8bb7018da185ce315608b` after merge of PR #160. Alignment stays ACTIVE (1/5); editor controls/snapping remain READY. The snapshot is **dated**, not a live-updating dashboard. Re-fetch main/PRs/checks before executing or declaring completion.
 >
 > **Source discipline:** This board adopts the **NOW / NEXT / LATER**, evidence, priority and agent continuation pattern in `Rofikali/imgengine/next.md`, not its IMGENGINE C17, FFI, VPS or five image tools. Code/tests and GitHub state override stale descriptions.
 >
@@ -16,9 +16,9 @@
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-21)
 
-**Reference main:** 423028d15ff221d7505a408fbd8be73618617a2e (dated snapshot; re-check live GitHub before acting).
+**Reference main:** a26acfd2b7108d48a8d8bb7018da185ce315608b (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M3-ALIGN-01 — Basic alignment and optional snapping** [PR_OPEN]. [PR #160](https://github.com/Rofikali/design-platform/pull/160)
+**NOW:** **DP-M3-ALIGN-01 — Basic alignment and optional snapping** [READY]. [PR #160](https://github.com/Rofikali/design-platform/pull/160)
 
 **NEXT:** DP-M3-IMAGE-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
@@ -52,7 +52,7 @@
 | DP-M2-TBL-02M — Exact Unicode aggregate-budget row insertion history regression | MERGED | [PR #152](https://github.com/Rofikali/design-platform/pull/152) | PR #152 merged as 6be18e92 on 2026-11-21; Unicode aggregate-budget row/column insertion, deletion recovery and schema-v5 history regressions integrated; manual accessibility remains open. |
 | DP-M2-TBL-02N — Column deletion Unicode budget recovery history regression | MERGED | [PR #153](https://github.com/Rofikali/design-platform/pull/153) | PR #153 merged as 535cd059 on 2026-11-21. Column removal recovers Unicode aggregate budget; code/history regression integrated. Manual user, native Ubuntu Compose and physical print NOT RUN. |
 | DP-M3-LAYERS-01 — Accessible element layering and ordering | DEFERRED | [PR #159](https://github.com/Rofikali/design-platform/pull/159) [Issue #158](https://github.com/Rofikali/design-platform/issues/158) | Four Layers PRs merged with CI evidence; browser stacking, keyboard and export acceptance remains partial in issue #158. Manual #82/#85 and native Ubuntu Compose NOT RUN. |
-| DP-M3-ALIGN-01 — Basic alignment and optional snapping | PR_OPEN | [PR #160](https://github.com/Rofikali/design-platform/pull/160) | PR #160 adds immutable page-alignment geometry and tests; editor wiring and snapping partial, CI/manual checks NOT RUN. |
+| DP-M3-ALIGN-01 — Basic alignment and optional snapping | READY | [PR #160](https://github.com/Rofikali/design-platform/pull/160) | PR #160 merged as a26acfd2 on 2026-11-21: immutable alignment geometry and unit tests. Editor controls/snapping remain READY; owner-run Ubuntu/Compose, screen reader and physical print NOT RUN by this governance review. |
 | DP-M3-IMAGE-01 — Foreground image element authoring | PLANNED | — | After alignment, plan bounded movable image elements, resource limits, history, import/export and accessible controls; distinct from existing page background images. |
 
 <!-- milestone-sync:end -->

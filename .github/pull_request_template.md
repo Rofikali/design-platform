@@ -1,4 +1,8 @@
+Feature-ID: REPLACE-WITH-ACTIVE-ID
+
 # Design Platform — bounded engineering PR
+
+> Replace the Feature-ID line with the actual ACTIVE feature ID. After opening the PR, add its real number to milestone-record.json under the feature, then regenerate seven docs. For governance-only review use GOVERNANCE-EXEMPT and title docs(governance):; the CI exemption enforces an allowlist of changed paths.
 
 ## Scope and evidence
 - Milestone / customer problem / selected READY item:

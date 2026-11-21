@@ -59,6 +59,7 @@ The [hourly autopilot operating agreement](hourly-autopilot.md) describes the ow
 
 ## Feature progression and acceptance
 
+- [PR feature budget gate](../../scripts/feature-pr-budget-check.mjs) and [unit tests](../../scripts/tests/feature-pr-budget-check.test.mjs): verifies actual PR IDs/numbers and narrow governance exception, alongside existing milestone documentation sync.
 - [Five-PR feature delivery policy](feature-delivery-policy.md): current feature ID, PR counting semantics, table closure, DONE/PARTIAL versus manual-acceptance debt and next feature order.
 - [Milestone source](milestone-record.json): machine-validated feature PR counts and active feature, in addition to NOW/NEXT snapshots.
 - [Release readiness](../operations/release-readiness.md): manual Ubuntu/Compose, assistive technology and print/physical-evidence gates are explicitly distinct from GitHub-hosted CI.

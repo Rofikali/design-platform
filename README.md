@@ -18,15 +18,19 @@ The current prototype includes:
 - CI checks for Rust formatting/tests/Clippy, frontend type-check/tests, browser smoke tests, and the production build.
 - A Docker-based frontend development path and a multi-stage frontend image.
 
+## Five-attempt feature governance
+
+A feature is one stable user outcome with up to **five opened PR attempts**, counting failed, abandoned, closed and merged PRs. Updates to the same PR consume no extra slot. Each implementation PR must declare its active `Feature-ID` and register the actual GitHub PR number in the [milestone record](docs/engineering/milestone-record.json). [CI](.github/workflows/ci.yml) verifies it, and the seven-section documentation generator keeps the living board consistent. After accepted completion or five PRs, close as DONE/PARTIAL/BLOCKED, record evidence and move to the next independent READY feature. See [the policy](docs/engineering/feature-delivery-policy.md). Security, manual accessibility, physical printing, local Compose and release approvals remain separate gates.
+
 ## Current engineering milestone and delivery status
 
 <!-- milestone-sync:start -->
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-21)
 
-**Reference main:** 423028d15ff221d7505a408fbd8be73618617a2e (dated snapshot; re-check live GitHub before acting).
+**Reference main:** a26acfd2b7108d48a8d8bb7018da185ce315608b (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M3-ALIGN-01 — Basic alignment and optional snapping** [PR_OPEN]. [PR #160](https://github.com/Rofikali/design-platform/pull/160)
+**NOW:** **DP-M3-ALIGN-01 — Basic alignment and optional snapping** [READY]. [PR #160](https://github.com/Rofikali/design-platform/pull/160)
 
 **NEXT:** DP-M3-IMAGE-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 

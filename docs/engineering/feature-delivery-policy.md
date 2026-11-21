@@ -10,6 +10,14 @@
 - A confirmed P0 security/data-loss incident can take priority in an **independent security/fix lane**, with separate issue, root cause and audit evidence. Do not relabel ordinary feature polishing as an incident or use security work to bypass the cap. If an architectural dependency genuinely blocks the next feature, record and escalate; select another unblocked feature.
 - The **historical semantic-table** sequence predates this policy and exceeded five PRs. It is `CLOSED_LEGACY`: no additional table-only PRs during this cycle. Historic PR numbers live in GitHub; the new per-feature counter intentionally tracks *post-policy* attempts only.
 
+### New CI feature-PR identity gate (from Messy-File-Cleaner)
+
+The existing milestone generator already checks the ledger's five-PR limit and duplicate numbers, but previously did not check each actual PR's Feature-ID and GitHub number. The new dependency-free Node 22 script `scripts/feature-pr-budget-check.mjs` reads pull_request event metadata. Every feature PR body must contain **exactly one standalone `Feature-ID: DP-...` line** matching the ACTIVE feature. Once the PR is opened, GitHub assigns its real number; add that number to the feature's `prs` list in `docs/engineering/milestone-record.json` and regenerate all seven sections **in the same PR**. Until that update, the new CI check must fail. The real GitHub PR history remains authoritative; the local ledger alone cannot prove all historical/closed attempts are counted.
+
+A governance-only exception uses `Feature-ID: GOVERNANCE-EXEMPT` plus a `docs(governance):` PR title. The job rejects this exception if changes include product Nuxt/Vue/TypeScript, Rust/WASM, Docker runtime or other non-allowlisted files. Reviewer scrutiny is still required. A confirmed security incident needs its own separately approved and traced work lane, not a disguised sixth feature PR or a governance exception. GitHub branch protection must be configured separately to make any CI job required.
+
+For every post-policy feature closed as `state: CLOSED`, the structured ledger must also record `outcome: DONE`, `PARTIAL` or `BLOCKED`, plus factual evidence in its notes. The generator rejects missing or invalid closure outcomes.
+
 ## 2. Completion statuses — do not conflate
 
 | Label | Meaning |
@@ -25,19 +33,15 @@
 
 Track `software implementation`, `CI evidence`, `manual device/OS acceptance`, `security approval`, `release approval` as **separate axes**. Do not say "fully complete" just because automated tests are green. Product-level quality and user acceptance are independent release gates, not reasons to keep producing endless PRs for one feature.
 
-## 3. Current feature transition
+## 3. Current progression (verified GitHub snapshot, 2026-11-21)
 
-**Previous: DP-M2-TABLE — semantic tables; CLOSED_LEGACY.** Schema-v5 table primitives, accessible cell editing, row/column insert/delete, bounded Unicode text validation, JSON/history preservation, and browser/export regressions are merged through [PR #153](https://github.com/Rofikali/design-platform/pull/153). This is **engineering implemented**, not owner/manual validated. Deferred: [accessibility #82](https://github.com/Rofikali/design-platform/issues/82), [print fidelity #85](https://github.com/Rofikali/design-platform/issues/85), local Ubuntu/Docker Compose check. Production security [#118](https://github.com/Rofikali/design-platform/issues/118) also blocks release authorization.
+**DP-M2-TABLE — CLOSED_LEGACY.** The many pre-policy semantic-table PRs remain historical. No new table-only PRs to restart the budget. Manual accessibility/print and native Ubuntu Compose acceptance remain unobserved.
 
-**NOW: DP-M3-LAYERS — layer ordering and selection; 0/5 PRs as of the source snapshot.** Expected outcome: users can intentionally move overlapping text/shapes/frames/grids/tables forward/back with keyboard-accessible controls and unchanged document semantics. Likely PR partition (do not open empty PRs just to fill slots):
+**DP-M3-LAYERS — CLOSED / PARTIAL (4/5).** PRs #155, #156, #157 and #159 merged; outstanding browser stacking, keyboard and export acceptance is tracked in [issue #158](https://github.com/Rofikali/design-platform/issues/158). The remaining fifth slot is not permission for scope-free polishing after feature closure. Manual accessibility [#82](https://github.com/Rofikali/design-platform/issues/82), physical print [#85](https://github.com/Rofikali/design-platform/issues/85), Ubuntu Compose and production advisory [#118](https://github.com/Rofikali/design-platform/issues/118) remain distinct acceptance or release gates.
 
-1. Pure immutable element reorder commands, bounded invalid-index/no-mutation cases, tests.
-2. Accessible Layers list and keyboard move-forward/back commands, clear selection/focus feedback.
-3. History/JSON import-export compatibility, local autosave/reopen and migration regression.
-4. Chrome overlapping-element PNG/print stacking fidelity and keyboard accessibility regression.
-5. Defect corrections necessary for the specified outcome and acceptance report, **only if needed**.
+**NOW: DP-M3-ALIGN — ACTIVE (1/5).** [PR #160](https://github.com/Rofikali/design-platform/pull/160) merged at `a26acfd2b7108d48a8d8bb7018da185ce315608b`, introducing bounded immutable page-alignment geometry and tests. Continue with keyboard-accessible editor controls and optional snapping, validated by scoped UI/browser/negative tests. Do not claim unobserved manual signoff.
 
-**NEXT: DP-M3-ALIGN**, bounded alignment and snapping; then **DP-M3-IMAGE**, foreground image elements (not the already implemented page background). Each receives its own five-PR ceiling. Typography/template enhancement comes after these, subject to the observed user jobs and MVP priorities.
+**NEXT: DP-M3-IMAGE — PLANNED (0/5).** Foreground image elements, independently bounded by resource limits, history, validation, privacy, accessible interaction and image export. When alignment is done or budget-exhausted, record DONE/PARTIAL/BLOCKED and move to this or another independent READY feature. A renamed alignment tweak is not a new feature.
 
 ## 4. End-of-feature handoff — mandatory
 

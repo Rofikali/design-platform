@@ -117,3 +117,16 @@ test("feature IDs, ownership, active state and PR uniqueness are validated", () 
   r.feature_delivery.features[1].state = "ACTIVE";
   assert.throws(() => validateRecord(r), /NOW must belong to active feature/);
 });
+
+test("closed features require an explicit final result", () => {
+  const r = fixture();
+  r.feature_delivery.features.push({ id: "DP-CLOSED", title: "Old feature", state: "CLOSED", prs: [99], notes: "Partially accepted" });
+  assert.throws(() => validateRecord(r), /Closed feature requires/);
+  r.feature_delivery.features[1].outcome = "PARTIAL";
+  assert.equal(validateRecord(r), r);
+  r.feature_delivery.features[1].outcome = "UNVERIFIED";
+  assert.throws(() => validateRecord(r), /Closed feature requires/);
+  r.feature_delivery.features[1].outcome = "DONE";
+  r.feature_delivery.features[0].outcome = "DONE";
+  assert.throws(() => validateRecord(r), /Only CLOSED features/);
+});

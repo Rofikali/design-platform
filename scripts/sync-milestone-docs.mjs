@@ -70,6 +70,8 @@ export function validateRecord(r) {
       assignedPrs.add(pr);
     }
     if (f.state === "CLOSED_LEGACY" && f.prs.length) fail("Legacy PRs must not be falsely counted as post-policy");
+    if (f.state === "CLOSED" && !["DONE", "PARTIAL", "BLOCKED"].includes(f.outcome)) fail("Closed feature requires DONE/PARTIAL/BLOCKED outcome: " + f.id);
+    if (f.state !== "CLOSED" && f.outcome !== undefined) fail("Only CLOSED features may declare outcome: " + f.id);
     if (f.id === delivery.active_feature_id) {
       if (f.state !== "ACTIVE") fail("Active feature must have ACTIVE state");
       activeFeature = f;

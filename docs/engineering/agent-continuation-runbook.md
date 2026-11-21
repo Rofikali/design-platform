@@ -6,9 +6,9 @@
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-21)
 
-**Reference main:** 423028d15ff221d7505a408fbd8be73618617a2e (dated snapshot; re-check live GitHub before acting).
+**Reference main:** a26acfd2b7108d48a8d8bb7018da185ce315608b (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M3-ALIGN-01 — Basic alignment and optional snapping** [PR_OPEN]. [PR #160](https://github.com/Rofikali/design-platform/pull/160)
+**NOW:** **DP-M3-ALIGN-01 — Basic alignment and optional snapping** [READY]. [PR #160](https://github.com/Rofikali/design-platform/pull/160)
 
 **NEXT:** DP-M3-IMAGE-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
@@ -32,7 +32,7 @@ A markdown rule **does not** wake ChatGPT/Astra/Codex after a session ends, subm
 
 ## Five-PR feature budget and handoff
 
-The current feature is **DP-M3-LAYERS**, not table-only work. Check [the five-PR feature ledger](feature-delivery-policy.md) and `milestone-record.json` before creating a PR. Record every PR attempt under the stable feature ID. Never open a sixth PR for one feature. Close the feature as DONE, PARTIAL or BLOCKED, carry real gaps to independent acceptance issues, and advance to alignment/snapping when layers exits. Local owner Ubuntu/Docker Compose, manual accessibility and real print remain NOT RUN without actual execution.
+The current feature is **DP-M3-ALIGN (1/5; #160 merged)**, not repeated table/layer regressions. Check [the five-PR feature ledger](feature-delivery-policy.md) and `milestone-record.json` before creating a PR. Record every PR attempt under the stable feature ID. Never open a sixth PR for one feature. Close the feature as DONE, PARTIAL or BLOCKED, carry real gaps to independent acceptance issues, and advance to alignment/snapping when layers exits. Local owner Ubuntu/Docker Compose, manual accessibility and real print remain NOT RUN without actual execution.
 
 ## "Go ahead" task-selection contract — use the live board
 
@@ -42,7 +42,7 @@ When the owner writes **"go ahead"**, the agent should not ask them to repeat al
 2. **Do not confuse statuses:** DONE/IMPLEMENTED/VERIFIED/CI_PENDING/FAILED/MERGED/RELEASED are different; only GitHub confirms a merge, a real launch confirms release, and only exact-head executed checks prove CI success.
 3. **Do not invent time:** docs cannot trigger a background agent or future response; work happens only while the authorized runner is executing.
 4. **Change control:** the latest owner rule authorizes safe verified PR merges, but never overrides required independent reviews or branch protections; no authority for publishing, deployment, visibility, billing, secrets, data deletion or security bypass. Small PRs and review remain standard.
-5. **Checkpoint sparingly:** update the structured milestone record and regenerate the six documentation views after a meaningful transition, not after every queued/running CI poll. Preserve durable evidence in PRs and linked reports, not duplicated logs.
+5. **Checkpoint sparingly:** update the structured milestone record and regenerate the seven documentation views after a meaningful transition, not after every queued/running CI poll. Preserve durable evidence in PRs and linked reports, not duplicated logs.
 6. **Handoff once per bounded milestone:** include task ID, prior and current SHA, affected boundary, test status, known failures, PR link, next action, seven-level/security/SRE/product/finance review notes and owner gate.
 7. **Next after merge:** confirm merge SHA and exact associated checks, mark the task MERGED (not RELEASED), then choose the next READY item after prerequisites—not the oldest long-term bullet.
 
