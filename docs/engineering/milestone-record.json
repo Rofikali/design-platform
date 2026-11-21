@@ -2,10 +2,9 @@
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
   "snapshot_date": "2026-11-21",
-  "reference_main_sha": "1b2ddd759d6efd2d67ea70cc66a5b203a54768be",
-  "now_id": "DP-M3-LAYERS-01",
+  "reference_main_sha": "423028d15ff221d7505a408fbd8be73618617a2e",
+  "now_id": "DP-M3-ALIGN-01",
   "next_ids": [
-    "DP-M3-ALIGN-01",
     "DP-M3-IMAGE-01",
     "DP-SEC-01",
     "DP-M1-ACC-02",
@@ -200,17 +199,20 @@
       "id": "DP-M3-LAYERS-01",
       "feature_id": "DP-M3-LAYERS",
       "title": "Accessible element layering and ordering",
-      "status": "PR_OPEN",
-      "summary": "PRs #155-#157 merged; PR #159 adds schema-v5 layer ordering history tests for issue #158. Browser, manual screen-reader, native Ubuntu Compose and physical print NOT RUN.",
+      "status": "DEFERRED",
+      "summary": "Four Layers PRs merged with CI evidence; browser stacking, keyboard and export acceptance remains partial in issue #158. Manual #82/#85 and native Ubuntu Compose NOT RUN.",
       "pr": 159,
-      "sha": "4a309835e12e246d78c96cee12f5cf27d7a152e1"
+      "sha": "423028d15ff221d7505a408fbd8be73618617a2e",
+      "issue": 158
     },
     {
       "id": "DP-M3-ALIGN-01",
       "feature_id": "DP-M3-ALIGN",
       "title": "Basic alignment and optional snapping",
-      "status": "PLANNED",
-      "summary": "After layer feature exits, implement bounded alignment/snapping for text, shapes, frames, grids and tables without breaking saved geometry; no more than five PRs."
+      "status": "PR_OPEN",
+      "summary": "PR #160 adds immutable page-alignment geometry and tests; editor wiring and snapping partial, CI/manual checks NOT RUN.",
+      "pr": 160,
+      "sha": "a3323995e77e3cdcea0714518ad6d386cd1b415a"
     },
     {
       "id": "DP-M3-IMAGE-01",
@@ -223,7 +225,7 @@
   "feature_delivery": {
     "policy_start": "2026-11-21",
     "max_prs_per_feature": 5,
-    "active_feature_id": "DP-M3-LAYERS",
+    "active_feature_id": "DP-M3-ALIGN",
     "features": [
       {
         "id": "DP-M2-TABLE",
@@ -235,21 +237,23 @@
       {
         "id": "DP-M3-LAYERS",
         "title": "Layer order and selection",
-        "state": "ACTIVE",
+        "state": "CLOSED",
         "prs": [
           155,
           156,
           157,
           159
         ],
-        "notes": "First post-policy feature; preserve stacking parity, history, local-only privacy and keyboard operability."
+        "notes": "Four merged PRs #155 #156 #157 #159; remaining browser acceptance tracked in issue #158; manual #82/#85 and native Compose NOT RUN."
       },
       {
         "id": "DP-M3-ALIGN",
         "title": "Alignment and snapping",
-        "state": "PLANNED",
-        "prs": [],
-        "notes": "Start after layers exit; no implicit coordinate migration."
+        "state": "ACTIVE",
+        "prs": [
+          160
+        ],
+        "notes": "First PR covers pure alignment geometry; editor controls and snapping remain."
       },
       {
         "id": "DP-M3-IMAGE",
