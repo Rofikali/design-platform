@@ -52,14 +52,14 @@ The browser cannot be trusted for server authorization. There is currently no pr
 | Document schema | Version is explicit; supported v1–v4 preserved | Historical fixture round-trip |
 | Identity | Unique element IDs, stable selection targets | Insert/delete/reorder tests |
 | Geometry | Finite positions, positive bounded sizes within page constraints | Rust/TS/WASM negative fixtures |
-| Order | Element stack order preserved | Render and JSON round-trip |
+| Order | Array order defines element stacking; new layer commands must preserve stable IDs | Pure reorder, undo/redo, JSON and overlapping PNG/print tests |
 | History | Atomic edit, redo invalidation after new edit, bounded stack | Unit + browser edit sequence |
 | Raster background | Supported PNG/JPEG/WebP with byte/decoded dimension bounds | Malformed/large asset tests |
 | SVG text | Untrusted string becomes escaped text, never arbitrary HTML | Injection-oriented tests |
 | Export | File signature, dimensions, content and acceptable fidelity | Real downloaded artifact tests |
 | Persistence | Storage failure cannot silently destroy current document | Failure simulation and manual recovery |
 
-Do not implement v5 Table as visual Grid + independent text elements: cells must be owned by one typed Table element. Proposed rows/columns 1–20 and cell caps require validation against the accepted contract before implementation.
+Schema v5 Tables are now typed, first-class elements with an owned rectangular cell matrix, bounded 1–20 rows/columns and Unicode code-point budgets. Cell editing, insertion/deletion and history regressions are merged through PR #153. Preserve visual Grids as a distinct element kind; manual accessibility, print fidelity and owner-run Ubuntu/Docker Compose acceptance remain unverified. The next feature is an accessible element layer-ordering workflow with no schema change planned.
 
 ## 5. Key operations and failure paths
 
@@ -96,6 +96,10 @@ Export
 - **Observer:** only for multiple actual subscribers to document-change events.
 
 SOLID, DRY, KISS and YAGNI are decision tools; do not add layers merely to demonstrate patterns. The Rust core should not depend on Nuxt, storage or HTTP.
+
+## Feature-budget architecture gate (2026-11-21)
+
+The [five-PR delivery policy](../engineering/feature-delivery-policy.md) closes the historical semantic table development lane and advances to element layers. Preserve DOM/canvas order, serialized element-array order and export renderer stacking parity; do not add a new `z-index` document field without explicit accepted contract and migration evidence. Prefer a pure immutable reorder operation and accessible UI controls before extracting editor state. The next feature is limited to five opened PR attempts. Real owner-run Ubuntu/Compose, manual screen-reader and physical print remain NOT RUN.
 
 ## 7. Planned extraction sequence (not implemented)
 
