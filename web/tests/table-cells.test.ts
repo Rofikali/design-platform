@@ -624,3 +624,122 @@ describe("headerless last-column deletion history contract", () => {
     });
   });
 });
+
+describe("table Unicode budget recovery after row deletion", () => {
+  it("reclaims deleted code points for a subsequent bounded cell edit without mutating history", () => {
+    const source: TableElement = {
+      ...sampleTable(),
+      rows: 10,
+      columns: 10,
+      headerRows: 0,
+      cells: Array.from({ length: 10 }, (_, row) =>
+        Array.from({ length: 10 }, (_, column) =>
+          row === 0 && column === 0 ? "😀".repeat(200) : "界".repeat(200))),
+    };
+    const count = (table: TableElement) =>
+      table.cells.flat().reduce((total, cell) => total + Array.from(cell).length, 0);
+    const before = JSON.stringify(toDocument([source]));
+    expect(count(source)).toBe(20_000);
+    const deleted = deleteTableRow(source, 0);
+    expect(deleted.rows).toBe(9);
+    expect(deleted.headerRows).toBe(0);
+    expect(count(deleted)).toBe(18_000);
+    const edited = replaceTableCell(deleted, 0, 0, "🚀".repeat(2_000));
+    expect(count(edited)).toBe(19_800);
+    expect(() => replaceTableCell(edited, 0, 1, "界".repeat(401))).toThrow(/20,000/);
+    expect(JSON.stringify(toDocument([source]))).toBe(before);
+    const after = JSON.stringify(toDocument([edited]));
+    expect(parseDocumentJson(after).elements[0]).toMatchObject({
+      type: "table", rows: 9, columns: 10, headerRows: 0, cells: edited.cells,
+    });
+    const undone = undoHistory(recordHistory(createHistory(before), after), after);
+    expect(parseDocumentJson(undone.snapshot!).elements[0]).toMatchObject({
+      rows: 10, cells: source.cells,
+    });
+    const redone = redoHistory(undone.history, undone.snapshot!);
+    expect(parseDocumentJson(redone.snapshot!).elements[0]).toMatchObject({
+      rows: 9, cells: edited.cells,
+    });
+  });
+});
+
+describe("table Unicode aggregate-budget structural history", () => {
+  it("preserves a full Unicode budget when inserting an empty column and restoring history", () => {
+    const source: TableElement = {
+      ...sampleTable(), rows: 10, columns: 10, headerRows: 0,
+      cells: Array.from({ length: 10 }, (_, row) =>
+        Array.from({ length: 10 }, (_, column) =>
+          row === 9 && column === 9 ? "😀".repeat(200) : "界".repeat(200))),
+    };
+    const count = (table: TableElement) =>
+      table.cells.flat().reduce((sum, value) => sum + Array.from(value).length, 0);
+    const before = JSON.stringify(toDocument([source]));
+    expect(count(source)).toBe(20_000);
+    const inserted = insertTableColumn(source, 0);
+    expect(inserted.columns).toBe(11);
+    expect(inserted.headerRows).toBe(0);
+    expect(inserted.cells.every(row => row[0] === "")).toBe(true);
+    expect(inserted.cells[9]![10]).toBe("😀".repeat(200));
+    expect(count(inserted)).toBe(20_000);
+    expect(JSON.stringify(toDocument([source]))).toBe(before);
+    const after = JSON.stringify(toDocument([inserted]));
+    expect(parseDocumentJson(after).elements[0]).toMatchObject({
+      type: "table", columns: 11, headerRows: 0, cells: inserted.cells,
+    });
+    expect(() => replaceTableCell(inserted, 0, 0, "x")).toThrow(/20,000/);
+    expect(JSON.stringify(toDocument([inserted]))).toBe(after);
+    const undone = undoHistory(recordHistory(createHistory(before), after), after);
+    expect(parseDocumentJson(undone.snapshot!).elements[0]).toMatchObject({
+      columns: 10, cells: source.cells,
+    });
+    const redone = redoHistory(undone.history, undone.snapshot!);
+    expect(parseDocumentJson(redone.snapshot!).elements[0]).toMatchObject({
+      columns: 11, cells: inserted.cells,
+    });
+  });
+
+  it("preserves exactly 20,000 code points across empty row insertion and undo/redo", () => {
+    const source: TableElement = {
+      ...sampleTable(),
+      rows: 10,
+      columns: 10,
+      headerRows: 0,
+      cells: Array.from({ length: 10 }, (_, row) =>
+        Array.from({ length: 10 }, (_, column) =>
+          row === 0 && column === 0 ? "😀".repeat(200) : "界".repeat(200))),
+    };
+    const before = JSON.stringify(toDocument([source]));
+    // Astral symbols count as one Unicode code point, not two UTF-16 code units.
+    const codePointCount = (cells: string[][]) =>
+      cells.reduce((total, row) => total + row.reduce((sum, cell) => sum + Array.from(cell).length, 0), 0);
+    expect(codePointCount(source.cells)).toBe(20_000);
+    const inserted = insertTableRow(source, 5);
+    expect(codePointCount(inserted.cells)).toBe(20_000);
+    expect(inserted.rows).toBe(11);
+    expect(inserted.headerRows).toBe(0);
+    expect(inserted.cells[5]).toEqual(Array(10).fill(""));
+    expect(inserted.cells[6]![0]).toBe("界".repeat(200));
+    expect(source.rows).toBe(10);
+    expect(JSON.stringify(toDocument([source]))).toBe(before);
+    const after = JSON.stringify(toDocument([inserted]));
+    expect(parseDocumentJson(after).elements[0]).toMatchObject({
+      type: "table", rows: 11, columns: 10, headerRows: 0, cells: inserted.cells,
+    });
+    // Replacing one astral code point with another remains valid at the exact budget.
+    const sameBudget = replaceTableCell(inserted, 0, 0, "🚀" + "😀".repeat(199));
+    expect(codePointCount(sameBudget.cells)).toBe(20_000);
+    expect(sameBudget.cells[0]![0]).toBe("🚀" + "😀".repeat(199));
+    expect(inserted.cells[0]![0]).toBe("😀".repeat(200));
+    expect(() => replaceTableCell(inserted, 5, 0, "x")).toThrow(/20,000/);
+    expect(codePointCount(inserted.cells)).toBe(20_000);
+    expect(JSON.stringify(toDocument([inserted]))).toBe(after);
+    const undone = undoHistory(recordHistory(createHistory(before), after), after);
+    expect(parseDocumentJson(undone.snapshot!).elements[0]).toMatchObject({
+      rows: 10, cells: source.cells,
+    });
+    const redone = redoHistory(undone.history, undone.snapshot!);
+    expect(parseDocumentJson(redone.snapshot!).elements[0]).toMatchObject({
+      rows: 11, cells: inserted.cells,
+    });
+  });
+});

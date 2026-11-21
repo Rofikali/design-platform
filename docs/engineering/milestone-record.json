@@ -2,8 +2,8 @@
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
   "snapshot_date": "2026-11-20",
-  "reference_main_sha": "be9a850ff14a938ec3d349a3e8cabe1b2e1b300a",
-  "now_id": "DP-M2-TBL-02L",
+  "reference_main_sha": "89089548e8e9926fa3237343124721a18265115f",
+  "now_id": "DP-M2-TBL-02M",
   "next_ids": [
     "DP-M2-TBL-02B",
     "DP-SEC-01",
@@ -174,8 +174,16 @@
     {
       "id": "DP-M2-TBL-02L",
       "title": "Headerless final-column deletion history regression",
+      "status": "MERGED",
+      "summary": "PR #151 merged as 89089548 on 2026-11-20; headerless final-column deletion schema-v5 Unicode and undo/redo regression integrated; manual accessibility remains open.",
+      "pr": 151,
+      "sha": "89089548e8e9926fa3237343124721a18265115f"
+    },
+    {
+      "id": "DP-M2-TBL-02M",
+      "title": "Exact Unicode aggregate-budget row insertion history regression",
       "status": "IN_PROGRESS",
-      "summary": "Regression added for deleting last column from two-column headerless table; preserve Unicode, schema-v5 and undo/redo. CI and independent review pending."
+      "summary": "Test 20,000-code-point headerless table row insertion, schema-v5 history, immutability and rejection of over-budget replacement; exact-head CI pending."
     }
   ]
 }
