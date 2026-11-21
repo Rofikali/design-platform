@@ -2,7 +2,7 @@
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
   "snapshot_date": "2026-11-21",
-  "reference_main_sha": "d88455f600fd286b175462c8e384c9e7e3653b54",
+  "reference_main_sha": "8235c50b49d9831ac28c378940877f785d7d1a76",
   "now_id": "DP-M3-LAYERS-01",
   "next_ids": [
     "DP-M3-ALIGN-01",
@@ -201,9 +201,9 @@
       "feature_id": "DP-M3-LAYERS",
       "title": "Accessible element layering and ordering",
       "status": "PR_OPEN",
-      "summary": "PR #155 draft implements immutable adjacent layer reorder and boundary/schema-v5 unit tests; UI, history and export acceptance pending; local tests NOT RUN.",
-      "pr": 155,
-      "sha": "5a4f0df02c0fe3545e67d6e3bc0c368ddbb4bd04"
+      "summary": "PR #155 merged as 8235c50b on 2026-11-21 with immutable adjacent ordering and schema-v5 tests; PR #156 draft wires accessible selection and boundary-disabled reorder controls into Nuxt editor. Exact-head CI pending, local/manual tests NOT RUN; history/export and screen-reader acceptance pending.",
+      "pr": 156,
+      "sha": "63ee8d363bdabcf8d3384435b26672e895a3a71e"
     },
     {
       "id": "DP-M3-ALIGN-01",
@@ -237,7 +237,8 @@
         "title": "Layer order and selection",
         "state": "ACTIVE",
         "prs": [
-          155
+          155,
+          156
         ],
         "notes": "First post-policy feature; preserve stacking parity, history, local-only privacy and keyboard operability."
       },
