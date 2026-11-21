@@ -637,7 +637,7 @@ onMounted(async () => {
           <label class="field" for="layer-selection">Select layer
             <select id="layer-selection" :value="selectedId ?? ''" @change="selectedId = ($event.target as HTMLSelectElement).value || null">
               <option value="">No selection</option>
-              <option v-for="element in elements" :key="element.id" :value="element.id">{{ element.type }} · {{ element.id }}</option>
+              <option v-for="(element, index) in elements" :key="element.id" :value="element.id">{{ index + 1 }} of {{ elements.length }} ({{ index === 0 ? "backmost" : index === elements.length - 1 ? "frontmost" : "middle" }}) · {{ element.type }} · {{ element.id }}</option>
             </select>
           </label>
           <div class="history-actions">
