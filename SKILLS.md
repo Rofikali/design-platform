@@ -294,13 +294,13 @@ The owner enabled an independent ChatGPT task named **Design Platform Autopilot*
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-21)
 
-**Reference main:** e6fa7cf7cc8972be9224f448de58590db11057b8 (dated snapshot; re-check live GitHub before acting).
+**Reference main:** 1b2ddd759d6efd2d67ea70cc66a5b203a54768be (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M3-LAYERS-01 — Accessible element layering and ordering** [PR_OPEN]. [PR #157](https://github.com/Rofikali/design-platform/pull/157)
+**NOW:** **DP-M3-LAYERS-01 — Accessible element layering and ordering** [PR_OPEN]. [PR #159](https://github.com/Rofikali/design-platform/pull/159)
 
 **NEXT:** DP-M3-ALIGN-01 [PLANNED]; DP-M3-IMAGE-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
-**Feature budget:** DP-M3-LAYERS — 3/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
+**Feature budget:** DP-M3-LAYERS — 4/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
 
 **Review gate:** Owner-authorized autopilot may review and merge only after all exact-head/integration CI, security, branch protection and required independent-review gates pass. No automatic publishing or deployment.
 
