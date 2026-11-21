@@ -6,9 +6,9 @@
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-21)
 
-**Reference main:** 423028d15ff221d7505a408fbd8be73618617a2e (dated snapshot; re-check live GitHub before acting).
+**Reference main:** a26acfd2b7108d48a8d8bb7018da185ce315608b (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M3-ALIGN-01 — Basic alignment and optional snapping** [PR_OPEN]. [PR #160](https://github.com/Rofikali/design-platform/pull/160)
+**NOW:** **DP-M3-ALIGN-01 — Basic alignment and optional snapping** [READY]. [PR #160](https://github.com/Rofikali/design-platform/pull/160)
 
 **NEXT:** DP-M3-IMAGE-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
@@ -22,7 +22,7 @@
 
 ## Five-PR feature progression (owner rule, 2026-11-21)
 
-**Hard cap:** one feature ID gets no more than five opened feature PRs, including closed or failed attempts; changes within an existing PR do not cost additional slots. Read [feature delivery policy](feature-delivery-policy.md) and `feature_delivery` in the milestone record every run. Prefer the smallest actual customer-visible vertical slice and stop early if accepted. On the fifth PR, finish its gates, close as DONE/PARTIAL/BLOCKED with exact evidence and switch to next independent READY feature. Never open a sixth table regression PR; the historic table lane is CLOSED_LEGACY. **Current NOW is DP-M3-LAYERS-01.** Manual screen reader, physical print and owner-run Ubuntu/Compose remain NOT RUN until observed; do not block independent editor feature work on those checks or declare release-ready.
+**Hard cap:** one feature ID gets no more than five opened feature PRs, including closed or failed attempts; changes within an existing PR do not cost additional slots. Read [feature delivery policy](feature-delivery-policy.md) and `feature_delivery` in the milestone record every run. Prefer the smallest actual customer-visible vertical slice and stop early if accepted. On the fifth PR, finish its gates, close as DONE/PARTIAL/BLOCKED with exact evidence and switch to next independent READY feature. Never open a sixth table regression PR; the historic table lane is CLOSED_LEGACY. **Current NOW is DP-M3-ALIGN-01 (1/5; #160 MERGED); the next independent editor-control slice is READY.** Manual screen reader, physical print and owner-run Ubuntu/Compose remain NOT RUN until observed; do not block independent editor feature work on those checks or declare release-ready.
 
 ## What "go ahead" means — manually or on an hourly run
 

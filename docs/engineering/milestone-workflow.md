@@ -6,6 +6,8 @@
 
 From 2026-11-21, each newly started feature has one stable feature ID and **at most five opened PR attempts**. Record actual PR numbers in `feature_delivery.features[].prs` (including abandoned attempts), and never relabel the same feature to escape the cap. The generator rejects six or more PRs for any post-policy feature and rejects stale/mismatched active feature selection. After five PRs, document exact behavior implemented, CI/manual gaps, decisions/deferred work, move the active feature to CLOSED, and start another independent READY feature. The pre-policy semantic-tables iteration is recorded as CLOSED_LEGACY, exempt from retroactive rewriting but not eligible for more table-only PRs. See [feature delivery policy](feature-delivery-policy.md).
 
+**New CI guard:** `scripts/feature-pr-budget-check.mjs` verifies the PR body's stable Feature-ID and the **actual opened GitHub PR number** against the ledger on every pull_request. The JSON generator alone cannot enforce that cross-reference. Open the PR, register its real number in the same PR, regenerate seven docs and await its exact-head CI. A narrow governance-only diff exception requires `docs(governance):` title and independent review. Closed post-policy features must record an explicit DONE/PARTIAL/BLOCKED outcome in the structured source, and the agent must advance to a genuinely independent READY feature.
+
 ## Four-gate workflow
 
 1. **Milestone record updated:** Edit only [milestone-record.json](milestone-record.json) to change the current NOW/NEXT IDs, status, PR/issue links, observed full commit SHA and evidence summary. A dated snapshot is not a live GitHub feed. Check GitHub before changing MERGED/PR_OPEN.

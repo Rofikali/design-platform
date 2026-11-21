@@ -2,7 +2,7 @@
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
   "snapshot_date": "2026-11-21",
-  "reference_main_sha": "423028d15ff221d7505a408fbd8be73618617a2e",
+  "reference_main_sha": "a26acfd2b7108d48a8d8bb7018da185ce315608b",
   "now_id": "DP-M3-ALIGN-01",
   "next_ids": [
     "DP-M3-IMAGE-01",
@@ -209,10 +209,10 @@
       "id": "DP-M3-ALIGN-01",
       "feature_id": "DP-M3-ALIGN",
       "title": "Basic alignment and optional snapping",
-      "status": "PR_OPEN",
-      "summary": "PR #160 adds immutable page-alignment geometry and tests; editor wiring and snapping partial, CI/manual checks NOT RUN.",
+      "status": "READY",
+      "summary": "PR #160 merged as a26acfd2 on 2026-11-21: immutable alignment geometry and unit tests. Editor controls/snapping remain READY; owner-run Ubuntu/Compose, screen reader and physical print NOT RUN by this governance review.",
       "pr": 160,
-      "sha": "a3323995e77e3cdcea0714518ad6d386cd1b415a"
+      "sha": "a26acfd2b7108d48a8d8bb7018da185ce315608b"
     },
     {
       "id": "DP-M3-IMAGE-01",
@@ -244,7 +244,8 @@
           157,
           159
         ],
-        "notes": "Four merged PRs #155 #156 #157 #159; remaining browser acceptance tracked in issue #158; manual #82/#85 and native Compose NOT RUN."
+        "notes": "Four merged PRs #155 #156 #157 #159; remaining browser acceptance tracked in issue #158; manual #82/#85 and native Compose NOT RUN.",
+        "outcome": "PARTIAL"
       },
       {
         "id": "DP-M3-ALIGN",
@@ -253,7 +254,7 @@
         "prs": [
           160
         ],
-        "notes": "First PR covers pure alignment geometry; editor controls and snapping remain."
+        "notes": "PR #160 MERGED as a26acfd2; next READY slice: bounded keyboard-accessible editor alignment and optional snapping. CI/manual environment/security acceptance is separate."
       },
       {
         "id": "DP-M3-IMAGE",

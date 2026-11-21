@@ -7,9 +7,9 @@
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-21)
 
-**Reference main:** 423028d15ff221d7505a408fbd8be73618617a2e (dated snapshot; re-check live GitHub before acting).
+**Reference main:** a26acfd2b7108d48a8d8bb7018da185ce315608b (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M3-ALIGN-01 — Basic alignment and optional snapping** [PR_OPEN]. [PR #160](https://github.com/Rofikali/design-platform/pull/160)
+**NOW:** **DP-M3-ALIGN-01 — Basic alignment and optional snapping** [READY]. [PR #160](https://github.com/Rofikali/design-platform/pull/160)
 
 **NEXT:** DP-M3-IMAGE-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
@@ -19,9 +19,13 @@
 
 <!-- milestone-sync:end -->
 
+## Five-attempt PR identity and handoff enforcement
+
+Before opening a feature PR, reconcile live GitHub history with `docs/engineering/milestone-record.json > feature_delivery`. Every feature PR body requires exactly one `Feature-ID: <ACTIVE-ID>` line. Once GitHub assigns the PR number, register the **actual** number under that feature in the same PR and regenerate all seven milestone sections. The CI job runs `scripts/feature-pr-budget-check.mjs` and its tests: missing/incorrect feature IDs, absent PR numbers, closed-feature continuations and a sixth attempt are rejected. A `GOVERNANCE-EXEMPT` PR must use a `docs(governance):` title, modify only the strict governance-doc/CI/test allowlist, and receive appropriate review. Product changes never qualify. Close a finished feature with an explicit DONE/PARTIAL/BLOCKED outcome and advance to another independent READY feature; after two no-material-change attempts on the same blocker, escalate and switch lanes. GitHub state, not dated Markdown, controls exact SHAs/merge evidence.
+
 ## Feature-delivery gate: five PRs maximum (effective 2026-11-21)
 
-The current feature is **element layers and ordering**, not more table-only regression iterations. The [feature delivery policy](docs/engineering/feature-delivery-policy.md) defines the hard **five-PR cap per feature**, outcome-based completion, bounded acceptance and next-feature handoff. Each PR must record its feature ID and count against the same five slots, including failed/closed feature attempts; never reset the count by renaming submilestones. A security P0 fix must be handled in its own tracked remediation lane, not hidden as a sixth feature PR.
+The current feature is **DP-M3-ALIGN (1/5; PR #160 merged)**, not endless table or layer regressions. The [feature delivery policy](docs/engineering/feature-delivery-policy.md) defines the hard **five-PR cap per feature**, outcome-based completion, bounded acceptance and next-feature handoff. Each PR must record its feature ID and count against the same five slots, including failed/closed feature attempts; never reset the count by renaming submilestones. A security P0 fix must be handled in its own tracked remediation lane, not hidden as a sixth feature PR.
 
 The table feature's earlier iterations predate this rule and are explicitly closed to new feature-scope PRs. Merged code ≠ CI proof ≠ manually tested ≠ released. Manual Ubuntu/Docker Compose, screen-reader and physical printer evidence remain **NOT RUN** until observed; do not stall independent READY features because those manual gates have not been exercised.
 

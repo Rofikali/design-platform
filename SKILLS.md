@@ -1,5 +1,7 @@
 # Engineering Skills and Playbooks
 
+**PR enforcement:** Use one PR-body `Feature-ID: <ACTIVE-ID>` line, record GitHub's actual PR number in the milestone record, and regenerate seven sections in the same implementation PR. CI verifies the linkage; governance-only exemptions must be diff-limited and independently reviewed. For CLOSED features, record explicit DONE/PARTIAL/BLOCKED outcome.
+
 **Feature execution rule (2026-11-21):** Follow [feature-delivery-policy.md](docs/engineering/feature-delivery-policy.md). Maximum **five PRs per feature**, count abandoned feature PR attempts, and after the budget is used close as DONE/PARTIAL/BLOCKED and advance to a different READY feature. Evidence labels are separate: merged source, exact-head CI, local Ubuntu/Docker Compose, manual accessibility, print, and release. Do not repeat table-only tests while the new layers feature is NOW.
 
 This file is the practical companion to `AGENTS.md`. It describes how an agent should apply professional engineering, security, architecture, product, and management skills to this repository.
@@ -294,9 +296,9 @@ The owner enabled an independent ChatGPT task named **Design Platform Autopilot*
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-21)
 
-**Reference main:** 423028d15ff221d7505a408fbd8be73618617a2e (dated snapshot; re-check live GitHub before acting).
+**Reference main:** a26acfd2b7108d48a8d8bb7018da185ce315608b (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M3-ALIGN-01 — Basic alignment and optional snapping** [PR_OPEN]. [PR #160](https://github.com/Rofikali/design-platform/pull/160)
+**NOW:** **DP-M3-ALIGN-01 — Basic alignment and optional snapping** [READY]. [PR #160](https://github.com/Rofikali/design-platform/pull/160)
 
 **NEXT:** DP-M3-IMAGE-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
