@@ -2,7 +2,7 @@
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
   "snapshot_date": "2026-11-21",
-  "reference_main_sha": "535cd059429d814fac0cfa200d33f0fa9d7064e9",
+  "reference_main_sha": "d88455f600fd286b175462c8e384c9e7e3653b54",
   "now_id": "DP-M3-LAYERS-01",
   "next_ids": [
     "DP-M3-ALIGN-01",
@@ -200,8 +200,10 @@
       "id": "DP-M3-LAYERS-01",
       "feature_id": "DP-M3-LAYERS",
       "title": "Accessible element layering and ordering",
-      "status": "READY",
-      "summary": "Next independent feature: bounded move-forward/back operations, named layer list, keyboard controls, undo/redo, JSON and PNG/print stacking tests. Zero PRs yet; no user-environment acceptance claim."
+      "status": "PR_OPEN",
+      "summary": "PR #155 draft implements immutable adjacent layer reorder and boundary/schema-v5 unit tests; UI, history and export acceptance pending; local tests NOT RUN.",
+      "pr": 155,
+      "sha": "5a4f0df02c0fe3545e67d6e3bc0c368ddbb4bd04"
     },
     {
       "id": "DP-M3-ALIGN-01",
@@ -234,7 +236,9 @@
         "id": "DP-M3-LAYERS",
         "title": "Layer order and selection",
         "state": "ACTIVE",
-        "prs": [],
+        "prs": [
+          155
+        ],
         "notes": "First post-policy feature; preserve stacking parity, history, local-only privacy and keyboard operability."
       },
       {

@@ -8,13 +8,13 @@
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-21)
 
-**Reference main:** 535cd059429d814fac0cfa200d33f0fa9d7064e9 (dated snapshot; re-check live GitHub before acting).
+**Reference main:** d88455f600fd286b175462c8e384c9e7e3653b54 (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M3-LAYERS-01 — Accessible element layering and ordering** [READY].
+**NOW:** **DP-M3-LAYERS-01 — Accessible element layering and ordering** [PR_OPEN]. [PR #155](https://github.com/Rofikali/design-platform/pull/155)
 
 **NEXT:** DP-M3-ALIGN-01 [PLANNED]; DP-M3-IMAGE-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
-**Feature budget:** DP-M3-LAYERS — 0/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
+**Feature budget:** DP-M3-LAYERS — 1/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
 
 **Review gate:** Owner-authorized autopilot may review and merge only after all exact-head/integration CI, security, branch protection and required independent-review gates pass. No automatic publishing or deployment.
 
@@ -43,7 +43,7 @@
 | DP-M2-TBL-02L — Headerless final-column deletion history regression | MERGED | [PR #151](https://github.com/Rofikali/design-platform/pull/151) | PR #151 merged as 89089548 on 2026-11-20; headerless final-column deletion schema-v5 Unicode and undo/redo regression integrated; manual accessibility remains open. |
 | DP-M2-TBL-02M — Exact Unicode aggregate-budget row insertion history regression | MERGED | [PR #152](https://github.com/Rofikali/design-platform/pull/152) | PR #152 merged as 6be18e92 on 2026-11-21; Unicode aggregate-budget row/column insertion, deletion recovery and schema-v5 history regressions integrated; manual accessibility remains open. |
 | DP-M2-TBL-02N — Column deletion Unicode budget recovery history regression | MERGED | [PR #153](https://github.com/Rofikali/design-platform/pull/153) | PR #153 merged as 535cd059 on 2026-11-21. Column removal recovers Unicode aggregate budget; code/history regression integrated. Manual user, native Ubuntu Compose and physical print NOT RUN. |
-| DP-M3-LAYERS-01 — Accessible element layering and ordering | READY | — | Next independent feature: bounded move-forward/back operations, named layer list, keyboard controls, undo/redo, JSON and PNG/print stacking tests. Zero PRs yet; no user-environment acceptance claim. |
+| DP-M3-LAYERS-01 — Accessible element layering and ordering | PR_OPEN | [PR #155](https://github.com/Rofikali/design-platform/pull/155) | PR #155 draft implements immutable adjacent layer reorder and boundary/schema-v5 unit tests; UI, history and export acceptance pending; local tests NOT RUN. |
 | DP-M3-ALIGN-01 — Basic alignment and optional snapping | PLANNED | — | After layer feature exits, implement bounded alignment/snapping for text, shapes, frames, grids and tables without breaking saved geometry; no more than five PRs. |
 | DP-M3-IMAGE-01 — Foreground image element authoring | PLANNED | — | After alignment, plan bounded movable image elements, resource limits, history, import/export and accessible controls; distinct from existing page background images. |
 
