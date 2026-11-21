@@ -4,11 +4,11 @@
 
 <!-- milestone-sync:start -->
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
-### Milestone snapshot (generated: 2026-11-20)
+### Milestone snapshot (generated: 2026-11-21)
 
-**Reference main:** 89089548e8e9926fa3237343124721a18265115f (dated snapshot; re-check live GitHub before acting).
+**Reference main:** 6be18e9280b5380e76627805f38431c0c89951fc (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M2-TBL-02M — Exact Unicode aggregate-budget row insertion history regression** [IN_PROGRESS].
+**NOW:** **DP-M2-TBL-02N — Column deletion Unicode budget recovery history regression** [IN_PROGRESS].
 
 **NEXT:** DP-M2-TBL-02B [IN_PROGRESS]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
@@ -37,7 +37,8 @@
 | DP-M2-TBL-02J — Maximum-height final-row deletion history regression | MERGED | [PR #149](https://github.com/Rofikali/design-platform/pull/149) | PR #149 merged as bd11eee6 on 2026-11-20; maximum-height final-row deletion, Unicode/schema-v5 history regression integrated; manual accessibility remains open. |
 | DP-M2-TBL-02K — Headerless first-column insertion history regression | MERGED | [PR #150](https://github.com/Rofikali/design-platform/pull/150) | PR #150 merged as be9a850f on 2026-11-20; headerless first-column insertion schema-v5 Unicode and undo/redo regression integrated; manual accessibility remains open. |
 | DP-M2-TBL-02L — Headerless final-column deletion history regression | MERGED | [PR #151](https://github.com/Rofikali/design-platform/pull/151) | PR #151 merged as 89089548 on 2026-11-20; headerless final-column deletion schema-v5 Unicode and undo/redo regression integrated; manual accessibility remains open. |
-| DP-M2-TBL-02M — Exact Unicode aggregate-budget row insertion history regression | IN_PROGRESS | — | Test 20,000-code-point headerless table row insertion, schema-v5 history, immutability and rejection of over-budget replacement; exact-head CI pending. |
+| DP-M2-TBL-02M — Exact Unicode aggregate-budget row insertion history regression | MERGED | [PR #152](https://github.com/Rofikali/design-platform/pull/152) | PR #152 merged as 6be18e92 on 2026-11-21; Unicode aggregate-budget row/column insertion, deletion recovery and schema-v5 history regressions integrated; manual accessibility remains open. |
+| DP-M2-TBL-02N — Column deletion Unicode budget recovery history regression | IN_PROGRESS | — | Verify 20,000-code-point headerless table column deletion reclaims text budget, preserves immutable source and schema-v5 undo/redo; exact-head CI pending. |
 
 <!-- milestone-sync:end -->
 
