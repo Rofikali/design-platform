@@ -2,6 +2,10 @@
 
 **Status:** Source-informed architecture map and proposed evolution points. This document is not proof that all diagram boxes are implemented. Read [system overview](system-overview.md), [MVP](../product/mvp.md), [semantic-table contract](../product/semantic-tables-milestone.md) and [ADRs](../adr/ADR-0001-architecture.md).
 
+## Proposed advanced-feature evolution (not implemented)
+
+The [owner's advanced feature roadmap](../product/advanced-feature-roadmap.md) and [L1–L7/security/business acceptance matrix](../engineering/advanced-feature-acceptance.md) require *additive* modules for typography, vector shapes, guides, local assets, multi-page exams, shop banners and PDF. Current architecture remains Nuxt/Vue/TypeScript + Rust/WASM validation; do not replace existing document history, canvas, v1–v5 migration, PNG or browser print. A new foreground image variant requires a reviewed **new schema version when necessary** and matching Rust/TypeScript validation, current document backward compatibility, local save/reopen and export tests. Old designs and default tools must behave as before. Treat any future backend as a separate approved product decision.
+
 ## 1. Observed implementation and boundaries
 
 | Component | Existing role | Contract/risk |
