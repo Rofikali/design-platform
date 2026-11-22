@@ -18,6 +18,12 @@ The current prototype includes:
 - CI checks for Rust formatting/tests/Clippy, frontend type-check/tests, browser smoke tests, and the production build.
 - A Docker-based frontend development path and a multi-stage frontend image.
 
+## Advanced future features (owner roadmap, 22 November 2026)
+
+The existing editor, text/shapes, frames/grids/tables, layers and snapping, page image backgrounds, undo/redo, localStorage, v1–v5 JSON compatibility, PNG and browser print **must keep working**. The [advanced editor feature roadmap](docs/product/advanced-feature-roadmap.md) records proposed typography, vector shapes, guides/rulers, object tools, multi-page exam papers, shop banner studio, local assets, templates, print preflight and optional direct PDF. The [advanced feature acceptance matrix](docs/engineering/advanced-feature-acceptance.md) adds L1–L7 architecture, CISSP/security, Linux/SRE, proportionate networking, CA/MBA and management evidence gates. Proposed does **not** mean implemented or release-approved.
+
+**Current source-backed milestone:** DP-M3-IMAGE remains ACTIVE at 1/5 PRs; [PR #165](https://github.com/Rofikali/design-platform/pull/165) is MERGED with only foreground raster data URL validation. Full editable foreground image objects are still missing. Future candidates stay PLANNED/BLOCKED until this feature exits and the live [milestone record](docs/engineering/milestone-record.json) promotes one new active feature. No SaaS/backend or unapproved paid deployment is implied.
+
 ## Five-attempt feature governance
 
 A feature is one stable user outcome with up to **five opened PR attempts**, counting failed, abandoned, closed and merged PRs. Updates to the same PR consume no extra slot. Each implementation PR must declare its active `Feature-ID` and register the actual GitHub PR number in the [milestone record](docs/engineering/milestone-record.json). [CI](.github/workflows/ci.yml) verifies it, and the seven-section documentation generator keeps the living board consistent. After accepted completion or five PRs, close as DONE/PARTIAL/BLOCKED, record evidence and move to the next independent READY feature. See [the policy](docs/engineering/feature-delivery-policy.md). Security, manual accessibility, physical printing, local Compose and release approvals remain separate gates.
@@ -44,7 +50,7 @@ For detailed CI and status decisions, see [the milestone workflow](docs/engineer
 
 ## Evidence and feature progression (2026-11-21)
 
-The next feature is **accessible element ordering/layers**. The [five-PR delivery policy](docs/engineering/feature-delivery-policy.md) records per-feature PR budgets, completed software versus remaining acceptance, and the next lane. The old table iteration loop is closed; manual accessibility and print gates remain open. GitHub CI has run in hosted Ubuntu and includes a production Docker **image build**; this does not establish a user's local Ubuntu/Docker Compose run, physical printer output, manual screen-reader behavior or a production release.
+**Historical 2026-11-21 checkpoint:** accessible Layers work was the next feature at that time; current Layers and Alignment have since been closed PARTIAL, and PR #165's resource-guard scope merged. Use the generated NOW block above, not this earlier snapshot, for today's active feature. The [five-PR delivery policy](docs/engineering/feature-delivery-policy.md) records per-feature PR budgets, completed software versus remaining acceptance, and the next lane. The old table iteration loop is closed; manual accessibility and print gates remain open. GitHub CI has run in hosted Ubuntu and includes a production Docker **image build**; this does not establish a user's local Ubuntu/Docker Compose run, physical printer output, manual screen-reader behavior or a production release.
 
 ## Current limitations
 
