@@ -1,6 +1,6 @@
 # Design Platform — LIVE Work Board and Master Roadmap
 
-> **Live-board snapshot:** Reconciled 2026-11-21 against GitHub; main `a26acfd2b7108d48a8d8bb7018da185ce315608b` after merge of PR #160. Alignment stays ACTIVE (1/5); editor controls/snapping remain READY. The snapshot is **dated**, not a live-updating dashboard. Re-fetch main/PRs/checks before executing or declaring completion.
+> **Live-board snapshot (2026-11-22, source-verified):** GitHub main `222e550e31e859b2b8e06538f27d07f424a88e19` includes merged PR #165, which adds only foreground image resource validation. DP-M3-IMAGE remains ACTIVE (1/5) with full editor/model/export work outstanding; **not** PR_OPEN. This date is not a live GitHub feed. Review current PRs and exact-head checks before any task.
 >
 > **Source discipline:** This board adopts the **NOW / NEXT / LATER**, evidence, priority and agent continuation pattern in `Rofikali/imgengine/next.md`, not its IMGENGINE C17, FFI, VPS or five image tools. Code/tests and GitHub state override stale descriptions.
 >
@@ -70,15 +70,15 @@
 
 <!-- milestone-sync:end -->
 
-### Active feature delivery lane — not generated
+### Historical feature-delivery snapshot — superseded, NOT a live task selector
 
-**NOW: DP-M3-LAYERS-01 — accessible element ordering and a Layers panel.** The feature has **0 of 5 PRs** consumed as of this snapshot, with first implementation PR still to be created. The first bounded change is an immutable array-order command with tests; later PRs may add keyboard controls, history/JSON parity and overlapping export regression. Do not implement unrelated tools or a broad editor rewrite. See [feature-delivery-policy.md](docs/engineering/feature-delivery-policy.md).
+**Historical NOW on 2026-11-21: DP-M3-LAYERS-01** (since CLOSED/PARTIAL after four merged PRs; no new Layers feature work authorized by this paragraph). The feature had **0 of 5 PRs** at that old snapshot, with first implementation PR still to be created. The first bounded change is an immutable array-order command with tests; later PRs may add keyboard controls, history/JSON parity and overlapping export regression. Do not implement unrelated tools or a broad editor rewrite. See [feature-delivery-policy.md](docs/engineering/feature-delivery-policy.md).
 
 **Table exit:** Schema-v5 table core, cell editing, row/column commands and Unicode/history regressions through #153 are merged. The feature is **engineering-implemented** and **closed to further table-only PR iterations**, **not** fully user-accepted or released. Manual screen-reader/table usability remains [#82](https://github.com/Rofikali/design-platform/issues/82); physical printer/PDF fidelity remains [#85](https://github.com/Rofikali/design-platform/issues/85). On real Ubuntu/Docker Compose: **NOT RUN by owner**, despite passing hosted CI/Docker image builds. Security release acceptance remains [#118](https://github.com/Rofikali/design-platform/issues/118).
 
 **Five-PR gate:** For every post-policy feature, count all opened PR attempts (including abandoned), one shared feature ID, no more than five. Close as DONE/PARTIAL/BLOCKED with evidence and deferred gaps, then advance to the next independent feature. Critical security repairs use a separate tracked remediation lane; do not hide a sixth feature PR in it.
 
-**Feature order:** LAYERS (NOW) → ALIGNMENT/SNAPPING (NEXT) → FOREGROUND IMAGE ELEMENTS (LATER) → TYPOGRAPHY/TEMPLATES after acceptance prioritization. Existing blocked manual/release gates remain open and cannot be represented as complete.
+**Historical feature order (superseded):** LAYERS → ALIGNMENT/SNAPPING → FOREGROUND IMAGE ELEMENTS → TYPOGRAPHY/TEMPLATES. **Current:** DP-M3-IMAGE ACTIVE; future independent candidates are defined in the [advanced roadmap](docs/product/advanced-feature-roadmap.md) and live milestone record. Existing blocked manual/release gates remain open and cannot be represented as complete.
 
 ### Historical parallel review lanes — recheck live GitHub (not generated)
 
@@ -119,6 +119,10 @@
 ### LATER / DEFERRED — do not silently start
 
 Account sync, collaboration, a multi-tenant SaaS, paid subscriptions, metered API, desktop, marketplace and mobile apps are **proposals**. Audio, video, animation and unrelated spreadsheet functionality are **out of initial scope**. No price, cloud bill, domain purchase, new database or launch is authorized by this board.
+
+## Owner-approved future jobs — proposals, not parallel execution
+
+The [advanced feature roadmap](docs/product/advanced-feature-roadmap.md) and [advanced feature acceptance matrix](docs/engineering/advanced-feature-acceptance.md) now define the next distinct feature families: **foreground images (ACTIVE) → typography → vector shapes → optional precision guides and object tools → multi-page exam papers and question blocks → shop banner studio → local asset/template components → print preflight and optional direct PDF → release and business validation**. Detailed planning entries are in the generated milestone table above, but only `DP-M3-IMAGE-01` is NOW. `PLANNED` means **not started**; no change to current features or runtime. Security #118, manual accessibility #82 and printer #85 remain separate release gates. Preserve the five-opened-PR ceiling and doc generator transaction in the next substantive PR.
 
 ## Permanent status rules: "go ahead" and milestone reconciliation
 
