@@ -8,13 +8,13 @@
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-22)
 
-**Reference main:** e3e848b4baf7750431a0e23edcc5fe108dac327b (dated snapshot; re-check live GitHub before acting).
+**Reference main:** 2a4dcd622620574bedba2397c0b0e7239c51ccc1 (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M3-ALIGN-01 — Basic alignment and optional snapping** [PR_OPEN]. [PR #163](https://github.com/Rofikali/design-platform/pull/163)
+**NOW:** **DP-M3-ALIGN-01 — Basic alignment and optional snapping** [PR_OPEN]. [PR #164](https://github.com/Rofikali/design-platform/pull/164)
 
 **NEXT:** DP-M3-IMAGE-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
-**Feature budget:** DP-M3-ALIGN — 3/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
+**Feature budget:** DP-M3-ALIGN — 4/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
 
 **Review gate:** Owner-authorized autopilot may review and merge only after all exact-head/integration CI, security, branch protection and required independent-review gates pass. No automatic publishing or deployment.
 
@@ -44,7 +44,7 @@
 | DP-M2-TBL-02M — Exact Unicode aggregate-budget row insertion history regression | MERGED | [PR #152](https://github.com/Rofikali/design-platform/pull/152) | PR #152 merged as 6be18e92 on 2026-11-21; Unicode aggregate-budget row/column insertion, deletion recovery and schema-v5 history regressions integrated; manual accessibility remains open. |
 | DP-M2-TBL-02N — Column deletion Unicode budget recovery history regression | MERGED | [PR #153](https://github.com/Rofikali/design-platform/pull/153) | PR #153 merged as 535cd059 on 2026-11-21. Column removal recovers Unicode aggregate budget; code/history regression integrated. Manual user, native Ubuntu Compose and physical print NOT RUN. |
 | DP-M3-LAYERS-01 — Accessible element layering and ordering | DEFERRED | [PR #159](https://github.com/Rofikali/design-platform/pull/159) [Issue #158](https://github.com/Rofikali/design-platform/issues/158) | Four Layers PRs merged with CI evidence; browser stacking, keyboard and export acceptance remains partial in issue #158. Manual #82/#85 and native Ubuntu Compose NOT RUN. |
-| DP-M3-ALIGN-01 — Basic alignment and optional snapping | PR_OPEN | [PR #163](https://github.com/Rofikali/design-platform/pull/163) | PRs #160 and #162 merged; #163 draft adds immutable optional snapping geometry and unit regressions, not yet wired to editor controls. Exact-head CI pending; manual #82/#85 and Ubuntu Compose NOT RUN; security #118 OPEN. |
+| DP-M3-ALIGN-01 — Basic alignment and optional snapping | PR_OPEN | [PR #164](https://github.com/Rofikali/design-platform/pull/164) | PRs #160, #162, #163 merged; #164 draft wires opt-in snapping into editor pointer drag with focused unit regressions. Exact-head CI, dependency audit, browser checks and independent review NOT VERIFIED; local generator, Ubuntu Compose, manual #82/#85 NOT RUN; security #118 OPEN. |
 | DP-M3-IMAGE-01 — Foreground image element authoring | PLANNED | — | After alignment, plan bounded movable image elements, resource limits, history, import/export and accessible controls; distinct from existing page background images. |
 
 <!-- milestone-sync:end -->
