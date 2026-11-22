@@ -8,7 +8,7 @@ const headers = {
 } as const;
 
 function resource(mime: keyof typeof headers, bytes: readonly number[] = headers[mime]): string {
-  return `data:image/${mime};base64,${Buffer.from(bytes).toString("base64")}`;
+  return `data:image/${mime};base64,${btoa(String.fromCharCode(...bytes))}`;
 }
 
 describe("foreground raster resource guard", () => {
@@ -43,9 +43,8 @@ describe("foreground raster resource guard", () => {
   it("enforces the encoded byte budget at the boundary", () => {
     const prefix = "data:image/png;base64,";
     const encodedLength = Math.floor((MAX_FOREGROUND_IMAGE_DATA_URL_BYTES - prefix.length) / 4) * 4;
-    const bytes = Buffer.alloc(encodedLength / 4 * 3);
-    Buffer.from(headers.png).copy(bytes);
-    const allowed = prefix + bytes.toString("base64");
+    const signature = btoa(String.fromCharCode(...headers.png));
+    const allowed = prefix + signature + "A".repeat(encodedLength - signature.length);
     expect(validateForegroundImageDataUrl(allowed)).toBe(allowed);
     expect(() => validateForegroundImageDataUrl(allowed + "AAAA")).toThrow(RangeError);
   });
