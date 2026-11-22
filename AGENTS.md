@@ -5,15 +5,15 @@
 
 <!-- milestone-sync:start -->
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
-### Milestone snapshot (generated: 2026-11-21)
+### Milestone snapshot (generated: 2026-11-22)
 
-**Reference main:** a26acfd2b7108d48a8d8bb7018da185ce315608b (dated snapshot; re-check live GitHub before acting).
+**Reference main:** a4cd88eba5a475601a70c6a3b6a393c560273f23 (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M3-ALIGN-01 — Basic alignment and optional snapping** [READY]. [PR #160](https://github.com/Rofikali/design-platform/pull/160)
+**NOW:** **DP-M3-ALIGN-01 — Basic alignment and optional snapping** [PR_OPEN]. [PR #162](https://github.com/Rofikali/design-platform/pull/162)
 
 **NEXT:** DP-M3-IMAGE-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
-**Feature budget:** DP-M3-ALIGN — 1/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
+**Feature budget:** DP-M3-ALIGN — 2/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
 
 **Review gate:** Owner-authorized autopilot may review and merge only after all exact-head/integration CI, security, branch protection and required independent-review gates pass. No automatic publishing or deployment.
 
