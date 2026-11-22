@@ -2,9 +2,12 @@
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
   "snapshot_date": "2026-11-22",
-  "reference_main_sha": "4cd009e0d0981eb16581998158db9ae068ea8665",
+  "reference_main_sha": "222e550e31e859b2b8e06538f27d07f424a88e19",
   "now_id": "DP-M3-IMAGE-01",
   "next_ids": [
+    "DP-M3-TYPO-01",
+    "DP-M3-VECTOR-01",
+    "DP-M3-PRECISION-01",
     "DP-SEC-01",
     "DP-M1-ACC-02",
     "DP-M1-BG-09"
@@ -217,10 +220,101 @@
       "id": "DP-M3-IMAGE-01",
       "feature_id": "DP-M3-IMAGE",
       "title": "Foreground image element authoring",
-      "status": "PR_OPEN",
-      "summary": "PR #165 introduces bounded local embedded raster data URL validation and canonical base64 tests. Foreground editor integration, image decoding, history, PNG/print acceptance NOT IMPLEMENTED; exact-head CI/security and independent review PENDING; manual #82/#85 NOT RUN.",
+      "status": "IN_PROGRESS",
+      "summary": "PR #165 MERGED at 222e550e31e859b2b8e06538f27d07f424a88e19: bounded embedded raster data URL format/size/Base64 guards only; foreground schema, draggable editor integration, undo, PNG/print remain unimplemented. Exact PR-head CI/audit/cross-browser PASS; local/manual NOT RUN.",
       "pr": 165,
-      "sha": "1e5b43fa7bb5113571eaafb5a52d9107b2c4f870"
+      "sha": "222e550e31e859b2b8e06538f27d07f424a88e19"
+    },
+    {
+      "id": "DP-M3-TYPO-01",
+      "feature_id": "DP-M3-TYPO",
+      "title": "Advanced typography and multilingual font handling",
+      "status": "PLANNED",
+      "summary": "Add reviewed font family/weight/style, spacing, alignment and locale fallback; preserve current text defaults, schema, browser PNG and print. Requires closed Image feature and font/license tests."
+    },
+    {
+      "id": "DP-M3-VECTOR-01",
+      "feature_id": "DP-M3-VECTOR",
+      "title": "Bounded vector shape library",
+      "status": "PLANNED",
+      "summary": "Add ellipses, lines, arrows, triangles, stars, rounded shapes and polygons as typed elements with bounded geometry, keyboard/history/PNG/print parity; never accept unsafe SVG."
+    },
+    {
+      "id": "DP-M3-PRECISION-01",
+      "feature_id": "DP-M3-PRECISION",
+      "title": "Optional guides rulers and precision layout",
+      "status": "PLANNED",
+      "summary": "Opt-in rulers, guide lines, margins, safe-area overlays and spacing measurement without changing established alignment/snapping or default exports."
+    },
+    {
+      "id": "DP-M3-OBJECT-01",
+      "feature_id": "DP-M3-OBJECT",
+      "title": "Optional object grouping locking rotation and styles",
+      "status": "PLANNED",
+      "summary": "Future grouped transforms, lock, flip, rotation, opacity and fills; require bounded schema, accessibility, selection/history and output parity; no bulk editor rewrite."
+    },
+    {
+      "id": "DP-M4-EXAM-PAGES-01",
+      "feature_id": "DP-M4-EXAM-PAGES",
+      "title": "Multi-page exam documents and print pagination",
+      "status": "PLANNED",
+      "summary": "Design and test a versioned multi-page model, A4 pagination, headers, footers and page numbers with compatibility to v1-v5; manual physical print remains an external release gate."
+    },
+    {
+      "id": "DP-M4-EXAM-TOOLS-01",
+      "feature_id": "DP-M4-EXAM-TOOLS",
+      "title": "Structured exam question and marks components",
+      "status": "PLANNED",
+      "summary": "Candidate sections, numbering, reusable questions, marks and bounded math typography after multi-page schema acceptance; keep existing templates unchanged."
+    },
+    {
+      "id": "DP-M4-BANNER-01",
+      "feature_id": "DP-M4-BANNER",
+      "title": "Professional shop banner preset and price components",
+      "status": "PLANNED",
+      "summary": "Candidate print dimension presets, reusable price cards, editable brand blocks and opt-in user-supplied QR data; depend on image/typography and print validation."
+    },
+    {
+      "id": "DP-M4-ASSETS-01",
+      "feature_id": "DP-M4-ASSETS",
+      "title": "Offline local assets and brand kit",
+      "status": "PLANNED",
+      "summary": "Optional local raster assets and palette library with consent, quotas, license/ownership and backup policy; never silently migrate or delete existing localStorage."
+    },
+    {
+      "id": "DP-M4-TEMPLATES-01",
+      "feature_id": "DP-M4-TEMPLATES",
+      "title": "Reusable template blocks and variables",
+      "status": "PLANNED",
+      "summary": "Curated exam/shop editable blocks and bounded template variable substitution; retain existing starter templates and portable JSON without remote fetches."
+    },
+    {
+      "id": "DP-M4-PRINT-01",
+      "feature_id": "DP-M4-PRINT",
+      "title": "Preflight print and raster quality diagnostics",
+      "status": "PLANNED",
+      "summary": "Candidate warnings for clipping, page dimensions, margins, crop/bleed, effective DPI and fonts; physical printer issue #85 must be manually accepted before release."
+    },
+    {
+      "id": "DP-M4-PDF-01",
+      "feature_id": "DP-M4-PDF",
+      "title": "Direct downloadable PDF output",
+      "status": "PLANNED",
+      "summary": "Add direct browser-local PDF as an optional path alongside existing print-dialog PDF, with license/font/page-size/fidelity tests; no automatic server infrastructure."
+    },
+    {
+      "id": "DP-M5-RELEASE-01",
+      "feature_id": "DP-M5-RELEASE",
+      "title": "Security accessibility and print release acceptance",
+      "status": "BLOCKED",
+      "summary": "Release remains blocked pending actual picomatch advisory exposure review #118, manual assistive technology #82, physical print #85, Docker Compose and owner release signoff."
+    },
+    {
+      "id": "DP-M5-BIZ-01",
+      "feature_id": "DP-M5-BIZ",
+      "title": "User research product support and finance validation",
+      "status": "PLANNED",
+      "summary": "Interview teachers and shops, measure first useful export, failures and repeat use; evaluate support costs, licensing and privacy before optional paid/cloud offering."
     }
   ],
   "feature_delivery": {
@@ -268,7 +362,98 @@
         "prs": [
           165
         ],
-        "notes": "First feature PR #165 OPEN; resource format/size and canonical base64 guard only. Image authoring, decoding, history, export and manual acceptance remain future scope."
+        "notes": "PR #165 MERGED at 222e550e31e859b2b8e06538f27d07f424a88e19, exact head e73593fef69a3df12f587598c8c7f192d539ef7a: resource data URL guard and Vitest tests only (1/5). Foreground image element authoring, decoding/identity, editor/history/JSON/PNG/print remain future. CI/audit/cross-browser PR-head success; owner-run Docker Compose, physical print and manual a11y NOT RUN, issue #118 still open. Continue feature in SAME ID; max 4 more PRs."
+      },
+      {
+        "id": "DP-M3-TYPO",
+        "title": "Advanced typography and multilingual font handling",
+        "state": "PLANNED",
+        "prs": [],
+        "notes": "Candidate only; NOT STARTED, 0/5 opened feature PRs. Requires closure of current ACTIVE image feature, scoped acceptance, documented dependencies and live GitHub/owner review. See docs/product/advanced-feature-roadmap.md and docs/engineering/advanced-feature-acceptance.md."
+      },
+      {
+        "id": "DP-M3-VECTOR",
+        "title": "Bounded vector shape library",
+        "state": "PLANNED",
+        "prs": [],
+        "notes": "Candidate only; NOT STARTED, 0/5 opened feature PRs. Requires closure of current ACTIVE image feature, scoped acceptance, documented dependencies and live GitHub/owner review. See docs/product/advanced-feature-roadmap.md and docs/engineering/advanced-feature-acceptance.md."
+      },
+      {
+        "id": "DP-M3-PRECISION",
+        "title": "Optional guides rulers and precision layout",
+        "state": "PLANNED",
+        "prs": [],
+        "notes": "Candidate only; NOT STARTED, 0/5 opened feature PRs. Requires closure of current ACTIVE image feature, scoped acceptance, documented dependencies and live GitHub/owner review. See docs/product/advanced-feature-roadmap.md and docs/engineering/advanced-feature-acceptance.md."
+      },
+      {
+        "id": "DP-M3-OBJECT",
+        "title": "Optional object grouping locking rotation and styles",
+        "state": "PLANNED",
+        "prs": [],
+        "notes": "Candidate only; NOT STARTED, 0/5 opened feature PRs. Requires closure of current ACTIVE image feature, scoped acceptance, documented dependencies and live GitHub/owner review. See docs/product/advanced-feature-roadmap.md and docs/engineering/advanced-feature-acceptance.md."
+      },
+      {
+        "id": "DP-M4-EXAM-PAGES",
+        "title": "Multi-page exam documents and print pagination",
+        "state": "PLANNED",
+        "prs": [],
+        "notes": "Candidate only; NOT STARTED, 0/5 opened feature PRs. Requires closure of current ACTIVE image feature, scoped acceptance, documented dependencies and live GitHub/owner review. See docs/product/advanced-feature-roadmap.md and docs/engineering/advanced-feature-acceptance.md."
+      },
+      {
+        "id": "DP-M4-EXAM-TOOLS",
+        "title": "Structured exam question and marks components",
+        "state": "PLANNED",
+        "prs": [],
+        "notes": "Candidate only; NOT STARTED, 0/5 opened feature PRs. Requires closure of current ACTIVE image feature, scoped acceptance, documented dependencies and live GitHub/owner review. See docs/product/advanced-feature-roadmap.md and docs/engineering/advanced-feature-acceptance.md."
+      },
+      {
+        "id": "DP-M4-BANNER",
+        "title": "Professional shop banner preset and price components",
+        "state": "PLANNED",
+        "prs": [],
+        "notes": "Candidate only; NOT STARTED, 0/5 opened feature PRs. Requires closure of current ACTIVE image feature, scoped acceptance, documented dependencies and live GitHub/owner review. See docs/product/advanced-feature-roadmap.md and docs/engineering/advanced-feature-acceptance.md."
+      },
+      {
+        "id": "DP-M4-ASSETS",
+        "title": "Offline local assets and brand kit",
+        "state": "PLANNED",
+        "prs": [],
+        "notes": "Candidate only; NOT STARTED, 0/5 opened feature PRs. Requires closure of current ACTIVE image feature, scoped acceptance, documented dependencies and live GitHub/owner review. See docs/product/advanced-feature-roadmap.md and docs/engineering/advanced-feature-acceptance.md."
+      },
+      {
+        "id": "DP-M4-TEMPLATES",
+        "title": "Reusable template blocks and variables",
+        "state": "PLANNED",
+        "prs": [],
+        "notes": "Candidate only; NOT STARTED, 0/5 opened feature PRs. Requires closure of current ACTIVE image feature, scoped acceptance, documented dependencies and live GitHub/owner review. See docs/product/advanced-feature-roadmap.md and docs/engineering/advanced-feature-acceptance.md."
+      },
+      {
+        "id": "DP-M4-PRINT",
+        "title": "Preflight print and raster quality diagnostics",
+        "state": "PLANNED",
+        "prs": [],
+        "notes": "Candidate only; NOT STARTED, 0/5 opened feature PRs. Requires closure of current ACTIVE image feature, scoped acceptance, documented dependencies and live GitHub/owner review. See docs/product/advanced-feature-roadmap.md and docs/engineering/advanced-feature-acceptance.md."
+      },
+      {
+        "id": "DP-M4-PDF",
+        "title": "Direct downloadable PDF output",
+        "state": "PLANNED",
+        "prs": [],
+        "notes": "Candidate only; NOT STARTED, 0/5 opened feature PRs. Requires closure of current ACTIVE image feature, scoped acceptance, documented dependencies and live GitHub/owner review. See docs/product/advanced-feature-roadmap.md and docs/engineering/advanced-feature-acceptance.md."
+      },
+      {
+        "id": "DP-M5-RELEASE",
+        "title": "Security accessibility and print release acceptance",
+        "state": "PLANNED",
+        "prs": [],
+        "notes": "Candidate only; NOT STARTED, 0/5 opened feature PRs. Requires closure of current ACTIVE image feature, scoped acceptance, documented dependencies and live GitHub/owner review. See docs/product/advanced-feature-roadmap.md and docs/engineering/advanced-feature-acceptance.md."
+      },
+      {
+        "id": "DP-M5-BIZ",
+        "title": "User research product support and finance validation",
+        "state": "PLANNED",
+        "prs": [],
+        "notes": "Candidate only; NOT STARTED, 0/5 opened feature PRs. Requires closure of current ACTIVE image feature, scoped acceptance, documented dependencies and live GitHub/owner review. See docs/product/advanced-feature-roadmap.md and docs/engineering/advanced-feature-acceptance.md."
       }
     ]
   }
