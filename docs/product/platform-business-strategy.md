@@ -2,6 +2,12 @@
 
 **Status:** Business/product proposal, not approved prices, launched subscriptions, customer-demand proof or a production launch. This is adapted from imgengine's product/finance strategy, **not** its native-C image pipeline. Authority: [MVP](mvp.md), [next](../../next.md), [unit economics](../finance/unit-economics.md), [seven-level model](../engineering/seven-level-operating-model.md).
 
+## Owner-requested advanced product options (2026-11-22)
+
+See the [advanced editor feature roadmap](advanced-feature-roadmap.md), [engineering acceptance gates](../engineering/advanced-feature-acceptance.md), [unit economics](../finance/unit-economics.md) and [live NOW](../../next.md). Propose advanced typography, vector shapes, precise guides and native local asset/template blocks first; exam-paper multi-page/question workflows, shop banner price/brand components and direct PDF/print preflight follow on validated user jobs. Current DP-M3-IMAGE is still in progress, with only PR #165's resource guard merged. These are **cost and product hypotheses**, not implemented features, approved paid tiers, revenue or market validation.
+
+CA/MBA/management review must distinguish one-off dev/CI and review effort from variable export/storage/support, finance/legal/privacy/license obligations and potential paid-hosting risk. Prefer zero-surprise local-first operations; no SaaS, external uploads, telemetry, accounts, billing or paid infrastructure without a separate owner-approved business/security decision. Track successful first export, print fidelity, repeat use and interview outcomes, not invented pricing or ROI.
+
 ## Product decision: one good editor for real jobs first
 
 Initial jobs:
