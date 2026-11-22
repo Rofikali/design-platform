@@ -221,7 +221,7 @@
       "feature_id": "DP-M3-IMAGE",
       "title": "Foreground image element authoring",
       "status": "PR_OPEN",
-      "summary": "PR #165 resource guard and #167 raster signatures merged; #167 exact-head CI failed two test fixtures; PR #168 OPEN/DRAFT repairs fixtures. Editor image schema, decode, dimensions, history/export NOT IMPLEMENTED; independent review and current-head CI pending; manual #82/#85 NOT RUN.",
+      "summary": "PR #165 resource guard and #167 raster signatures merged; #167 exact-head CI failed two test fixtures; PR #168 OPEN/DRAFT repairs fixtures. Editor image schema, decode, dimensions, history/export NOT IMPLEMENTED; review and CI pending; manual #82/#85 NOT RUN.",
       "pr": 168,
       "sha": "bd8302e404929579aec388295c3ab0979029bcf8"
     },
