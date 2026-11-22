@@ -6,6 +6,7 @@ import { loadLocalDocument, saveLocalDocument } from "~/utils/local-document-sto
 import { createHistory, recordHistory, redoHistory, undoHistory } from "~/utils/document-history";
 import { moveElementLayer } from "~/utils/element-layers";
 import { alignToPage, type Alignment } from "~/utils/element-alignment";
+import { snapToPage } from "~/utils/element-snapping";
 import { deleteTableColumn, deleteTableRow, insertTableColumn, insertTableRow, replaceTableCell, tableCellPosition } from "~/utils/table-cells";
 
 import {
@@ -28,6 +29,8 @@ const STORAGE_KEY = "design-platform:document:v1"; // Keep the key so existing v
 const pageWidth = ref(PAGE_WIDTH);
 const pageHeight = ref(PAGE_HEIGHT);
 const pageBackground = ref("#ffffff");
+// Editor preference only: never serialize the snapping toggle into the design document.
+const snappingEnabled = ref(false);
 const backgroundImage = ref<BackgroundImage | undefined>();
 const outputSizeMm = ref<{ width: number; height: number } | undefined>();
 const templateMetadata = ref<{ id: string; version: number } | undefined>();
@@ -354,8 +357,11 @@ function onElementPointerMove(event: PointerEvent) {
     pageWidth.value,
     pageHeight.value,
   );
-  element.x = position.x;
-  element.y = position.y;
+  const snapped = snappingEnabled.value
+    ? snapToPage({ ...element, ...position }, { width: pageWidth.value, height: pageHeight.value })
+    : position;
+  element.x = snapped.x;
+  element.y = snapped.y;
 }
 function onElementPointerEnd(event: PointerEvent) {
   if (event.type === "pointercancel") {
@@ -667,6 +673,7 @@ onMounted(async () => {
         </fieldset>
         <template v-if="selectedElement">
           <p class="selected-name" role="status" aria-live="polite" aria-atomic="true">{{ selectionAnnouncement }}</p>
+          <label class="field"><input v-model="snappingEnabled" type="checkbox" /> Snap to page edges and center while dragging</label>
           <fieldset class="layer-controls" aria-label="Align selected element to page">
             <legend>Align to page</legend>
             <div class="history-actions">
