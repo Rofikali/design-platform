@@ -35,7 +35,7 @@ describe("foreground raster resource guard", () => {
     const valid = resource("png");
     expect(validateForegroundImageDataUrl(valid)).toBe(valid);
     // A one-byte trailing group is encoded with two padding characters.
-    const padded = resource("png", [...headers.png, 0]);
+    const padded = resource("png", [...headers.png, 0, 0]);
     expect(validateForegroundImageDataUrl(padded)).toBe(padded);
     expect(() => validateForegroundImageDataUrl(padded.replace(/A==$/, "B=="))).toThrow(TypeError);
   });
@@ -43,8 +43,9 @@ describe("foreground raster resource guard", () => {
   it("enforces the encoded byte budget at the boundary", () => {
     const prefix = "data:image/png;base64,";
     const encodedLength = Math.floor((MAX_FOREGROUND_IMAGE_DATA_URL_BYTES - prefix.length) / 4) * 4;
-    const signature = btoa(String.fromCharCode(...headers.png));
-    const allowed = prefix + signature + "A".repeat(encodedLength - signature.length);
+    const decodedLength = (encodedLength / 4) * 3;
+    // Encode one complete byte stream: concatenating padded Base64 fragments is invalid.
+    const allowed = prefix + btoa(String.fromCharCode(...headers.png) + "\0".repeat(decodedLength - headers.png.length));
     expect(validateForegroundImageDataUrl(allowed)).toBe(allowed);
     expect(() => validateForegroundImageDataUrl(allowed + "AAAA")).toThrow(RangeError);
   });
