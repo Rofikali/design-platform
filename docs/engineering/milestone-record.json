@@ -2,7 +2,7 @@
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
   "snapshot_date": "2026-11-22",
-  "reference_main_sha": "6b244d55380454dd10ff77434b36b792c2660ecd",
+  "reference_main_sha": "0163846f6338d6bbbda249c81ba35b04723fa00d",
   "now_id": "DP-M3-IMAGE-01",
   "next_ids": [
     "DP-M3-TYPO-01",
@@ -221,9 +221,9 @@
       "feature_id": "DP-M3-IMAGE",
       "title": "Foreground image element authoring",
       "status": "PR_OPEN",
-      "summary": "PR #165 merged resource guard; PR #167 OPEN/DRAFT adds raster signature and MIME spoofing tests. Editor image schema, decode, dimensions, history and export NOT IMPLEMENTED; CI exact-head and independent review pending; manual #82/#85 NOT RUN.",
-      "pr": 167,
-      "sha": "a8009c3d460d41628a2c71129d83edd9ac42871f"
+      "summary": "PR #165 resource guard and #167 raster signatures merged; #167 exact-head CI failed two test fixtures; PR #168 OPEN/DRAFT repairs fixtures. Editor image schema, decode, dimensions, history/export NOT IMPLEMENTED; independent review and current-head CI pending; manual #82/#85 NOT RUN.",
+      "pr": 168,
+      "sha": "bd8302e404929579aec388295c3ab0979029bcf8"
     },
     {
       "id": "DP-M3-TYPO-01",
@@ -361,9 +361,10 @@
         "state": "ACTIVE",
         "prs": [
           165,
-          167
+          167,
+          168
         ],
-        "notes": "PR #165 merged resource guard; PR #167 OPEN/DRAFT adds raster MIME-signature validation with tests. Image decode, dimensions, versioned document schema, authoring/history/export remain unimplemented. Local and manual tests NOT RUN; independent review pending; issue #118 open."
+        "notes": "PR #165 merged resource guard; PR #167 merged signature checks at 0163846f6338d6bbbda249c81ba35b04723fa00d but its exact-head CI failed two test fixtures; PR #168 OPEN/DRAFT repairs canonical padding and 1 MiB fixture. Image authoring, decode, dimensions, versioned schema, history/export NOT IMPLEMENTED. Manual #82/#85/#158 NOT RUN; security release #118 OPEN."
       },
       {
         "id": "DP-M3-TYPO",
