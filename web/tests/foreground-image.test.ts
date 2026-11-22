@@ -16,6 +16,15 @@ describe("foreground raster resource guard", () => {
     }
   });
 
+  it("rejects noncanonical base64 pad bits while accepting canonical padding", () => {
+    for (const payload of ["AA==", "AAA=", "AAAA"]) {
+      expect(validateForegroundImageDataUrl(`data:image/png;base64,${payload}`)).toContain(payload);
+    }
+    for (const payload of ["AB==", "AAB="]) {
+      expect(() => validateForegroundImageDataUrl(`data:image/png;base64,${payload}`)).toThrow(TypeError);
+    }
+  });
+
   it("enforces the encoded byte budget at the boundary", () => {
     const prefix = "data:image/png;base64,";
     const allowed = prefix + "A".repeat(Math.floor((MAX_FOREGROUND_IMAGE_DATA_URL_BYTES - prefix.length) / 4) * 4);
