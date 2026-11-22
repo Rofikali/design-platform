@@ -7,6 +7,8 @@ The [hourly autopilot operating agreement](hourly-autopilot.md) describes the ow
 ## Product and architecture
 
 - [MVP scope](../product/mvp.md): initial users, outcomes, and explicit non-goals.
+- [Advanced editor feature roadmap](../product/advanced-feature-roadmap.md): **proposed** typography, vector shapes, guides, exam-paper studio, banner studio, local assets, print/PDF and release candidate dependencies; not the live task selector.
+- [Advanced feature acceptance matrix](advanced-feature-acceptance.md): L1–L7, security/CISSP, Linux/SRE, relevant CCIE/network, QA, CA/MBA, management requirements and protected existing editor behavior.
 - [Frames and Grids milestone](../product/frames-and-grids-milestone.md): implemented schema-v4 frame/grid scope and acceptance contract.
 - [Semantic Tables milestone](../product/semantic-tables-milestone.md): proposed schema-v5 data-bearing table scope and acceptance contract.
 - [System overview](../architecture/system-overview.md): HLD, responsibilities, trust boundaries, and target component flow.

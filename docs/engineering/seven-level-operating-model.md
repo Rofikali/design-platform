@@ -2,9 +2,13 @@
 
 **Status:** Contributor governance proposal; documentation only. **Authority:** [AGENTS](../../AGENTS.md) → [next](../../next.md) → [SKILLS](../../SKILLS.md) → [document map](documentation-map.md). Inspired by the review methodology in the owner's imgengine repository; this is **not** its C/ABI/FFI architecture transplanted into a design editor.
 
+## Advanced feature review requirements (2026-11-22)
+
+Apply this operating model proportionately to the [proposed advanced feature roadmap](../product/advanced-feature-roadmap.md) and [acceptance matrix](advanced-feature-acceptance.md). Existing editor/text/frames/grids/tables/layers/align, templates, local persistence, bounded history, Rust/WASM–TS parity, PNG/print and migration behavior must be regression-protected; new features are additive, not a rewrite. Current DP-M3-IMAGE is active; future typography, shapes, rulers, multi-page exams, banner studio and direct PDF are PLANNED. CCIE/network tests are N/A for the local-first app until a real network integration is separately approved. Compare implementation cost, support burden and user value rather than inventing ROI.
+
 ## Mission and non-negotiable constraints
 
-Build a correct, accessible, secure, maintainable and economically sustainable browser design editor. The first jobs are **exam papers** and **shop banners**, not a generic audio/video/animation suite. Treat the versioned document contract and users' saved work as more important than framework fashion. Preserve v1–v4 migrations and do not implement schema v5 until its accepted contract and migration tests exist.
+Build a correct, accessible, secure, maintainable and economically sustainable browser design editor. The first jobs are **exam papers** and **shop banners**, not a generic audio/video/animation suite. Treat the versioned document contract and users' saved work as more important than framework fashion. Preserve v1–v5 document migrations; introduce any future schema version only with an accepted compatibility contract and migration tests exist.
 
 The technology currently in the repo is Nuxt/Vue/TypeScript, a framework-independent Rust design core and a thin Rust/WASM adapter. A Rust/Axum API, accounts, PostgreSQL, durable remote assets, hosted exports and billing are proposals, **not deployed features**. Do not adopt C17, public C ABI, FFI, SIMD or a native image scheduler simply because imgengine uses them.
 

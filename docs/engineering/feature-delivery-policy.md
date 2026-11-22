@@ -2,6 +2,10 @@
 
 **Effective:** 2026-11-21. **Owner decision:** no more than **five pull requests for a single product feature** before progressing to the next independent feature. Applies prospectively. This is a delivery-budget rule, not a claim that untested work is feature-complete.
 
+## Current feature selection and advanced candidate policy (2026-11-22)
+
+The [advanced editor roadmap](../product/advanced-feature-roadmap.md) and [acceptance criteria](advanced-feature-acceptance.md) contain **planned candidates only**. Live GitHub verifies PR #165 merged at `222e550e31e859b2b8e06538f27d07f424a88e19` and current DP-M3-IMAGE remains ACTIVE at **1/5**; do not attempt stale alignment #162 or treat a merged #165 as open. `milestone-record.json` is the canonical feature-budget selector, and its seven generated views must be regenerated together. Future typography, shape, guide, exam, banner, asset, PDF and print work becomes active only after image closure and justified prerequisites; no parallel lanes or sixth PR by renamed feature. The dated 2026-11-21 progression below is historical, not today's NOW queue.
+
 ## 1. Scope and count (strict)
 
 - Use one stable feature ID for the user-visible capability, e.g. `DP-M3-LAYERS`. Subtasks, test regressions, renamed milestones, refactors and follow-up bugs inside the feature share its budget. A sixth feature PR is prohibited.

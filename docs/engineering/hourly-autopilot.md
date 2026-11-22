@@ -6,11 +6,11 @@
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-22)
 
-**Reference main:** 4cd009e0d0981eb16581998158db9ae068ea8665 (dated snapshot; re-check live GitHub before acting).
+**Reference main:** 222e550e31e859b2b8e06538f27d07f424a88e19 (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M3-IMAGE-01 — Foreground image element authoring** [PR_OPEN]. [PR #165](https://github.com/Rofikali/design-platform/pull/165)
+**NOW:** **DP-M3-IMAGE-01 — Foreground image element authoring** [IN_PROGRESS]. [PR #165](https://github.com/Rofikali/design-platform/pull/165)
 
-**NEXT:** DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
+**NEXT:** DP-M3-TYPO-01 [PLANNED]; DP-M3-VECTOR-01 [PLANNED]; DP-M3-PRECISION-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
 **Feature budget:** DP-M3-IMAGE — 1/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
 
@@ -22,7 +22,13 @@
 
 ## Five-PR feature progression (owner rule, 2026-11-21)
 
-**Hard cap:** one feature ID gets no more than five opened feature PRs, including closed or failed attempts; changes within an existing PR do not cost additional slots. Read [feature delivery policy](feature-delivery-policy.md) and `feature_delivery` in the milestone record every run. Prefer the smallest actual customer-visible vertical slice and stop early if accepted. On the fifth PR, finish its gates, close as DONE/PARTIAL/BLOCKED with exact evidence and switch to next independent READY feature. Never open a sixth table regression PR; the historic table lane is CLOSED_LEGACY. **Current NOW is DP-M3-ALIGN-01 (1/5; #160 MERGED); the next independent editor-control slice is READY.** Manual screen reader, physical print and owner-run Ubuntu/Compose remain NOT RUN until observed; do not block independent editor feature work on those checks or declare release-ready.
+**Hard cap:** one feature ID gets no more than five opened feature PRs, including closed or failed attempts; changes within an existing PR do not cost additional slots. Read [feature delivery policy](feature-delivery-policy.md) and `feature_delivery` in the milestone record every run. Prefer the smallest actual customer-visible vertical slice and stop early if accepted. On the fifth PR, finish its gates, close as DONE/PARTIAL/BLOCKED with exact evidence and switch to next independent READY feature. Never open a sixth table regression PR; the historic table lane is CLOSED_LEGACY. **Current NOW (verified 2026-11-22) is DP-M3-IMAGE-01 (1/5; PR #165 MERGED)**; previous Alignment/Layers/Table lanes are CLOSED/PARTIAL or legacy. The next image-authoring implementation remains outstanding; first reconcile record, then continue the SAME feature ID. Manual screen reader, physical print and owner-run Ubuntu/Compose remain NOT RUN until observed; do not block independent editor feature work on those checks or declare release-ready.
+
+## Advanced-feature continuation and stale-PR recovery (owner update 2026-11-22)
+
+The saved scheduled automation previously contained a stale mandate to continue PR #162. This runbook now points to [advanced-feature roadmap](../product/advanced-feature-roadmap.md), [advanced acceptance](advanced-feature-acceptance.md), [record](milestone-record.json) and [next](../../next.md). Always check LIVE GitHub first. PR #165 was MERGED at `222e550e31e859b2b8e06538f27d07f424a88e19`; do not reopen or attempt to merge it again. Work on **DP-M3-IMAGE** for the next bounded PR, following existing v1–v5/TS+Rust/WASM, user element/keyboard, autosave/history and PNG/print non-regression contracts. When this feature is closed DONE/PARTIAL/BLOCKED within five opened feature PR attempts, promote exactly one independent PLANNED candidate after a prerequisite/approval check. The roadmap is not a second live queue.
+
+A governance-only documentation PR opened to record this roadmap is not an image PR budget attempt; do not create a duplicate or miscount it. If existing governance/feature PR is open, finish it subject to all exact-head CI and independent-review gates rather than generate another. On merge, reconcile evidence in the next substantive implementation PR. After two consecutive no-code runs on the same blocker, disclose the precise failed gate and choose another independently safe task or request the necessary owner approval. Never attempt to bypass dependency security, #118, manual #82/#85, protection checks, or paid/deployment authorization.
 
 ## What "go ahead" means — manually or on an hourly run
 

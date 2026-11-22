@@ -1,5 +1,9 @@
 # Unit Economics and Cost Controls
 
+## Advanced-feature investment checkpoint
+
+Use the [new candidate roadmap](../product/advanced-feature-roadmap.md) and [engineering/business acceptance](../engineering/advanced-feature-acceptance.md) to compare user-facing value, implementation/review/CI cost, third-party font/PDF licenses, privacy exposure and ongoing support. Browser-local typography/shapes/guides may have lower variable hosting cost than cloud sync, billing or server PDF. No speculative margin or rupee price is evidence. No paid infrastructure without an explicit owner decision.
+
 ## Purpose
 Keep the product financially sustainable while validating whether users value the editor. These are measurement rules, not forecasts or proof of profitability.
 

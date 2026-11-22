@@ -6,17 +6,21 @@
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-22)
 
-**Reference main:** 4cd009e0d0981eb16581998158db9ae068ea8665 (dated snapshot; re-check live GitHub before acting).
+**Reference main:** 222e550e31e859b2b8e06538f27d07f424a88e19 (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M3-IMAGE-01 — Foreground image element authoring** [PR_OPEN]. [PR #165](https://github.com/Rofikali/design-platform/pull/165)
+**NOW:** **DP-M3-IMAGE-01 — Foreground image element authoring** [IN_PROGRESS]. [PR #165](https://github.com/Rofikali/design-platform/pull/165)
 
-**NEXT:** DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
+**NEXT:** DP-M3-TYPO-01 [PLANNED]; DP-M3-VECTOR-01 [PLANNED]; DP-M3-PRECISION-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
 **Feature budget:** DP-M3-IMAGE — 1/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
 
 **Review gate:** Owner-authorized autopilot may review and merge only after all exact-head/integration CI, security, branch protection and required independent-review gates pass. No automatic publishing or deployment.
 
 <!-- milestone-sync:end -->
+
+## Current feature continuation and future-job selection (2026-11-22)
+
+Check [advanced roadmap](../product/advanced-feature-roadmap.md), [new feature acceptance matrix](advanced-feature-acceptance.md), [live work board](../../next.md) and [structured milestone record](milestone-record.json) after live GitHub state. PR #165 merged at `222e550e31e859b2b8e06538f27d07f424a88e19`; current DP-M3-IMAGE remains 1/5 and IN_PROGRESS, **not PR_OPEN**. Continue foreground-image schema/editor/history/export through a bounded next PR under the SAME feature ID. New typography/vector/guides/exam/banner/asset/PDF candidates remain PLANNED. Restore the generated seven documentation views from the record whenever status materially changes. Old tasks #162, closed Alignment/Layers and legacy tables must not be reselected. Preserve existing editor functionality and all original schema migrations.
 
 ## Enabled scheduled engineering autopilot
 

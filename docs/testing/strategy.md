@@ -1,5 +1,9 @@
 # Testing Strategy
 
+## Proposed future feature regression gates
+
+For new [advanced editor features](../product/advanced-feature-roadmap.md), use the [acceptance matrix](../engineering/advanced-feature-acceptance.md) for positive/negative cases, existing UI/keyboard/export/history non-regressions, Rust/TS parity and old JSON migrations. Unexecuted manual NVDA/VoiceOver, real printer, Ubuntu/Docker Compose or security review remains NOT RUN; source/docs PRs do not certify them. Keep the currently implemented suite intact and add new cases without changing old expected behavior.
+
 ## Rule
 Documentation describes intended tests; it is not evidence that they have run. Record actual commands, environment, exit status, and important output for every release gate.
 
