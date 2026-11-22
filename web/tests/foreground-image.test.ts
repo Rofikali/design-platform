@@ -42,8 +42,10 @@ describe("foreground raster resource guard", () => {
 
   it("enforces the encoded byte budget at the boundary", () => {
     const prefix = "data:image/png;base64,";
-    const header = Buffer.from(headers.png).toString("base64");
-    const allowed = prefix + header + "A".repeat(Math.floor((MAX_FOREGROUND_IMAGE_DATA_URL_BYTES - prefix.length - header.length) / 4) * 4);
+    const encodedLength = Math.floor((MAX_FOREGROUND_IMAGE_DATA_URL_BYTES - prefix.length) / 4) * 4;
+    const bytes = Buffer.alloc(encodedLength / 4 * 3);
+    Buffer.from(headers.png).copy(bytes);
+    const allowed = prefix + bytes.toString("base64");
     expect(validateForegroundImageDataUrl(allowed)).toBe(allowed);
     expect(() => validateForegroundImageDataUrl(allowed + "AAAA")).toThrow(RangeError);
   });
