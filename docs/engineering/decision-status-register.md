@@ -8,11 +8,11 @@
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-22)
 
-**Reference main:** 4cd009e0d0981eb16581998158db9ae068ea8665 (dated snapshot; re-check live GitHub before acting).
+**Reference main:** 222e550e31e859b2b8e06538f27d07f424a88e19 (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M3-IMAGE-01 — Foreground image element authoring** [PR_OPEN]. [PR #165](https://github.com/Rofikali/design-platform/pull/165)
+**NOW:** **DP-M3-IMAGE-01 — Foreground image element authoring** [IN_PROGRESS]. [PR #165](https://github.com/Rofikali/design-platform/pull/165)
 
-**NEXT:** DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
+**NEXT:** DP-M3-TYPO-01 [PLANNED]; DP-M3-VECTOR-01 [PLANNED]; DP-M3-PRECISION-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
 **Feature budget:** DP-M3-IMAGE — 1/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
 
@@ -45,7 +45,20 @@
 | DP-M2-TBL-02N — Column deletion Unicode budget recovery history regression | MERGED | [PR #153](https://github.com/Rofikali/design-platform/pull/153) | PR #153 merged as 535cd059 on 2026-11-21. Column removal recovers Unicode aggregate budget; code/history regression integrated. Manual user, native Ubuntu Compose and physical print NOT RUN. |
 | DP-M3-LAYERS-01 — Accessible element layering and ordering | DEFERRED | [PR #159](https://github.com/Rofikali/design-platform/pull/159) [Issue #158](https://github.com/Rofikali/design-platform/issues/158) | Four Layers PRs merged with CI evidence; browser stacking, keyboard and export acceptance remains partial in issue #158. Manual #82/#85 and native Ubuntu Compose NOT RUN. |
 | DP-M3-ALIGN-01 — Basic alignment and optional snapping | DEFERRED | [PR #164](https://github.com/Rofikali/design-platform/pull/164) | PRs #160 #162 #163 #164 merged; keyboard alignment and opt-in pointer snapping implemented. Manual screen reader #82, physical print #85 and native Ubuntu Compose NOT RUN; security release #118 OPEN. Closed PARTIAL without a fifth PR. |
-| DP-M3-IMAGE-01 — Foreground image element authoring | PR_OPEN | [PR #165](https://github.com/Rofikali/design-platform/pull/165) | PR #165 introduces bounded local embedded raster data URL validation and canonical base64 tests. Foreground editor integration, image decoding, history, PNG/print acceptance NOT IMPLEMENTED; exact-head CI/security and independent review PENDING; manual #82/#85 NOT RUN. |
+| DP-M3-IMAGE-01 — Foreground image element authoring | IN_PROGRESS | [PR #165](https://github.com/Rofikali/design-platform/pull/165) | PR #165 MERGED at 222e550e31e859b2b8e06538f27d07f424a88e19: bounded embedded raster data URL format/size/Base64 guards only; foreground schema, draggable editor integration, undo, PNG/print remain unimplemented. Exact PR-head CI/audit/cross-browser PASS; local/manual NOT RUN. |
+| DP-M3-TYPO-01 — Advanced typography and multilingual font handling | PLANNED | — | Add reviewed font family/weight/style, spacing, alignment and locale fallback; preserve current text defaults, schema, browser PNG and print. Requires closed Image feature and font/license tests. |
+| DP-M3-VECTOR-01 — Bounded vector shape library | PLANNED | — | Add ellipses, lines, arrows, triangles, stars, rounded shapes and polygons as typed elements with bounded geometry, keyboard/history/PNG/print parity; never accept unsafe SVG. |
+| DP-M3-PRECISION-01 — Optional guides rulers and precision layout | PLANNED | — | Opt-in rulers, guide lines, margins, safe-area overlays and spacing measurement without changing established alignment/snapping or default exports. |
+| DP-M3-OBJECT-01 — Optional object grouping locking rotation and styles | PLANNED | — | Future grouped transforms, lock, flip, rotation, opacity and fills; require bounded schema, accessibility, selection/history and output parity; no bulk editor rewrite. |
+| DP-M4-EXAM-PAGES-01 — Multi-page exam documents and print pagination | PLANNED | — | Design and test a versioned multi-page model, A4 pagination, headers, footers and page numbers with compatibility to v1-v5; manual physical print remains an external release gate. |
+| DP-M4-EXAM-TOOLS-01 — Structured exam question and marks components | PLANNED | — | Candidate sections, numbering, reusable questions, marks and bounded math typography after multi-page schema acceptance; keep existing templates unchanged. |
+| DP-M4-BANNER-01 — Professional shop banner preset and price components | PLANNED | — | Candidate print dimension presets, reusable price cards, editable brand blocks and opt-in user-supplied QR data; depend on image/typography and print validation. |
+| DP-M4-ASSETS-01 — Offline local assets and brand kit | PLANNED | — | Optional local raster assets and palette library with consent, quotas, license/ownership and backup policy; never silently migrate or delete existing localStorage. |
+| DP-M4-TEMPLATES-01 — Reusable template blocks and variables | PLANNED | — | Curated exam/shop editable blocks and bounded template variable substitution; retain existing starter templates and portable JSON without remote fetches. |
+| DP-M4-PRINT-01 — Preflight print and raster quality diagnostics | PLANNED | — | Candidate warnings for clipping, page dimensions, margins, crop/bleed, effective DPI and fonts; physical printer issue #85 must be manually accepted before release. |
+| DP-M4-PDF-01 — Direct downloadable PDF output | PLANNED | — | Add direct browser-local PDF as an optional path alongside existing print-dialog PDF, with license/font/page-size/fidelity tests; no automatic server infrastructure. |
+| DP-M5-RELEASE-01 — Security accessibility and print release acceptance | BLOCKED | — | Release remains blocked pending actual picomatch advisory exposure review #118, manual assistive technology #82, physical print #85, Docker Compose and owner release signoff. |
+| DP-M5-BIZ-01 — User research product support and finance validation | PLANNED | — | Interview teachers and shops, measure first useful export, failures and repeat use; evaluate support costs, licensing and privacy before optional paid/cloud offering. |
 
 <!-- milestone-sync:end -->
 
