@@ -2,7 +2,7 @@
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
   "snapshot_date": "2026-11-22",
-  "reference_main_sha": "e3e848b4baf7750431a0e23edcc5fe108dac327b",
+  "reference_main_sha": "2a4dcd622620574bedba2397c0b0e7239c51ccc1",
   "now_id": "DP-M3-ALIGN-01",
   "next_ids": [
     "DP-M3-IMAGE-01",
@@ -210,9 +210,9 @@
       "feature_id": "DP-M3-ALIGN",
       "title": "Basic alignment and optional snapping",
       "status": "PR_OPEN",
-      "summary": "PRs #160 and #162 merged; #163 draft adds immutable optional snapping geometry and unit regressions, not yet wired to editor controls. Exact-head CI pending; manual #82/#85 and Ubuntu Compose NOT RUN; security #118 OPEN.",
-      "pr": 163,
-      "sha": "aed5b4594c9f01fdd023c13b7b962be7a931cf41"
+      "summary": "PRs #160, #162, #163 merged; #164 draft wires opt-in snapping into editor pointer drag with focused unit regressions. Exact-head CI, dependency audit, browser checks and independent review NOT VERIFIED; local generator, Ubuntu Compose, manual #82/#85 NOT RUN; security #118 OPEN.",
+      "pr": 164,
+      "sha": "3a3ce08ac90aeea95e7b6524b1b705510c2ebaea"
     },
     {
       "id": "DP-M3-IMAGE-01",
@@ -254,9 +254,10 @@
         "prs": [
           160,
           162,
-          163
+          163,
+          164
         ],
-        "notes": "PRs #160 and #162 merged (alignment geometry and accessible controls). PR #163 draft implements bounded optional snapping primitive/tests, UI integration not yet complete. Exact-head CI and independent review pending; manual #82/#85, security #118 and Ubuntu Compose remain NOT RUN/OPEN."
+        "notes": "PRs #160 #162 #163 merged; #164 draft adds opt-in pointer-drag snapping and focused tests. Exact-head CI, security/browser checks, independent review and generated-doc sync pending; local Ubuntu Compose and manual #82/#85 NOT RUN; #118 OPEN."
       },
       {
         "id": "DP-M3-IMAGE",
