@@ -2,10 +2,9 @@
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
   "snapshot_date": "2026-11-22",
-  "reference_main_sha": "2a4dcd622620574bedba2397c0b0e7239c51ccc1",
-  "now_id": "DP-M3-ALIGN-01",
+  "reference_main_sha": "4cd009e0d0981eb16581998158db9ae068ea8665",
+  "now_id": "DP-M3-IMAGE-01",
   "next_ids": [
-    "DP-M3-IMAGE-01",
     "DP-SEC-01",
     "DP-M1-ACC-02",
     "DP-M1-BG-09"
@@ -209,23 +208,25 @@
       "id": "DP-M3-ALIGN-01",
       "feature_id": "DP-M3-ALIGN",
       "title": "Basic alignment and optional snapping",
-      "status": "PR_OPEN",
-      "summary": "PRs #160, #162, #163 merged; #164 draft wires opt-in snapping into editor pointer drag with focused unit regressions. Exact-head CI, dependency audit, browser checks and independent review NOT VERIFIED; local generator, Ubuntu Compose, manual #82/#85 NOT RUN; security #118 OPEN.",
+      "status": "DEFERRED",
+      "summary": "PRs #160 #162 #163 #164 merged; keyboard alignment and opt-in pointer snapping implemented. Manual screen reader #82, physical print #85 and native Ubuntu Compose NOT RUN; security release #118 OPEN. Closed PARTIAL without a fifth PR.",
       "pr": 164,
-      "sha": "3a3ce08ac90aeea95e7b6524b1b705510c2ebaea"
+      "sha": "4cd009e0d0981eb16581998158db9ae068ea8665"
     },
     {
       "id": "DP-M3-IMAGE-01",
       "feature_id": "DP-M3-IMAGE",
       "title": "Foreground image element authoring",
-      "status": "PLANNED",
-      "summary": "After alignment, plan bounded movable image elements, resource limits, history, import/export and accessible controls; distinct from existing page background images."
+      "status": "PR_OPEN",
+      "summary": "PR #165 introduces bounded local embedded raster data URL validation and canonical base64 tests. Foreground editor integration, image decoding, history, PNG/print acceptance NOT IMPLEMENTED; exact-head CI/security and independent review PENDING; manual #82/#85 NOT RUN.",
+      "pr": 165,
+      "sha": "1e5b43fa7bb5113571eaafb5a52d9107b2c4f870"
     }
   ],
   "feature_delivery": {
     "policy_start": "2026-11-21",
     "max_prs_per_feature": 5,
-    "active_feature_id": "DP-M3-ALIGN",
+    "active_feature_id": "DP-M3-IMAGE",
     "features": [
       {
         "id": "DP-M2-TABLE",
@@ -250,21 +251,24 @@
       {
         "id": "DP-M3-ALIGN",
         "title": "Alignment and snapping",
-        "state": "ACTIVE",
+        "state": "CLOSED",
         "prs": [
           160,
           162,
           163,
           164
         ],
-        "notes": "PRs #160 #162 #163 merged; #164 draft adds opt-in pointer-drag snapping and focused tests. Exact-head CI, security/browser checks, independent review and generated-doc sync pending; local Ubuntu Compose and manual #82/#85 NOT RUN; #118 OPEN."
+        "notes": "Four merged PRs #160 #162 #163 #164. Keyboard alignment and opt-in pointer snapping integrated; manual screen-reader #82, printer #85, native Ubuntu Compose NOT RUN and security release #118 OPEN. No fifth alignment PR.",
+        "outcome": "PARTIAL"
       },
       {
         "id": "DP-M3-IMAGE",
         "title": "Foreground image elements",
-        "state": "PLANNED",
-        "prs": [],
-        "notes": "Start after alignment exits; preserve size limits and browser privacy."
+        "state": "ACTIVE",
+        "prs": [
+          165
+        ],
+        "notes": "First feature PR #165 OPEN; resource format/size and canonical base64 guard only. Image authoring, decoding, history, export and manual acceptance remain future scope."
       }
     ]
   }
