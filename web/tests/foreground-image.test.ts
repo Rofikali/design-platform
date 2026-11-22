@@ -1,33 +1,49 @@
 import { describe, expect, it } from "vitest";
 import { MAX_FOREGROUND_IMAGE_DATA_URL_BYTES, validateForegroundImageDataUrl } from "../utils/foreground-image";
 
+const headers = {
+  png: [137, 80, 78, 71, 13, 10, 26, 10],
+  jpeg: [255, 216, 255, 224],
+  webp: [82, 73, 70, 70, 16, 0, 0, 0, 87, 69, 66, 80],
+} as const;
+
+function resource(mime: keyof typeof headers, bytes: readonly number[] = headers[mime]): string {
+  return `data:image/${mime};base64,${Buffer.from(bytes).toString("base64")}`;
+}
+
 describe("foreground raster resource guard", () => {
-  it("accepts supported embedded raster formats without changing the source", () => {
-    for (const mime of ["png", "jpeg", "webp"]) {
-      const source = `data:image/${mime};base64,AAAA`;
+  it("accepts supported matching raster signatures without changing the source", () => {
+    for (const mime of ["png", "jpeg", "webp"] as const) {
+      const source = resource(mime);
       expect(validateForegroundImageDataUrl(source)).toBe(source);
     }
   });
 
-  it("rejects remote references, active content, invalid base64 and untrusted types", () => {
-    for (const source of ["https://example.com/photo.png", "data:image/svg+xml;base64,AAAA",
-      "data:image/png;base64,AA=A", "data:image/png;base64,AAA", "data:image/png;base64,AAAA\n", null, {}]) {
+  it("rejects MIME spoofing, truncated signatures, remote references and active content", () => {
+    for (const source of [
+      resource("png", headers.jpeg), resource("jpeg", headers.png),
+      resource("webp", [82, 73, 70, 70]), resource("png", [137, 80]),
+      "https://example.com/photo.png", "data:image/svg+xml;base64,AAAA",
+      "data:image/png;base64,AA=A", "data:image/png;base64,AAA",
+      "data:image/png;base64,AAAA\n", null, {},
+    ]) {
       expect(() => validateForegroundImageDataUrl(source)).toThrow();
     }
   });
 
-  it("rejects noncanonical base64 pad bits while accepting canonical padding", () => {
-    for (const payload of ["AA==", "AAA=", "AAAA"]) {
-      expect(validateForegroundImageDataUrl(`data:image/png;base64,${payload}`)).toContain(payload);
-    }
-    for (const payload of ["AB==", "AAB="]) {
-      expect(() => validateForegroundImageDataUrl(`data:image/png;base64,${payload}`)).toThrow(TypeError);
-    }
+  it("rejects noncanonical base64 pad bits even with a valid raster prefix", () => {
+    const valid = resource("png");
+    expect(validateForegroundImageDataUrl(valid)).toBe(valid);
+    // A one-byte trailing group is encoded with two padding characters.
+    const padded = resource("png", [...headers.png, 0]);
+    expect(validateForegroundImageDataUrl(padded)).toBe(padded);
+    expect(() => validateForegroundImageDataUrl(padded.replace(/A==$/, "B=="))).toThrow(TypeError);
   });
 
   it("enforces the encoded byte budget at the boundary", () => {
     const prefix = "data:image/png;base64,";
-    const allowed = prefix + "A".repeat(Math.floor((MAX_FOREGROUND_IMAGE_DATA_URL_BYTES - prefix.length) / 4) * 4);
+    const header = Buffer.from(headers.png).toString("base64");
+    const allowed = prefix + header + "A".repeat(Math.floor((MAX_FOREGROUND_IMAGE_DATA_URL_BYTES - prefix.length - header.length) / 4) * 4);
     expect(validateForegroundImageDataUrl(allowed)).toBe(allowed);
     expect(() => validateForegroundImageDataUrl(allowed + "AAAA")).toThrow(RangeError);
   });
