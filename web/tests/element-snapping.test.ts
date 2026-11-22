@@ -25,6 +25,20 @@ describe("optional page snapping geometry", () => {
     expect(dragged.y).toBe(538);
   });
 
+  it("snaps only the axis within tolerance and preserves unrelated element metadata", () => {
+    const element = Object.freeze({ id: "text-1", type: "text", x: 3, y: 128, width: 100, height: 60, text: "Keep me" });
+    const snapped = snapToPage(element, page);
+    expect(snapped).toEqual({ ...element, x: 0 });
+    expect(snapped.y).toBe(128);
+    expect(element.x).toBe(3);
+  });
+
+  it("does not snap when a candidate is just beyond the tolerance", () => {
+    const element = Object.freeze({ x: 7, y: 7, width: 100, height: 60 });
+    expect(snapToPage(element, page)).toBe(element);
+    expect(snapToPage(element, page, 7)).toEqual({ ...element, x: 0, y: 0 });
+  });
+
   it("honors zero tolerance and validates untrusted geometry", () => {
     const element = { x: 5, y: 5, width: 100, height: 60 };
     expect(snapToPage(element, page, 0)).toBe(element);
