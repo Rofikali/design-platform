@@ -17,6 +17,14 @@ describe("optional page snapping geometry", () => {
     expect(snapToPage(aligned, page)).toBe(aligned);
   });
 
+  it("keeps a clamped drag within the page and does not modify unrelated fields", () => {
+    const dragged = Object.freeze({ id: "rect-1", type: "rect", x: 694, y: 538, width: 100, height: 60, color: "#fff" });
+    const snapped = snapToPage(dragged, page);
+    expect(snapped).toEqual({ ...dragged, x: 700, y: 540 });
+    expect(dragged.x).toBe(694);
+    expect(dragged.y).toBe(538);
+  });
+
   it("honors zero tolerance and validates untrusted geometry", () => {
     const element = { x: 5, y: 5, width: 100, height: 60 };
     expect(snapToPage(element, page, 0)).toBe(element);
