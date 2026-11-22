@@ -19,5 +19,27 @@ export function validateForegroundImageDataUrl(value: unknown): string {
       (encoded.endsWith("=") && !encoded.endsWith("==") && (alphabet.indexOf(encoded[encoded.length - 2]!) & 3) !== 0)) {
     throw new TypeError("Foreground image base64 padding bits must be canonical.");
   }
+  // MIME labels are untrusted; signatures are necessary, but not proof of decode.
+  const prefix = encoded.slice(0, 24).replace(/=+$/, "");
+  const bytes: number[] = [];
+  let bits = 0;
+  let accumulator = 0;
+  for (const char of prefix) {
+    accumulator = (accumulator << 6) | alphabet.indexOf(char);
+    bits += 6;
+    if (bits >= 8) {
+      bits -= 8;
+      bytes.push((accumulator >>> bits) & 0xff);
+    }
+  }
+  const png = [137, 80, 78, 71, 13, 10, 26, 10];
+  const isPng = bytes.length >= 8 && png.every((byte, index) => bytes[index] === byte);
+  const isJpeg = bytes.length >= 3 && bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255;
+  const isWebp = bytes.length >= 12 &&
+    [82, 73, 70, 70].every((byte, index) => bytes[index] === byte) &&
+    [87, 69, 66, 80].every((byte, index) => bytes[index + 8] === byte);
+  if (!((match[1] === "png" && isPng) || (match[1] === "jpeg" && isJpeg) || (match[1] === "webp" && isWebp))) {
+    throw new TypeError("Foreground image MIME does not match a supported raster signature.");
+  }
   return value;
 }
