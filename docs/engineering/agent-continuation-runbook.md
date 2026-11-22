@@ -18,6 +18,10 @@
 
 <!-- milestone-sync:end -->
 
+## Current feature continuation and future-job selection (2026-11-22)
+
+Check [advanced roadmap](../product/advanced-feature-roadmap.md), [new feature acceptance matrix](advanced-feature-acceptance.md), [live work board](../../next.md) and [structured milestone record](milestone-record.json) after live GitHub state. PR #165 merged at `222e550e31e859b2b8e06538f27d07f424a88e19`; current DP-M3-IMAGE remains 1/5 and IN_PROGRESS, **not PR_OPEN**. Continue foreground-image schema/editor/history/export through a bounded next PR under the SAME feature ID. New typography/vector/guides/exam/banner/asset/PDF candidates remain PLANNED. Restore the generated seven documentation views from the record whenever status materially changes. Old tasks #162, closed Alignment/Layers and legacy tables must not be reselected. Preserve existing editor functionality and all original schema migrations.
+
 ## Enabled scheduled engineering autopilot
 
 The owner has separately enabled a ChatGPT hourly task named **Design Platform Autopilot**, which runs this repository's bounded "go ahead" workflow. See [hourly autopilot](hourly-autopilot.md) for precise task-selection, safety, spending and reporting rules. This runbook alone does not schedule anything. At each hourly execution re-check GitHub live state before continuing. The automation must be manually paused through ChatGPT when the owner wishes to stop it.
