@@ -2,11 +2,17 @@
 
 **PR enforcement:** Use one PR-body `Feature-ID: <ACTIVE-ID>` line, record GitHub's actual PR number in the milestone record, and regenerate seven sections in the same implementation PR. CI verifies the linkage; governance-only exemptions must be diff-limited and independently reviewed. For CLOSED features, record explicit DONE/PARTIAL/BLOCKED outcome.
 
-**Feature execution rule (2026-11-21):** Follow [feature-delivery-policy.md](docs/engineering/feature-delivery-policy.md). Maximum **five PRs per feature**, count abandoned feature PR attempts, and after the budget is used close as DONE/PARTIAL/BLOCKED and advance to a different READY feature. Evidence labels are separate: merged source, exact-head CI, local Ubuntu/Docker Compose, manual accessibility, print, and release. Do not repeat table-only tests while the new layers feature is NOW.
+**Feature execution rule (2026-11-21):** Follow [feature-delivery-policy.md](docs/engineering/feature-delivery-policy.md). Maximum **five PRs per feature**, count abandoned feature PR attempts, and after the budget is used close as DONE/PARTIAL/BLOCKED and advance to a different READY feature. Evidence labels are separate: merged source, exact-head CI, local Ubuntu/Docker Compose, manual accessibility, print, and release. Do not repeat table-only, closed Layers or closed Alignment PR iterations. DP-M3-IMAGE is ACTIVE (1/5, merged resource guard #165); full image authoring remains NEXT work within that feature.
 
 This file is the practical companion to `AGENTS.md`. It describes how an agent should apply professional engineering, security, architecture, product, and management skills to this repository.
 
 The goal is to build a real product and help the owner understand the decisions in easy English. A checklist is a prompt for investigation, not proof that the work was completed.
+
+## Advanced feature addition and autopilot repair recipe (2026-11-22)
+
+Follow the [proposed advanced features and phased milestones](docs/product/advanced-feature-roadmap.md), their [acceptance and risk matrix](docs/engineering/advanced-feature-acceptance.md), [source milestone record](docs/engineering/milestone-record.json), [live board](next.md) and [hourly runbook](docs/engineering/hourly-autopilot.md). Start by checking current main, PR state, feature budget and exact-head tests. As of the verified 22 Nov checkpoint, image-validation PR #165 is MERGED, not open; the next bounded DP-M3-IMAGE PR should add a versioned/validated foreground image document model and existing import migration compatibility, then integrate editor, history, persistence and export within the 5-opened-PR ceiling. Do not reattempt #162 or reopen closed Alignment/Layers/Table. Avoid a status-only PR when a safe substantive implementation task exists.
+
+For each added feature, inventory current behavior and protect all existing elements, templates, localStorage, undo/redo, JSON v1–v5, Rust/WASM and TS fallback, PNG and print. When modifying shared contracts, use versioned schema/fixtures, targeted negative tests, visual/keyboard/export regression, manual NOT RUN notes and scoped ADR/HLD/LLD updates. Keep source code modular; only introduce new abstractions, API or infrastructure with demonstrated need. Future typography, shapes, rulers, grouping, multi-page exams, banner studio, direct PDF and assets are PLANNED not merged. Update `milestone-record.json` then generate exactly seven sections with `node scripts/sync-milestone-docs.mjs` (and `--check`); never hand-edit generated markers.
 
 ## 1. Principal Engineer playbook
 
