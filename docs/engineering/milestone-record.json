@@ -2,7 +2,7 @@
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
   "snapshot_date": "2026-11-22",
-  "reference_main_sha": "a4cd88eba5a475601a70c6a3b6a393c560273f23",
+  "reference_main_sha": "e3e848b4baf7750431a0e23edcc5fe108dac327b",
   "now_id": "DP-M3-ALIGN-01",
   "next_ids": [
     "DP-M3-IMAGE-01",
@@ -210,9 +210,9 @@
       "feature_id": "DP-M3-ALIGN",
       "title": "Basic alignment and optional snapping",
       "status": "PR_OPEN",
-      "summary": "PR #160 geometry MERGED. PR #162 draft adds accessible page-alignment controls and schema-v5 undo/export tests; exact-head CI PENDING. Snapping not implemented; manual #82/#85 and Ubuntu Compose NOT RUN.",
-      "pr": 162,
-      "sha": "be909305fd8d4b96339ce075177111be13b403e2"
+      "summary": "PRs #160 and #162 merged; #163 draft adds immutable optional snapping geometry and unit regressions, not yet wired to editor controls. Exact-head CI pending; manual #82/#85 and Ubuntu Compose NOT RUN; security #118 OPEN.",
+      "pr": 163,
+      "sha": "aed5b4594c9f01fdd023c13b7b962be7a931cf41"
     },
     {
       "id": "DP-M3-IMAGE-01",
@@ -253,9 +253,10 @@
         "state": "ACTIVE",
         "prs": [
           160,
-          162
+          162,
+          163
         ],
-        "notes": "PR #160 MERGED as a26acfd2 (immutable page alignment). PR #162 draft adds page alignment controls and export/history regression; pending exact-head CI and independent review. Snapping remains READY; manual #82/#85, security #118 and Ubuntu Compose NOT RUN/OPEN."
+        "notes": "PRs #160 and #162 merged (alignment geometry and accessible controls). PR #163 draft implements bounded optional snapping primitive/tests, UI integration not yet complete. Exact-head CI and independent review pending; manual #82/#85, security #118 and Ubuntu Compose remain NOT RUN/OPEN."
       },
       {
         "id": "DP-M3-IMAGE",
