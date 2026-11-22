@@ -5,6 +5,7 @@ import { clampElementPosition, clampElementSize, nextElementId } from "~/utils/e
 import { loadLocalDocument, saveLocalDocument } from "~/utils/local-document-storage";
 import { createHistory, recordHistory, redoHistory, undoHistory } from "~/utils/document-history";
 import { moveElementLayer } from "~/utils/element-layers";
+import { alignToPage, type Alignment } from "~/utils/element-alignment";
 import { deleteTableColumn, deleteTableRow, insertTableColumn, insertTableRow, replaceTableCell, tableCellPosition } from "~/utils/table-cells";
 
 import {
@@ -259,6 +260,22 @@ function reorderSelectedLayer(direction: "forward" | "backward" | "front" | "bac
   statusMessage.value = direction === "front" ? "Moved selection to front." : direction === "back" ? "Moved selection to back." : direction === "forward" ? "Moved selection one layer forward." : "Moved selection one layer backward.";
 }
 const selectedLayerIndex = computed(() => elements.value.findIndex(element => element.id === selectedId.value));
+/** Page alignment remains a single immutable edit, tracked by the existing history/autosave watcher. */
+function alignSelected(alignment: Alignment) {
+  const element = selectedElement.value;
+  if (!element) return;
+  try {
+    const aligned = alignToPage(element, { width: pageWidth.value, height: pageHeight.value }, alignment);
+    if (aligned === element) {
+      statusMessage.value = "Selected element is already at that page alignment.";
+      return;
+    }
+    elements.value = elements.value.map(candidate => candidate.id === element.id ? aligned : candidate);
+    statusMessage.value = "Selected element aligned to page.";
+  } catch (error) {
+    statusMessage.value = error instanceof Error ? error.message : "Could not align selected element.";
+  }
+}
 function moveSelected(dx: number, dy: number) {
   const element = selectedElement.value;
   if (!element) return;
@@ -650,6 +667,18 @@ onMounted(async () => {
         </fieldset>
         <template v-if="selectedElement">
           <p class="selected-name" role="status" aria-live="polite" aria-atomic="true">{{ selectionAnnouncement }}</p>
+          <fieldset class="layer-controls" aria-label="Align selected element to page">
+            <legend>Align to page</legend>
+            <div class="history-actions">
+              <button type="button" @click="alignSelected('left')">Align left</button>
+              <button type="button" @click="alignSelected('center-horizontal')">Center horizontally</button>
+              <button type="button" @click="alignSelected('right')">Align right</button>
+              <button type="button" @click="alignSelected('top')">Align top</button>
+              <button type="button" @click="alignSelected('center-vertical')">Center vertically</button>
+              <button type="button" @click="alignSelected('bottom')">Align bottom</button>
+            </div>
+            <p class="hint">Moves only the selected element. Undo restores its prior position.</p>
+          </fieldset>
           <label v-if="selectedElement.type === 'text'" class="field">
             Text
             <textarea v-model="selectedElement.text" rows="4" maxlength="10000" />
