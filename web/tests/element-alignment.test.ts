@@ -24,6 +24,17 @@ describe("page-relative immutable alignment", () => {
     expect(() => alignToPage({ ...source, x: NaN }, { width: 100, height: 80 }, "top")).toThrow(RangeError);
     expect(() => alignToPage(source, { width: 100, height: 80 }, "diagonal" as never)).toThrow(RangeError);
   });
+  it("keeps the original document unchanged when alignment is already satisfied", () => {
+    const source: TextElement = { id: "already-left", type: "text", text: "Title", x: 0, y: 15, width: 120, height: 25, fontSize: 18, color: "#172033" };
+    const page = { width: 800, height: 600, background: "#ffffff" };
+    const before = JSON.stringify(toDocument([source], page));
+    const result = alignToPage(source, page, "left");
+    expect(result).toBe(source);
+    const after = JSON.stringify(toDocument([result], page));
+    expect(after).toBe(before);
+    expect(recordHistory(createHistory(before), after)).toEqual(createHistory(before));
+  });
+
   it("preserves schema-v5 export and undo/redo of an aligned element", () => {
     const source: TextElement = { id: "heading", type: "text", text: "Exam", x: 27, y: 18, width: 100, height: 30, fontSize: 20, color: "#172033" };
     const page = { width: 800, height: 600, background: "#ffffff" };
