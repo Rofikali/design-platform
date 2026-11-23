@@ -39,6 +39,28 @@
       try { wasm.validate_document_json("é".repeat(1_000_001)); } catch { oversizedUtf8Rejected = true; }
       if (!oversizedUtf8Rejected) throw new Error("Oversized UTF-8 input was accepted");
 
+      // Execute the staged raster boundary in actual Chrome/WASM, rather than
+      // treating Rust unit tests or mirrored TypeScript fixtures as browser proof.
+      const rasterCases = [
+        ["valid PNG signature", "data:image/png;base64,iVBORw0KGgo=", true],
+        ["MIME mismatch", "data:image/jpeg;base64,iVBORw0KGgo=", false],
+        ["noncanonical pad bits", "data:image/png;base64,iVBORw0KGgp=", false],
+        ["missing padding", "data:image/png;base64,iVBORw0KGgo", false],
+        ["invalid alphabet", "data:image/png;base64,!!!!", false],
+        ["empty payload", "data:image/png;base64,", false],
+        ["SVG not supported", "data:image/svg+xml;base64,iVBORw0KGgo=", false],
+        ["remote URL not supported", "https://example.com/image.png", false],
+        ["literal escape sequence", "data:image/png;base64,iVBORw0KGgo=\\\\n", false],
+      ];
+      for (const [name, input, expected] of rasterCases) {
+        let accepted = true;
+        try { wasm.validate_foreground_raster_data_url_v6(input); }
+        catch { accepted = false; }
+        if (accepted !== expected) {
+          throw new Error("WASM foreground raster boundary differed for: " + name);
+        }
+      }
+
       result.dataset.status = "passed";
       result.textContent = "PASS: WASM initialized; shared valid/invalid cases matched expectations; malformed JSON and oversized UTF-8 input rejected.";
     } catch (error) {
