@@ -73,3 +73,25 @@ describe("staged schema-v6 untrusted JSON image import", () => {
     expect(() => parseForegroundImageElementV6(value)).toThrow();
   });
 });
+
+// Boundary parity matrix is intentionally independent of browser decode.
+describe("staged raster Rust/TS boundary parity", () => {
+  // Mirror crates/design-core/src/foreground_image_v6.rs boundary cases.
+  // This checks the same acceptance matrix; WASM execution remains separate.
+  it.each([
+    ["data:image/png;base64,iVBORw0KGgo=", true],
+    ["data:image/jpeg;base64,iVBORw0KGgo=", false],
+    ["data:image/png;base64,iVBORw0KGgp=", false],
+    ["data:image/png;base64,iVBORw0KGgo", false],
+    ["data:image/png;base64,!!!!", false],
+    ["data:image/png;base64,", false],
+    ["data:image/svg+xml;base64,iVBORw0KGgo=", false],
+    ["https://example.com/image.png", false],
+    ["data:image/png;base64,iVBORw0KGgo=\\n", false],
+  ] as const)("matches Rust raster boundary acceptance for %s", (data_url, valid) => {
+    const run = () => makeForegroundImageElementV6("image-1", { ...placement, data_url });
+    if (valid) expect(run()).toBeDefined();
+    else expect(run).toThrow();
+  });
+
+});
