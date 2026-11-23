@@ -49,3 +49,29 @@ export function makeForegroundImageElementV6(
     kind: Object.freeze({ type: "image" as const, data_url, intrinsic_width, intrinsic_height }),
   });
 }
+
+/**
+ * Validate a deserialized schema-v6 image element at the trust boundary.
+ * Does not decode the raster; callers must also perform browser decode checks.
+ * This intentionally does not activate schema v6 in the existing v5 editor.
+ */
+export function parseForegroundImageElementV6(value: unknown): ForegroundImageElementV6 {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new TypeError("Foreground image element must be an object.");
+  }
+  const element = value as Record<string, unknown>;
+  const kind = element.kind;
+  if (!kind || typeof kind !== "object" || Array.isArray(kind) ||
+      (kind as Record<string, unknown>).type !== "image") {
+    throw new TypeError("Foreground image element must have image kind.");
+  }
+  const image = kind as Record<string, unknown>;
+  // Never coerce untrusted JSON fields: the shared constructor enforces
+  // finite geometry, safe intrinsic dimensions, and the raster signature.
+  return makeForegroundImageElementV6(element.id, {
+    x: element.x, y: element.y, width: element.width, height: element.height,
+    data_url: image.data_url,
+    intrinsic_width: image.intrinsic_width,
+    intrinsic_height: image.intrinsic_height,
+  } as ForegroundImagePlacement);
+}
