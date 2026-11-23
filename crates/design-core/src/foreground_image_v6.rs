@@ -117,4 +117,24 @@ mod tests {
         assert_eq!(image.validate(), Ok(()));
         assert_eq!(validate_raster_data_url(&format!("data:image/png;base64,{}", "A".repeat(MAX_IMAGE_DATA_URL_BYTES))), Err(ImageValidationError::InvalidDataUrl));
     }
+    // Mirror the staged TypeScript data-URL boundary cases in
+    // web/tests/foreground-image-v6.test.ts until shared WASM fixtures land.
+    #[test]
+    fn matches_typescript_raster_boundary_cases() {
+        let cases = [
+            ("data:image/png;base64,iVBORw0KGgo=", true),
+            ("data:image/jpeg;base64,iVBORw0KGgo=", false),
+            ("data:image/png;base64,iVBORw0KGgp=", false),
+            ("data:image/png;base64,iVBORw0KGgo", false),
+            ("data:image/png;base64,!!!!", false),
+            ("data:image/png;base64,", false),
+            ("data:image/svg+xml;base64,iVBORw0KGgo=", false),
+            ("https://example.com/image.png", false),
+            ("data:image/png;base64,iVBORw0KGgo=\\n", false),
+        ];
+        for (input, valid) in cases {
+            assert_eq!(validate_raster_data_url(input).is_ok(), valid, "input: {input:?}");
+        }
+    }
+
 }
