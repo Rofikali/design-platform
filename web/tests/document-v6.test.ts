@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { parseDocument, toDocument } from "../utils/document";
-import { parseStagedDocumentV6 } from "../utils/document-v6";
+import { parseStagedDocumentV6, toStagedDocumentV6 } from "../utils/document-v6";
 import { makeForegroundImageElementV6 } from "../utils/foreground-image-v6";
 
 const image = makeForegroundImageElementV6("image-1", {
@@ -13,6 +13,20 @@ const legacy = toDocument([rect]);
 const v6 = () => ({ ...legacy, schema_version: 6, elements: [image, ...legacy.elements] });
 
 describe("staged schema-v6 import boundary", () => {
+  it("serializes mixed images and legacy elements in original stacking order", () => {
+    const mixed = [rect, image, { ...rect, id: "rect-2" }];
+    const exported = toStagedDocumentV6(mixed);
+    expect(exported.schema_version).toBe(6);
+    expect(parseStagedDocumentV6(JSON.parse(JSON.stringify(exported))).elements).toEqual(mixed);
+    expect(parseDocument(legacy).elements).toEqual([rect]);
+  });
+
+  it("rejects duplicate IDs and oversized payloads at export boundary", () => {
+    expect(() => toStagedDocumentV6([rect, { ...image, id: "rect-1" }])).toThrow(/Duplicate element IDs/);
+    const oversized = { ...image, kind: { ...image.kind, data_url: "data:image/png;base64," + "A".repeat(2_000_004) } };
+    expect(() => toStagedDocumentV6([oversized])).toThrow();
+  });
+
   it("preserves ordered image and legacy elements without mutating input", () => {
     const input = JSON.parse(JSON.stringify(v6()));
     const before = structuredClone(input);
