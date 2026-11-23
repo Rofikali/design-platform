@@ -20,8 +20,10 @@ pub enum ImageValidationError {
 
 impl ForegroundImageV6 {
     pub fn validate(&self) -> Result<(), ImageValidationError> {
-        if self.intrinsic_width == 0 || self.intrinsic_height == 0
-            || self.intrinsic_width > 8192 || self.intrinsic_height > 8192
+        if self.intrinsic_width == 0
+            || self.intrinsic_height == 0
+            || self.intrinsic_width > 8192
+            || self.intrinsic_height > 8192
             || u64::from(self.intrinsic_width) * u64::from(self.intrinsic_height) > MAX_IMAGE_PIXELS
         {
             return Err(ImageValidationError::InvalidDimensions);
@@ -49,7 +51,13 @@ pub fn validate_raster_data_url(value: &str) -> Result<(), ImageValidationError>
     if bytes.is_empty() || bytes.len() % 4 != 0 {
         return Err(ImageValidationError::InvalidDataUrl);
     }
-    let pad = if bytes.ends_with(b"==") { 2 } else if bytes.ends_with(b"=") { 1 } else { 0 };
+    let pad = if bytes.ends_with(b"==") {
+        2
+    } else if bytes.ends_with(b"=") {
+        1
+    } else {
+        0
+    };
     let end = bytes.len() - pad;
     let sextet = |c: u8| -> Option<u8> {
         match c {
@@ -89,7 +97,11 @@ pub fn validate_raster_data_url(value: &str) -> Result<(), ImageValidationError>
         "webp" => count >= 12 && &signature[..4] == b"RIFF" && &signature[8..12] == b"WEBP",
         _ => false,
     };
-    if matches { Ok(()) } else { Err(ImageValidationError::InvalidDataUrl) }
+    if matches {
+        Ok(())
+    } else {
+        Err(ImageValidationError::InvalidDataUrl)
+    }
 }
 
 #[cfg(test)]
@@ -101,21 +113,48 @@ mod tests {
     #[test]
     fn accepts_bounded_png_signature() {
         assert_eq!(validate_raster_data_url(&png()), Ok(()));
-        assert_eq!(ForegroundImageV6 { data_url: png(), intrinsic_width: 400, intrinsic_height: 300 }.validate(), Ok(()));
+        assert_eq!(
+            ForegroundImageV6 {
+                data_url: png(),
+                intrinsic_width: 400,
+                intrinsic_height: 300
+            }
+            .validate(),
+            Ok(())
+        );
     }
     #[test]
     fn rejects_mime_mismatch_and_noncanonical_padding() {
-        assert_eq!(validate_raster_data_url("data:image/jpeg;base64,iVBORw0KGgo="), Err(ImageValidationError::InvalidDataUrl));
-        assert_eq!(validate_raster_data_url("data:image/png;base64,iVBORw0KGgp="), Err(ImageValidationError::InvalidDataUrl));
+        assert_eq!(
+            validate_raster_data_url("data:image/jpeg;base64,iVBORw0KGgo="),
+            Err(ImageValidationError::InvalidDataUrl)
+        );
+        assert_eq!(
+            validate_raster_data_url("data:image/png;base64,iVBORw0KGgp="),
+            Err(ImageValidationError::InvalidDataUrl)
+        );
     }
     #[test]
     fn rejects_bad_dimensions_and_payload_budget() {
-        let mut image = ForegroundImageV6 { data_url: png(), intrinsic_width: 8192, intrinsic_height: 8192 };
-        assert_eq!(image.validate(), Err(ImageValidationError::InvalidDimensions));
+        let mut image = ForegroundImageV6 {
+            data_url: png(),
+            intrinsic_width: 8192,
+            intrinsic_height: 8192,
+        };
+        assert_eq!(
+            image.validate(),
+            Err(ImageValidationError::InvalidDimensions)
+        );
         image.intrinsic_width = 1;
         image.intrinsic_height = 1;
         assert_eq!(image.validate(), Ok(()));
-        assert_eq!(validate_raster_data_url(&format!("data:image/png;base64,{}", "A".repeat(MAX_IMAGE_DATA_URL_BYTES))), Err(ImageValidationError::InvalidDataUrl));
+        assert_eq!(
+            validate_raster_data_url(&format!(
+                "data:image/png;base64,{}",
+                "A".repeat(MAX_IMAGE_DATA_URL_BYTES)
+            )),
+            Err(ImageValidationError::InvalidDataUrl)
+        );
     }
     // Mirror the staged TypeScript data-URL boundary cases in
     // web/tests/foreground-image-v6.test.ts until shared WASM fixtures land.
@@ -133,8 +172,11 @@ mod tests {
             ("data:image/png;base64,iVBORw0KGgo=\\n", false),
         ];
         for (input, valid) in cases {
-            assert_eq!(validate_raster_data_url(input).is_ok(), valid, "input: {input:?}");
+            assert_eq!(
+                validate_raster_data_url(input).is_ok(),
+                valid,
+                "input: {input:?}"
+            );
         }
     }
-
 }
