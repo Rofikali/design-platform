@@ -1,8 +1,10 @@
 # Engineering Documentation Map
 
+**Owner change (23 Nov 2026):** [autonomous zero-required-approval PR policy and ruleset import](autopilot-zero-human-review.md). This supersedes the older external-approval requirement; exact-head CI, real review threads, security and release approvals remain. The ruleset file is only a configuration artifact until imported by the administrator.
+
 This index explains where project knowledge belongs. **For the currently active NOW task, completed/merged work, blocked PRs and the next bounded move, start at the [top LIVE NOW / NEXT / DONE board](../../next.md).** This document maps detailed contracts; it is not a second status tracker. Keep each document focused and update the existing source of truth rather than creating competing copies.
 
-The [hourly autopilot operating agreement](hourly-autopilot.md) describes the owner's enabled recurring "go ahead" task. It supplements—rather than replaces—the live work board and human merge gates.
+The [hourly autopilot operating agreement](hourly-autopilot.md) describes the owner's enabled recurring "go ahead" task. It supplements—rather than replaces—the live work board and GitHub CI/branch merge gates.
 
 ## Product and architecture
 
@@ -34,7 +36,7 @@ The [hourly autopilot operating agreement](hourly-autopilot.md) describes the ow
 ## Deep-dive engineering, delivery, business and operations references
 
 - [Seven-level engineering operating model](seven-level-operating-model.md): junior through distinguished/principal review lenses plus security, QA, SRE, product and CA/MBA oversight.
-- [Agent continuation runbook](agent-continuation-runbook.md): resume from current PR/SHA, choose a bounded next milestone and checkpoint without autonomous merge or background promises.
+- [Agent continuation runbook](agent-continuation-runbook.md): resume from current PR/SHA, choose a bounded next milestone and checkpoint with bounded gated autonomous PR merges; no background success promises.
 - [Agent milestone handoff](agent-milestone-handoff.md): task specification, PR evidence and exact-SHA CI/report template.
 - [Change-scoped verification](change-scoped-verification.md): Rust, WASM, Nuxt, renderer, Docker and security testing lanes and CI cost discipline.
 - [CI evidence policy](ci-evidence-policy.md): minimum logs, failed-step debugging, current-head versus historical results.

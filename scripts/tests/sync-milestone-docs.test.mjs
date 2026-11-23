@@ -65,8 +65,9 @@ test("scoped owner authorization allows gated PR merges without publishing", () 
   const record = fixture();
   record.approval_policy = "OWNER_APPROVED_GATED_MERGE";
   const block = renderGeneratedBlock(record, "compact");
-  assert.match(block, /Owner-authorized autopilot may review and merge only after all exact-head\/integration CI/);
-  assert.match(block, /required independent-review gates pass/);
+  assert.match(block, /Owner-authorized autopilot may self-review and merge eligible PRs/);
+  assert.match(block, /zero mandatory human approvals/);
+  assert.match(block, /Never present self-review as independent approval/);
   assert.match(block, /No automatic publishing or deployment/);
   assert.doesNotMatch(block, /No automated merges/);
 });

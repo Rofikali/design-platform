@@ -1,5 +1,7 @@
 # Five-PR Feature Delivery and Acceptance Ledger
 
+**Owner change (23 Nov 2026):** [autopilot no-human-approval governance](autopilot-zero-human-review.md) authorizes documented agent self-review and gated merging of eligible PRs with **zero required human approvals**. Five opened PR attempts remain the ceiling, and audit/CI/feature identity, review threads, security/print/accessibility/release restrictions remain binding.
+
 **Effective:** 2026-11-21. **Owner decision:** no more than **five pull requests for a single product feature** before progressing to the next independent feature. Applies prospectively. This is a delivery-budget rule, not a claim that untested work is feature-complete.
 
 ## Current feature selection and advanced candidate policy (2026-11-22)

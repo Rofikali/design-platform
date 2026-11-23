@@ -1,5 +1,7 @@
 # Engineering Constitution
 
+> **Owner autonomy directive (2026-11-23):** Eligible engineering PRs use documented agent self-review with **zero mandatory human approvals**, not a fake independent APPROVED review. Preserve required CI, branch rules, review-thread resolution, feature budgets and all security/release restrictions. [Current governance](docs/engineering/autopilot-zero-human-review.md) · [Importable main ruleset](.github/rulesets/autopilot-main-no-human-review.json) (not active until imported).
+
 > **Engineering handbook / imgengine-style governance (2026-11-16):** All agents must start with [the document map](docs/engineering/documentation-map.md), [seven-level operating model](docs/engineering/seven-level-operating-model.md), [milestone continuation](docs/engineering/agent-continuation-runbook.md), [handoff template](docs/engineering/agent-milestone-handoff.md), [change-scoped verification](docs/engineering/change-scoped-verification.md) and [CI evidence policy](docs/engineering/ci-evidence-policy.md). Their decisions apply to this editor's existing **Nuxt + Rust document core + thin WASM adapter**, not imgengine's C17/ABI/FFI pipeline. The [status register](docs/engineering/decision-status-register.md) and [current roadmap](next.md) must be reconciled with live PRs and exact-SHA checks, not treated as eternal facts. The owner's latest authorization permits the autopilot to review and merge safe PRs after all latest-head CI, security, repository protections and required independent-review gates pass; never automatically publish or deploy. Do not bypass independent-review rules, deploy, spend, weaken tests or claim a completed AI session continues itself. Docs-only additions do not implement features or certify release readiness.
 
 
@@ -7,15 +9,15 @@
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-23)
 
-**Reference main:** e203bf289911ba13f4a10eafcb529b16bbe98f58 (dated snapshot; re-check live GitHub before acting).
+**Reference main:** c99d1c55fc495f7bb4e1522407deadf8933d1f2a (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M3-IMAGE-01 — Foreground image element authoring** [PR_OPEN]. [PR #169](https://github.com/Rofikali/design-platform/pull/169)
+**NOW:** **DP-M3-IMAGE-01 — Foreground image element authoring** [IN_PROGRESS]. [PR #169](https://github.com/Rofikali/design-platform/pull/169)
 
 **NEXT:** DP-M3-TYPO-01 [PLANNED]; DP-M3-VECTOR-01 [PLANNED]; DP-M3-PRECISION-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
 **Feature budget:** DP-M3-IMAGE — 4/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
 
-**Review gate:** Owner-authorized autopilot may review and merge only after all exact-head/integration CI, security, branch protection and required independent-review gates pass. No automatic publishing or deployment.
+**Review gate:** Owner-authorized autopilot may self-review and merge eligible PRs with zero mandatory human approvals after required exact-head/integration CI, security, branch rules and review-thread gates pass. Never present self-review as independent approval. No automatic publishing or deployment.
 
 <!-- milestone-sync:end -->
 

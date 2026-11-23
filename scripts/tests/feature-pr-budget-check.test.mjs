@@ -51,6 +51,10 @@ test("missing, malformed, duplicated or invalid PR metadata fails", () => {
   e.pull_request.body = "Feature-ID: DP-M3-ALIGN"; e.pull_request.number = 0;
   assert.throws(() => validatePrEvent(record(), e), /Invalid GitHub PR number/);
 });
+test("ruleset import JSON is a governance-only path", () => {
+  assert.equal(isGovernanceOnlyPath(".github/rulesets/autopilot-main-no-human-review.json"), true);
+});
+
 test("governance exemption allows only reviewed docs, CI and policy tests", () => {
   const e = event("GOVERNANCE-EXEMPT", 200, "docs(governance): implement budget gate");
   const r = record();

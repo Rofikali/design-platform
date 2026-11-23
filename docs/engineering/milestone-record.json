@@ -2,7 +2,7 @@
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
   "snapshot_date": "2026-11-23",
-  "reference_main_sha": "e203bf289911ba13f4a10eafcb529b16bbe98f58",
+  "reference_main_sha": "c99d1c55fc495f7bb4e1522407deadf8933d1f2a",
   "now_id": "DP-M3-IMAGE-01",
   "next_ids": [
     "DP-M3-TYPO-01",
@@ -220,10 +220,10 @@
       "id": "DP-M3-IMAGE-01",
       "feature_id": "DP-M3-IMAGE",
       "title": "Foreground image element authoring",
-      "status": "PR_OPEN",
-      "summary": "PRs #165, #167 and #168 merged; draft #169 adds browser-local raster decode, dimension limits and cleanup tests, not yet CI-verified. Image element authoring, Rust/WASM parity, editor controls, history, autosave and PNG/print remain unimplemented.",
+      "status": "IN_PROGRESS",
+      "summary": "PRs #165 #167 #168 #169 merged; raster guards/decode only, not image authoring/schema v6/Rust-WASM parity/editor/history/export. Integrated main CI failed autosave restore on 2026-11-23; security #118 and manual #82/#85/#158 remain open.",
       "pr": 169,
-      "sha": "1d5b48ab8c86d020d14484ffce276f8a6d44a029"
+      "sha": "c99d1c55fc495f7bb4e1522407deadf8933d1f2a"
     },
     {
       "id": "DP-M3-TYPO-01",
@@ -365,7 +365,7 @@
           168,
           169
         ],
-        "notes": "PRs #165 #167 #168 merged (latest merge e203bf289911ba13f4a10eafcb529b16bbe98f58). Draft #169 adds local decode/dimension/cleanup tests; CI/review pending. Schema v6, Rust/WASM, editor/history/export NOT IMPLEMENTED; manual #82/#85/#158 NOT RUN; security #118 OPEN."
+        "notes": "PRs #165 #167 #168 #169 merged, latest merge c99d1c55fc495f7bb4e1522407deadf8933d1f2a on 2026-11-23; 4/5 opened attempts. The prior PR_OPEN note is superseded. Raster input guard/decode prerequisites are integrated; actual foreground image authoring, schema v6, Rust/WASM parity and full editor/history/export are not implemented. Main CI run 45103673434 failed autosave restore (editor-browser-smoke.mjs:890); do not call main green. Security #118 and manual #82/#85/#158 remain open."
       },
       {
         "id": "DP-M3-TYPO",

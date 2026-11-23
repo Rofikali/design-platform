@@ -1,20 +1,22 @@
 # Design Platform — Hourly Autopilot Operating Agreement
 
+> **Owner update (23 Nov 2026):** [zero-required-human-approval autopilot policy](autopilot-zero-human-review.md) governs the existing hourly task. If ruleset not imported, report an unprotected main; do not confuse committed JSON with activated settings. The latest integrated main browser autosave check FAILED after merged #169.
+
 **Status:** A separate ChatGPT scheduled automation named **Design Platform Autopilot** was created and enabled on 2026-11-16, hourly in Asia/Kolkata. This document describes its owner-approved **bounded continuation workflow**, not a GitHub Actions workflow or a guarantee that every scheduled run can complete a PR. Pause it through ChatGPT task controls when desired.
 
 <!-- milestone-sync:start -->
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-23)
 
-**Reference main:** e203bf289911ba13f4a10eafcb529b16bbe98f58 (dated snapshot; re-check live GitHub before acting).
+**Reference main:** c99d1c55fc495f7bb4e1522407deadf8933d1f2a (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M3-IMAGE-01 — Foreground image element authoring** [PR_OPEN]. [PR #169](https://github.com/Rofikali/design-platform/pull/169)
+**NOW:** **DP-M3-IMAGE-01 — Foreground image element authoring** [IN_PROGRESS]. [PR #169](https://github.com/Rofikali/design-platform/pull/169)
 
 **NEXT:** DP-M3-TYPO-01 [PLANNED]; DP-M3-VECTOR-01 [PLANNED]; DP-M3-PRECISION-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
 **Feature budget:** DP-M3-IMAGE — 4/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
 
-**Review gate:** Owner-authorized autopilot may review and merge only after all exact-head/integration CI, security, branch protection and required independent-review gates pass. No automatic publishing or deployment.
+**Review gate:** Owner-authorized autopilot may self-review and merge eligible PRs with zero mandatory human approvals after required exact-head/integration CI, security, branch rules and review-thread gates pass. Never present self-review as independent approval. No automatic publishing or deployment.
 
 <!-- milestone-sync:end -->
 

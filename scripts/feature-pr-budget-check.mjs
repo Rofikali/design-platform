@@ -20,7 +20,7 @@ const GOVERNANCE_PATHS = new Set([
 function requireValid(ok, why) { if (!ok) throw new Error(why); }
 
 export function isGovernanceOnlyPath(path) {
-  return GOVERNANCE_PATHS.has(path) || /^docs\/[a-zA-Z0-9/._-]+\.md$/.test(path);
+  return GOVERNANCE_PATHS.has(path) || /^\.github\/rulesets\/[a-z0-9._-]+\.json$/.test(path) || /^docs\/[a-zA-Z0-9/._-]+\.md$/.test(path);
 }
 
 export function validatePrEvent(record, event, changedFiles = []) {
@@ -37,7 +37,7 @@ export function validatePrEvent(record, event, changedFiles = []) {
   const id = match[1];
   if (id === "GOVERNANCE-EXEMPT") {
     requireValid(/^docs\(governance\):/.test(pr.title || ""),
-      "Governance exemption requires docs(governance): title and independent review");
+      "Governance exemption requires docs(governance): title and documented agent review");
     requireValid(Array.isArray(changedFiles) && changedFiles.length > 0 && changedFiles.every(isGovernanceOnlyPath),
       "Governance exemption is limited to approved documentation, CI and governance-test files");
     return record;

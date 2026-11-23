@@ -1,5 +1,7 @@
 # Engineering Skills and Playbooks
 
+> **Autopilot execution:** [no-human-approval but gated PR lifecycle](docs/engineering/autopilot-zero-human-review.md), protected-main [ruleset JSON](.github/rulesets/autopilot-main-no-human-review.json), honest self-review, exact-head CI, and seven-section source-of-truth regeneration. No self-approval or release without separate authorization.
+
 **PR enforcement:** Use one PR-body `Feature-ID: <ACTIVE-ID>` line, record GitHub's actual PR number in the milestone record, and regenerate seven sections in the same implementation PR. CI verifies the linkage; governance-only exemptions must be diff-limited and independently reviewed. For CLOSED features, record explicit DONE/PARTIAL/BLOCKED outcome.
 
 **Feature execution rule (2026-11-21):** Follow [feature-delivery-policy.md](docs/engineering/feature-delivery-policy.md). Maximum **five PRs per feature**, count abandoned feature PR attempts, and after the budget is used close as DONE/PARTIAL/BLOCKED and advance to a different READY feature. Evidence labels are separate: merged source, exact-head CI, local Ubuntu/Docker Compose, manual accessibility, print, and release. Do not repeat table-only, closed Layers or closed Alignment PR iterations. DP-M3-IMAGE is ACTIVE (1/5, merged resource guard #165); full image authoring remains NEXT work within that feature.
@@ -302,14 +304,14 @@ The owner enabled an independent ChatGPT task named **Design Platform Autopilot*
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-23)
 
-**Reference main:** e203bf289911ba13f4a10eafcb529b16bbe98f58 (dated snapshot; re-check live GitHub before acting).
+**Reference main:** c99d1c55fc495f7bb4e1522407deadf8933d1f2a (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M3-IMAGE-01 — Foreground image element authoring** [PR_OPEN]. [PR #169](https://github.com/Rofikali/design-platform/pull/169)
+**NOW:** **DP-M3-IMAGE-01 — Foreground image element authoring** [IN_PROGRESS]. [PR #169](https://github.com/Rofikali/design-platform/pull/169)
 
 **NEXT:** DP-M3-TYPO-01 [PLANNED]; DP-M3-VECTOR-01 [PLANNED]; DP-M3-PRECISION-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
 **Feature budget:** DP-M3-IMAGE — 4/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
 
-**Review gate:** Owner-authorized autopilot may review and merge only after all exact-head/integration CI, security, branch protection and required independent-review gates pass. No automatic publishing or deployment.
+**Review gate:** Owner-authorized autopilot may self-review and merge eligible PRs with zero mandatory human approvals after required exact-head/integration CI, security, branch rules and review-thread gates pass. Never present self-review as independent approval. No automatic publishing or deployment.
 
 <!-- milestone-sync:end -->
