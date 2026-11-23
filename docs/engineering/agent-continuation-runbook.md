@@ -1,20 +1,22 @@
 # Agent Continuation and New-Session Recovery — Design Platform
 
+> **Owner update (23 Nov 2026):** [autopilot self-review + gated merges with zero required human approvals](autopilot-zero-human-review.md) supersedes historical mandatory-review language. Never call an agent self-review independent. GitHub rules and all CI/security/manual-release gates still apply.
+
 **Status:** Standing procedure, not running automation. Inspired by imgengine's milestone-continuation model and adapted to Design Platform. [AGENTS](../../AGENTS.md), [next](../../next.md), [handoff template](agent-milestone-handoff.md) and current source/CI remain authoritative.
 
 <!-- milestone-sync:start -->
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-23)
 
-**Reference main:** e203bf289911ba13f4a10eafcb529b16bbe98f58 (dated snapshot; re-check live GitHub before acting).
+**Reference main:** c99d1c55fc495f7bb4e1522407deadf8933d1f2a (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M3-IMAGE-01 — Foreground image element authoring** [PR_OPEN]. [PR #169](https://github.com/Rofikali/design-platform/pull/169)
+**NOW:** **DP-M3-IMAGE-01 — Foreground image element authoring** [IN_PROGRESS]. [PR #169](https://github.com/Rofikali/design-platform/pull/169)
 
 **NEXT:** DP-M3-TYPO-01 [PLANNED]; DP-M3-VECTOR-01 [PLANNED]; DP-M3-PRECISION-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
 **Feature budget:** DP-M3-IMAGE — 4/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
 
-**Review gate:** Owner-authorized autopilot may review and merge only after all exact-head/integration CI, security, branch protection and required independent-review gates pass. No automatic publishing or deployment.
+**Review gate:** Owner-authorized autopilot may self-review and merge eligible PRs with zero mandatory human approvals after required exact-head/integration CI, security, branch rules and review-thread gates pass. Never present self-review as independent approval. No automatic publishing or deployment.
 
 <!-- milestone-sync:end -->
 
@@ -36,7 +38,7 @@ A markdown rule **does not** wake ChatGPT/Astra/Codex after a session ends, subm
 
 ## Five-PR feature budget and handoff
 
-The current feature is **DP-M3-ALIGN (1/5; #160 merged)**, not repeated table/layer regressions. Check [the five-PR feature ledger](feature-delivery-policy.md) and `milestone-record.json` before creating a PR. Record every PR attempt under the stable feature ID. Never open a sixth PR for one feature. Close the feature as DONE, PARTIAL or BLOCKED, carry real gaps to independent acceptance issues, and advance to alignment/snapping when layers exits. Local owner Ubuntu/Docker Compose, manual accessibility and real print remain NOT RUN without actual execution.
+The current feature is **DP-M3-IMAGE (4/5; #169 merged)**, not repeated table/layer regressions. Check [the five-PR feature ledger](feature-delivery-policy.md) and `milestone-record.json` before creating a PR. Record every PR attempt under the stable feature ID. Never open a sixth PR for one feature. Close the feature as DONE, PARTIAL or BLOCKED, carry real gaps to independent acceptance issues, and advance to alignment/snapping when layers exits. Local owner Ubuntu/Docker Compose, manual accessibility and real print remain NOT RUN without actual execution.
 
 ## "Go ahead" task-selection contract — use the live board
 
