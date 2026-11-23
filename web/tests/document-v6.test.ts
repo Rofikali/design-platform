@@ -32,7 +32,18 @@ describe("staged schema-v6 import boundary", () => {
     })).toThrow(/Duplicate element IDs/);
   });
 
-  it("rejects oversized v6 JSON even when the legacy subset is small", () => {\n    const oversized = { ...v6(), unused_metadata: "x".repeat(2_000_001) };\n    expect(() => parseStagedDocumentV6(oversized)).toThrow(/2 MB limit/);\n  });\n\n  it("rejects cyclic input instead of accepting an unserializable document", () => {\n    const cyclic = v6() as ReturnType<typeof v6> & { extra?: unknown };\n    cyclic.extra = cyclic;\n    expect(() => parseStagedDocumentV6(cyclic)).toThrow(/serializable/);\n  });\n\n  it("rejects invalid page geometry and malformed image data", () => {
+  it("rejects oversized v6 JSON even when the legacy subset is small", () => {
+    const oversized = { ...v6(), unused_metadata: "x".repeat(2_000_001) };
+    expect(() => parseStagedDocumentV6(oversized)).toThrow(/2 MB limit/);
+  });
+
+  it("rejects cyclic input instead of accepting an unserializable document", () => {
+    const cyclic = v6() as ReturnType<typeof v6> & { extra?: unknown };
+    cyclic.extra = cyclic;
+    expect(() => parseStagedDocumentV6(cyclic)).toThrow(/serializable/);
+  });
+
+  it("rejects invalid page geometry and malformed image data", () => {
     expect(() => parseStagedDocumentV6({ ...v6(), page: { ...legacy.page, width: -1 } })).toThrow();
     expect(() => parseStagedDocumentV6({
       ...v6(), elements: [{ ...image, kind: { ...image.kind, intrinsic_width: 0 } }],
