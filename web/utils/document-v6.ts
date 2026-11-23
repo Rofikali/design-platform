@@ -1,4 +1,4 @@
-import { parseDocument, type ParsedDocument, type DesignElement } from "./document";
+import { parseDocument, MAX_FILE_CHARS, type ParsedDocument, type DesignElement } from "./document";
 import { parseForegroundImageElementV6, type ForegroundImageElementV6 } from "./foreground-image-v6";
 
 /**
@@ -14,7 +14,7 @@ export function parseStagedDocumentV6(input: unknown): ParsedDocumentV6 {
   if (!input || typeof input !== "object" || Array.isArray(input)) {
     throw new Error("Schema-v6 document must be an object.");
   }
-  const document = input as Record<string, unknown>;
+  // Enforce the portable JSON budget across image and legacy elements together.\n  // Delegating only the legacy subset to v5 would otherwise miss image bytes.\n  let serialized: string;\n  try { serialized = JSON.stringify(input); } catch { throw new Error("Schema-v6 document must be serializable."); }\n  if (new TextEncoder().encode(serialized).byteLength > MAX_FILE_CHARS) {\n    throw new Error("The file exceeds the 2 MB limit.");\n  }\n  const document = input as Record<string, unknown>;
   if (document.schema_version !== 6 || !Array.isArray(document.elements)) {
     throw new Error("Schema-v6 document requires version 6 and an elements array.");
   }
