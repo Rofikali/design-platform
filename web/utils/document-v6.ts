@@ -1,4 +1,4 @@
-import { parseDocument, MAX_FILE_CHARS, type ParsedDocument, type DesignElement } from "./document";
+import { parseDocument, MAX_FILE_CHARS, type ParsedDocument, type DesignElement, type PageGeometry, type OutputSizeMm, type TemplateMetadata, toDocument } from "./document";
 import { parseForegroundImageElementV6, type ForegroundImageElementV6 } from "./foreground-image-v6";
 
 /**
@@ -52,4 +52,31 @@ export function parseStagedDocumentV6(input: unknown): ParsedDocumentV6 {
     elements: document.elements.map((_: unknown, index: number) =>
       images.get(index) ?? parsed.elements[legacyIndex++]!),
   };
+}
+
+/**
+ * Stage a portable v6 JSON document without changing production v5 exports.
+ * The legacy serializer remains authoritative for all existing element kinds;
+ * images are inserted at their original z-order positions. Validate the final
+ * combined document to enforce the shared size, ID and geometry budgets.
+ */
+export function toStagedDocumentV6(
+  elements: ReadonlyArray<DesignElement | ForegroundImageElementV6>,
+  page?: PageGeometry,
+  outputSizeMm?: OutputSizeMm,
+  template?: TemplateMetadata,
+): Record<string, unknown> {
+  const isImage = (element: DesignElement | ForegroundImageElementV6): element is ForegroundImageElementV6 =>
+    "kind" in element && element.kind?.type === "image";
+  const legacy = elements.filter((element): element is DesignElement => !isImage(element));
+  const v5 = toDocument(legacy, page, outputSizeMm, template);
+  let legacyIndex = 0;
+  const combined = elements.map(element =>
+    isImage(element)
+      ? parseForegroundImageElementV6(element)
+      : v5.elements[legacyIndex++]!,
+  );
+  const document = { ...v5, schema_version: 6, elements: combined };
+  parseStagedDocumentV6(document);
+  return document;
 }
