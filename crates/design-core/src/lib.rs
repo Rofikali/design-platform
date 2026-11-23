@@ -3,6 +3,8 @@
 //! Coordinates use logical pixels at a 96-units-per-inch reference scale.
 //! This crate intentionally contains no browser, filesystem, network, or rendering code.
 
+pub mod foreground_image_v6;
+
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
