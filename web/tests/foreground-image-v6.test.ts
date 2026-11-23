@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { makeForegroundImageElementV6 } from "../utils/foreground-image-v6";
+import { makeForegroundImageElementV6, parseForegroundImageElementV6 } from "../utils/foreground-image-v6";
 
 const png = "data:image/png;base64,iVBORw0KGgo=";
 const placement = {
@@ -41,5 +41,28 @@ describe("staged schema-v6 foreground image contract", () => {
     "data:image/png;base64,!!!!",
   ])("rejects untrusted raster input: %s", data_url => {
     expect(() => makeForegroundImageElementV6("image-1", { ...placement, data_url })).toThrow();
+  });
+});
+
+describe("staged schema-v6 untrusted JSON image import", () => {
+  const valid = () => makeForegroundImageElementV6("image-1", placement);
+
+  it("accepts a JSON round trip without changing the input", () => {
+    const input = JSON.parse(JSON.stringify(valid()));
+    const before = structuredClone(input);
+    expect(parseForegroundImageElementV6(input)).toEqual(valid());
+    expect(input).toEqual(before);
+  });
+
+  it.each([
+    null, [], 7, {}, { id: "image-1", kind: { type: "rect" } },
+    { ...valid(), id: "" },
+    { ...valid(), x: "40" },
+    { ...valid(), width: -1 },
+    { ...valid(), kind: { ...valid().kind, intrinsic_width: 1.5 } },
+    { ...valid(), kind: { ...valid().kind, data_url: "https://example.com/image.png" } },
+    { ...valid(), kind: { ...valid().kind, type: "svg" } },
+  ])("rejects malformed or coerced image elements: %o", value => {
+    expect(() => parseForegroundImageElementV6(value)).toThrow();
   });
 });
