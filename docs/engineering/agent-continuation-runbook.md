@@ -20,6 +20,8 @@
 
 <!-- milestone-sync:end -->
 
+**Resumption protocol:** consult [hourly autopilot execution recovery](autopilot-execution-recovery.md). An earlier run's unresolved step is a hint to revalidate against live GitHub, not authority to repeat an old PR; report a specific next code/test step and after two identical NO CODE CHANGED runs either switch safe category or escalate without bypassing controls.
+
 ## Current feature continuation and future-job selection (2026-11-22)
 
 Check [advanced roadmap](../product/advanced-feature-roadmap.md), [new feature acceptance matrix](advanced-feature-acceptance.md), [live work board](../../next.md) and [structured milestone record](milestone-record.json) after live GitHub state. PR #165 merged at `222e550e31e859b2b8e06538f27d07f424a88e19`; current DP-M3-IMAGE remains 1/5 and IN_PROGRESS, **not PR_OPEN**. Continue foreground-image schema/editor/history/export through a bounded next PR under the SAME feature ID. New typography/vector/guides/exam/banner/asset/PDF candidates remain PLANNED. Restore the generated seven documentation views from the record whenever status materially changes. Old tasks #162, closed Alignment/Layers and legacy tables must not be reselected. Preserve existing editor functionality and all original schema migrations.
@@ -34,7 +36,7 @@ A markdown rule **does not** wake ChatGPT/Astra/Codex after a session ends, subm
 
 ## Bootstrap prompt for a new agent session
 
-> Read AGENTS.md, SKILLS.md, next.md, docs/engineering/agent-continuation-runbook.md and current GitHub PR/CI state. Reconcile stale milestones and select one READY bounded task, performing a bounded PR creation, review and merge when all exact-head/integration CI, security, repository and required independent-review gates pass; publishing/deployment remain separately gated. Report exact-SHA evidence, costs and open risks; do not invent results or rerun full CI unnecessarily.
+> Read AGENTS.md, SKILLS.md, next.md, docs/engineering/agent-continuation-runbook.md and current GitHub PR/CI state. Reconcile stale milestones and select one READY bounded task, performing a bounded PR creation, review and merge when all exact-head/integration CI, security, repository and actual GitHub review/branch-protection gates pass; publishing/deployment remain separately gated. Report exact-SHA evidence, costs and open risks; do not invent results or rerun full CI unnecessarily.
 
 ## Five-PR feature budget and handoff
 
@@ -47,7 +49,7 @@ When the owner writes **"go ahead"**, the agent should not ask them to repeat al
 1. **Continue before duplicating:** inspect an active feature/CI remediation PR and its exact latest head before opening a competing PR. If a regression has a failing latest-head job, it remains NOW even when other jobs pass. In the 2026-11-16 snapshot, PR #102 is the primary CI regression lane; this is not a permanent rule to target #102.
 2. **Do not confuse statuses:** DONE/IMPLEMENTED/VERIFIED/CI_PENDING/FAILED/MERGED/RELEASED are different; only GitHub confirms a merge, a real launch confirms release, and only exact-head executed checks prove CI success.
 3. **Do not invent time:** docs cannot trigger a background agent or future response; work happens only while the authorized runner is executing.
-4. **Change control:** the latest owner rule authorizes safe verified PR merges, but never overrides required independent reviews or branch protections; no authority for publishing, deployment, visibility, billing, secrets, data deletion or security bypass. Small PRs and review remain standard.
+4. **Change control:** the latest owner rule authorizes safe verified PR merges, but never overrides applicable review requirements or branch protections; no authority for publishing, deployment, visibility, billing, secrets, data deletion or security bypass. Small PRs and review remain standard.
 5. **Checkpoint sparingly:** update the structured milestone record and regenerate the seven documentation views after a meaningful transition, not after every queued/running CI poll. Preserve durable evidence in PRs and linked reports, not duplicated logs.
 6. **Handoff once per bounded milestone:** include task ID, prior and current SHA, affected boundary, test status, known failures, PR link, next action, seven-level/security/SRE/product/finance review notes and owner gate.
 7. **Next after merge:** confirm merge SHA and exact associated checks, mark the task MERGED (not RELEASED), then choose the next READY item after prerequisites—not the oldest long-term bullet.

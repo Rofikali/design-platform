@@ -1,6 +1,8 @@
 # Design Platform
 
-> **Autopilot policy (2026-11-23):** scoped PRs may be self-reviewed and merged without a human approval after all required CI/security/branch gates. [Policy and docs-sync process](docs/engineering/autopilot-zero-human-review.md) · [importable protection JSON](.github/rulesets/autopilot-main-no-human-review.json). GitHub ruleset import requires a separate Settings action; the integrated browser autosave failure remains unresolved.
+> **Autopilot execution recovery (23 Nov 2026):** [outcome-first continuation contract](docs/engineering/autopilot-execution-recovery.md) records precise handoff fields, resume-first implementation, two-no-code escalation, and L1–L7/CISSP/CCIE/Linux/SRE/CA-MBA gates. This is **not** a scheduler or a substitute for current GitHub CI and the task run record.
+
+> **Autopilot policy (2026-11-23):** scoped PRs may be self-reviewed and merged without a human approval after all required CI/security/branch gates. [Policy and docs-sync process](docs/engineering/autopilot-zero-human-review.md) · [importable protection JSON](.github/rulesets/autopilot-main-no-human-review.json). GitHub ruleset import requires a separate Settings action; the earlier browser autosave failure was followed by a reported passing main run; intermittent regression risk still needs evidence-based triage.
 
 A template-driven design editor, built incrementally with security, export fidelity, and operating cost treated as product requirements.
 
@@ -24,7 +26,7 @@ The current prototype includes:
 
 The existing editor, text/shapes, frames/grids/tables, layers and snapping, page image backgrounds, undo/redo, localStorage, v1–v5 JSON compatibility, PNG and browser print **must keep working**. The [advanced editor feature roadmap](docs/product/advanced-feature-roadmap.md) records proposed typography, vector shapes, guides/rulers, object tools, multi-page exam papers, shop banner studio, local assets, templates, print preflight and optional direct PDF. The [advanced feature acceptance matrix](docs/engineering/advanced-feature-acceptance.md) adds L1–L7 architecture, CISSP/security, Linux/SRE, proportionate networking, CA/MBA and management evidence gates. Proposed does **not** mean implemented or release-approved.
 
-**Current source-backed milestone:** DP-M3-IMAGE remains ACTIVE at 1/5 PRs; [PR #165](https://github.com/Rofikali/design-platform/pull/165) is MERGED with only foreground raster data URL validation. Full editable foreground image objects are still missing. Future candidates stay PLANNED/BLOCKED until this feature exits and the live [milestone record](docs/engineering/milestone-record.json) promotes one new active feature. No SaaS/backend or unapproved paid deployment is implied.
+**Current source-backed milestone:** DP-M3-IMAGE remains ACTIVE at 4/5 feature PR attempts (merged #165, #167, #168 and #169); input guards and browser decode prerequisites exist, not complete foreground image authoring. Full editable foreground image objects are still missing. Future candidates stay PLANNED/BLOCKED until this feature exits and the live [milestone record](docs/engineering/milestone-record.json) promotes one new active feature. No SaaS/backend or unapproved paid deployment is implied.
 
 ## Five-attempt feature governance
 
