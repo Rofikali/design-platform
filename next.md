@@ -1,5 +1,7 @@
 # Design Platform — LIVE Work Board and Master Roadmap
 
+> **Continuation checkpoint (23 Nov 2026):** [outcome-first autopilot recovery](docs/engineering/autopilot-execution-recovery.md) governs handoff and no-code fallback. GitHub PR #170 merged at `37fbe383b8f6df33c4c5c658d29ae659c2691d5c`; the image feature has 4/5 feature PRs, with authoring incomplete. The earlier autosave failure is a historical observation; a later reported passing main check does not prove the bug impossible. Always verify GitHub live state and do not edit the seven generator-owned blocks manually.
+
 > **Current owner policy:** [Autopilot no-human-review / main ruleset / docs reconciliation](docs/engineering/autopilot-zero-human-review.md). Snapshot 2026-11-23: [#169](https://github.com/Rofikali/design-platform/pull/169) merged into main `c99d1c5`; [integrated main CI](https://github.com/Rofikali/design-platform/actions/runs/45103673434) failed browser autosave restore. Repair/diagnose that regression before treating main as green; image feature remains IN_PROGRESS (4/5).
 
 > **Live-board snapshot (2026-11-23; dated GitHub inspection):** main `c99d1c55fc495f7bb4e1522407deadf8933d1f2a` includes merged PR #169; image authoring remains incomplete (4/5 attempts). Main CI run 45103673434 FAILED the editor browser autosave restoration check; repair before any main-green claim. GitHub live state still outranks this snapshot.

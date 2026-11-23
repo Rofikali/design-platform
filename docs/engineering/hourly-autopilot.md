@@ -1,6 +1,6 @@
 # Design Platform — Hourly Autopilot Operating Agreement
 
-> **Owner update (23 Nov 2026):** [zero-required-human-approval autopilot policy](autopilot-zero-human-review.md) governs the existing hourly task. If ruleset not imported, report an unprotected main; do not confuse committed JSON with activated settings. The latest integrated main browser autosave check FAILED after merged #169.
+> **Owner update (23 Nov 2026):** [zero-required-human-approval autopilot policy](autopilot-zero-human-review.md) governs the existing hourly task. If ruleset not imported, report an unprotected main; do not confuse committed JSON with activated settings. The browser autosave check FAILED in an earlier integrated-main run after #169; a later run #45106836566 was reported PASS, which does not rule out flakiness. Verify the latest exact SHA rather than treating either as permanent.
 
 **Status:** A separate ChatGPT scheduled automation named **Design Platform Autopilot** was created and enabled on 2026-11-16, hourly in Asia/Kolkata. This document describes its owner-approved **bounded continuation workflow**, not a GitHub Actions workflow or a guarantee that every scheduled run can complete a PR. Pause it through ChatGPT task controls when desired.
 
@@ -21,6 +21,8 @@
 <!-- milestone-sync:end -->
 
 **Read first:** [AGENTS](../../AGENTS.md) → [SKILLS](../../SKILLS.md) → [live NOW / NEXT / DONE board](../../next.md) → [agent continuation](agent-continuation-runbook.md) → [seven-level operating model](seven-level-operating-model.md) → [milestone handoff](agent-milestone-handoff.md) → [change-scoped verification](change-scoped-verification.md) → [CI evidence policy](ci-evidence-policy.md).
+
+**Required continuation:** [outcome-first execution recovery](autopilot-execution-recovery.md) defines the concrete pending action to preserve between scheduled invocations, the two-repeated-no-code recovery rule, GitHub CI vs task-run distinctions and L1–L7/security/SRE/finance gates. Read it before re-auditing historical PRs.
 
 ## Five-PR feature progression (owner rule, 2026-11-21)
 

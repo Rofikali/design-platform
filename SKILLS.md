@@ -1,10 +1,12 @@
 # Engineering Skills and Playbooks
 
+> **Autopilot execution recovery (23 Nov 2026):** [outcome-first continuation contract](docs/engineering/autopilot-execution-recovery.md) records precise handoff fields, resume-first implementation, two-no-code escalation, and L1–L7/CISSP/CCIE/Linux/SRE/CA-MBA gates. This is **not** a scheduler or a substitute for current GitHub CI and the task run record.
+
 > **Autopilot execution:** [no-human-approval but gated PR lifecycle](docs/engineering/autopilot-zero-human-review.md), protected-main [ruleset JSON](.github/rulesets/autopilot-main-no-human-review.json), honest self-review, exact-head CI, and seven-section source-of-truth regeneration. No self-approval or release without separate authorization.
 
 **PR enforcement:** Use one PR-body `Feature-ID: <ACTIVE-ID>` line, record GitHub's actual PR number in the milestone record, and regenerate seven sections in the same implementation PR. CI verifies the linkage; governance-only exemptions must be diff-limited and independently reviewed. For CLOSED features, record explicit DONE/PARTIAL/BLOCKED outcome.
 
-**Feature execution rule (2026-11-21):** Follow [feature-delivery-policy.md](docs/engineering/feature-delivery-policy.md). Maximum **five PRs per feature**, count abandoned feature PR attempts, and after the budget is used close as DONE/PARTIAL/BLOCKED and advance to a different READY feature. Evidence labels are separate: merged source, exact-head CI, local Ubuntu/Docker Compose, manual accessibility, print, and release. Do not repeat table-only, closed Layers or closed Alignment PR iterations. DP-M3-IMAGE is ACTIVE (1/5, merged resource guard #165); full image authoring remains NEXT work within that feature.
+**Feature execution rule (2026-11-21):** Follow [feature-delivery-policy.md](docs/engineering/feature-delivery-policy.md). Maximum **five PRs per feature**, count abandoned feature PR attempts, and after the budget is used close as DONE/PARTIAL/BLOCKED and advance to a different READY feature. Evidence labels are separate: merged source, exact-head CI, local Ubuntu/Docker Compose, manual accessibility, print, and release. Do not repeat table-only, closed Layers or closed Alignment PR iterations. DP-M3-IMAGE is ACTIVE (4/5 merged attempts #165/#167/#168/#169); full image authoring remains NEXT work within that feature.
 
 This file is the practical companion to `AGENTS.md`. It describes how an agent should apply professional engineering, security, architecture, product, and management skills to this repository.
 
