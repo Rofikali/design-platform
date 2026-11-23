@@ -119,7 +119,7 @@ export function renderGeneratedBlock(record, view) {
       ". No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.",
     "",
     r.approval_policy === "OWNER_APPROVED_GATED_MERGE"
-      ? "**Review gate:** Owner-authorized autopilot may review and merge only after all exact-head/integration CI, security, branch protection and required independent-review gates pass. No automatic publishing or deployment."
+      ? "**Review gate:** Owner-authorized autopilot may self-review and merge eligible PRs with zero mandatory human approvals after required exact-head/integration CI, security, branch rules and review-thread gates pass. Never present self-review as independent approval. No automatic publishing or deployment."
       : "**Review gate:** A human reviews and manually merges each PR. No automated merges, publishing or deployments.",
   ];
   if (view === "detailed") {
