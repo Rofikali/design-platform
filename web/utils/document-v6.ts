@@ -1,0 +1,48 @@
+import { parseDocument, type ParsedDocument, type DesignElement } from "./document";
+import { parseForegroundImageElementV6, type ForegroundImageElementV6 } from "./foreground-image-v6";
+
+/**
+ * Staged schema-v6 import boundary. Does not activate v6 in the production
+ * editor: existing v1-v5 parsing stays on its established code path.
+ * Legacy elements are validated by the current v5 parser, not reimplemented.
+ */
+export type ParsedDocumentV6 = Omit<ParsedDocument, "elements"> & {
+  elements: Array<DesignElement | ForegroundImageElementV6>;
+};
+
+export function parseStagedDocumentV6(input: unknown): ParsedDocumentV6 {
+  if (!input || typeof input !== "object" || Array.isArray(input)) {
+    throw new Error("Schema-v6 document must be an object.");
+  }
+  const document = input as Record<string, unknown>;
+  if (document.schema_version !== 6 || !Array.isArray(document.elements)) {
+    throw new Error("Schema-v6 document requires version 6 and an elements array.");
+  }
+  const images = new Map<number, ForegroundImageElementV6>();
+  const legacy: unknown[] = [];
+  for (const [index, item] of document.elements.entries()) {
+    if (item && typeof item === "object" && !Array.isArray(item) &&
+        (item as { kind?: { type?: unknown } }).kind?.type === "image") {
+      images.set(index, parseForegroundImageElementV6(item));
+    } else {
+      legacy.push(item);
+    }
+  }
+  // Validate page, metadata and legacy element kinds through the existing v5
+  // boundary. This also retains all existing size, color and geometry limits.
+  const parsed = parseDocument({ ...document, schema_version: 5, elements: legacy });
+  const ids = new Set(parsed.elements.map(element => element.id));
+  for (const image of images.values()) {
+    if (ids.has(image.id)) throw new Error("Duplicate element IDs are not allowed.");
+    ids.add(image.id);
+  }
+  if (document.elements.length > 1000) {
+    throw new Error("The document must have at most 1,000 elements.");
+  }
+  let legacyIndex = 0;
+  return {
+    ...parsed,
+    elements: document.elements.map((_: unknown, index: number) =>
+      images.get(index) ?? parsed.elements[legacyIndex++]!),
+  };
+}
