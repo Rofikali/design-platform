@@ -62,7 +62,7 @@
       }
 
       result.dataset.status = "passed";
-      result.textContent = "PASS: WASM initialized; shared valid/invalid cases matched expectations; malformed JSON and oversized UTF-8 input rejected.";
+      result.textContent = "PASS: WASM initialized; document fixtures, malformed/oversized JSON and staged foreground raster acceptance matrix passed.";
     } catch (error) {
       result.dataset.status = "failed";
       result.textContent = "FAIL: " + (error instanceof Error ? error.message : String(error));
