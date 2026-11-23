@@ -20,7 +20,14 @@ describe("staged schema-v6 foreground image contract", () => {
     expect(placement).toEqual(before);
   });
 
-  it.each(["image\u0000one", "image\nnext", "image\tpart", "image\u007fend"])(\n    "rejects control characters in image IDs: %s", id => {\n      expect(() => makeForegroundImageElementV6(id, placement)).toThrow(/control characters/);\n      expect(() => parseForegroundImageElementV6({ ...makeForegroundImageElementV6("safe", placement), id })).toThrow(/control characters/);\n    },\n  );\n\n  it.each(["", "x".repeat(129), "😀".repeat(33), 42, null])(
+  it.each(["image\u0000one", "image\nnext", "image\tpart", "image\u007fend"])(
+    "rejects control characters in image IDs: %s", id => {
+      expect(() => makeForegroundImageElementV6(id, placement)).toThrow(/control characters/);
+      expect(() => parseForegroundImageElementV6({ ...makeForegroundImageElementV6("safe", placement), id })).toThrow(/control characters/);
+    },
+  );
+
+  it.each(["", "x".repeat(129), "😀".repeat(33), 42, null])(
     "rejects invalid element IDs: %s", id => {
       expect(() => makeForegroundImageElementV6(id, placement)).toThrow();
     },
