@@ -30,7 +30,7 @@ export function makeForegroundImageElementV6(
       new TextEncoder().encode(id).byteLength > 128) {
     throw new TypeError("Foreground image element ID must contain 1–128 UTF-8 bytes.");
   }
-  if (!placement || typeof placement !== "object") {
+  if (/[\u0000-\u001f\u007f]/u.test(id as string)) {\n    throw new TypeError("Foreground image element ID must not contain control characters.");\n  }\n  if (!placement || typeof placement !== "object") {
     throw new TypeError("Foreground image placement is required.");
   }
   const { x, y, width, height, intrinsic_width, intrinsic_height } = placement;
