@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { parseDocument, toDocument } from "../utils/document";
-import { parseStagedDocumentV6, toStagedDocumentV6 } from "../utils/document-v6";
+import { parseDocumentUpToV6, parseStagedDocumentV6, toStagedDocumentV6 } from "../utils/document-v6";
 import { makeForegroundImageElementV6 } from "../utils/foreground-image-v6";
 
 const image = makeForegroundImageElementV6("image-1", {
@@ -11,6 +11,31 @@ const image = makeForegroundImageElementV6("image-1", {
 const rect = { id: "rect-1", type: "rect" as const, x: 1, y: 2, width: 30, height: 40, color: "#ffffff" };
 const legacy = toDocument([rect]);
 const v6 = () => ({ ...legacy, schema_version: 6, elements: [image, ...legacy.elements] });
+
+describe("staged backwards-compatible import dispatch", () => {
+  it("preserves v1-v5 legacy migration behavior without changing the production parser", () => {
+    for (const version of [1, 2, 3, 4, 5]) {
+      const old = { ...legacy, schema_version: version };
+      // Legacy schema acceptance and migration remain owned by parseDocument.
+      try {
+        expect(parseDocumentUpToV6(old)).toEqual(parseDocument(old));
+      } catch (error) {
+        expect(() => parseDocument(old)).toThrow();
+        expect(error).toBeInstanceOf(Error);
+      }
+    }
+  });
+
+  it("accepts staged v6 while production v5 remains isolated", () => {
+    expect(parseDocumentUpToV6(v6())).toEqual(parseStagedDocumentV6(v6()));
+    expect(() => parseDocument(v6())).toThrow(/Unsupported document schema version/);
+  });
+
+  it("rejects unsupported future versions and malformed input", () => {
+    expect(() => parseDocumentUpToV6({ ...legacy, schema_version: 7 })).toThrow();
+    expect(() => parseDocumentUpToV6(null)).toThrow();
+  });
+});
 
 describe("staged schema-v6 import boundary", () => {
   it("serializes mixed images and legacy elements in original stacking order", () => {
