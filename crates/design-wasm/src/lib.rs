@@ -39,7 +39,7 @@ mod tests {
         "kind":{"type":"text","text":"Exam Paper","font_size":28,"color":"#123456"}}]
     }"##;
     #[test]
-    fn staged_foreground_raster_guard_matches_core_boundary() {
+    fn staged_foreground_raster_core_matrix_on_native_target() {
         let cases = [
             ("data:image/png;base64,iVBORw0KGgo=", true),
             ("data:image/jpeg;base64,iVBORw0KGgo=", false),
@@ -52,7 +52,7 @@ mod tests {
         ];
         for (input, expected) in cases {
             assert_eq!(
-                validate_foreground_raster_data_url_v6(input).is_ok(),
+                design_core::foreground_image_v6::validate_raster_data_url(input).is_ok(),
                 expected,
                 "input: {input:?}"
             );
