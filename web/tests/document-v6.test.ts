@@ -40,6 +40,14 @@ describe("staged schema-v6 import boundary", () => {
     expect(parseDocument(legacy).elements).toEqual([rect]);
   });
 
+  it("rejects duplicate IDs between two foreground images", () => {
+    const duplicate = { ...image };
+    expect(() => parseStagedDocumentV6({
+      ...v6(), elements: [image, duplicate],
+    })).toThrow(/Duplicate element IDs/);
+    expect(() => toStagedDocumentV6([image, duplicate])).toThrow(/Duplicate element IDs/);
+  });
+
   it("rejects duplicate IDs across legacy and image kinds", () => {
     expect(() => parseStagedDocumentV6({
       ...v6(), elements: [{ ...image, id: "rect-1" }, ...legacy.elements],
