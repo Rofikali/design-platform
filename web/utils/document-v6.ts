@@ -80,3 +80,19 @@ export function toStagedDocumentV6(
   parseStagedDocumentV6(document);
   return document;
 }
+
+/**
+ * Forward-compatible import entry point for existing local documents.
+ * v1–v5 continue through their original migration/validation boundary;
+ * only v6 opts into the staged image-aware parser. This does not enable
+ * v6 in the production editor or change legacy persistence.
+ */
+export function parseDocumentUpToV6(input: unknown): ParsedDocumentV6 {
+  if (!input || typeof input !== "object" || Array.isArray(input)) {
+    throw new Error("Document must be an object.");
+  }
+  if ((input as Record<string, unknown>).schema_version === 6) {
+    return parseStagedDocumentV6(input);
+  }
+  return parseDocument(input);
+}
