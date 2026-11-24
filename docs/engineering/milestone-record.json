@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
-  "snapshot_date": "2026-11-23",
-  "reference_main_sha": "c99d1c55fc495f7bb4e1522407deadf8933d1f2a",
+  "snapshot_date": "2026-11-24",
+  "reference_main_sha": "d898f8c49c33d274a522ad9161cf553c8e6f9950",
   "now_id": "DP-M3-IMAGE-01",
   "next_ids": [
     "DP-M3-TYPO-01",
@@ -220,10 +220,10 @@
       "id": "DP-M3-IMAGE-01",
       "feature_id": "DP-M3-IMAGE",
       "title": "Foreground image element authoring",
-      "status": "IN_PROGRESS",
-      "summary": "PRs #165 #167 #168 #169 merged; raster guards/decode only, not image authoring/schema v6/Rust-WASM parity/editor/history/export. Integrated main CI failed autosave restore on 2026-11-23; security #118 and manual #82/#85/#158 remain open.",
-      "pr": 169,
-      "sha": "c99d1c55fc495f7bb4e1522407deadf8933d1f2a"
+      "status": "PR_OPEN",
+      "summary": "PR #172 OPEN, fifth/final attempt; staged raster/schema utilities only, not editor authoring/history/autosave/export. Prior CI failed Rust formatting and PR registration. Do not merge; security #118 and manual #82/#85/#158 outstanding.",
+      "pr": 172,
+      "sha": "f4d77d24d6e67191f315a3a9189fec78d7bfe705"
     },
     {
       "id": "DP-M3-TYPO-01",
@@ -363,9 +363,10 @@
           165,
           167,
           168,
-          169
+          169,
+          172
         ],
-        "notes": "PRs #165 #167 #168 #169 merged, latest merge c99d1c55fc495f7bb4e1522407deadf8933d1f2a on 2026-11-23; 4/5 opened attempts. The prior PR_OPEN note is superseded. Raster input guard/decode prerequisites are integrated; actual foreground image authoring, schema v6, Rust/WASM parity and full editor/history/export are not implemented. Main CI run 45103673434 failed autosave restore (editor-browser-smoke.mjs:890); do not call main green. Security #118 and manual #82/#85/#158 remain open."
+        "notes": "PR #172 OPEN, fifth/final attempt; staged v6 image validation is incomplete, not editor authoring. Prior exact-head CI failed Rust formatting and PR registration. No merge/release; #118/#82/#85/#158 outstanding."
       },
       {
         "id": "DP-M3-TYPO",
