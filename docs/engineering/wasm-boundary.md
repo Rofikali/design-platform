@@ -49,3 +49,7 @@ These tests exercise the current JSON import/export path, not all pointer/keyboa
 ## Performance and cost
 
 Do not call into WASM for every pointer-move frame or individual property read. Keep the cross-language boundary coarse-grained around document validation/normalization. Measure initialization cost, transfer/serialization time, bundle size, and latency before deciding where WASM adds value.
+
+## Reuse-first WASM decision
+
+Use browser shaping first; preserve thin WASM and Rust/TS contract parity. Defer COSMIC Text/HarfBuzz/FreeType until measured native requirement, ABI/FFI ADR and performance/security evidence. See [reuse-first and zero-unapproved-spend policy](reuse-first-policy.md).

@@ -41,3 +41,7 @@ Track:
 
 ## Decision discipline
 Do not confuse revenue with profit, downloads with active users, or sign-ups with product-market fit. Make scale and pricing decisions from observed data, not optimistic assumptions.
+
+## Build versus reuse economics
+
+INR 0 incremental mandatory vendor fee target, not zero cost. Compare native, open-source and custom paths using 12-month TCO: internal engineering time, integration, CI, bandwidth, upgrade/support, compliance and replacement. No fictitious ROI or paid commitment without explicit approval. See [reuse-first and zero-unapproved-spend policy](../engineering/reuse-first-policy.md).

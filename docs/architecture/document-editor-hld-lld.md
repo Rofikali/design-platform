@@ -120,3 +120,7 @@ Threat boundaries include JSON, data URLs, SVG, browser storage, generated files
 ## 9. HLD/LLD release gate
 
 Do not label this document "production-ready" until accepted target requirements, measured performance, complete accessibility review, import/export regression and the actual deployment/recovery evidence exist. This map evolves with code; an older diagram never overrides current source.
+
+## Replaceable adapters
+
+Native browser primitives first. Optional prebuilt typography/layout, PDF and asset engines sit behind narrow adapters; own canonical Rust/TS contracts, preserve v5/v7 compatibility, test migration and rollback. No wholesale rewrite. See [reuse-first and zero-unapproved-spend policy](../engineering/reuse-first-policy.md).

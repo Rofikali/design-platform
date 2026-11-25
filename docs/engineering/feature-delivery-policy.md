@@ -61,3 +61,7 @@ Reconcile `milestone-record.json` first, run `node scripts/sync-milestone-docs.m
 - **Linux/DevOps/SRE:** GitHub Ubuntu CI and a Docker image build are not a user-run Ubuntu 24.04 Compose test, performance benchmark or production deployment; mark those **NOT RUN**.
 - **Networking/CCIE:** browser-local MVP has no required distributed networking/backend stack; do not add DNS/TLS/load-balancers, microservices or a VPS as unproven prerequisites.
 - **CA/MBA/Management:** cap iteration waste, record opportunity cost and customer utility; no assumed revenue, pricing or paid cloud spending. Deliver the user journey before expanding product scope.
+
+## Reuse evaluation counts toward stable feature budget
+
+Prototype, adoption and implementation PRs count against the same existing feature's five opened PR limit. No competing lane or feature renaming. Finish #175 first; at cap record gaps and advance independently. See [reuse-first and zero-unapproved-spend policy](reuse-first-policy.md).
