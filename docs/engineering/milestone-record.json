@@ -2,7 +2,7 @@
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
   "snapshot_date": "2026-11-25",
-  "reference_main_sha": "553711d3c866be573f990d313f6c74038e7108e2",
+  "reference_main_sha": "13ec3d4b66270c07dc5e3e02e0d51d2025153096",
   "now_id": "DP-M3-TYPO-01",
   "next_ids": [
     "DP-M3-VECTOR-01",
@@ -229,9 +229,9 @@
       "feature_id": "DP-M3-TYPO",
       "title": "Advanced typography and multilingual font handling",
       "status": "PR_OPEN",
-      "summary": "PR #176 merged. PR #177 activates native v8 editor layout, TS/WASM persistence, history and export; browser acceptance assertions added. Local tests NOT RUN, exact-head CI pending. No new dependencies or spend.",
-      "pr": 177,
-      "sha": "167a91c33592d3f837f6ab9d203c33722952fb83"
+      "summary": "PR #177 merged. #178 multilingual v8 file import/export, DOM and PNG ink baseline plus pinned Noto metadata/OFL evaluation. Font binaries deferred; glyph/IME/print fidelity unverified. Local tests NOT RUN; final-head CI pending.",
+      "pr": 178,
+      "sha": "59fbca2d6d5e18aadbe18652dbb070b9cdb53ddf"
     },
     {
       "id": "DP-M3-VECTOR-01",
@@ -378,9 +378,10 @@
           174,
           175,
           176,
-          177
+          177,
+          178
         ],
-        "notes": "PRs #174/#175/#176 merged; #177 OPEN, 4/5. #176 exact-head four workflow families passed; integrated-main CI unverified. #177 candidate v8 editor controls, persistence, validation and PNG/browser tests. Local tests NOT RUN, final-head gates pending. Fifth slot reserved for bounded local font evaluation and multilingual acceptance; partial closure if unmet."
+        "notes": "PRs #174–#177 merged; #178 OPEN, 5/5 (cap reached). #177 three reported exact-head workflows passed; integrated-main CI unverified. Multilingual browser baseline and pinned Noto metadata/OFL evidence added; no font assets adopted. Local tests NOT RUN. Fix within #178 only; close PARTIAL if glyph/IME, binary provenance, embedding/physical print or other gates remain unmet. No sixth PR; then advance independent feature."
       },
       {
         "id": "DP-M3-VECTOR",
