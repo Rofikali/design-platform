@@ -40,6 +40,24 @@ pub fn validate_text_style_v1_json(input: &str) -> Result<String, JsValue> {
     serde_json::to_string(&style).map_err(|_| JsValue::from_str("Could not serialize text style"))
 }
 
+/// Proposed typography migration boundary. Does not activate schema v7 in the editor.
+#[wasm_bindgen]
+pub fn normalize_typography_document_json(input: &str) -> Result<String, JsValue> {
+    if input.len() > MAX_DOCUMENT_JSON_BYTES {
+        return Err(JsValue::from_str("Document JSON exceeds the 2,000,000-byte limit"));
+    }
+    let document: design_core::typography_document::TypographyDocument =
+        serde_json::from_str(input).map_err(|_| JsValue::from_str("Invalid typography document"))?;
+    let normalized = design_core::typography_document::normalize_typography_document(document)
+        .map_err(|_| JsValue::from_str("Invalid typography document"))?;
+    let json = serde_json::to_string(&normalized)
+        .map_err(|_| JsValue::from_str("Could not serialize typography document"))?;
+    if json.len() > MAX_DOCUMENT_JSON_BYTES {
+        return Err(JsValue::from_str("Document JSON exceeds the 2,000,000-byte limit"));
+    }
+    Ok(json)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

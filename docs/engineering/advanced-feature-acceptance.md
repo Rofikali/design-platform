@@ -66,3 +66,8 @@ Review lenses are not certifications, seven separate AI workers or permission to
 ### Typography foundation checkpoint (25 November 2026)
 
 PR #174 introduces only fixed local family tokens, legacy default SVG/Canvas font resolution and negative regression tests. No user-facing family picker, weight/style, document migration or glyph/print certification yet. No font assets, remote requests or new dependency; system font availability remains host-dependent. Local tests NOT RUN; exact-head CI required. Next: coordinate the versioned TS/Rust/WASM model and migration fixtures before enabling editor controls.
+
+
+### Proposed typography persistence boundary
+
+Staged schema v7 adds a text_styles array keyed by existing text element IDs; schema v6 remains reserved for the incomplete raster contract. Each text element has exactly one allowlisted style; duplicate, missing, non-text and unknown targets are rejected. Legacy v1–v5 normalize through the unchanged v5 validator before default sans/normal/normal styles are attached. The editor still rejects v7; activation requires schema ADR, end-to-end parity, renderer/editor/history/autosave integration and migration tests. No network, font assets or new dependency. Local tests NOT RUN; CI not yet verified.
