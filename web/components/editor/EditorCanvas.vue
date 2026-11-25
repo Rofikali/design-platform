@@ -2,8 +2,10 @@
 import type { BackgroundImage, DesignElement } from "~/utils/document";
 import { getElementSelectionLabel } from "~/utils/element-accessibility";
 import { localFontStack } from "~/utils/local-typography";
+import { editorTextStyles } from "~/utils/editor-typography-document";
+import { computed } from "vue";
 
-defineProps<{
+const props = defineProps<{
   elements: DesignElement[];
   selectedId: string | null;
   pageWidth: number;
@@ -11,6 +13,7 @@ defineProps<{
   pageBackground: string;
   backgroundImage?: BackgroundImage;
 }>();
+const styledDocument = computed(() => editorTextStyles(props.elements) !== undefined);
 
 const emit = defineEmits<{
   select: [id: string];
@@ -60,7 +63,7 @@ const emit = defineEmits<{
             color: element.type === 'text' ? element.color : undefined,
             backgroundColor: element.type === 'rect' ? element.color : element.type === 'frame' ? (element.fillColor ?? 'transparent') : 'transparent',
             fontSize: element.type === 'text' ? element.fontSize + 'px' : undefined,
-            fontFamily: element.type === 'text' && element.textStyle && element.textStyle.font_family !== 'sans' ? localFontStack(element.textStyle.font_family) : undefined,
+            fontFamily: element.type === 'text' && styledDocument ? localFontStack(element.textStyle?.font_family) : undefined,
             fontWeight: element.type === 'text' && element.textStyle?.font_weight === 'bold' ? 'bold' : undefined,
             fontStyle: element.type === 'text' && element.textStyle?.font_style === 'italic' ? 'italic' : undefined,
             border: element.type === 'frame' || element.type === 'grid' ? element.strokeWidth + 'px solid ' + element.strokeColor : undefined,

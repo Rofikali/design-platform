@@ -22,6 +22,9 @@ export function parseEditorDocumentJson(json: string): ParsedDocument {
   if (new TextEncoder().encode(json).byteLength > MAX_FILE_CHARS) throw new Error("The file exceeds the 2 MB limit.");
   const wire: unknown = JSON.parse(json);
   if (!wire || typeof wire !== "object" || (wire as { schema_version?: unknown }).schema_version !== TYPOGRAPHY_SCHEMA_VERSION) {
+    if (wire && typeof wire === "object" && Object.prototype.hasOwnProperty.call(wire, "text_styles")) {
+      throw new Error("Typography styles require schema version 7.");
+    }
     return parseDocumentJson(json);
   }
   const normalized = normalizeTypographyDocument(wire);

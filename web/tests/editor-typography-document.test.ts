@@ -26,3 +26,9 @@ describe("editor typography persistence", () => {
     expect(serializeEditorDocument(parsed.elements, page)).toBe(before);
   });
 });
+
+describe("legacy typography safety", () => {
+  it("rejects style bindings in legacy documents instead of silently discarding them", () => {
+    expect(() => parseEditorDocumentJson(JSON.stringify({ ...v1, text_styles: [] }))).toThrow("Typography styles require schema version 7");
+  });
+});
