@@ -90,3 +90,8 @@ Added actual Chrome/WASM shared style fixture cases, v1 to v7 normalization, non
 ## Reuse-first future work and adoption gate
 
 Consult the [reuse-first policy](reuse-first-policy.md) for prioritized typography, font, rich-text, graphics, PDF, raster, assets and deferred native-engine evaluations; license, security, performance and 12-month TCO gates apply to every contributor. Existing feature caps and live PR priority remain unchanged. No new dependencies or paid services authorized by documentation alone.
+
+
+### REUSE-02 native layout foundation
+
+PR #175 merged (exact-head four workflow families passed). Native bounded layout candidate uses CSS/SVG alignment and letter-spacing attributes, line-height ratio and shared line advance for existing export defaults. A browser smoke probe measures DOM/Canvas letter-spacing support and line heights; unsupported Canvas spacing is recorded, not silently approximated. Unit and browser assertions added; NOT RUN locally. No new persisted fields, editor controls, font files, dependencies or new spending; further schema ADR and actual cross-browser/print parity needed before activation.
