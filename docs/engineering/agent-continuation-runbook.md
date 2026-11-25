@@ -112,3 +112,7 @@ Next smallest safe action:
 ```
 
 Keep logs in GitHub rather than pasting all output. If latest CI cannot be fetched, say **unverified**, not "green". On resumed sessions fetch anew.
+
+## Reuse-first future work and adoption gate
+
+Consult the [reuse-first policy](reuse-first-policy.md) for prioritized typography, font, rich-text, graphics, PDF, raster, assets and deferred native-engine evaluations; license, security, performance and 12-month TCO gates apply to every contributor. Existing feature caps and live PR priority remain unchanged. No new dependencies or paid services authorized by documentation alone.

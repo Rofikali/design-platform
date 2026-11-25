@@ -84,3 +84,7 @@ The [hourly autopilot operating agreement](hourly-autopilot.md) describes the ow
 6. Record commands and observed outcomes; do not write “tested” just because a test was added.
 7. Never place credentials, private customer data, real exam candidate data, or production secrets in docs or fixtures.
 8. Prefer diagrams and tables when they make boundaries or responsibilities easier to review, but keep the written explanation sufficient on its own.
+
+## Reuse-first future work and adoption gate
+
+Consult the [reuse-first policy](reuse-first-policy.md) for prioritized typography, font, rich-text, graphics, PDF, raster, assets and deferred native-engine evaluations; license, security, performance and 12-month TCO gates apply to every contributor. Existing feature caps and live PR priority remain unchanged. No new dependencies or paid services authorized by documentation alone.

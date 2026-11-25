@@ -56,8 +56,8 @@ pub fn normalize_typography_document(
         }
         _ => return Err(TypographyDocumentError::UnsupportedVersion),
     }
-    input.document = migrate_to_current(input.document)
-        .map_err(|_| TypographyDocumentError::InvalidDocument)?;
+    input.document =
+        migrate_to_current(input.document).map_err(|_| TypographyDocumentError::InvalidDocument)?;
     let text_ids: HashSet<&str> = input
         .document
         .elements
@@ -129,9 +129,13 @@ mod tests {
         let legacy = include_str!("../../../fixtures/document-v1.json");
         let mut doc: serde_json::Value = serde_json::from_str(legacy).unwrap();
         doc["schema_version"] = serde_json::json!(6);
-        assert!(normalize_typography_document(serde_json::from_value(doc.clone()).unwrap()).is_err());
+        assert!(
+            normalize_typography_document(serde_json::from_value(doc.clone()).unwrap()).is_err()
+        );
         doc["schema_version"] = serde_json::json!(7);
-        assert!(normalize_typography_document(serde_json::from_value(doc.clone()).unwrap()).is_err());
+        assert!(
+            normalize_typography_document(serde_json::from_value(doc.clone()).unwrap()).is_err()
+        );
         for id in ["rect-2", "missing"] {
             doc["text_styles"] = serde_json::json!([{
                 "element_id": id, "style": TextStyleV1::default()

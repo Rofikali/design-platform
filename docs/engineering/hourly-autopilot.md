@@ -110,3 +110,7 @@ Zero-unapproved-spend check:
 ## Comparison to imgengine
 
 This adopts imgengine's persistent NOW/NEXT/LATER queue, exact-SHA verification, task statuses, seven-level engineering lenses, cost-aware testing and explicit agent handoffs. **Do not** transplant imgengine's C17 ABI, C/Rust FFI, SIMDs, image codec pipeline, VPS deployment or unrelated free/paid image-tool features into this document-editor repository.
+
+## Reuse-first future work and adoption gate
+
+Consult the [reuse-first policy](reuse-first-policy.md) for prioritized typography, font, rich-text, graphics, PDF, raster, assets and deferred native-engine evaluations; license, security, performance and 12-month TCO gates apply to every contributor. Existing feature caps and live PR priority remain unchanged. No new dependencies or paid services authorized by documentation alone.

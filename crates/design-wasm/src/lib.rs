@@ -35,8 +35,8 @@ pub fn validate_text_style_v1_json(input: &str) -> Result<String, JsValue> {
     if input.len() > 512 {
         return Err(JsValue::from_str("Text style JSON exceeds 512 bytes"));
     }
-    let style: design_core::typography::TextStyleV1 = serde_json::from_str(input)
-        .map_err(|_| JsValue::from_str("Invalid text style"))?;
+    let style: design_core::typography::TextStyleV1 =
+        serde_json::from_str(input).map_err(|_| JsValue::from_str("Invalid text style"))?;
     serde_json::to_string(&style).map_err(|_| JsValue::from_str("Could not serialize text style"))
 }
 
@@ -49,7 +49,8 @@ pub fn normalize_typography_document_json(input: &str) -> Result<String, JsValue
         ));
     }
     let document: design_core::typography_document::TypographyDocument =
-        serde_json::from_str(input).map_err(|_| JsValue::from_str("Invalid typography document"))?;
+        serde_json::from_str(input)
+            .map_err(|_| JsValue::from_str("Invalid typography document"))?;
     let normalized = design_core::typography_document::normalize_typography_document(document)
         .map_err(|_| JsValue::from_str("Invalid typography document"))?;
     let json = serde_json::to_string(&normalized)

@@ -229,9 +229,9 @@
       "feature_id": "DP-M3-TYPO",
       "title": "Advanced typography and multilingual font handling",
       "status": "PR_OPEN",
-      "summary": "PR #175: native font controls, v7 migration, export and history/autosave; browser assertions added. Local tests NOT RUN; final-head CI pending. Spacing, alignment, glyph and print acceptance pending.",
+      "summary": "PR #175 editor typography, v7 migration and export. Previous-head Nuxt/browser/security passed; rustfmt failed. Log-based fixes and reuse-first roadmap staged; final-head CI pending.",
       "pr": 175,
-      "sha": "b69d6acd49977530d48752b7f8be16b36d61a8de"
+      "sha": "78ed17c360e5f40c1a27f85bdcebaba7b0cb3c70"
     },
     {
       "id": "DP-M3-VECTOR-01",
@@ -378,7 +378,7 @@
           174,
           175
         ],
-        "notes": "PR #174 merged; #175 OPEN, 2/5 attempts. Editor typography, v7 migration, export, history/autosave and browser regression assertions staged. Local tests NOT RUN; exact-head CI and security pending. Spacing, alignment, multilingual glyph and manual print acceptance remain pending."
+        "notes": "PR #175 OPEN, 2/5. Previous head 78ed17c Nuxt/browser/security/cross-browser/dev container passed; rustfmt failed, Rust tests skipped. Applied exact log formatting fixes; new head pending. REUSE-01–10 in docs/engineering/reuse-first-policy.md."
       },
       {
         "id": "DP-M3-VECTOR",

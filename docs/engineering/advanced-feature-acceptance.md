@@ -86,3 +86,7 @@ The feature branch now wires native family, weight and style selects into text e
 ### Browser acceptance coverage
 
 Added actual Chrome/WASM shared style fixture cases, v1 to v7 normalization, nondefault style roundtrip and invalid binding rejection. Existing Nuxt smoke now exercises typography controls, computed CSS, undo/redo, debounced local persistence, reload and real PNG download dimensions before print geometry. Browser assertions are written, not yet executed; PNG glyph pixel parity, styled JSON file import/export UI, physical print and multilingual acceptance remain pending. Local tests NOT RUN.
+
+## Reuse-first future work and adoption gate
+
+Consult the [reuse-first policy](reuse-first-policy.md) for prioritized typography, font, rich-text, graphics, PDF, raster, assets and deferred native-engine evaluations; license, security, performance and 12-month TCO gates apply to every contributor. Existing feature caps and live PR priority remain unchanged. No new dependencies or paid services authorized by documentation alone.

@@ -1,5 +1,7 @@
 # Design Platform
 
+**Engineering direction:** [Reuse-first engineering and zero-unapproved-spend policy](docs/engineering/reuse-first-policy.md) governs REUSE-01–10. Native primitives first, proven open-source components next, justified custom code last. Preserve current work and stable feature budgets; no paid or mandatory remote service without explicit owner approval.
+
 > **Current handoff (25 Nov 2026):** All authorized contributors resume live GitHub work across authors. Adopt existing PRs, count all opened PRs toward the stable feature cap, use a persistent branch for bounded commits, and verify exact-head gates before merging. The generated milestone snapshot supersedes older dated checkpoints. No security bypass or release authorization.
 
 > **Autopilot execution recovery (23 Nov 2026):** [outcome-first continuation contract](docs/engineering/autopilot-execution-recovery.md) records precise handoff fields, resume-first implementation, two-no-code escalation, and L1–L7/CISSP/CCIE/Linux/SRE/CA-MBA gates. This is **not** a scheduler or a substitute for current GitHub CI and the task run record.
