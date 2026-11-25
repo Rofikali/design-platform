@@ -34,9 +34,39 @@ impl TriangleElementV8 {
     }
 }
 
+pub const MAX_VECTOR_TRIANGLES: usize = 1000;
+
+/// Validate the staged collection before accepting it into a document.
+pub fn validate_triangle_collection_v8(elements: &[TriangleElementV8]) -> bool {
+    if elements.len() > MAX_VECTOR_TRIANGLES {
+        return false;
+    }
+    let mut ids = std::collections::HashSet::with_capacity(elements.len());
+    elements.iter().all(|element| element.validate() && ids.insert(element.id.as_str()))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn collection_bounds_and_identity() {
+        let make = |i: usize| TriangleElementV8 {
+            id: i.to_string(), x: 0.0, y: 0.0, width: 1.0, height: 1.0,
+            kind: TriangleKind::Triangle { color: "#fff".into() },
+        };
+        assert!(validate_triangle_collection_v8(&[]));
+        let mut elements: Vec<_> = (0..MAX_VECTOR_TRIANGLES).map(make).collect();
+        assert!(validate_triangle_collection_v8(&elements));
+        elements.push(make(MAX_VECTOR_TRIANGLES));
+        assert!(!validate_triangle_collection_v8(&elements));
+        elements.pop();
+        elements[1].id = elements[0].id.clone();
+        assert!(!validate_triangle_collection_v8(&elements));
+        elements[1] = make(1);
+        elements[1].width = f64::NAN;
+        assert!(!validate_triangle_collection_v8(&elements));
+    }
 
     #[test]
     fn shared_triangle_cases() {
