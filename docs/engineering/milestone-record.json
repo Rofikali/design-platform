@@ -2,10 +2,9 @@
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
   "snapshot_date": "2026-11-25",
-  "reference_main_sha": "13ec3d4b66270c07dc5e3e02e0d51d2025153096",
-  "now_id": "DP-M3-TYPO-01",
+  "reference_main_sha": "5ff1cd427a0d9126d5f9e0c1c6c51d07d1d5795e",
+  "now_id": "DP-M3-VECTOR-01",
   "next_ids": [
-    "DP-M3-VECTOR-01",
     "DP-M3-PRECISION-01",
     "DP-SEC-01",
     "DP-M1-ACC-02",
@@ -228,17 +227,17 @@
       "id": "DP-M3-TYPO-01",
       "feature_id": "DP-M3-TYPO",
       "title": "Advanced typography and multilingual font handling",
-      "status": "PR_OPEN",
-      "summary": "#178 multilingual baseline: prior-head cross-browser failure was ambiguous selected text/resize-handle locator. Corrected selector and WASM export status check; latest CI pending. Font adoption/glyph/print gates remain unverified.",
+      "status": "MERGED",
+      "summary": "PR #178 merged; multilingual baseline integrated, feature CLOSED/PARTIAL at 5/5. Font assets, glyph fidelity, IME and physical print remain unverified. Integrated CI not returned.",
       "pr": 178,
-      "sha": "ba0136e47bbf7023266dae285e116458d1695660"
+      "sha": "5ff1cd427a0d9126d5f9e0c1c6c51d07d1d5795e"
     },
     {
       "id": "DP-M3-VECTOR-01",
       "feature_id": "DP-M3-VECTOR",
       "title": "Bounded vector shape library",
-      "status": "PLANNED",
-      "summary": "Add ellipses, lines, arrows, triangles, stars, rounded shapes and polygons as typed elements with bounded geometry, keyboard/history/PNG/print parity; never accept unsafe SVG."
+      "status": "IN_PROGRESS",
+      "summary": "Staged normalized polygon geometry for triangle, star and regular polygon; bounded sides and star radius. Tests NOT RUN; schema, editor, history and export integration pending."
     },
     {
       "id": "DP-M3-PRECISION-01",
@@ -321,7 +320,7 @@
   "feature_delivery": {
     "policy_start": "2026-11-21",
     "max_prs_per_feature": 5,
-    "active_feature_id": "DP-M3-TYPO",
+    "active_feature_id": "DP-M3-VECTOR",
     "features": [
       {
         "id": "DP-M2-TABLE",
@@ -373,7 +372,7 @@
       {
         "id": "DP-M3-TYPO",
         "title": "Advanced typography and multilingual font handling",
-        "state": "ACTIVE",
+        "state": "CLOSED",
         "prs": [
           174,
           175,
@@ -381,14 +380,15 @@
           177,
           178
         ],
-        "notes": "PRs #174–#177 merged; #178 OPEN, 5/5. Prior head ba0136e cross-browser failed on selected text/resize-handle locator ambiguity; Chromium legacy exports, Rust core, doc sync and JS audit passed. Scoped selector and WASM export assertion corrected; final-head CI pending. Font binaries, glyph/IME and embedding/physical print gates unmet; close PARTIAL at cap if unresolved. No sixth PR."
+        "notes": "All five PRs merged; #178 merge 5ff1cd427a0d9126d5f9e0c1c6c51d07d1d5795e verified. Integrated CI not returned. Font assets, glyph fidelity, IME and physical print remain unverified. No sixth PR.",
+        "outcome": "PARTIAL"
       },
       {
         "id": "DP-M3-VECTOR",
         "title": "Bounded vector shape library",
-        "state": "PLANNED",
+        "state": "ACTIVE",
         "prs": [],
-        "notes": "Candidate only; NOT STARTED, 0/5 opened feature PRs. Requires closure of current ACTIVE image feature, scoped acceptance, documented dependencies and live GitHub/owner review. See docs/product/advanced-feature-roadmap.md and docs/engineering/advanced-feature-acceptance.md."
+        "notes": "0/5 PRs. Staged normalized geometry validator and tests; no schema or editor integration yet. Local tests NOT RUN. Continue same branch."
       },
       {
         "id": "DP-M3-PRECISION",

@@ -128,3 +128,8 @@ PR #177 merged at 13ec3d4; all three reported exact-head workflow families passe
 ### PR #178 failure remediation
 
 Cross-browser run 45555056217 failed on a strict locator ambiguity (selected text span plus resize-handle span). Corrected the selector to exclude aria-hidden controls and assert unique text content, without weakening Unicode, JSON, PNG ink/dimensions or network assertions. Require WASM export status as well. Rust core, docs sync and production JS dependency audit passed on the prior head. Other gates pending at observation. No runtime change, font assets, spend or additional PR. New-head verification pending.
+
+
+### Vector geometry staged increment (25 Nov 2026)
+
+Pure normalized polygon points for triangle, regular polygon (3–32 sides) and star (3–16 tips, inner radius ratio 0.1–0.9). No arbitrary SVG, markup, URLs, new dependencies or network. Reject invalid numeric input before allocating points. This is not a persisted schema or editor feature. Local tests NOT RUN; Rust/WASM parity, keyboard, history, PNG/print and manual acceptance remain pending. Typography closed PARTIAL at five merged PRs; integrated main workflow list empty at observation. Finance/network/SRE unchanged: no infrastructure or spend.
