@@ -228,10 +228,10 @@
       "id": "DP-M3-TYPO-01",
       "feature_id": "DP-M3-TYPO",
       "title": "Advanced typography and multilingual font handling",
-      "status": "IN_PROGRESS",
-      "summary": "PR #175 merged. REUSE-02 staged v8 layout migration, shared Rust/TS fixtures and WASM adapter; existing v5/v7 editor rejects layout fields until activation. Local tests NOT RUN; next ADR, renderer and editor parity.",
-      "pr": 175,
-      "sha": "8646b64df0072ed518e9acbecba2b7dc530d0e5f"
+      "status": "PR_OPEN",
+      "summary": "PR #176 staged v8 layout model and native SVG/Canvas renderer; regression fixtures and browser capability probe. Live editor v5/v7; local tests NOT RUN, final-head CI pending. No new dependency.",
+      "pr": 176,
+      "sha": "b2123dea44220f3b56990a0c0aa9085ccc34ac67"
     },
     {
       "id": "DP-M3-VECTOR-01",
@@ -376,9 +376,10 @@
         "state": "ACTIVE",
         "prs": [
           174,
-          175
+          175,
+          176
         ],
-        "notes": "PRs #174/#175 merged; 2/5. REUSE-02 native layout contract, staged v8 TS/Rust/WASM document normalization and anti-downgrade checks committed. Live editor remains v5/v7; local tests NOT RUN. Next: ADR and native export/editor parity; no new PR."
+        "notes": "PRs #174/#175 merged; #176 OPEN, 3/5. REUSE-02 staged v8 layout model, native SVG/Canvas rendering and validation tests; live editor v5/v7. Local tests NOT RUN; final-head CI pending. Next after gates: v8 activation ADR and editor integration, then local font evaluation."
       },
       {
         "id": "DP-M3-VECTOR",
