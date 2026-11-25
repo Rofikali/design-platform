@@ -118,3 +118,13 @@ PR #176 merged at 553711d; four exact-head workflow families passed, integrated-
 
 
 Added candidate Chrome smoke checks for v8 live CSS, v7/v8 undo/redo, autosave/reload, actual JSON download and PNG dimensions/changed bytes (or explicit unsupported native spacing error), reusing the existing PDF geometry smoke. Updated legacy font-size selector to avoid ambiguous numeric control selection. These are written assertions, not executed evidence. File import UI roundtrip and glyph pixel fidelity remain separate gates. Local tests NOT RUN.
+
+
+### REUSE-03 multilingual baseline and local font decision
+
+PR #177 merged at 13ec3d4; all three reported exact-head workflow families passed. Integrated-main CI not verified. Fifth feature slice adds multilingual v8 fixture and actual three-engine JSON import/export, DOM text, PNG ink/dimensions and external-request assertions. Noto catalogue provenance/OFL review pinned in [local font evaluation](local-font-evaluation.md); binary hashes/notice reconciliation, glyph/IME and embedded-font/physical print evidence outstanding. No font assets adopted; tests NOT RUN locally, latest CI pending. No dependencies, network services or spending added.
+
+
+### PR #178 failure remediation
+
+Cross-browser run 45555056217 failed on a strict locator ambiguity (selected text span plus resize-handle span). Corrected the selector to exclude aria-hidden controls and assert unique text content, without weakening Unicode, JSON, PNG ink/dimensions or network assertions. Require WASM export status as well. Rust core, docs sync and production JS dependency audit passed on the prior head. Other gates pending at observation. No runtime change, font assets, spend or additional PR. New-head verification pending.

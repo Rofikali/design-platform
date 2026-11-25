@@ -1,0 +1,159 @@
+{
+  "schema_version": 8,
+  "page": {
+    "width": 800,
+    "height": 600,
+    "background": "#ffffff"
+  },
+  "elements": [
+    {
+      "id": "lang-en",
+      "x": 40,
+      "y": 20,
+      "width": 720,
+      "height": 80,
+      "kind": {
+        "type": "text",
+        "text": "Exam paper 123 — café",
+        "font_size": 32,
+        "color": "#172033"
+      }
+    },
+    {
+      "id": "lang-as",
+      "x": 40,
+      "y": 120,
+      "width": 720,
+      "height": 80,
+      "kind": {
+        "type": "text",
+        "text": "অসমীয়া ভাষা ৰ ৱ প্ৰশ্ন ১২৩",
+        "font_size": 32,
+        "color": "#172033"
+      }
+    },
+    {
+      "id": "lang-bn",
+      "x": 40,
+      "y": 220,
+      "width": 720,
+      "height": 80,
+      "kind": {
+        "type": "text",
+        "text": "বাংলা প্রশ্নপত্র ১২৩",
+        "font_size": 32,
+        "color": "#172033"
+      }
+    },
+    {
+      "id": "lang-hi",
+      "x": 40,
+      "y": 320,
+      "width": 720,
+      "height": 80,
+      "kind": {
+        "type": "text",
+        "text": "हिन्दी प्रश्नपत्र १२३",
+        "font_size": 32,
+        "color": "#172033"
+      }
+    },
+    {
+      "id": "lang-ne",
+      "x": 40,
+      "y": 420,
+      "width": 720,
+      "height": 80,
+      "kind": {
+        "type": "text",
+        "text": "नेपाली प्रश्नपत्र १२३",
+        "font_size": 32,
+        "color": "#172033"
+      }
+    }
+  ],
+  "text_styles": [
+    {
+      "element_id": "lang-en",
+      "style": {
+        "font_family": "sans",
+        "font_weight": "normal",
+        "font_style": "normal"
+      }
+    },
+    {
+      "element_id": "lang-as",
+      "style": {
+        "font_family": "sans",
+        "font_weight": "normal",
+        "font_style": "normal"
+      }
+    },
+    {
+      "element_id": "lang-bn",
+      "style": {
+        "font_family": "sans",
+        "font_weight": "normal",
+        "font_style": "normal"
+      }
+    },
+    {
+      "element_id": "lang-hi",
+      "style": {
+        "font_family": "sans",
+        "font_weight": "normal",
+        "font_style": "normal"
+      }
+    },
+    {
+      "element_id": "lang-ne",
+      "style": {
+        "font_family": "sans",
+        "font_weight": "normal",
+        "font_style": "normal"
+      }
+    }
+  ],
+  "text_layouts": [
+    {
+      "element_id": "lang-en",
+      "layout": {
+        "alignment": "center",
+        "lineHeight": 1.5,
+        "letterSpacing": 0
+      }
+    },
+    {
+      "element_id": "lang-as",
+      "layout": {
+        "alignment": "center",
+        "lineHeight": 1.5,
+        "letterSpacing": 0
+      }
+    },
+    {
+      "element_id": "lang-bn",
+      "layout": {
+        "alignment": "center",
+        "lineHeight": 1.5,
+        "letterSpacing": 0
+      }
+    },
+    {
+      "element_id": "lang-hi",
+      "layout": {
+        "alignment": "center",
+        "lineHeight": 1.5,
+        "letterSpacing": 0
+      }
+    },
+    {
+      "element_id": "lang-ne",
+      "layout": {
+        "alignment": "center",
+        "lineHeight": 1.5,
+        "letterSpacing": 0
+      }
+    }
+  ]
+}

@@ -2,7 +2,7 @@
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
   "snapshot_date": "2026-11-25",
-  "reference_main_sha": "553711d3c866be573f990d313f6c74038e7108e2",
+  "reference_main_sha": "13ec3d4b66270c07dc5e3e02e0d51d2025153096",
   "now_id": "DP-M3-TYPO-01",
   "next_ids": [
     "DP-M3-VECTOR-01",
@@ -229,9 +229,9 @@
       "feature_id": "DP-M3-TYPO",
       "title": "Advanced typography and multilingual font handling",
       "status": "PR_OPEN",
-      "summary": "PR #176 merged. PR #177 activates native v8 editor layout, TS/WASM persistence, history and export; browser acceptance assertions added. Local tests NOT RUN, exact-head CI pending. No new dependencies or spend.",
-      "pr": 177,
-      "sha": "167a91c33592d3f837f6ab9d203c33722952fb83"
+      "summary": "#178 multilingual baseline: prior-head cross-browser failure was ambiguous selected text/resize-handle locator. Corrected selector and WASM export status check; latest CI pending. Font adoption/glyph/print gates remain unverified.",
+      "pr": 178,
+      "sha": "ba0136e47bbf7023266dae285e116458d1695660"
     },
     {
       "id": "DP-M3-VECTOR-01",
@@ -378,9 +378,10 @@
           174,
           175,
           176,
-          177
+          177,
+          178
         ],
-        "notes": "PRs #174/#175/#176 merged; #177 OPEN, 4/5. #176 exact-head four workflow families passed; integrated-main CI unverified. #177 candidate v8 editor controls, persistence, validation and PNG/browser tests. Local tests NOT RUN, final-head gates pending. Fifth slot reserved for bounded local font evaluation and multilingual acceptance; partial closure if unmet."
+        "notes": "PRs #174–#177 merged; #178 OPEN, 5/5. Prior head ba0136e cross-browser failed on selected text/resize-handle locator ambiguity; Chromium legacy exports, Rust core, doc sync and JS audit passed. Scoped selector and WASM export assertion corrected; final-head CI pending. Font binaries, glyph/IME and embedding/physical print gates unmet; close PARTIAL at cap if unresolved. No sixth PR."
       },
       {
         "id": "DP-M3-VECTOR",
