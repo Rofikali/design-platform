@@ -69,6 +69,9 @@ export async function validateEditorDocumentJson(json: string): Promise<Document
   if (new TextEncoder().encode(json).byteLength > MAX_FILE_CHARS) throw new Error("The file exceeds the 2 MB limit.");
   const wire: unknown = JSON.parse(json);
   if (!wire || typeof wire !== "object" || (wire as { schema_version?: unknown }).schema_version !== 7) {
+    if (wire && typeof wire === "object" && Object.prototype.hasOwnProperty.call(wire, "text_styles")) {
+      throw new Error("Typography styles require schema version 7.");
+    }
     return validateDocumentJson(json);
   }
   const { normalizeTypographyDocument } = await import("./typography-document");

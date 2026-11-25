@@ -229,7 +229,7 @@
       "feature_id": "DP-M3-TYPO",
       "title": "Advanced typography and multilingual font handling",
       "status": "IN_PROGRESS",
-      "summary": "PR #174 merged local font foundation; exact-head CI/security/cross-browser passed. Staged v7 typography migration and style binding; production editor remains v5. Local tests NOT RUN; integrated CI not verified. Next: renderer and browser parity.",
+      "summary": "PR #174 merged font foundation. Staged v7 style migration, SVG/Canvas export, editor controls and version-aware snapshots; main remains v5. Local tests NOT RUN. Next: browser reload/undo/JSON/PNG and WASM parity. Integrated-main CI not verified.",
       "pr": 174,
       "sha": "3baa30ef4ed9488c2073f144900609e15f4b73da"
     },
@@ -377,7 +377,7 @@
         "prs": [
           174
         ],
-        "notes": "PR #174 merged at 3baa30ef4ed9488c2073f144900609e15f4b73da; 1/5 attempts. Three exact-head workflow families passed; integrated-main CI not verified. Shared Rust/TS/WASM styles and proposed v7 migration staged on codex/dp-m3-typography; no new PR, local tests NOT RUN. Production schema v5 remains unchanged."
+        "notes": "PR #174 merged; 1/5 attempts. Staged v7 style migration, SVG/Canvas export, native editor controls and history/autosave/JSON adapters on codex/dp-m3-typography. Local tests NOT RUN. Next: browser roundtrip and real WASM parity; do not open PR before coherent slice."
       },
       {
         "id": "DP-M3-VECTOR",

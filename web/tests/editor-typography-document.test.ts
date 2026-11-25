@@ -28,7 +28,9 @@ describe("editor typography persistence", () => {
 });
 
 describe("legacy typography safety", () => {
-  it("rejects style bindings in legacy documents instead of silently discarding them", () => {
-    expect(() => parseEditorDocumentJson(JSON.stringify({ ...v1, text_styles: [] }))).toThrow("Typography styles require schema version 7");
+  it("rejects style bindings in legacy documents instead of silently discarding them", async () => {
+    const legacy = JSON.stringify({ ...v1, text_styles: [] });
+    expect(() => parseEditorDocumentJson(legacy)).toThrow("Typography styles require schema version 7");
+    await expect(validateEditorDocumentJson(legacy)).rejects.toThrow("Typography styles require schema version 7");
   });
 });
