@@ -28,7 +28,7 @@ The current prototype includes:
 
 The existing editor, text/shapes, frames/grids/tables, layers and snapping, page image backgrounds, undo/redo, localStorage, v1–v5 JSON compatibility, PNG and browser print **must keep working**. The [advanced editor feature roadmap](docs/product/advanced-feature-roadmap.md) records proposed typography, vector shapes, guides/rulers, object tools, multi-page exam papers, shop banner studio, local assets, templates, print preflight and optional direct PDF. The [advanced feature acceptance matrix](docs/engineering/advanced-feature-acceptance.md) adds L1–L7 architecture, CISSP/security, Linux/SRE, proportionate networking, CA/MBA and management evidence gates. Proposed does **not** mean implemented or release-approved.
 
-**Current source-backed milestone:** DP-M3-IMAGE remains ACTIVE at 4/5 feature PR attempts (merged #165, #167, #168 and #169); input guards and browser decode prerequisites exist, not complete foreground image authoring. Full editable foreground image objects are still missing. Future candidates stay PLANNED/BLOCKED until this feature exits and the live [milestone record](docs/engineering/milestone-record.json) promotes one new active feature. No SaaS/backend or unapproved paid deployment is implied.
+**Source-backed milestone:** DP-M3-IMAGE closed PARTIAL at 5/5 including merged #172. Full editable foreground image objects remain incomplete. The [milestone record](docs/engineering/milestone-record.json) and live GitHub determine the sole active feature; typography is next on this reconciliation branch. No SaaS/backend or unapproved paid deployment is implied.
 
 ## Five-attempt feature governance
 

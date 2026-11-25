@@ -2,7 +2,7 @@
 
 > **Owner-autonomous PR governance (23 Nov 2026):** [zero-human-approval ruleset and documentation reconciliation](autopilot-zero-human-review.md). This register is generated from a dated JSON snapshot; GitHub live CI and merge state take precedence.
 
-**Decision 2026-11-21:** Previous semantic-table feature is closed to further table-only iteration after merged PR #153. At that historical checkpoint accessible layering was NOW (0/5), but it later closed PARTIAL; current DP-M3-IMAGE is ACTIVE (1/5) after merged PR #165. Do not reuse this dated decision as the live task selector. The [feature-delivery policy](feature-delivery-policy.md) distinguishes source merged, hosted CI verified, local Ubuntu/Compose NOT RUN, screen-reader/physical print NOT RUN and release not authorized.
+**Decision 2026-11-21:** Previous semantic-table feature is closed to further table-only iteration after merged PR #153. At that historical checkpoint accessible layering was NOW (0/5), but it later closed PARTIAL; DP-M3-IMAGE was ACTIVE (1/5) after merged PR #165. Do not reuse this dated decision as the live task selector. The [feature-delivery policy](feature-delivery-policy.md) distinguishes source merged, hosted CI verified, local Ubuntu/Compose NOT RUN, screen-reader/physical print NOT RUN and release not authorized.
 
 **Status:** Dated decisions/evidence register, reconciled 2026-11-16 with live GitHub. **Generated milestone status comes from [milestone-record.json](milestone-record.json);** historical boundary notes below are dated context, and live GitHub overrides all snapshots.
 
@@ -66,7 +66,7 @@
 
 ## Advanced roadmap and evidence authority (2026-11-22)
 
-The [future job catalogue](../product/advanced-feature-roadmap.md) and [acceptance matrix](advanced-feature-acceptance.md) are **proposals**; the structured milestone source above, [live next board](../../next.md) and GitHub exact SHA determine real task status. DP-M3-IMAGE PR #165 merged at `222e550e31e859b2b8e06538f27d07f424a88e19`; foreground authoring remains IN_PROGRESS (1/5). All new typography, vector, guides, exam/banner, assets and direct PDF tasks are PLANNED, and #118/#82/#85 still block production acceptance. Existing UI and schema-v1–v5 compatibility are protected.
+The [future job catalogue](../product/advanced-feature-roadmap.md) and [acceptance matrix](advanced-feature-acceptance.md) are **proposals**; the structured milestone source above, [live next board](../../next.md) and GitHub exact SHA determine real task status. DP-M3-IMAGE PR #165 merged at `222e550e31e859b2b8e06538f27d07f424a88e19`; foreground authoring was IN_PROGRESS (1/5) at that checkpoint. Current status is determined by the generated record, and #118/#82/#85 still block production acceptance. Existing UI and schema-v1–v5 compatibility are protected.
 
 ## Status definitions
 

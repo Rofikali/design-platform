@@ -69,3 +69,18 @@ test("governance exemption allows only reviewed docs, CI and policy tests", () =
 test("main push checks the ledger without inventing a PR number", () => {
   const r = record(); assert.equal(validatePrEvent(r, { ref: "refs/heads/main" }), r);
 });
+
+test("governance transition preserves exhausted feature budget across contributors", () => {
+  const r = record();
+  const previous = r.feature_delivery.features[0];
+  previous.prs = [160, 161, 162, 163, 164];
+  previous.state = "CLOSED"; previous.outcome = "PARTIAL";
+  r.feature_delivery.features[1].state = "ACTIVE";
+  r.feature_delivery.active_feature_id = "DP-M3-IMAGE";
+  r.now_id = "DP-M3-IMAGE-01"; r.next_ids = [];
+  r.milestones[1].status = "READY";
+  const governance = event("GOVERNANCE-EXEMPT", 200, "docs(governance): reconcile exhausted feature");
+  assert.equal(validatePrEvent(r, governance, ["docs/engineering/milestone-record.json", "next.md", "scripts/tests/feature-pr-budget-check.test.mjs"]), r);
+  assert.throws(() => validatePrEvent(r, event("DP-M3-ALIGN", 201)), /currently active/);
+  assert.throws(() => validatePrEvent(r, event("DP-M3-IMAGE", 202)), /Actual GitHub PR #202 missing/);
+});
