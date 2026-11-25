@@ -105,3 +105,8 @@ Use a separate v8 layout envelope rather than mutating merged v7 semantics. Exac
 ### REUSE-02 staged native export adapter
 
 SVG/PNG renderer accepts optional complete validated layout bindings; left/center/right anchors, finite letter spacing, line advance, clipping and native Canvas metrics share the staged layout contract. Legacy/default SVG bytes and table behavior are covered by regression assertions. Nonzero spacing fails explicitly if native measurement is unavailable; Canvas state is restored per measurement. No fake complex-script shaping approximation, no editor activation, no dependency or spend. Unit assertions added, local tests NOT RUN. Native browser probe and actual pixel/print/Indic parity remain acceptance gates.
+
+
+### PR #176 CI remediation and v8 WASM browser coverage
+
+Exact head d7bdb7191267545ca04bfc27e719613ae5ceae60: CI run 45553330205 Rust formatting failed (job 138999495914), Rust tests/Clippy skipped, documentation sync and frontend unit tests/existing WASM smoke passed; editor browser and other workflows still running at checkpoint. Applied the two formatting corrections shown by the runner. Added actual Chrome/WASM v1/v7-to-v8 migration, preservation of existing content/styles, shared 12 layout fixture outcomes, valid roundtrip and invalid binding/version rejection. New-head tests pending; local tests NOT RUN. No editor v8 activation, dependency or spending.

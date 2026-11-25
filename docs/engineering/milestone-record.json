@@ -229,9 +229,9 @@
       "feature_id": "DP-M3-TYPO",
       "title": "Advanced typography and multilingual font handling",
       "status": "PR_OPEN",
-      "summary": "PR #176 staged v8 layout model and native SVG/Canvas renderer; regression fixtures and browser capability probe. Live editor v5/v7; local tests NOT RUN, final-head CI pending. No new dependency.",
+      "summary": "PR #176 staged v8 layout model and native renderer. Prior-head rustfmt failed; documentation, frontend tests and existing WASM smoke passed. Exact log corrections and direct v8 browser regression assertions added; latest CI pending.",
       "pr": 176,
-      "sha": "b2123dea44220f3b56990a0c0aa9085ccc34ac67"
+      "sha": "d7bdb7191267545ca04bfc27e719613ae5ceae60"
     },
     {
       "id": "DP-M3-VECTOR-01",
@@ -379,7 +379,7 @@
           175,
           176
         ],
-        "notes": "PRs #174/#175 merged; #176 OPEN, 3/5. REUSE-02 staged v8 layout model, native SVG/Canvas rendering and validation tests; live editor v5/v7. Local tests NOT RUN; final-head CI pending. Next after gates: v8 activation ADR and editor integration, then local font evaluation."
+        "notes": "PRs #174/#175 merged; #176 OPEN, 3/5. Previous head d7bdb71 Rust fmt failed; docs, frontend tests and existing WASM smoke passed. Log-based fixes and direct v8 browser fixtures added; final-head gates pending. Local tests NOT RUN, editor v5/v7."
       },
       {
         "id": "DP-M3-VECTOR",

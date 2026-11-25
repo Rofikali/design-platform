@@ -96,7 +96,10 @@ pub fn normalize_text_layout_document(
         .text_styles
         .as_ref()
         .ok_or(TextLayoutError::InvalidTypography)?;
-    let ids: HashSet<&str> = styles.iter().map(|entry| entry.element_id.as_str()).collect();
+    let ids: HashSet<&str> = styles
+        .iter()
+        .map(|entry| entry.element_id.as_str())
+        .collect();
     let mut layouts = HashMap::new();
     if let Some(entries) = input.text_layouts.take() {
         if entries.len() != ids.len() {
@@ -147,8 +150,7 @@ mod tests {
     #[test]
     fn legacy_and_v8_roundtrip() {
         let input = include_str!("../../../fixtures/document-v1.json");
-        let mut doc =
-            normalize_text_layout_document(serde_json::from_str(input).unwrap()).unwrap();
+        let mut doc = normalize_text_layout_document(serde_json::from_str(input).unwrap()).unwrap();
         assert_eq!(doc.typography.document.schema_version, 8);
         let entry = &mut doc.text_layouts.as_mut().unwrap()[0];
         assert_eq!(entry.layout, NativeTextLayout::default());
