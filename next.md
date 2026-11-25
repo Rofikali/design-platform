@@ -22,9 +22,9 @@
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-25)
 
-**Reference main:** dd1a63ccbe1d6cf586b5776e9a1fc8ad9547475a (dated snapshot; re-check live GitHub before acting).
+**Reference main:** 3baa30ef4ed9488c2073f144900609e15f4b73da (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M3-TYPO-01 — Advanced typography and multilingual font handling** [PR_OPEN]. [PR #174](https://github.com/Rofikali/design-platform/pull/174)
+**NOW:** **DP-M3-TYPO-01 — Advanced typography and multilingual font handling** [IN_PROGRESS]. [PR #174](https://github.com/Rofikali/design-platform/pull/174)
 
 **NEXT:** DP-M3-VECTOR-01 [PLANNED]; DP-M3-PRECISION-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
@@ -60,7 +60,7 @@
 | DP-M3-LAYERS-01 — Accessible element layering and ordering | DEFERRED | [PR #159](https://github.com/Rofikali/design-platform/pull/159) [Issue #158](https://github.com/Rofikali/design-platform/issues/158) | Four Layers PRs merged with CI evidence; browser stacking, keyboard and export acceptance remains partial in issue #158. Manual #82/#85 and native Ubuntu Compose NOT RUN. |
 | DP-M3-ALIGN-01 — Basic alignment and optional snapping | DEFERRED | [PR #164](https://github.com/Rofikali/design-platform/pull/164) | PRs #160 #162 #163 #164 merged; keyboard alignment and opt-in pointer snapping implemented. Manual screen reader #82, physical print #85 and native Ubuntu Compose NOT RUN; security release #118 OPEN. Closed PARTIAL without a fifth PR. |
 | DP-M3-IMAGE-01 — Foreground image element authoring | MERGED | [PR #172](https://github.com/Rofikali/design-platform/pull/172) | PR #172 merged staged v6 raster utilities only. Feature CLOSED/PARTIAL (5/5); production editor, history/autosave and PNG/print parity incomplete. Exact-head and integrated CI not verified; no release approval. |
-| DP-M3-TYPO-01 — Advanced typography and multilingual font handling | PR_OPEN | [PR #174](https://github.com/Rofikali/design-platform/pull/174) | PR #174: local font token foundation and shared SVG/Canvas legacy default; source head observed 3da194a before registration. Local tests NOT RUN; final-head CI pending. Editor controls and model parity remain unimplemented. |
+| DP-M3-TYPO-01 — Advanced typography and multilingual font handling | IN_PROGRESS | [PR #174](https://github.com/Rofikali/design-platform/pull/174) | PR #174 merged local font foundation; exact-head CI/security/cross-browser passed. Staged v7 typography migration and style binding; production editor remains v5. Local tests NOT RUN; integrated CI not verified. Next: renderer and browser parity. |
 | DP-M3-VECTOR-01 — Bounded vector shape library | PLANNED | — | Add ellipses, lines, arrows, triangles, stars, rounded shapes and polygons as typed elements with bounded geometry, keyboard/history/PNG/print parity; never accept unsafe SVG. |
 | DP-M3-PRECISION-01 — Optional guides rulers and precision layout | PLANNED | — | Opt-in rulers, guide lines, margins, safe-area overlays and spacing measurement without changing established alignment/snapping or default exports. |
 | DP-M3-OBJECT-01 — Optional object grouping locking rotation and styles | PLANNED | — | Future grouped transforms, lock, flip, rotation, opacity and fills; require bounded schema, accessibility, selection/history and output parity; no bulk editor rewrite. |

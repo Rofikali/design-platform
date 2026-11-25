@@ -2,7 +2,7 @@
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
   "snapshot_date": "2026-11-25",
-  "reference_main_sha": "dd1a63ccbe1d6cf586b5776e9a1fc8ad9547475a",
+  "reference_main_sha": "3baa30ef4ed9488c2073f144900609e15f4b73da",
   "now_id": "DP-M3-TYPO-01",
   "next_ids": [
     "DP-M3-VECTOR-01",
@@ -228,10 +228,10 @@
       "id": "DP-M3-TYPO-01",
       "feature_id": "DP-M3-TYPO",
       "title": "Advanced typography and multilingual font handling",
-      "status": "PR_OPEN",
-      "summary": "PR #174: local font token foundation and shared SVG/Canvas legacy default; source head observed 3da194a before registration. Local tests NOT RUN; final-head CI pending. Editor controls and model parity remain unimplemented.",
+      "status": "IN_PROGRESS",
+      "summary": "PR #174 merged local font foundation; exact-head CI/security/cross-browser passed. Staged v7 typography migration and style binding; production editor remains v5. Local tests NOT RUN; integrated CI not verified. Next: renderer and browser parity.",
       "pr": 174,
-      "sha": "3da194a4e953731deceb48d35f3d8047be1cf8e5"
+      "sha": "3baa30ef4ed9488c2073f144900609e15f4b73da"
     },
     {
       "id": "DP-M3-VECTOR-01",
@@ -377,7 +377,7 @@
         "prs": [
           174
         ],
-        "notes": "PR #174 OPEN, 1/5 attempts. Bounded local font tokens and shared legacy export defaults; no editor font selection, schema or multilingual acceptance yet. Local tests NOT RUN; final-head CI pending. Continue same PR if corrections needed."
+        "notes": "PR #174 merged at 3baa30ef4ed9488c2073f144900609e15f4b73da; 1/5 attempts. Three exact-head workflow families passed; integrated-main CI not verified. Shared Rust/TS/WASM styles and proposed v7 migration staged on codex/dp-m3-typography; no new PR, local tests NOT RUN. Production schema v5 remains unchanged."
       },
       {
         "id": "DP-M3-VECTOR",
