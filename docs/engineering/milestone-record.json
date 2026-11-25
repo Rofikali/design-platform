@@ -2,7 +2,7 @@
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
   "snapshot_date": "2026-11-25",
-  "reference_main_sha": "3baa30ef4ed9488c2073f144900609e15f4b73da",
+  "reference_main_sha": "8646b64df0072ed518e9acbecba2b7dc530d0e5f",
   "now_id": "DP-M3-TYPO-01",
   "next_ids": [
     "DP-M3-VECTOR-01",
@@ -228,10 +228,10 @@
       "id": "DP-M3-TYPO-01",
       "feature_id": "DP-M3-TYPO",
       "title": "Advanced typography and multilingual font handling",
-      "status": "PR_OPEN",
-      "summary": "PR #175 editor typography, v7 migration and export. Previous-head Nuxt/browser/security passed; rustfmt failed. Log-based fixes and reuse-first roadmap staged; final-head CI pending.",
+      "status": "IN_PROGRESS",
+      "summary": "PR #175 merged typography controls and persistence; four exact-head workflow families passed. REUSE-02 native layout foundation and browser probe committed. Local tests NOT RUN; integrated-main CI unverified.",
       "pr": 175,
-      "sha": "78ed17c360e5f40c1a27f85bdcebaba7b0cb3c70"
+      "sha": "8646b64df0072ed518e9acbecba2b7dc530d0e5f"
     },
     {
       "id": "DP-M3-VECTOR-01",
@@ -378,7 +378,7 @@
           174,
           175
         ],
-        "notes": "PR #175 OPEN, 2/5. Previous head 78ed17c Nuxt/browser/security/cross-browser/dev container passed; rustfmt failed, Rust tests skipped. Applied exact log formatting fixes; new head pending. REUSE-01–10 in docs/engineering/reuse-first-policy.md."
+        "notes": "PRs #174 and #175 merged; 2/5. #175 exact-head CI/security/cross-browser/dev container passed; integrated-main CI unverified. REUSE-02 native layout contract and browser measurement probe committed. Local tests NOT RUN. Next: versioned layout ADR and editor/export parity; no new PR yet."
       },
       {
         "id": "DP-M3-VECTOR",
