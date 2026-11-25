@@ -1,12 +1,14 @@
 # Engineering Skills and Playbooks
 
+> **Current handoff (25 Nov 2026):** All authorized contributors resume live GitHub work across authors. Adopt existing PRs, count all opened PRs toward the stable feature cap, use a persistent branch for bounded commits, and verify exact-head gates before merging. The generated milestone snapshot supersedes older dated checkpoints. No security bypass or release authorization.
+
 > **Autopilot execution recovery (23 Nov 2026):** [outcome-first continuation contract](docs/engineering/autopilot-execution-recovery.md) records precise handoff fields, resume-first implementation, two-no-code escalation, and L1–L7/CISSP/CCIE/Linux/SRE/CA-MBA gates. This is **not** a scheduler or a substitute for current GitHub CI and the task run record.
 
 > **Autopilot execution:** [no-human-approval but gated PR lifecycle](docs/engineering/autopilot-zero-human-review.md), protected-main [ruleset JSON](.github/rulesets/autopilot-main-no-human-review.json), honest self-review, exact-head CI, and seven-section source-of-truth regeneration. No self-approval or release without separate authorization.
 
 **PR enforcement:** Use one PR-body `Feature-ID: <ACTIVE-ID>` line, record GitHub's actual PR number in the milestone record, and regenerate seven sections in the same implementation PR. CI verifies the linkage; governance-only exemptions must be diff-limited and independently reviewed. For CLOSED features, record explicit DONE/PARTIAL/BLOCKED outcome.
 
-**Feature execution rule (2026-11-21):** Follow [feature-delivery-policy.md](docs/engineering/feature-delivery-policy.md). Maximum **five PRs per feature**, count abandoned feature PR attempts, and after the budget is used close as DONE/PARTIAL/BLOCKED and advance to a different READY feature. Evidence labels are separate: merged source, exact-head CI, local Ubuntu/Docker Compose, manual accessibility, print, and release. Do not repeat table-only, closed Layers or closed Alignment PR iterations. DP-M3-IMAGE is ACTIVE (4/5 merged attempts #165/#167/#168/#169); full image authoring remains NEXT work within that feature.
+**Feature execution rule (2026-11-21):** Follow [feature-delivery-policy.md](docs/engineering/feature-delivery-policy.md). Maximum **five PRs per feature**, count abandoned feature PR attempts, and after the budget is used close as DONE/PARTIAL/BLOCKED and advance to a different READY feature. Evidence labels are separate: merged source, exact-head CI, local Ubuntu/Docker Compose, manual accessibility, print, and release. Do not repeat table-only, closed Layers or closed Alignment PR iterations. DP-M3-IMAGE is CLOSED/PARTIAL (5/5 including #172); full image authoring remains incomplete, not a new PR authorization. Use the generated NOW selector.
 
 This file is the practical companion to `AGENTS.md`. It describes how an agent should apply professional engineering, security, architecture, product, and management skills to this repository.
 
@@ -14,7 +16,7 @@ The goal is to build a real product and help the owner understand the decisions 
 
 ## Advanced feature addition and autopilot repair recipe (2026-11-22)
 
-Follow the [proposed advanced features and phased milestones](docs/product/advanced-feature-roadmap.md), their [acceptance and risk matrix](docs/engineering/advanced-feature-acceptance.md), [source milestone record](docs/engineering/milestone-record.json), [live board](next.md) and [hourly runbook](docs/engineering/hourly-autopilot.md). Start by checking current main, PR state, feature budget and exact-head tests. As of the verified 22 Nov checkpoint, image-validation PR #165 is MERGED, not open; the next bounded DP-M3-IMAGE PR should add a versioned/validated foreground image document model and existing import migration compatibility, then integrate editor, history, persistence and export within the 5-opened-PR ceiling. Do not reattempt #162 or reopen closed Alignment/Layers/Table. Avoid a status-only PR when a safe substantive implementation task exists.
+Follow the [proposed advanced features and phased milestones](docs/product/advanced-feature-roadmap.md), their [acceptance and risk matrix](docs/engineering/advanced-feature-acceptance.md), [source milestone record](docs/engineering/milestone-record.json), [live board](next.md) and [hourly runbook](docs/engineering/hourly-autopilot.md). Start by checking current main, PR state, feature budget and exact-head tests. Choose the smallest safe slice of the canonical active feature, after verifying live merges and acceptance dependencies. Continue the same branch and PR across contributors. Do not reattempt #162 or reopen closed Alignment/Layers/Table. Avoid a status-only PR when a safe substantive implementation task exists.
 
 For each added feature, inventory current behavior and protect all existing elements, templates, localStorage, undo/redo, JSON v1–v5, Rust/WASM and TS fallback, PNG and print. When modifying shared contracts, use versioned schema/fixtures, targeted negative tests, visual/keyboard/export regression, manual NOT RUN notes and scoped ADR/HLD/LLD updates. Keep source code modular; only introduce new abstractions, API or infrastructure with demonstrated need. Future typography, shapes, rulers, grouping, multi-page exams, banner studio, direct PDF and assets are PLANNED not merged. Update `milestone-record.json` then generate exactly seven sections with `node scripts/sync-milestone-docs.mjs` (and `--check`); never hand-edit generated markers.
 
@@ -304,15 +306,15 @@ The owner enabled an independent ChatGPT task named **Design Platform Autopilot*
 
 <!-- milestone-sync:start -->
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
-### Milestone snapshot (generated: 2026-11-24)
+### Milestone snapshot (generated: 2026-11-25)
 
-**Reference main:** d898f8c49c33d274a522ad9161cf553c8e6f9950 (dated snapshot; re-check live GitHub before acting).
+**Reference main:** 88f860deab1c56ca2947fde4406c96d3ccc9dd88 (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M3-IMAGE-01 — Foreground image element authoring** [PR_OPEN]. [PR #172](https://github.com/Rofikali/design-platform/pull/172)
+**NOW:** **DP-M3-TYPO-01 — Advanced typography and multilingual font handling** [READY].
 
-**NEXT:** DP-M3-TYPO-01 [PLANNED]; DP-M3-VECTOR-01 [PLANNED]; DP-M3-PRECISION-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
+**NEXT:** DP-M3-VECTOR-01 [PLANNED]; DP-M3-PRECISION-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
-**Feature budget:** DP-M3-IMAGE — 5/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
+**Feature budget:** DP-M3-TYPO — 0/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
 
 **Review gate:** Owner-authorized autopilot may self-review and merge eligible PRs with zero mandatory human approvals after required exact-head/integration CI, security, branch rules and review-thread gates pass. Never present self-review as independent approval. No automatic publishing or deployment.
 

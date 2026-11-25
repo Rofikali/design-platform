@@ -1,5 +1,7 @@
 # Engineering Constitution
 
+> **Current handoff (25 Nov 2026):** All authorized contributors resume live GitHub work across authors. Adopt existing PRs, count all opened PRs toward the stable feature cap, use a persistent branch for bounded commits, and verify exact-head gates before merging. The generated milestone snapshot supersedes older dated checkpoints. No security bypass or release authorization.
+
 > **Autopilot execution recovery (23 Nov 2026):** [outcome-first continuation contract](docs/engineering/autopilot-execution-recovery.md) records precise handoff fields, resume-first implementation, two-no-code escalation, and L1–L7/CISSP/CCIE/Linux/SRE/CA-MBA gates. This is **not** a scheduler or a substitute for current GitHub CI and the task run record.
 
 > **Owner autonomy directive (2026-11-23):** Eligible engineering PRs use documented agent self-review with **zero mandatory human approvals**, not a fake independent APPROVED review. Preserve required CI, branch rules, review-thread resolution, feature budgets and all security/release restrictions. [Current governance](docs/engineering/autopilot-zero-human-review.md) · [Importable main ruleset](.github/rulesets/autopilot-main-no-human-review.json) (not active until imported).
@@ -9,15 +11,15 @@
 
 <!-- milestone-sync:start -->
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
-### Milestone snapshot (generated: 2026-11-24)
+### Milestone snapshot (generated: 2026-11-25)
 
-**Reference main:** d898f8c49c33d274a522ad9161cf553c8e6f9950 (dated snapshot; re-check live GitHub before acting).
+**Reference main:** 88f860deab1c56ca2947fde4406c96d3ccc9dd88 (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M3-IMAGE-01 — Foreground image element authoring** [PR_OPEN]. [PR #172](https://github.com/Rofikali/design-platform/pull/172)
+**NOW:** **DP-M3-TYPO-01 — Advanced typography and multilingual font handling** [READY].
 
-**NEXT:** DP-M3-TYPO-01 [PLANNED]; DP-M3-VECTOR-01 [PLANNED]; DP-M3-PRECISION-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
+**NEXT:** DP-M3-VECTOR-01 [PLANNED]; DP-M3-PRECISION-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
-**Feature budget:** DP-M3-IMAGE — 5/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
+**Feature budget:** DP-M3-TYPO — 0/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
 
 **Review gate:** Owner-authorized autopilot may self-review and merge eligible PRs with zero mandatory human approvals after required exact-head/integration CI, security, branch rules and review-thread gates pass. Never present self-review as independent approval. No automatic publishing or deployment.
 
@@ -29,13 +31,13 @@ Before opening a feature PR, reconcile live GitHub history with `docs/engineerin
 
 ## Feature-delivery gate: five PRs maximum (effective 2026-11-21)
 
-The current feature is **DP-M3-IMAGE (1/5; PR #165 merged)**, not a new Alignment/Layers/Table task. Its remaining work is foreground image schema/editor/history/export integration; resource validation alone is not authoring. Live GitHub, not dated prose, determines actual PR status. The [feature delivery policy](docs/engineering/feature-delivery-policy.md) defines the hard **five-PR cap per feature**, outcome-based completion, bounded acceptance and next-feature handoff. Each PR must record its feature ID and count against the same five slots, including failed/closed feature attempts; never reset the count by renaming submilestones. A security P0 fix must be handled in its own tracked remediation lane, not hidden as a sixth feature PR.
+Select the current feature from the generated NOW block after reconciling live GitHub. DP-M3-IMAGE closed PARTIAL after PR #172 (5/5); no further image-feature PR. Its unfinished editor/history/export acceptance remains explicitly recorded. Live GitHub, not dated prose, determines actual PR status. The [feature delivery policy](docs/engineering/feature-delivery-policy.md) defines the hard **five-PR cap per feature**, outcome-based completion, bounded acceptance and next-feature handoff. Each PR must record its feature ID and count against the same five slots, including failed/closed feature attempts; never reset the count by renaming submilestones. A security P0 fix must be handled in its own tracked remediation lane, not hidden as a sixth feature PR.
 
 The table feature's earlier iterations predate this rule and are explicitly closed to new feature-scope PRs. Merged code ≠ CI proof ≠ manually tested ≠ released. Manual Ubuntu/Docker Compose, screen-reader and physical printer evidence remain **NOT RUN** until observed; do not stall independent READY features because those manual gates have not been exercised.
 
 ## Additive advanced-feature governance (owner direction, 2026-11-22)
 
-Read the [advanced editor roadmap](docs/product/advanced-feature-roadmap.md) and [advanced acceptance gates](docs/engineering/advanced-feature-acceptance.md), then [live board](next.md), [milestone record](docs/engineering/milestone-record.json), [documentation map](docs/engineering/documentation-map.md) and [seven-level model](docs/engineering/seven-level-operating-model.md). Future typography, vectors, guides, grouping, exam pagination, shop banners, assets, templates, PDF and print preflight are **PLANNED**, not authorized concurrent PRs. Current feature DP-M3-IMAGE remains the sole ACTIVE lane. For next tasks, first reconcile merge of #165 at `222e550e31e859b2b8e06538f27d07f424a88e19`, then implement only the smallest safe image-authoring vertical slice under that same stable feature ID.
+Read the [advanced editor roadmap](docs/product/advanced-feature-roadmap.md) and [advanced acceptance gates](docs/engineering/advanced-feature-acceptance.md), then [live board](next.md), [milestone record](docs/engineering/milestone-record.json), [documentation map](docs/engineering/documentation-map.md) and [seven-level model](docs/engineering/seven-level-operating-model.md). Only the canonical ACTIVE lane may advance; after PR #173 integration, typography is the selected independent lane. Other roadmap proposals are not concurrent work. Start with bounded local font and text-model acceptance; preserve legacy defaults.
 
 **Preserve existing editor behavior**: do not touch current text/rect/frame/grid/table user flows, layers/snap, 50-snapshot history, local autosave, background images, v1–v5 imports, old templates, PNG and browser PDF, TS+Rust/WASM parity except for minimal reviewed additions protected by regression tests. Any necessary shared schema change must be versioned, backward-compatible and tested; no general rewrite. Respect P0 product release/security [#118](https://github.com/Rofikali/design-platform/issues/118), manual a11y [#82](https://github.com/Rofikali/design-platform/issues/82), printer [#85](https://github.com/Rofikali/design-platform/issues/85), and Layer acceptance [#158](https://github.com/Rofikali/design-platform/issues/158). No auto-deploy, cloud sync, billing, remote assets, telemetry, new backend or paid infrastructure. Proportionate L1–L7/CISSP/Linux/SRE/CCIE/CA/MBA review; record actual evidence and cost, never claim certification.
 

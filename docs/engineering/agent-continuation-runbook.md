@@ -1,20 +1,22 @@
 # Agent Continuation and New-Session Recovery — Design Platform
 
+> **Current handoff (25 Nov 2026):** All authorized contributors resume live GitHub work across authors. Adopt existing PRs, count all opened PRs toward the stable feature cap, use a persistent branch for bounded commits, and verify exact-head gates before merging. The generated milestone snapshot supersedes older dated checkpoints. No security bypass or release authorization.
+
 > **Owner update (23 Nov 2026):** [autopilot self-review + gated merges with zero required human approvals](autopilot-zero-human-review.md) supersedes historical mandatory-review language. Never call an agent self-review independent. GitHub rules and all CI/security/manual-release gates still apply.
 
 **Status:** Standing procedure, not running automation. Inspired by imgengine's milestone-continuation model and adapted to Design Platform. [AGENTS](../../AGENTS.md), [next](../../next.md), [handoff template](agent-milestone-handoff.md) and current source/CI remain authoritative.
 
 <!-- milestone-sync:start -->
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
-### Milestone snapshot (generated: 2026-11-24)
+### Milestone snapshot (generated: 2026-11-25)
 
-**Reference main:** d898f8c49c33d274a522ad9161cf553c8e6f9950 (dated snapshot; re-check live GitHub before acting).
+**Reference main:** 88f860deab1c56ca2947fde4406c96d3ccc9dd88 (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M3-IMAGE-01 — Foreground image element authoring** [PR_OPEN]. [PR #172](https://github.com/Rofikali/design-platform/pull/172)
+**NOW:** **DP-M3-TYPO-01 — Advanced typography and multilingual font handling** [READY].
 
-**NEXT:** DP-M3-TYPO-01 [PLANNED]; DP-M3-VECTOR-01 [PLANNED]; DP-M3-PRECISION-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
+**NEXT:** DP-M3-VECTOR-01 [PLANNED]; DP-M3-PRECISION-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
-**Feature budget:** DP-M3-IMAGE — 5/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
+**Feature budget:** DP-M3-TYPO — 0/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
 
 **Review gate:** Owner-authorized autopilot may self-review and merge eligible PRs with zero mandatory human approvals after required exact-head/integration CI, security, branch rules and review-thread gates pass. Never present self-review as independent approval. No automatic publishing or deployment.
 
@@ -24,7 +26,7 @@
 
 ## Current feature continuation and future-job selection (2026-11-22)
 
-Check [advanced roadmap](../product/advanced-feature-roadmap.md), [new feature acceptance matrix](advanced-feature-acceptance.md), [live work board](../../next.md) and [structured milestone record](milestone-record.json) after live GitHub state. PR #165 merged at `222e550e31e859b2b8e06538f27d07f424a88e19`; current DP-M3-IMAGE remains 1/5 and IN_PROGRESS, **not PR_OPEN**. Continue foreground-image schema/editor/history/export through a bounded next PR under the SAME feature ID. New typography/vector/guides/exam/banner/asset/PDF candidates remain PLANNED. Restore the generated seven documentation views from the record whenever status materially changes. Old tasks #162, closed Alignment/Layers and legacy tables must not be reselected. Preserve existing editor functionality and all original schema migrations.
+Check [advanced roadmap](../product/advanced-feature-roadmap.md), [new feature acceptance matrix](advanced-feature-acceptance.md), [live work board](../../next.md) and [structured milestone record](milestone-record.json) after live GitHub state. PR #172 merged at `88f860deab1c56ca2947fde4406c96d3ccc9dd88`; DP-M3-IMAGE is CLOSED/PARTIAL, 5/5. Do not reopen that feature. Resume the canonical active lane across all contributors; typography is selected after this reconciliation integrates. Restore the generated seven documentation views from the record whenever status materially changes. Old tasks #162, closed Alignment/Layers and legacy tables must not be reselected. Preserve existing editor functionality and all original schema migrations.
 
 ## Enabled scheduled engineering autopilot
 
@@ -40,7 +42,7 @@ A markdown rule **does not** wake ChatGPT/Astra/Codex after a session ends, subm
 
 ## Five-PR feature budget and handoff
 
-The current feature is **DP-M3-IMAGE (4/5; #169 merged)**, not repeated table/layer regressions. Check [the five-PR feature ledger](feature-delivery-policy.md) and `milestone-record.json` before creating a PR. Record every PR attempt under the stable feature ID. Never open a sixth PR for one feature. Close the feature as DONE, PARTIAL or BLOCKED, carry real gaps to independent acceptance issues, and advance to alignment/snapping when layers exits. Local owner Ubuntu/Docker Compose, manual accessibility and real print remain NOT RUN without actual execution.
+The current feature is selected by the generated record and live GitHub, not repeated table/layer/image regressions. Check [the five-PR feature ledger](feature-delivery-policy.md) and `milestone-record.json` before creating a PR. Record every PR attempt under the stable feature ID. Never open a sixth PR for one feature. Close the feature as DONE, PARTIAL or BLOCKED, carry real gaps to independent acceptance issues, and advance to the next independently eligible feature. Local owner Ubuntu/Docker Compose, manual accessibility and real print remain NOT RUN without actual execution.
 
 ## "Go ahead" task-selection contract — use the live board
 
