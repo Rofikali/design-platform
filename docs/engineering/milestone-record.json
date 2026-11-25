@@ -229,9 +229,9 @@
       "feature_id": "DP-M3-TYPO",
       "title": "Advanced typography and multilingual font handling",
       "status": "PR_OPEN",
-      "summary": "PR #177 merged. #178 multilingual v8 file import/export, DOM and PNG ink baseline plus pinned Noto metadata/OFL evaluation. Font binaries deferred; glyph/IME/print fidelity unverified. Local tests NOT RUN; final-head CI pending.",
+      "summary": "#178 multilingual baseline: prior-head cross-browser failure was ambiguous selected text/resize-handle locator. Corrected selector and WASM export status check; latest CI pending. Font adoption/glyph/print gates remain unverified.",
       "pr": 178,
-      "sha": "59fbca2d6d5e18aadbe18652dbb070b9cdb53ddf"
+      "sha": "ba0136e47bbf7023266dae285e116458d1695660"
     },
     {
       "id": "DP-M3-VECTOR-01",
@@ -381,7 +381,7 @@
           177,
           178
         ],
-        "notes": "PRs #174–#177 merged; #178 OPEN, 5/5 (cap reached). #177 three reported exact-head workflows passed; integrated-main CI unverified. Multilingual browser baseline and pinned Noto metadata/OFL evidence added; no font assets adopted. Local tests NOT RUN. Fix within #178 only; close PARTIAL if glyph/IME, binary provenance, embedding/physical print or other gates remain unmet. No sixth PR; then advance independent feature."
+        "notes": "PRs #174–#177 merged; #178 OPEN, 5/5. Prior head ba0136e cross-browser failed on selected text/resize-handle locator ambiguity; Chromium legacy exports, Rust core, doc sync and JS audit passed. Scoped selector and WASM export assertion corrected; final-head CI pending. Font binaries, glyph/IME and embedding/physical print gates unmet; close PARTIAL at cap if unresolved. No sixth PR."
       },
       {
         "id": "DP-M3-VECTOR",

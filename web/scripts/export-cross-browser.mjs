@@ -144,12 +144,19 @@ async function verifyMultilingual(browserName, browser) {
     }, expected);
     await page.waitForFunction(() => window.__multilingualStatuses.some(s => s.includes("imported and validated with WebAssembly")));
     for (const item of expected.elements) {
-      const text = await page.locator(`[data-element-id="${item.id}"] > span`).textContent();
+      // Selected text elements also contain an aria-hidden resize-handle span.
+      // Scope to the canvas and exclude the handle without hiding duplicate text nodes.
+      const content = page.locator(`.design-page .design-element[data-element-id="${item.id}"] > span:not([aria-hidden="true"])`);
+      if (await content.count() !== 1) {
+        throw new Error(`${browserName}: expected exactly one rendered text node for ${item.id}`);
+      }
+      const text = await content.textContent();
       if (text !== item.kind.text) throw new Error(`${browserName}: DOM text changed for ${item.id}`);
     }
     const jsonPromise = page.waitForEvent("download", { timeout: 30_000 });
     await page.getByRole("button", { name: "Download JSON" }).click();
     const jsonPath = await (await jsonPromise).path();
+    await page.waitForFunction(() => window.__multilingualStatuses.some(s => s.includes("validated with WebAssembly and downloaded")));
     if (!jsonPath) throw new Error("Missing multilingual JSON download");
     const exported = JSON.parse(await readFile(jsonPath, "utf8"));
     if (exported.schema_version !== 8 || expected.elements.some(e =>
