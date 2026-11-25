@@ -237,7 +237,7 @@
       "feature_id": "DP-M3-VECTOR",
       "title": "Bounded vector shape library",
       "status": "IN_PROGRESS",
-      "summary": "Staged normalized polygon geometry for triangle, star and regular polygon; bounded sides and star radius. Tests NOT RUN; schema, editor, history and export integration pending."
+      "summary": "Staged normalized polygon, line, arrow, ellipse and rounded-rectangle geometry with bounded parameters. Tests NOT RUN; schema, editor, history and export integration pending."
     },
     {
       "id": "DP-M3-PRECISION-01",
@@ -388,7 +388,7 @@
         "title": "Bounded vector shape library",
         "state": "ACTIVE",
         "prs": [],
-        "notes": "0/5 PRs. Staged normalized geometry validator and tests; no schema or editor integration yet. Local tests NOT RUN. Continue same branch."
+        "notes": "0/5 PRs. Staged polygon and primitive outlines with bounded validation and regression tests; local tests NOT RUN. Next: versioned Rust/TS schema and migration parity on same branch."
       },
       {
         "id": "DP-M3-PRECISION",

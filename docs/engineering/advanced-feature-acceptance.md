@@ -133,3 +133,8 @@ Cross-browser run 45555056217 failed on a strict locator ambiguity (selected tex
 ### Vector geometry staged increment (25 Nov 2026)
 
 Pure normalized polygon points for triangle, regular polygon (3–32 sides) and star (3–16 tips, inner radius ratio 0.1–0.9). No arbitrary SVG, markup, URLs, new dependencies or network. Reject invalid numeric input before allocating points. This is not a persisted schema or editor feature. Local tests NOT RUN; Rust/WASM parity, keyboard, history, PNG/print and manual acceptance remain pending. Typography closed PARTIAL at five merged PRs; integrated main workflow list empty at observation. Finance/network/SRE unchanged: no infrastructure or spend.
+
+
+### Vector staged primitive geometry
+
+Added bounded normalized line, arrow, 32-point ellipse approximation and rounded-rectangle outlines (maximum 36 points). Reject nonfinite and out-of-range parameters before allocation. No SVG parsing, schema or runtime integration, dependencies, network or spend. Local tests NOT RUN; CI pending PR. Next: versioned Rust/TS schema and migration parity. Existing security and manual acceptance gates unchanged.
