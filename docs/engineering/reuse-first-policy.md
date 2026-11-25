@@ -27,7 +27,7 @@ Official upstream starting points (verify exact version and LICENSE/NOTICE, not 
 | --- | --- | --- |
 | REUSE-01 | Integrated: DP-M3-TYPO | PR #175 merged at 8646b64; four exact-head workflow families passed. Integrated-main CI not verified; glyph/physical print acceptance remains separate. |
 | REUSE-02 | Active: typography editor integration | Native line/letter spacing, alignment and wrapping comparison; preserve old defaults/v7, validate finite bounds, Rust/TS/WASM and DOM/SVG/PNG/print fixtures |
-| REUSE-03 | Typography acceptance | Local Noto font evaluation: exact assets/license/hash, Indic grapheme/IME/glyph fixtures, cold/offline loading, PNG/PDF and bundle measurements; only ship approved necessary assets |
+| REUSE-03 | Active candidate: typography acceptance | Local Noto font evaluation: exact assets/license/hash, Indic grapheme/IME/glyph fixtures, cold/offline loading, PNG/PDF and bundle measurements; only ship approved necessary assets |
 | REUSE-04 | Conditional rich-text scope | Compare native editing with bounded Tiptap/ProseMirror prototype for mixed runs; preserve IME, keyboard, history, portable JSON and export; no paid extensions |
 | REUSE-05 | Existing vector/precision feature IDs | Native SVG baseline; compare one Fabric or Konva adapter only for measurable gaps in selection, hit testing, layout or rendering; same fixtures, rollback, no rewrite |
 | REUSE-06 | Existing asset/template roadmap | Local icons/shapes/templates; provenance, license inventory, sanitized input and accessible names |
@@ -54,3 +54,6 @@ Target INR 0 incremental license fees, royalties, mandatory subscriptions, paid 
 
 ## 8. Documentation and gates
 Keep AGENTS.md, SKILLS.md, README.md, next.md, canonical milestone record and seven generated views consistent; link scoped architecture/security/testing/CI/Linux/SRE/network/finance docs or record N/A. Exact-head CI and integration checks are separate; local NOT RUN is not PASS. This policy installs no dependencies or font assets and authorizes no release. See [feature policy](feature-delivery-policy.md), [acceptance](advanced-feature-acceptance.md), [HLD/LLD](../architecture/document-editor-hld-lld.md), [security](../security/threat-model.md), [testing](../testing/strategy.md), [finance](../finance/unit-economics.md), [operations](../operations/release-readiness.md), [roadmap](../product/advanced-feature-roadmap.md).
+
+
+See [pinned local font evaluation](local-font-evaluation.md) for candidate provenance, baseline tests and explicit adoption blockers. No asset adoption until exact binary and render acceptance.

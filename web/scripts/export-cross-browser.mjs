@@ -112,6 +112,89 @@ async function verifyExport(browserName, browser, template, expectedWidth, expec
   }
 }
 
+/** Baseline only: visible ink and exact text roundtrip do not prove glyph correctness. */
+async function verifyMultilingual(browserName, browser) {
+  const context = await browser.newContext({ acceptDownloads: true });
+  try {
+    const page = await context.newPage();
+    const external = [];
+    page.on("request", request => {
+      const url = new URL(request.url());
+      if (["http:", "https:"].includes(url.protocol) && url.origin !== baseUrl) external.push(url.origin);
+    });
+    const { readFile } = await import("node:fs/promises");
+    const fixture = await readFile(resolve(webRoot, "../fixtures/document-v8-multilingual.json"), "utf8");
+    const expected = JSON.parse(fixture);
+    await page.goto(baseUrl, { waitUntil: "networkidle" });
+    await page.locator(".design-page").waitFor();
+    await page.evaluate(() => {
+      const region = document.querySelector('.tools-panel > p.hint[role="status"]');
+      if (!region) throw new Error("Missing status live region");
+      window.__multilingualStatuses = [];
+      new MutationObserver(() => window.__multilingualStatuses.push(region.textContent || ""))
+        .observe(region, { subtree: true, childList: true, characterData: true });
+    });
+    await page.getByLabel("Import design JSON file").setInputFiles({
+      name: "document-v8-multilingual.json", mimeType: "application/json", buffer: Buffer.from(fixture),
+    });
+    await page.waitForFunction(doc => {
+      const saved = JSON.parse(localStorage.getItem("design-platform:document:v1") || "null");
+      return saved?.schema_version === 8 && saved.elements.length === doc.elements.length &&
+        doc.elements.every(e => saved.elements.find(s => s.id === e.id)?.kind.text === e.kind.text);
+    }, expected);
+    await page.waitForFunction(() => window.__multilingualStatuses.some(s => s.includes("imported and validated with WebAssembly")));
+    for (const item of expected.elements) {
+      const text = await page.locator(`[data-element-id="${item.id}"] > span`).textContent();
+      if (text !== item.kind.text) throw new Error(`${browserName}: DOM text changed for ${item.id}`);
+    }
+    const jsonPromise = page.waitForEvent("download", { timeout: 30_000 });
+    await page.getByRole("button", { name: "Download JSON" }).click();
+    const jsonPath = await (await jsonPromise).path();
+    if (!jsonPath) throw new Error("Missing multilingual JSON download");
+    const exported = JSON.parse(await readFile(jsonPath, "utf8"));
+    if (exported.schema_version !== 8 || expected.elements.some(e =>
+      exported.elements.find(s => s.id === e.id)?.kind.text !== e.kind.text) ||
+      JSON.stringify(exported.text_styles) !== JSON.stringify(expected.text_styles) ||
+      JSON.stringify(exported.text_layouts) !== JSON.stringify(expected.text_layouts)) {
+      throw new Error(`${browserName}: multilingual JSON lost text or formatting`);
+    }
+    const pngPromise = page.waitForEvent("download", { timeout: 30_000 });
+    await page.getByRole("button", { name: "Download PNG" }).click();
+    const pngPath = await (await pngPromise).path();
+    if (!pngPath) throw new Error("Missing multilingual PNG download");
+    const png = await readFile(pngPath);
+    if (!png.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])) ||
+        png.toString("ascii", 12, 16) !== "IHDR" ||
+        png.readUInt32BE(16) !== 1600 || png.readUInt32BE(20) !== 1200) {
+      throw new Error(`${browserName}: multilingual PNG dimensions/signature invalid`);
+    }
+    const ink = await page.evaluate(async ({ encoded, elements }) => {
+      const image = new Image();
+      image.src = "data:image/png;base64," + encoded;
+      await image.decode();
+      const canvas = document.createElement("canvas");
+      canvas.width = image.naturalWidth;
+      canvas.height = image.naturalHeight;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(image, 0, 0);
+      return elements.map(e => {
+        const data = ctx.getImageData(e.x * 2, e.y * 2, e.width * 2, e.height * 2).data;
+        let pixels = 0;
+        for (let i = 0; i < data.length; i += 4) {
+          if (data[i + 3] > 0 && data[i] < 100 && data[i + 1] < 100 && data[i + 2] < 100) pixels += 1;
+        }
+        return { id: e.id, pixels };
+      });
+    }, { encoded: png.toString("base64"), elements: expected.elements });
+    if (ink.some(row => row.pixels < 50) || external.length) {
+      throw new Error(`${browserName}: missing rendered ink or external requests: ${JSON.stringify({ ink, external })}`);
+    }
+    process.stdout.write(`PASS: ${browserName} multilingual v8 text/style/layout roundtrip, 1600×1200 PNG ink and local requests only: ${JSON.stringify(ink)}\n`);
+  } finally {
+    await context.close();
+  }
+}
+
 async function main() {
   // Use the package build lifecycle so the prebuild hook generates the
   // Rust/WASM adapter before Nuxt resolves its browser-only module import.
@@ -136,6 +219,7 @@ async function main() {
       try {
         await verifyExport(name, browser, "shop-banner-landscape", 2400, 1000);
         await verifyExport(name, browser, "exam-paper-a4", 1588, 2246);
+        await verifyMultilingual(name, browser);
       } finally {
         await browser.close();
       }
