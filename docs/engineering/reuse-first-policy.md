@@ -26,7 +26,7 @@ Official upstream starting points (verify exact version and LICENSE/NOTICE, not 
 | ID | Priority and feature ownership | Bounded deliverable and exit gate |
 | --- | --- | --- |
 | REUSE-01 | Integrated: DP-M3-TYPO | PR #175 merged at 8646b64; four exact-head workflow families passed. Integrated-main CI not verified; glyph/physical print acceptance remains separate. |
-| REUSE-02 | NOW candidate: typography slice | Native line/letter spacing, alignment and wrapping comparison; preserve old defaults/v7, validate finite bounds, Rust/TS/WASM and DOM/SVG/PNG/print fixtures |
+| REUSE-02 | Active: typography editor integration | Native line/letter spacing, alignment and wrapping comparison; preserve old defaults/v7, validate finite bounds, Rust/TS/WASM and DOM/SVG/PNG/print fixtures |
 | REUSE-03 | Typography acceptance | Local Noto font evaluation: exact assets/license/hash, Indic grapheme/IME/glyph fixtures, cold/offline loading, PNG/PDF and bundle measurements; only ship approved necessary assets |
 | REUSE-04 | Conditional rich-text scope | Compare native editing with bounded Tiptap/ProseMirror prototype for mixed runs; preserve IME, keyboard, history, portable JSON and export; no paid extensions |
 | REUSE-05 | Existing vector/precision feature IDs | Native SVG baseline; compare one Fabric or Konva adapter only for measurable gaps in selection, hit testing, layout or rendering; same fixtures, rollback, no rewrite |

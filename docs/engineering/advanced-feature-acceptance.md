@@ -115,3 +115,6 @@ Exact head d7bdb7191267545ca04bfc27e719613ae5ceae60: CI run 45553330205 Rust for
 ### REUSE-02 v8 activation candidate
 
 PR #176 merged at 553711d; four exact-head workflow families passed, integrated-main workflow query returned no runs. Candidate editor wiring uses native alignment/line-height/spacing controls, complete v8 bindings only when nondefault layout is present, v5/v7 otherwise, version-aware TS/WASM validation, snapshots and native PNG adapter. Existing history/autosave observe layout state; unit assertions added. Browser and physical print/glyph parity not yet verified; v8 activation is branch-only until merge. No new dependency, font asset or spend. Local tests NOT RUN.
+
+
+Added candidate Chrome smoke checks for v8 live CSS, v7/v8 undo/redo, autosave/reload, actual JSON download and PNG dimensions/changed bytes (or explicit unsupported native spacing error), reusing the existing PDF geometry smoke. Updated legacy font-size selector to avoid ambiguous numeric control selection. These are written assertions, not executed evidence. File import UI roundtrip and glyph pixel fidelity remain separate gates. Local tests NOT RUN.

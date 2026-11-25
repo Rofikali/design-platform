@@ -804,7 +804,7 @@ onMounted(async () => {
           </fieldset>
           <label v-if="selectedElement.type === 'text'" class="field">
             Font size
-            <input v-model.number="selectedElement.fontSize" type="number" min="1" max="512" />
+            <input v-model.number="selectedElement.fontSize" aria-label="Font size" type="number" min="1" max="512" />
           </label>
           <label class="field">
             Width
