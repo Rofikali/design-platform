@@ -61,3 +61,8 @@ Review lenses are not certifications, seven separate AI workers or permission to
 - [AGENTS](../../AGENTS.md), [SKILLS](../../SKILLS.md), [README](../../README.md), [next.md](../../next.md), [five-PR policy](feature-delivery-policy.md), [hourly autopilot](hourly-autopilot.md)
 - [architecture HLD/LLD](../architecture/document-editor-hld-lld.md), [WASM parity](wasm-boundary.md), [local storage](local-document-persistence.md), [testing](../testing/strategy.md), [security](../security/threat-model.md), [CI evidence](ci-evidence-policy.md)
 - [product/business](../product/platform-business-strategy.md), [unit economics](../finance/unit-economics.md), [seven-level operating model](seven-level-operating-model.md)
+
+
+### Typography foundation checkpoint (25 November 2026)
+
+PR #174 introduces only fixed local family tokens, legacy default SVG/Canvas font resolution and negative regression tests. No user-facing family picker, weight/style, document migration or glyph/print certification yet. No font assets, remote requests or new dependency; system font availability remains host-dependent. Local tests NOT RUN; exact-head CI required. Next: coordinate the versioned TS/Rust/WASM model and migration fixtures before enabling editor controls.
