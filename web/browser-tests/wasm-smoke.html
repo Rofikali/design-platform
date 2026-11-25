@@ -61,8 +61,41 @@
         }
       }
 
+      const styleResponse = await fetch("/fixtures/text-style-v1-cases.json");
+      if (!styleResponse.ok) throw new Error("Missing typography fixture");
+      for (const entry of await styleResponse.json()) {
+        let accepted = true;
+        let normalized;
+        try { normalized = JSON.parse(wasm.validate_text_style_v1_json(JSON.stringify(entry.input))); }
+        catch { accepted = false; }
+        if (accepted !== entry.valid || (accepted && JSON.stringify(normalized) !== JSON.stringify(entry.input))) {
+          throw new Error("WASM typography style differed for: " + entry.name);
+        }
+      }
+      const legacyResponse = await fetch("/fixtures/document-v1.json");
+      if (!legacyResponse.ok) throw new Error("Missing legacy document fixture");
+      const legacy = await legacyResponse.json();
+      const styled = JSON.parse(wasm.normalize_typography_document_json(JSON.stringify(legacy)));
+      if (styled.schema_version !== 7 || styled.text_styles.length !== 1 ||
+          styled.text_styles[0].element_id !== "title-1" || styled.text_styles[0].style.font_family !== "sans") {
+        throw new Error("WASM typography migration did not preserve default text binding");
+      }
+      styled.text_styles[0].style = { font_family: "serif", font_weight: "bold", font_style: "italic" };
+      const roundtrip = JSON.parse(wasm.normalize_typography_document_json(JSON.stringify(styled)));
+      if (JSON.stringify(roundtrip) !== JSON.stringify(styled)) throw new Error("Styled document roundtrip changed");
+      for (const invalid of [
+        { ...styled, text_styles: null }, { ...styled, text_styles: [] },
+        { ...styled, text_styles: [styled.text_styles[0], styled.text_styles[0]] },
+        { ...styled, text_styles: [{ ...styled.text_styles[0], element_id: "rect-2" }] },
+        { ...styled, schema_version: 6 },
+      ]) {
+        let rejected = false;
+        try { wasm.normalize_typography_document_json(JSON.stringify(invalid)); } catch { rejected = true; }
+        if (!rejected) throw new Error("WASM accepted invalid typography document");
+      }
+
       result.dataset.status = "passed";
-      result.textContent = "PASS: WASM initialized; document fixtures, malformed/oversized JSON and staged foreground raster acceptance matrix passed.";
+      result.textContent = "PASS: WASM initialized; document fixtures, malformed/oversized JSON staged foreground raster and typography acceptance matrices passed.";
     } catch (error) {
       result.dataset.status = "failed";
       result.textContent = "FAIL: " + (error instanceof Error ? error.message : String(error));

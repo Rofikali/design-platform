@@ -81,3 +81,8 @@ SVG and Canvas export now accept optional validated text-style bindings; existin
 ### Staged editor typography controls
 
 The feature branch now wires native family, weight and style selects into text element state. Default-only designs remain schema v5; nondefault styles serialize as proposed v7 and restore through the version-aware editor parser. Existing deep history/autosave snapshots include style changes, JSON validation uses a separate WASM migration boundary with TypeScript fallback, PNG uses matching style bindings, and print inherits canvas styling. No claim of browser acceptance until tests pass. Actual local tests NOT RUN. No new dependencies, remote fonts, network, infrastructure or spending. Main remains v5 until integration.
+
+
+### Browser acceptance coverage
+
+Added actual Chrome/WASM shared style fixture cases, v1 to v7 normalization, nondefault style roundtrip and invalid binding rejection. Existing Nuxt smoke now exercises typography controls, computed CSS, undo/redo, debounced local persistence, reload and real PNG download dimensions before print geometry. Browser assertions are written, not yet executed; PNG glyph pixel parity, styled JSON file import/export UI, physical print and multilingual acceptance remain pending. Local tests NOT RUN.

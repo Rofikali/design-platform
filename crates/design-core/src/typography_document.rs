@@ -137,7 +137,8 @@ mod tests {
                 "element_id": id, "style": TextStyleV1::default()
             }]);
             assert!(
-                normalize_typography_document(serde_json::from_value(doc.clone()).unwrap()).is_err()
+                normalize_typography_document(serde_json::from_value(doc.clone()).unwrap())
+                    .is_err()
             );
         }
         doc["text_styles"] = serde_json::Value::Null;

@@ -44,7 +44,9 @@ pub fn validate_text_style_v1_json(input: &str) -> Result<String, JsValue> {
 #[wasm_bindgen]
 pub fn normalize_typography_document_json(input: &str) -> Result<String, JsValue> {
     if input.len() > MAX_DOCUMENT_JSON_BYTES {
-        return Err(JsValue::from_str("Document JSON exceeds the 2,000,000-byte limit"));
+        return Err(JsValue::from_str(
+            "Document JSON exceeds the 2,000,000-byte limit",
+        ));
     }
     let document: design_core::typography_document::TypographyDocument =
         serde_json::from_str(input).map_err(|_| JsValue::from_str("Invalid typography document"))?;
@@ -53,7 +55,9 @@ pub fn normalize_typography_document_json(input: &str) -> Result<String, JsValue
     let json = serde_json::to_string(&normalized)
         .map_err(|_| JsValue::from_str("Could not serialize typography document"))?;
     if json.len() > MAX_DOCUMENT_JSON_BYTES {
-        return Err(JsValue::from_str("Document JSON exceeds the 2,000,000-byte limit"));
+        return Err(JsValue::from_str(
+            "Document JSON exceeds the 2,000,000-byte limit",
+        ));
     }
     Ok(json)
 }
