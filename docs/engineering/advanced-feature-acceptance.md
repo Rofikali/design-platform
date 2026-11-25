@@ -110,3 +110,8 @@ SVG/PNG renderer accepts optional complete validated layout bindings; left/cente
 ### PR #176 CI remediation and v8 WASM browser coverage
 
 Exact head d7bdb7191267545ca04bfc27e719613ae5ceae60: CI run 45553330205 Rust formatting failed (job 138999495914), Rust tests/Clippy skipped, documentation sync and frontend unit tests/existing WASM smoke passed; editor browser and other workflows still running at checkpoint. Applied the two formatting corrections shown by the runner. Added actual Chrome/WASM v1/v7-to-v8 migration, preservation of existing content/styles, shared 12 layout fixture outcomes, valid roundtrip and invalid binding/version rejection. New-head tests pending; local tests NOT RUN. No editor v8 activation, dependency or spending.
+
+
+### REUSE-02 v8 activation candidate
+
+PR #176 merged at 553711d; four exact-head workflow families passed, integrated-main workflow query returned no runs. Candidate editor wiring uses native alignment/line-height/spacing controls, complete v8 bindings only when nondefault layout is present, v5/v7 otherwise, version-aware TS/WASM validation, snapshots and native PNG adapter. Existing history/autosave observe layout state; unit assertions added. Browser and physical print/glyph parity not yet verified; v8 activation is branch-only until merge. No new dependency, font asset or spend. Local tests NOT RUN.

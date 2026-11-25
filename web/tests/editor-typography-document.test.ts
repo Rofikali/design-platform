@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import v1 from "../../fixtures/document-v1.json";
-import { editorTextStyles, parseEditorDocumentJson, serializeEditorDocument } from "../utils/editor-typography-document";
+import { editorTextLayouts, editorTextStyles, parseEditorDocumentJson, serializeEditorDocument } from "../utils/editor-typography-document";
 import { createHistory, recordHistory, undoHistory, redoHistory } from "../utils/document-history";
 import { validateEditorDocumentJson } from "../utils/document-validation";
 
@@ -35,14 +35,40 @@ describe("legacy typography safety", () => {
   });
 });
 
-describe("staged layout downgrade protection", () => {
+describe("layout downgrade protection", () => {
   it("rejects layout fields in v5 and v7 rather than losing formatting", async () => {
     const styled = { ...v1, schema_version: 7, text_styles: [{ element_id: "title-1",
       style: { font_family: "sans", font_weight: "normal", font_style: "normal" } }] };
-    for (const doc of [{ ...v1, schema_version: 5 }, styled, { ...styled, schema_version: 8 }]) {
+    for (const doc of [{ ...v1, schema_version: 5 }, styled]) {
       const input = JSON.stringify({ ...doc, text_layouts: [] });
       expect(() => parseEditorDocumentJson(input)).toThrow("Advanced text layout");
       await expect(validateEditorDocumentJson(input)).rejects.toThrow("Advanced text layout");
     }
+  });
+});
+
+
+describe("editor v8 layout persistence", () => {
+  it("preserves v5 and v7 defaults and v8 layout through validation, undo and redo", async () => {
+    const parsed = parseEditorDocumentJson(JSON.stringify(v1));
+    const page = { width: parsed.width, height: parsed.height, background: parsed.background };
+    const before = serializeEditorDocument(parsed.elements, page);
+    const text = parsed.elements.find(e => e.type === "text")!;
+    if (text.type !== "text") throw new Error("Expected text fixture");
+    text.textLayout = { alignment: "center", lineHeight: 2, letterSpacing: 3 };
+    const advanced = serializeEditorDocument(parsed.elements, page);
+    const doc = JSON.parse(advanced);
+    expect(doc.schema_version).toBe(8);
+    expect(doc.text_styles[0].style.font_family).toBe("sans");
+    const validated = await validateEditorDocumentJson(advanced);
+    expect(editorTextLayouts(parseEditorDocumentJson(validated.json).elements)).toEqual(editorTextLayouts(parsed.elements));
+    const history = recordHistory(createHistory(before), advanced);
+    const undone = undoHistory(history, advanced);
+    expect(editorTextLayouts(parseEditorDocumentJson(undone.snapshot!).elements)).toBeUndefined();
+    const redone = redoHistory(undone.history, undone.snapshot!);
+    expect(editorTextLayouts(parseEditorDocumentJson(redone.snapshot!).elements)).toEqual(editorTextLayouts(parsed.elements));
+    text.textLayout = { alignment: "left", lineHeight: 1.25, letterSpacing: 0 };
+    expect(serializeEditorDocument(parsed.elements, page)).toBe(before);
+    await expect(validateEditorDocumentJson(JSON.stringify({ ...doc, text_layouts: [] }))).rejects.toThrow();
   });
 });
