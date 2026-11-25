@@ -148,3 +148,32 @@ describe("design export renderer", () => {
     expect(() => renderDesignSvg([], 2_000, 2_000, "#fff", 2)).not.toThrow();
   });
 });
+
+describe("staged typography export", () => {
+  it("renders and measures the same validated style without changing legacy defaults", () => {
+    const style = { font_family: "serif", font_weight: "bold", font_style: "italic" } as const;
+    const seen: unknown[] = [];
+    const svg = renderDesignSvg(elements, 300, 125, "#ffffff", 2,
+      (text, size, measuredStyle) => {
+        seen.push(measuredStyle);
+        return text.length * size / 2;
+      }, undefined, [{ element_id: "title", style }]);
+    expect(seen.length).toBeGreaterThan(0);
+    expect(seen.every(value => JSON.stringify(value) === JSON.stringify(style))).toBe(true);
+    expect(svg).toContain('font-family="Georgia, Times New Roman, serif" font-size="20" font-weight="bold" font-style="italic"');
+    expect(svg).toContain("Shop &amp;");
+    const legacy = renderDesignSvg(elements, 300, 125, "#ffffff");
+    const explicitDefault = renderDesignSvg(elements, 300, 125, "#ffffff", 2, undefined, undefined,
+      [{ element_id: "title", style: { font_family: "sans", font_weight: "normal", font_style: "normal" } }]);
+    expect(explicitDefault).toBe(legacy);
+  });
+
+  it("rejects malformed styles, unknown targets and missing bindings", () => {
+    const entry = { element_id: "title", style: { font_family: "sans", font_weight: "normal", font_style: "normal" } } as const;
+    for (const entries of [[], [entry, entry], [{ ...entry, element_id: "accent" }],
+      [{ ...entry, element_id: "unknown" }],
+      [{ ...entry, style: { ...entry.style, font_family: "url(https://example.invalid/font)" as "sans" } }]]) {
+      expect(() => renderDesignSvg(elements, 300, 125, "#ffffff", 2, undefined, undefined, entries)).toThrow();
+    }
+  });
+});

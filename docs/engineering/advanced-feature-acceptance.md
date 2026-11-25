@@ -71,3 +71,8 @@ PR #174 introduces only fixed local family tokens, legacy default SVG/Canvas fon
 ### Proposed typography persistence boundary
 
 Staged schema v7 adds a text_styles array keyed by existing text element IDs; schema v6 remains reserved for the incomplete raster contract. Each text element has exactly one allowlisted style; duplicate, missing, non-text and unknown targets are rejected. Legacy v1–v5 normalize through the unchanged v5 validator before default sans/normal/normal styles are attached. The editor still rejects v7; activation requires schema ADR, end-to-end parity, renderer/editor/history/autosave integration and migration tests. No network, font assets or new dependency. Local tests NOT RUN; CI not yet verified.
+
+
+### Staged typography rendering checkpoint
+
+SVG and Canvas export now accept optional validated text-style bindings; existing callers omit them and retain byte-identical default SVG output. Only text elements accept typography bindings; table cells retain legacy defaults. SVG attributes and Canvas font shorthand derive from the same fixed tokens. Tests cover measured-style propagation, escaping, invalid bindings and default output equivalence. Actual browser and local tests NOT RUN. Production editor, print, persistence and multilingual glyph acceptance remain pending. No new dependency, remote font request, networking, SRE or finance impact (N/A).

@@ -1,7 +1,25 @@
 import type { BackgroundImage, DesignElement } from "./document";
 import { localCanvasFont, localFontStack } from "./local-typography";
 
-type TextWidthMeasurer = (text: string, fontSize: number) => number;
+import { DEFAULT_TEXT_STYLE_V1, parseTextStyleV1, type TextStyleV1 } from "./text-style-v1";
+import type { TextStyleEntry } from "./typography-document";
+
+type TextWidthMeasurer = (text: string, fontSize: number, style: TextStyleV1) => number;
+
+/** Optional staged typography input; legacy exports omit it entirely. */
+function validateExportStyles(elements: DesignElement[], entries?: ReadonlyArray<TextStyleEntry>): Map<string, TextStyleV1> {
+  const styles = new Map<string, TextStyleV1>();
+  if (entries === undefined) return styles;
+  const ids = new Set(elements.filter(element => element.type === "text").map(element => element.id));
+  if (!Array.isArray(entries) || entries.length !== ids.size) throw new Error("Invalid export text styles");
+  for (const entry of entries) {
+    if (!entry || typeof entry !== "object" || !ids.has(entry.element_id) || styles.has(entry.element_id)) {
+      throw new Error("Invalid export text styles");
+    }
+    styles.set(entry.element_id, parseTextStyleV1(entry.style));
+  }
+  return styles;
+}
 
 function escapeXml(value: string): string {
   return value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&apos;");
@@ -12,6 +30,7 @@ function wrapText(
   maxWidth: number,
   fontSize: number,
   measureText?: TextWidthMeasurer,
+  style: TextStyleV1 = DEFAULT_TEXT_STYLE_V1,
 ): string[] {
   const lines: string[] = [];
   // A grapheme can contain multiple code points (for example, a family emoji
@@ -21,7 +40,7 @@ function wrapText(
   // Keep a deterministic approximation for pure unit tests and non-browser callers.
   // PNG export supplies Canvas measureText so real exports wrap by rendered width.
   const widthOf = (value: string) => measureText
-    ? measureText(value, fontSize)
+    ? measureText(value, fontSize, style)
     : splitGraphemes(value).length * fontSize * 0.58;
 
   for (const paragraph of text.split("\n")) {
@@ -109,6 +128,7 @@ export function renderDesignSvg(
   scale = 2,
   measureText?: TextWidthMeasurer,
   backgroundImage?: BackgroundImage,
+  textStyles?: ReadonlyArray<TextStyleEntry>,
 ): string {
   if (!Number.isFinite(width) || !Number.isFinite(height) || width < 1 || height < 1 || width > 10_000 || height > 10_000) {
     throw new Error("Invalid export page dimensions.");
@@ -124,6 +144,7 @@ export function renderDesignSvg(
   if (outputWidth * outputHeight > 16_000_000) {
     throw new Error("PNG export exceeds the 16-million-pixel limit. Reduce the page size or export scale.");
   }
+  const styles = validateExportStyles(elements, textStyles);
   const shapes = elements.map((element, elementIndex) => {
     if (element.type === "rect") {
       return `<rect x="${element.x}" y="${element.y}" width="${element.width}" height="${element.height}" fill="${escapeXml(element.color)}"/>`;
@@ -177,12 +198,16 @@ export function renderDesignSvg(
       return cellFills.join("") + border + cellText.join("");
     }
     const fontSize = element.fontSize;
-    const lines = wrapText(element.text, element.width, fontSize, measureText);
+    const style = styles.get(element.id) ?? DEFAULT_TEXT_STYLE_V1;
+    const lines = wrapText(element.text, element.width, fontSize, measureText, style);
+    // Omit normal attributes to preserve byte-for-byte legacy SVG output.
+    const weight = style.font_weight === "bold" ? ' font-weight="bold"' : "";
+    const italic = style.font_style === "italic" ? ' font-style="italic"' : "";
     // The editor element's box is its layout contract. Without clipping, wrapped
     // lines can paint over neighboring elements or outside the page.
     const clipId = `text-clip-${elementIndex}`;
     const clip = `<defs><clipPath id="${clipId}"><rect x="${element.x}" y="${element.y}" width="${element.width}" height="${element.height}"/></clipPath></defs>`;
-    const text = `<text clip-path="url(#${clipId})" x="${element.x + 2}" y="${element.y + fontSize}" fill="${escapeXml(element.color)}" font-family="${localFontStack()}" font-size="${fontSize}">${lines.map((line, index) => `<tspan x="${element.x + 2}" dy="${index === 0 ? 0 : fontSize * 1.25}">${escapeXml(line)}</tspan>`).join("")}</text>`;
+    const text = `<text clip-path="url(#${clipId})" x="${element.x + 2}" y="${element.y + fontSize}" fill="${escapeXml(element.color)}" font-family="${localFontStack(style.font_family)}" font-size="${fontSize}"${weight}${italic}>${lines.map((line, index) => `<tspan x="${element.x + 2}" dy="${index === 0 ? 0 : fontSize * 1.25}">${escapeXml(line)}</tspan>`).join("")}</text>`;
     return clip + text;
   }).join("");
   const image = backgroundImage
@@ -198,6 +223,7 @@ export async function renderDesignPng(
   background: string,
   scale = 2,
   backgroundImage?: BackgroundImage,
+  textStyles?: ReadonlyArray<TextStyleEntry>,
 ): Promise<Blob> {
   // Measure with the same font family used by the SVG. Character-count wrapping
   // is only an approximation: "WWW" and "iii" have very different rendered widths.
@@ -210,11 +236,12 @@ export async function renderDesignPng(
     height,
     background,
     scale,
-    (text, fontSize) => {
-      context.font = localCanvasFont(fontSize);
+    (text, fontSize, style) => {
+      context.font = localCanvasFont(fontSize, style.font_family, style.font_weight, style.font_style);
       return context.measureText(text).width;
     },
     backgroundImage,
+    textStyles,
   );
   const url = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml;charset=utf-8" }));
   try {
