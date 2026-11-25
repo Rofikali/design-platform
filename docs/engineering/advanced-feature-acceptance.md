@@ -66,3 +66,27 @@ Review lenses are not certifications, seven separate AI workers or permission to
 ### Typography foundation checkpoint (25 November 2026)
 
 PR #174 introduces only fixed local family tokens, legacy default SVG/Canvas font resolution and negative regression tests. No user-facing family picker, weight/style, document migration or glyph/print certification yet. No font assets, remote requests or new dependency; system font availability remains host-dependent. Local tests NOT RUN; exact-head CI required. Next: coordinate the versioned TS/Rust/WASM model and migration fixtures before enabling editor controls.
+
+
+### Proposed typography persistence boundary
+
+Staged schema v7 adds a text_styles array keyed by existing text element IDs; schema v6 remains reserved for the incomplete raster contract. Each text element has exactly one allowlisted style; duplicate, missing, non-text and unknown targets are rejected. Legacy v1–v5 normalize through the unchanged v5 validator before default sans/normal/normal styles are attached. The editor still rejects v7; activation requires schema ADR, end-to-end parity, renderer/editor/history/autosave integration and migration tests. No network, font assets or new dependency. Local tests NOT RUN; CI not yet verified.
+
+
+### Staged typography rendering checkpoint
+
+SVG and Canvas export now accept optional validated text-style bindings; existing callers omit them and retain byte-identical default SVG output. Only text elements accept typography bindings; table cells retain legacy defaults. SVG attributes and Canvas font shorthand derive from the same fixed tokens. Tests cover measured-style propagation, escaping, invalid bindings and default output equivalence. Actual browser and local tests NOT RUN. Production editor, print, persistence and multilingual glyph acceptance remain pending. No new dependency, remote font request, networking, SRE or finance impact (N/A).
+
+
+### Staged editor typography controls
+
+The feature branch now wires native family, weight and style selects into text element state. Default-only designs remain schema v5; nondefault styles serialize as proposed v7 and restore through the version-aware editor parser. Existing deep history/autosave snapshots include style changes, JSON validation uses a separate WASM migration boundary with TypeScript fallback, PNG uses matching style bindings, and print inherits canvas styling. No claim of browser acceptance until tests pass. Actual local tests NOT RUN. No new dependencies, remote fonts, network, infrastructure or spending. Main remains v5 until integration.
+
+
+### Browser acceptance coverage
+
+Added actual Chrome/WASM shared style fixture cases, v1 to v7 normalization, nondefault style roundtrip and invalid binding rejection. Existing Nuxt smoke now exercises typography controls, computed CSS, undo/redo, debounced local persistence, reload and real PNG download dimensions before print geometry. Browser assertions are written, not yet executed; PNG glyph pixel parity, styled JSON file import/export UI, physical print and multilingual acceptance remain pending. Local tests NOT RUN.
+
+## Reuse-first future work and adoption gate
+
+Consult the [reuse-first policy](reuse-first-policy.md) for prioritized typography, font, rich-text, graphics, PDF, raster, assets and deferred native-engine evaluations; license, security, performance and 12-month TCO gates apply to every contributor. Existing feature caps and live PR priority remain unchanged. No new dependencies or paid services authorized by documentation alone.

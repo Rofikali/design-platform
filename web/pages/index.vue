@@ -15,13 +15,13 @@ import {
   MAX_TABLE_CELL_CHARS,
   PAGE_HEIGHT,
   PAGE_WIDTH,
-  parseDocumentJson,
-  toDocument,
   type BackgroundImage,
   type DesignElement,
 } from "~/utils/document";
 import { prepareBackgroundImage, validateEmbeddedBackgroundImage } from "~/utils/background-image";
-import { validateDocumentJson } from "~/utils/document-validation";
+import { validateEditorDocumentJson } from "~/utils/document-validation";
+import { editorTextStyles, parseEditorDocumentJson, serializeEditorDocument } from "~/utils/editor-typography-document";
+import { DEFAULT_TEXT_STYLE_V1, parseTextStyleV1, type TextStyleV1 } from "~/utils/text-style-v1";
 import { createTemplateDocument, listTemplates, type TemplateId } from "~/utils/templates";
 import { renderDesignPng } from "~/utils/design-export";
 
@@ -56,6 +56,16 @@ let historyTimer: ReturnType<typeof setTimeout> | undefined;
 let autosaveTimer: ReturnType<typeof setTimeout> | undefined;
 
 const selectedElement = computed(() => elements.value.find((element) => element.id === selectedId.value) ?? null);
+const selectedTextStyle = computed(() => selectedElement.value?.type === "text"
+  ? selectedElement.value.textStyle ?? DEFAULT_TEXT_STYLE_V1 : DEFAULT_TEXT_STYLE_V1);
+function setSelectedTextStyle(key: keyof TextStyleV1, value: string) {
+  const element = selectedElement.value;
+  if (element?.type !== "text") return;
+  try {
+    element.textStyle = parseTextStyleV1({ ...selectedTextStyle.value, [key]: value });
+    statusMessage.value = "Text style updated.";
+  } catch { statusMessage.value = "Unsupported text style."; }
+}
 const selectedTable = computed(() => {
   const element = selectedElement.value;
   return element?.type === "table" ? element : null;
@@ -160,12 +170,12 @@ function announceSelection(id: string | null) {
 watch(selectedId, () => { selectedCellIndex.value = 0; }, { flush: "sync" });
 watch([selectedId, selectedCellIndex, selectedTable], () => announceSelection(selectedId.value), { immediate: true });
 
-function snapshot(): string { return JSON.stringify(toDocument(elements.value, { width: pageWidth.value, height: pageHeight.value, background: pageBackground.value, ...(backgroundImage.value ? { background_image: backgroundImage.value } : {}) }, outputSizeMm.value, templateMetadata.value)); }
+function snapshot(): string { return serializeEditorDocument(elements.value, { width: pageWidth.value, height: pageHeight.value, background: pageBackground.value, ...(backgroundImage.value ? { background_image: backgroundImage.value } : {}) }, outputSizeMm.value, templateMetadata.value); }
 const history = ref(createHistory(snapshot()));
 const undoStack = computed(() => history.value.undoStack);
 const redoStack = computed(() => history.value.redoStack);
 function applySnapshot(json: string) {
-  const parsed = parseDocumentJson(json);
+  const parsed = parseEditorDocumentJson(json);
   elements.value = parsed.elements;
   pageWidth.value = parsed.width;
   pageHeight.value = parsed.height;
@@ -381,7 +391,7 @@ function onElementPointerEnd(event: PointerEvent) {
 }
 async function exportJson() {
   try {
-    const validation = await validateDocumentJson(snapshot());
+    const validation = await validateEditorDocumentJson(snapshot());
     const prettyJson = JSON.stringify(JSON.parse(validation.json) as unknown, null, 2);
     const blob = new Blob([prettyJson], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -400,10 +410,10 @@ async function exportJson() {
 async function exportPng() {
   statusMessage.value = "Preparing PNG export…";
   try {
-    const validation = await validateDocumentJson(snapshot());
-    const parsed = parseDocumentJson(validation.json);
+    const validation = await validateEditorDocumentJson(snapshot());
+    const parsed = parseEditorDocumentJson(validation.json);
     statusMessage.value = "Rendering PNG image…";
-    const blob = await renderDesignPng(parsed.elements, parsed.width, parsed.height, parsed.background, 2, parsed.backgroundImage);
+    const blob = await renderDesignPng(parsed.elements, parsed.width, parsed.height, parsed.background, 2, parsed.backgroundImage, editorTextStyles(parsed.elements));
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
     anchor.href = url;
@@ -501,8 +511,8 @@ async function onFileSelected(event: Event) {
   if (file.size > MAX_FILE_CHARS) { statusMessage.value = "Import rejected: file exceeds the 2 MB limit."; return; }
   try {
     const text = await file.text();
-    const validation = await validateDocumentJson(text);
-    const parsed = parseDocumentJson(validation.json);
+    const validation = await validateEditorDocumentJson(text);
+    const parsed = parseEditorDocumentJson(validation.json);
     if (parsed.backgroundImage) await validateEmbeddedBackgroundImage(parsed.backgroundImage);
     if (historyTimer) clearTimeout(historyTimer);
     historyTimer = undefined;
@@ -578,7 +588,7 @@ onMounted(async () => {
   const result = loadLocalDocument(STORAGE_KEY);
   if (result.status === "loaded") {
     try {
-      const saved = parseDocumentJson(result.value);
+      const saved = parseEditorDocumentJson(result.value);
       if (saved.backgroundImage) await validateEmbeddedBackgroundImage(saved.backgroundImage);
       applySnapshot(result.value);
       statusMessage.value = "Restored the last locally saved design.";
@@ -744,6 +754,26 @@ onMounted(async () => {
               <input :value="selectedElement.columns" type="number" min="1" max="20" step="1" @change="setGridColumns(($event.target as HTMLInputElement).value)" />
             </label>
           </template>
+          <fieldset v-if="selectedElement.type === 'text'" class="table-cell-editor">
+            <legend>Typography</legend>
+            <label class="field">Font family
+              <select :value="selectedTextStyle.font_family" @change="setSelectedTextStyle('font_family', ($event.target as HTMLSelectElement).value)">
+                <option value="sans">Sans-serif</option>
+                <option value="serif">Serif</option>
+                <option value="monospace">Monospace</option>
+              </select>
+            </label>
+            <label class="field">Font weight
+              <select :value="selectedTextStyle.font_weight" @change="setSelectedTextStyle('font_weight', ($event.target as HTMLSelectElement).value)">
+                <option value="normal">Normal</option><option value="bold">Bold</option>
+              </select>
+            </label>
+            <label class="field">Font style
+              <select :value="selectedTextStyle.font_style" @change="setSelectedTextStyle('font_style', ($event.target as HTMLSelectElement).value)">
+                <option value="normal">Normal</option><option value="italic">Italic</option>
+              </select>
+            </label>
+          </fieldset>
           <label v-if="selectedElement.type === 'text'" class="field">
             Font size
             <input v-model.number="selectedElement.fontSize" type="number" min="1" max="512" />

@@ -27,3 +27,13 @@ describe("local typography contract", () => {
     expect(localCanvasFont(512)).toBe("512px Arial, Helvetica, sans-serif");
   });
 });
+
+describe("styled canvas font shorthand", () => {
+  it("uses fixed safe weights and styles and preserves default syntax", () => {
+    expect(localCanvasFont(20, "serif", "bold", "italic")).toBe("italic bold 20px Georgia, Times New Roman, serif");
+    expect(localCanvasFont(20, "monospace", "bold")).toBe("bold 20px Courier New, Courier, monospace");
+    expect(localCanvasFont(20, "sans", "normal", "normal")).toBe("20px Arial, Helvetica, sans-serif");
+    expect(() => localCanvasFont(20, "sans", "900" as "bold")).toThrow();
+    expect(() => localCanvasFont(20, "sans", "normal", "url(x)" as "italic")).toThrow();
+  });
+});

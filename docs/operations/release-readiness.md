@@ -74,3 +74,7 @@ Go / No-go and owner signoff:
 ```
 
 Do not relabel a workflow result from an older PR head as candidate release evidence.
+
+## Reuse operations and network gate
+
+Ubuntu/Docker reproducibility, pinned inputs, bounded resources, offline/local assets, no mandatory network/CDN, documented CSP/egress/cache and rollback for optional deployment. No paid service or publication authorization. See [reuse-first and zero-unapproved-spend policy](../engineering/reuse-first-policy.md).

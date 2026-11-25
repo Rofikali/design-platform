@@ -1685,6 +1685,63 @@ async function main() {
       value => value.includes("300 × 125 mm"),
     );
 
+    // Typography uses the same real editor, persistence and export boundary.
+    const typographyId = await evaluate(`(() => {
+      const text = Array.from(document.querySelectorAll('.design-element')).find(el => !el.classList.contains('rectangle') && !el.classList.contains('frame') && !el.classList.contains('grid') && !el.classList.contains('table'));
+      text.click();
+      return text.dataset.elementId;
+    })()`);
+    await waitForPage("typography controls", "Array.from(document.querySelectorAll('fieldset')).some(f => f.querySelector('legend')?.textContent === 'Typography')");
+    const styleSelector = `(() => {
+      const fieldset = Array.from(document.querySelectorAll('fieldset')).find(f => f.querySelector('legend')?.textContent === 'Typography');
+      const selects = fieldset.querySelectorAll('select');
+      for (const [index, value] of ['serif', 'bold', 'italic'].entries()) {
+        selects[index].value = value;
+        selects[index].dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      return true;
+    })()`;
+    // Capture the stable legacy snapshot before exercising the coalesced edit.
+    await waitForPage("legacy template saved before typography edit", "JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null')?.schema_version === 5");
+    await evaluate(styleSelector);
+    const styledSaved = `(() => {
+      const doc = JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null');
+      const style = doc?.text_styles?.find(e => e.element_id === ${JSON.stringify(typographyId)})?.style;
+      const element = Array.from(document.querySelectorAll('.design-element')).find(e => e.dataset.elementId === ${JSON.stringify(typographyId)});
+      if (!element || !style) return false;
+      const css = getComputedStyle(element);
+      return doc.schema_version === 7 && style.font_family === 'serif' && style.font_weight === 'bold' &&
+        style.font_style === 'italic' && css.fontFamily.includes('Georgia') && css.fontWeight === '700' && css.fontStyle === 'italic';
+    })()`;
+    await waitForPage("styled document and canvas autosaved", styledSaved);
+    await evaluate("Array.from(document.querySelectorAll('button')).find(b => b.textContent.trim() === 'Undo')?.click(); true");
+    await waitForPage("typography undo restores legacy snapshot", "JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null')?.schema_version === 5");
+    await evaluate("Array.from(document.querySelectorAll('button')).find(b => b.textContent.trim() === 'Redo')?.click(); true");
+    await waitForPage("typography redo restores style", styledSaved);
+    await evaluate("location.reload(); true");
+    await waitForPage("Vue mounted after typography reload", "Boolean(document.querySelector('#__nuxt')?.__vue_app__)");
+    await waitForPage("typography restored after reload", styledSaved);
+    // Capture the actual download through CDP. Remove previous PNG files first.
+    for (const name of await readdir(downloads)) {
+      if (/^design-platform(?: \(\d+\))?\.png$/.test(name)) await rm(resolve(downloads, name));
+    }
+    await clickButtonContaining("Download PNG");
+    const typographyPng = await waitFor("styled PNG download", async () => {
+      const names = await readdir(downloads);
+      if (names.some(name => name.endsWith(".crdownload"))) return null;
+      const name = names.find(name => /^design-platform(?: \(\d+\))?\.png$/.test(name));
+      if (!name) return null;
+      const path = resolve(downloads, name);
+      return (await stat(path)).size > 100 ? path : null;
+    });
+    const typographyBytes = await readFile(typographyPng);
+    if (typographyBytes.toString("ascii", 12, 16) !== "IHDR" ||
+        typographyBytes.readUInt32BE(16) !== 2400 || typographyBytes.readUInt32BE(20) !== 1000) {
+      throw new Error("Styled PNG dimensions changed");
+    }
+    // Reuse the styled banner for print geometry; the print CSS must not clear text style.
+    process.stdout.write("PASS: typography controls, undo/redo, persisted reload and real styled PNG download.\\n");
+
     // Exercise the real print workflow without opening a native print dialog.
     // Keep the application's injected print stylesheet active, then ask Chrome
     // for the same PDF output through DevTools so CI can inspect its page box.

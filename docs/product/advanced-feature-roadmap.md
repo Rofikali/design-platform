@@ -53,3 +53,7 @@ Existing `--` expectations and product interfaces: no backend/database/payment r
 - Finance/product: [business strategy](platform-business-strategy.md), [unit economics](../finance/unit-economics.md), [MVP promise](mvp.md), [README](../../README.md), [AGENTS](../../AGENTS.md), [SKILLS](../../SKILLS.md)
 
 No claim of full SDK, direct PDF, advanced typography, multi-page rendering, product-market fit or release is authorized by this roadmap.
+
+## Reuse-first future work and adoption gate
+
+Consult the [reuse-first policy](../engineering/reuse-first-policy.md) for prioritized typography, font, rich-text, graphics, PDF, raster, assets and deferred native-engine evaluations; license, security, performance and 12-month TCO gates apply to every contributor. Existing feature caps and live PR priority remain unchanged. No new dependencies or paid services authorized by documentation alone.

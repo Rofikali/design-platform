@@ -89,3 +89,7 @@ CI should install pinned toolchains, run formatting and lint checks, execute tes
 - [ ] Resource-limit and cleanup tests pass.
 - [ ] Dependency/security checks have been reviewed.
 - [ ] Commands, versions, and results are recorded.
+
+## Candidate acceptance evidence
+
+Same-fixture baseline, compressed bundle, CPU/memory, p50/p95 latency, keyboard/IME, glyph coverage, document migration/history, PNG/print, hostile input and rollback. No claimed pass for unexecuted tests. See [reuse-first and zero-unapproved-spend policy](../engineering/reuse-first-policy.md).

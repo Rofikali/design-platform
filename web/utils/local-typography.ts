@@ -17,9 +17,18 @@ export function localFontStack(family: LocalFontFamily = DEFAULT_FONT_FAMILY): s
 }
 
 /** Preserve the legacy normal-weight Canvas shorthand exactly. */
-export function localCanvasFont(size: number, family: LocalFontFamily = DEFAULT_FONT_FAMILY): string {
+export function localCanvasFont(
+  size: number,
+  family: LocalFontFamily = DEFAULT_FONT_FAMILY,
+  weight: "normal" | "bold" = "normal",
+  style: "normal" | "italic" = "normal",
+): string {
   if (!Number.isFinite(size) || size < 1 || size > 512) {
     throw new Error("Invalid font size");
   }
-  return `${size}px ${localFontStack(family)}`;
+  if ((weight !== "normal" && weight !== "bold") || (style !== "normal" && style !== "italic")) {
+    throw new Error("Unsupported local font weight or style");
+  }
+  const prefix = (style === "italic" ? "italic " : "") + (weight === "bold" ? "bold " : "");
+  return `${prefix}${size}px ${localFontStack(family)}`;
 }

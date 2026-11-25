@@ -67,3 +67,7 @@ The planned browser editor, saved design documents, uploaded assets, API, and ex
 
 ## Residual risks
 The proposed controls are not implemented merely because they are documented. Each must be linked to code, tests, operational configuration, or an explicit accepted risk before release.
+
+## Third-party supply chain and local assets
+
+Exact-version provenance, official license and transitive obligations, lockfile review, advisories, SBOM/notices and malformed input/resource tests are required. No arbitrary CSS/HTML/SVG, remote font URL, mandatory CDN or telemetry. WASM is not a security boundary. See [reuse-first and zero-unapproved-spend policy](../engineering/reuse-first-policy.md).

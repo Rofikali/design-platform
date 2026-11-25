@@ -53,3 +53,32 @@ export async function validateDocumentJson(json: string): Promise<DocumentValida
   const document: DesignDocument = toDocument(parsed.elements, { width: parsed.width, height: parsed.height, background: parsed.background, ...(parsed.backgroundImage ? { background_image: parsed.backgroundImage } : {}) }, parsed.outputSizeMm, parsed.template);
   return { json: JSON.stringify(document), engine: "typescript" };
 }
+
+/** Version-aware editor boundary: retain the existing v5 path; validate v7 separately. */
+let typographyWasmPromise: Promise<WasmValidator | null> | undefined;
+async function loadTypographyWasm(): Promise<WasmValidator | null> {
+  if (typeof window === "undefined") return null;
+  try {
+    const wasm = await import("../generated/design-wasm/design_wasm.js");
+    await wasm.default();
+    return typeof wasm.normalize_typography_document_json === "function"
+      ? (json: string) => wasm.normalize_typography_document_json(json) : null;
+  } catch { return null; }
+}
+export async function validateEditorDocumentJson(json: string): Promise<DocumentValidationResult> {
+  if (new TextEncoder().encode(json).byteLength > MAX_FILE_CHARS) throw new Error("The file exceeds the 2 MB limit.");
+  const wire: unknown = JSON.parse(json);
+  if (!wire || typeof wire !== "object" || (wire as { schema_version?: unknown }).schema_version !== 7) {
+    if (wire && typeof wire === "object" && Object.prototype.hasOwnProperty.call(wire, "text_styles")) {
+      throw new Error("Typography styles require schema version 7.");
+    }
+    return validateDocumentJson(json);
+  }
+  const { normalizeTypographyDocument } = await import("./typography-document");
+  const normalized = JSON.stringify(normalizeTypographyDocument(wire));
+  typographyWasmPromise ??= loadTypographyWasm();
+  const validator = await typographyWasmPromise;
+  // Propagate validation errors; fallback only on unavailable initialization.
+  return validator ? { json: validator(normalized), engine: "wasm" }
+    : { json: normalized, engine: "typescript" };
+}
