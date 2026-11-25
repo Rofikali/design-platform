@@ -20,10 +20,11 @@ import {
 } from "~/utils/document";
 import { prepareBackgroundImage, validateEmbeddedBackgroundImage } from "~/utils/background-image";
 import { validateEditorDocumentJson } from "~/utils/document-validation";
-import { editorTextStyles, parseEditorDocumentJson, serializeEditorDocument } from "~/utils/editor-typography-document";
+import { editorTextLayouts, editorTextStyles, parseEditorDocumentJson, serializeEditorDocument } from "~/utils/editor-typography-document";
 import { DEFAULT_TEXT_STYLE_V1, parseTextStyleV1, type TextStyleV1 } from "~/utils/text-style-v1";
 import { createTemplateDocument, listTemplates, type TemplateId } from "~/utils/templates";
 import { renderDesignPng } from "~/utils/design-export";
+import { DEFAULT_NATIVE_TEXT_LAYOUT, parseNativeTextLayout, type NativeTextLayout } from "~/utils/native-text-layout";
 
 const STORAGE_KEY = "design-platform:document:v1"; // Keep the key so existing v1 autosaves migrate in place.
 const pageWidth = ref(PAGE_WIDTH);
@@ -58,6 +59,19 @@ let autosaveTimer: ReturnType<typeof setTimeout> | undefined;
 const selectedElement = computed(() => elements.value.find((element) => element.id === selectedId.value) ?? null);
 const selectedTextStyle = computed(() => selectedElement.value?.type === "text"
   ? selectedElement.value.textStyle ?? DEFAULT_TEXT_STYLE_V1 : DEFAULT_TEXT_STYLE_V1);
+const selectedTextLayout = computed(() => selectedElement.value?.type === "text"
+  ? selectedElement.value.textLayout ?? DEFAULT_NATIVE_TEXT_LAYOUT : DEFAULT_NATIVE_TEXT_LAYOUT);
+function setSelectedTextLayout(key: keyof NativeTextLayout, value: string) {
+  const element = selectedElement.value;
+  if (element?.type !== "text") return;
+  try {
+    const next = key === "alignment" ? value : value.trim() === "" ? NaN : Number(value);
+    element.textLayout = parseNativeTextLayout({ ...selectedTextLayout.value, [key]: next });
+    statusMessage.value = "Text layout updated.";
+  } catch {
+    statusMessage.value = "Invalid text layout. Alignment: left/center/right; line height: 1–3; spacing: -2–10.";
+  }
+}
 function setSelectedTextStyle(key: keyof TextStyleV1, value: string) {
   const element = selectedElement.value;
   if (element?.type !== "text") return;
@@ -413,7 +427,7 @@ async function exportPng() {
     const validation = await validateEditorDocumentJson(snapshot());
     const parsed = parseEditorDocumentJson(validation.json);
     statusMessage.value = "Rendering PNG image…";
-    const blob = await renderDesignPng(parsed.elements, parsed.width, parsed.height, parsed.background, 2, parsed.backgroundImage, editorTextStyles(parsed.elements));
+    const blob = await renderDesignPng(parsed.elements, parsed.width, parsed.height, parsed.background, 2, parsed.backgroundImage, editorTextStyles(parsed.elements), editorTextLayouts(parsed.elements));
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
     anchor.href = url;
@@ -774,9 +788,23 @@ onMounted(async () => {
               </select>
             </label>
           </fieldset>
+          <fieldset v-if="selectedElement.type === 'text'" class="table-cell-editor">
+            <legend>Text layout</legend>
+            <label class="field">Text alignment
+              <select :value="selectedTextLayout.alignment" @change="setSelectedTextLayout('alignment', ($event.target as HTMLSelectElement).value)">
+                <option value="left">Left</option><option value="center">Center</option><option value="right">Right</option>
+              </select>
+            </label>
+            <label class="field">Line height (1–3)
+              <input :value="selectedTextLayout.lineHeight" type="number" min="1" max="3" step="0.05" @change="setSelectedTextLayout('lineHeight', ($event.target as HTMLInputElement).value)" />
+            </label>
+            <label class="field">Letter spacing (−2–10 px)
+              <input :value="selectedTextLayout.letterSpacing" type="number" min="-2" max="10" step="0.5" @change="setSelectedTextLayout('letterSpacing', ($event.target as HTMLInputElement).value)" />
+            </label>
+          </fieldset>
           <label v-if="selectedElement.type === 'text'" class="field">
             Font size
-            <input v-model.number="selectedElement.fontSize" type="number" min="1" max="512" />
+            <input v-model.number="selectedElement.fontSize" aria-label="Font size" type="number" min="1" max="512" />
           </label>
           <label class="field">
             Width

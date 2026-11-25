@@ -2,8 +2,9 @@
 import type { BackgroundImage, DesignElement } from "~/utils/document";
 import { getElementSelectionLabel } from "~/utils/element-accessibility";
 import { localFontStack } from "~/utils/local-typography";
-import { editorTextStyles } from "~/utils/editor-typography-document";
+import { editorTextLayouts, editorTextStyles } from "~/utils/editor-typography-document";
 import { computed } from "vue";
+import { nativeLayoutAttributes } from "~/utils/native-text-layout";
 
 const props = defineProps<{
   elements: DesignElement[];
@@ -13,7 +14,7 @@ const props = defineProps<{
   pageBackground: string;
   backgroundImage?: BackgroundImage;
 }>();
-const styledDocument = computed(() => editorTextStyles(props.elements) !== undefined);
+const styledDocument = computed(() => editorTextStyles(props.elements) !== undefined || editorTextLayouts(props.elements) !== undefined);
 
 const emit = defineEmits<{
   select: [id: string];
@@ -79,7 +80,8 @@ const emit = defineEmits<{
           @pointercancel="emit('elementPointerEnd', $event)"
           @click="emit('select', element.id)"
         >
-          <span v-if="element.type === 'text'">{{ element.text }}</span>
+          <span v-if="element.type === 'text'" :style="element.textLayout && (element.textLayout.alignment !== 'left' || element.textLayout.lineHeight !== 1.25 || element.textLayout.letterSpacing !== 0)
+            ? { ...nativeLayoutAttributes(element.textLayout).css, width: '100%', minWidth: '0' } : undefined">{{ element.text }}</span>
           <div
             v-else-if="element.type === 'table'"
             class="table-preview"

@@ -65,12 +65,29 @@ async function loadTypographyWasm(): Promise<WasmValidator | null> {
       ? (json: string) => wasm.normalize_typography_document_json(json) : null;
   } catch { return null; }
 }
+let layoutWasmPromise: Promise<WasmValidator | null> | undefined;
+async function loadLayoutWasm(): Promise<WasmValidator | null> {
+  if (typeof window === "undefined") return null;
+  try {
+    const wasm = await import("../generated/design-wasm/design_wasm.js");
+    await wasm.default();
+    return typeof wasm.normalize_text_layout_document_json === "function"
+      ? (json: string) => wasm.normalize_text_layout_document_json(json) : null;
+  } catch { return null; }
+}
 export async function validateEditorDocumentJson(json: string): Promise<DocumentValidationResult> {
   if (new TextEncoder().encode(json).byteLength > MAX_FILE_CHARS) throw new Error("The file exceeds the 2 MB limit.");
   const wire: unknown = JSON.parse(json);
-  // Until v8 is activated, never silently discard staged layout bindings.
+  if (wire && typeof wire === "object" && (wire as { schema_version?: unknown }).schema_version === 8) {
+    const { normalizeTextLayoutDocument } = await import("./text-layout-document");
+    const normalized = JSON.stringify(normalizeTextLayoutDocument(wire));
+    layoutWasmPromise ??= loadLayoutWasm();
+    const validator = await layoutWasmPromise;
+    return validator ? { json: validator(normalized), engine: "wasm" }
+      : { json: normalized, engine: "typescript" };
+  }
   if (wire && typeof wire === "object" && Object.prototype.hasOwnProperty.call(wire, "text_layouts")) {
-    throw new Error("Advanced text layout is not supported by this editor version.");
+    throw new Error("Advanced text layout requires schema version 8.");
   }
   if (!wire || typeof wire !== "object" || (wire as { schema_version?: unknown }).schema_version !== 7) {
     if (wire && typeof wire === "object" && Object.prototype.hasOwnProperty.call(wire, "text_styles")) {

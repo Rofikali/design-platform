@@ -844,7 +844,7 @@ async function main() {
     await waitForPage("text edit visible", "document.querySelector('.design-page')?.innerText || ''", value => value.includes("Browser interaction proof"));
 
     const initialPosition = await evaluate("(() => { const item = Array.from(document.querySelectorAll('.design-element')).find(element => element.textContent.includes('Browser interaction proof')); return { left: parseFloat(item.style.left), top: parseFloat(item.style.top) }; })()");
-    await evaluate("(() => { const field = document.querySelector('input[type=color]'); field.value = '#ff0000'; field.dispatchEvent(new Event('input', { bubbles: true })); field.dispatchEvent(new Event('change', { bubbles: true })); const size = document.querySelector('input[type=number]'); size.value = '36'; size.dispatchEvent(new Event('input', { bubbles: true })); size.dispatchEvent(new Event('change', { bubbles: true })); document.querySelector('button[aria-label=\"Move right\"]')?.click(); return true; })()");
+    await evaluate("(() => { const field = document.querySelector('input[type=color]'); field.value = '#ff0000'; field.dispatchEvent(new Event('input', { bubbles: true })); field.dispatchEvent(new Event('change', { bubbles: true })); const size = document.querySelector('input[aria-label=\"Font size\"]'); size.value = '36'; size.dispatchEvent(new Event('input', { bubbles: true })); size.dispatchEvent(new Event('change', { bubbles: true })); document.querySelector('button[aria-label=\"Move right\"]')?.click(); return true; })()");
     const changed = await evaluate("(() => { const item = Array.from(document.querySelectorAll('.design-element')).find(element => element.textContent.includes('Browser interaction proof')); return { left: parseFloat(item.style.left), color: getComputedStyle(item).color, fontSize: getComputedStyle(item).fontSize }; })()");
     if (changed.left !== initialPosition.left + 10 || changed.color !== "rgb(255, 0, 0)" || changed.fontSize !== "36px") {
       throw new Error(`Text/style/movement controls did not apply expected changes: ${JSON.stringify({ initialPosition, changed })}`);
@@ -1781,6 +1781,87 @@ async function main() {
     }
     // Reuse the styled banner for print geometry; the print CSS must not clear text style.
     process.stdout.write("PASS: typography controls, undo/redo, persisted reload and real styled PNG download.\\n");
+
+    // Activate v8 only for nondefault layout, with the same native editor state.
+    await evaluate(`Array.from(document.querySelectorAll('.design-element')).find(e => e.dataset.elementId === ${JSON.stringify(typographyId)}).click(); true`);
+    await waitForPage("advanced layout controls", "Array.from(document.querySelectorAll('fieldset')).some(f => f.querySelector('legend')?.textContent === 'Text layout')");
+    await evaluate(`(() => {
+      const field = Array.from(document.querySelectorAll('fieldset')).find(f => f.querySelector('legend')?.textContent === 'Text layout');
+      const controls = [field.querySelector('select'), ...field.querySelectorAll('input[type=number]')];
+      for (const [i, value] of ['center', '2', '3'].entries()) {
+        controls[i].value = value;
+        controls[i].dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      return true;
+    })()`);
+    const advancedSaved = `(() => {
+      const doc = JSON.parse(localStorage.getItem('design-platform:document:v1') || 'null');
+      const layout = doc?.text_layouts?.find(e => e.element_id === ${JSON.stringify(typographyId)})?.layout;
+      const element = Array.from(document.querySelectorAll('.design-element')).find(e => e.dataset.elementId === ${JSON.stringify(typographyId)});
+      if (!element || !layout) return false;
+      const css = getComputedStyle(element.querySelector('span'));
+      return doc.schema_version === 8 && layout.alignment === 'center' && layout.lineHeight === 2 &&
+        layout.letterSpacing === 3 && css.textAlign === 'center' && css.letterSpacing === '3px' &&
+        Math.abs(parseFloat(css.lineHeight) / parseFloat(css.fontSize) - 2) < 0.01;
+    })()`;
+    await waitForPage("v8 native layout autosave", advancedSaved);
+    await evaluate("Array.from(document.querySelectorAll('button')).find(b => b.textContent.trim() === 'Undo')?.click(); true");
+    await waitForPage("layout undo restores v7 styles", styledSaved);
+    await evaluate("Array.from(document.querySelectorAll('button')).find(b => b.textContent.trim() === 'Redo')?.click(); true");
+    await waitForPage("layout redo restores v8", advancedSaved);
+    await evaluate("location.reload(); true");
+    await waitForPage("Vue mounted after v8 reload", "Boolean(document.querySelector('#__nuxt')?.__vue_app__)");
+    await waitForPage("v8 layout survives reload", advancedSaved);
+
+    // Verify the actual JSON download includes both bindings and the WASM path.
+    for (const name of await readdir(downloads)) {
+      if (/^design-platform-document(?: \(\d+\))?\.json$/.test(name)) await rm(resolve(downloads, name));
+    }
+    await clickButtonContaining("Download JSON");
+    const advancedJsonPath = await waitFor("v8 JSON download", async () => {
+      const names = await readdir(downloads);
+      if (names.some(name => name.endsWith(".crdownload"))) return null;
+      const name = names.find(name => /^design-platform-document(?: \(\d+\))?\.json$/.test(name));
+      if (!name) return null;
+      const path = resolve(downloads, name);
+      return (await stat(path)).size > 100 ? path : null;
+    });
+    const downloadedLayout = JSON.parse(await readFile(advancedJsonPath, "utf8"));
+    if (downloadedLayout.schema_version !== 8 ||
+        downloadedLayout.text_layouts.find(e => e.element_id === typographyId)?.layout.letterSpacing !== 3 ||
+        downloadedLayout.text_styles.find(e => e.element_id === typographyId)?.style.font_family !== "serif") {
+      throw new Error("V8 JSON download lost layout or styles");
+    }
+    // Real native PNG export: compare bytes to the earlier styled baseline,
+    // and require explicit failure if the browser lacks Canvas spacing support.
+    for (const name of await readdir(downloads)) {
+      if (/^design-platform(?: \(\d+\))?\.png$/.test(name)) await rm(resolve(downloads, name));
+    }
+    const nativeSpacingSupported = await evaluate("typeof document.createElement('canvas').getContext('2d').letterSpacing === 'string'");
+    await clickButtonContaining("Download PNG");
+    const advancedPngStatus = await waitForPage("v8 PNG outcome",
+      "document.querySelector('.tools-panel > p.hint[role=status]')?.textContent || ''",
+      value => value.includes("PNG exported at 2400 × 1000 pixels") || value.startsWith("PNG export failed:"));
+    if (nativeSpacingSupported) {
+      if (!advancedPngStatus.includes("PNG exported at 2400 × 1000 pixels")) throw new Error(advancedPngStatus);
+      const path = await waitFor("v8 PNG download", async () => {
+        const names = await readdir(downloads);
+        if (names.some(name => name.endsWith(".crdownload"))) return null;
+        const name = names.find(name => /^design-platform(?: \(\d+\))?\.png$/.test(name));
+        if (!name) return null;
+        const target = resolve(downloads, name);
+        return (await stat(target)).size > 100 ? target : null;
+      });
+      const advancedPng = await readFile(path);
+      if (advancedPng.toString("ascii", 12, 16) !== "IHDR" ||
+          advancedPng.readUInt32BE(16) !== 2400 || advancedPng.readUInt32BE(20) !== 1000 ||
+          advancedPng.equals(typographyBytes)) {
+        throw new Error("V8 PNG did not preserve dimensions or reflect layout changes");
+      }
+    } else if (!advancedPngStatus.includes("Letter spacing is unavailable")) {
+      throw new Error("Missing explicit unsupported spacing outcome: " + advancedPngStatus);
+    }
+    process.stdout.write("PASS: v8 editor controls, history, reload, JSON download and native PNG outcome.\\n");
 
     // Exercise the real print workflow without opening a native print dialog.
     // Keep the application's injected print stylesheet active, then ask Chrome
