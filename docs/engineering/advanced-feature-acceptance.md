@@ -100,3 +100,8 @@ PR #175 merged (exact-head four workflow families passed). Native bounded layout
 ### REUSE-02 staged v8 document contract
 
 Use a separate v8 layout envelope rather than mutating merged v7 semantics. Exactly one bounded layout binding per text element, deterministic z-order, v1–v5/v7 migration, no v6 acceptance, explicit null/invalid/missing/duplicate/unknown binding rejection; existing v7 font styles and page metadata preserved through the established validator. Rust, TypeScript, WASM normalization and shared fixtures staged. Live editor remains v5/v7; no v8 activation until ADR, anti-downgrade checks, native renderer/browser/print parity, undo/autosave/import/export tests and CI. Local tests NOT RUN. No new dependencies, fonts, network or financial commitments.
+
+
+### REUSE-02 staged native export adapter
+
+SVG/PNG renderer accepts optional complete validated layout bindings; left/center/right anchors, finite letter spacing, line advance, clipping and native Canvas metrics share the staged layout contract. Legacy/default SVG bytes and table behavior are covered by regression assertions. Nonzero spacing fails explicitly if native measurement is unavailable; Canvas state is restored per measurement. No fake complex-script shaping approximation, no editor activation, no dependency or spend. Unit assertions added, local tests NOT RUN. Native browser probe and actual pixel/print/Indic parity remain acceptance gates.

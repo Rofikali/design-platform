@@ -41,3 +41,26 @@ export function lineAdvance(fontSize: number, layout: NativeTextLayout = DEFAULT
   if (!Number.isFinite(fontSize) || fontSize < 1 || fontSize > 512) throw new RangeError("Invalid font size");
   return fontSize * parseNativeTextLayout(layout).lineHeight;
 }
+
+/** Native measurement, with explicit failure rather than an inaccurate fallback. */
+export function measureNativeTextWidth(
+  context: Pick<CanvasRenderingContext2D, "measureText"> & { letterSpacing?: string },
+  text: string,
+  layout: NativeTextLayout = DEFAULT_NATIVE_TEXT_LAYOUT,
+): number {
+  const spacing = parseNativeTextLayout(layout).letterSpacing;
+  if (typeof context.letterSpacing === "string") {
+    const previous = context.letterSpacing;
+    try {
+      context.letterSpacing = `${spacing}px`;
+      if (Number.parseFloat(context.letterSpacing) !== spacing) {
+        throw new Error("Canvas rejected the requested letter spacing.");
+      }
+      return context.measureText(text).width;
+    } finally {
+      context.letterSpacing = previous;
+    }
+  }
+  if (spacing !== 0) throw new Error("Letter spacing is unavailable in this browser's Canvas renderer.");
+  return context.measureText(text).width;
+}

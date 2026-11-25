@@ -177,3 +177,43 @@ describe("staged typography export", () => {
     }
   });
 });
+
+
+describe("staged native layout export", () => {
+  const text: DesignElement[] = [
+    { id: "layout", type: "text", text: "AB\nCD", x: 10, y: 5, width: 100, height: 80, fontSize: 20, color: "#000000" },
+  ];
+  const layout = { alignment: "center", lineHeight: 2, letterSpacing: 3 } as const;
+  it("uses the same native layout for measurement, SVG anchors, clipping and line advance", () => {
+    const seen: unknown[] = [];
+    const svg = renderDesignSvg(text, 160, 100, "#fff", 2, (value, size, _style, measuredLayout) => {
+      seen.push(measuredLayout);
+      return value.length * size;
+    }, undefined, undefined, [{ element_id: "layout", layout }]);
+    expect(seen.length).toBeGreaterThan(0);
+    expect(seen.every(value => JSON.stringify(value) === JSON.stringify(layout))).toBe(true);
+    expect(svg).toContain('text-anchor="middle" letter-spacing="3"');
+    expect(svg).toContain('<tspan x="60" dy="0">AB</tspan>');
+    expect(svg).toContain('<tspan x="60" dy="40">CD</tspan>');
+    expect(svg).toContain('<clipPath id="text-clip-0"><rect x="10" y="5" width="100" height="80"/>');
+  });
+  it("preserves legacy default output and uses the right anchor", () => {
+    const legacy = renderDesignSvg(text, 160, 100, "#fff");
+    const defaults = { alignment: "left", lineHeight: 1.25, letterSpacing: 0 } as const;
+    expect(renderDesignSvg(text, 160, 100, "#fff", 2, undefined, undefined, undefined,
+      [{ element_id: "layout", layout: defaults }])).toBe(legacy);
+    const right = renderDesignSvg(text, 160, 100, "#fff", 2, undefined, undefined, undefined,
+      [{ element_id: "layout", layout: { ...defaults, alignment: "right" } }]);
+    expect(right).toContain('text-anchor="end"');
+    expect(right).toContain('<tspan x="108" dy="0">AB</tspan>');
+  });
+  it("rejects missing metrics for nonzero spacing and unsafe layout bindings", () => {
+    const entry = { element_id: "layout", layout };
+    expect(() => renderDesignSvg(text, 160, 100, "#fff", 2, undefined, undefined, undefined, [entry]))
+      .toThrow("Letter spacing requires native text measurement");
+    for (const entries of [[], [entry, entry], [{ ...entry, element_id: "unknown" }],
+      [{ ...entry, layout: { ...layout, letterSpacing: Infinity } }]]) {
+      expect(() => renderDesignSvg(text, 160, 100, "#fff", 2, () => 1, undefined, undefined, entries)).toThrow();
+    }
+  });
+});

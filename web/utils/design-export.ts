@@ -1,11 +1,29 @@
 import type { BackgroundImage, DesignElement } from "./document";
 import { localCanvasFont, localFontStack } from "./local-typography";
-import { lineAdvance } from "./native-text-layout";
+import { DEFAULT_NATIVE_TEXT_LAYOUT, lineAdvance, nativeLayoutAttributes, parseNativeTextLayout, type NativeTextLayout, measureNativeTextWidth } from "./native-text-layout";
+import type { TextLayoutEntry } from "./text-layout-document";
 
 import { DEFAULT_TEXT_STYLE_V1, parseTextStyleV1, type TextStyleV1 } from "./text-style-v1";
 import type { TextStyleEntry } from "./typography-document";
 
-type TextWidthMeasurer = (text: string, fontSize: number, style: TextStyleV1) => number;
+type TextWidthMeasurer = (text: string, fontSize: number, style: TextStyleV1, layout: NativeTextLayout) => number;
+
+function validateExportLayouts(elements: DesignElement[], entries?: ReadonlyArray<TextLayoutEntry>): Map<string, NativeTextLayout> {
+  const layouts = new Map<string, NativeTextLayout>();
+  if (entries === undefined) return layouts;
+  const ids = new Set(elements.filter(element => element.type === "text").map(element => element.id));
+  if (!Array.isArray(entries) || entries.length !== ids.size) throw new Error("Invalid export text layouts");
+  for (const entry of entries) {
+    if (!entry || typeof entry !== "object" || Object.keys(entry).length !== 2 ||
+        !Object.prototype.hasOwnProperty.call(entry, "element_id") ||
+        !Object.prototype.hasOwnProperty.call(entry, "layout") ||
+        !ids.has(entry.element_id) || layouts.has(entry.element_id)) {
+      throw new Error("Invalid export text layouts");
+    }
+    layouts.set(entry.element_id, parseNativeTextLayout(entry.layout));
+  }
+  return layouts;
+}
 
 /** Optional staged typography input; legacy exports omit it entirely. */
 function validateExportStyles(elements: DesignElement[], entries?: ReadonlyArray<TextStyleEntry>): Map<string, TextStyleV1> {
@@ -32,6 +50,7 @@ function wrapText(
   fontSize: number,
   measureText?: TextWidthMeasurer,
   style: TextStyleV1 = DEFAULT_TEXT_STYLE_V1,
+  layout: NativeTextLayout = DEFAULT_NATIVE_TEXT_LAYOUT,
 ): string[] {
   const lines: string[] = [];
   // A grapheme can contain multiple code points (for example, a family emoji
@@ -40,8 +59,13 @@ function wrapText(
   const splitGraphemes = (value: string) => Array.from(segmenter.segment(value), part => part.segment);
   // Keep a deterministic approximation for pure unit tests and non-browser callers.
   // PNG export supplies Canvas measureText so real exports wrap by rendered width.
+  // Nonzero spacing needs actual native metrics; do not silently invent
+  // per-grapheme widths for shaped Indic text or other complex scripts.
+  if (!measureText && layout.letterSpacing !== 0) {
+    throw new Error("Letter spacing requires native text measurement.");
+  }
   const widthOf = (value: string) => measureText
-    ? measureText(value, fontSize, style)
+    ? measureText(value, fontSize, style, layout)
     : splitGraphemes(value).length * fontSize * 0.58;
 
   for (const paragraph of text.split("\n")) {
@@ -130,6 +154,7 @@ export function renderDesignSvg(
   measureText?: TextWidthMeasurer,
   backgroundImage?: BackgroundImage,
   textStyles?: ReadonlyArray<TextStyleEntry>,
+  textLayouts?: ReadonlyArray<TextLayoutEntry>,
 ): string {
   if (!Number.isFinite(width) || !Number.isFinite(height) || width < 1 || height < 1 || width > 10_000 || height > 10_000) {
     throw new Error("Invalid export page dimensions.");
@@ -146,6 +171,7 @@ export function renderDesignSvg(
     throw new Error("PNG export exceeds the 16-million-pixel limit. Reduce the page size or export scale.");
   }
   const styles = validateExportStyles(elements, textStyles);
+  const layouts = validateExportLayouts(elements, textLayouts);
   const shapes = elements.map((element, elementIndex) => {
     if (element.type === "rect") {
       return `<rect x="${element.x}" y="${element.y}" width="${element.width}" height="${element.height}" fill="${escapeXml(element.color)}"/>`;
@@ -200,7 +226,17 @@ export function renderDesignSvg(
     }
     const fontSize = element.fontSize;
     const style = styles.get(element.id) ?? DEFAULT_TEXT_STYLE_V1;
-    const lines = wrapText(element.text, element.width, fontSize, measureText, style);
+    const layout = layouts.get(element.id) ?? DEFAULT_NATIVE_TEXT_LAYOUT;
+    const attrs = nativeLayoutAttributes(layout).svg;
+    // Retain the historical left inset and wrap width for default documents.
+    const textX = layout.alignment === "center" ? element.x + element.width / 2
+      : layout.alignment === "right" ? element.x + Math.max(0, element.width - 2) : element.x + 2;
+    const wrapWidth = layout.alignment === "left" && layout.letterSpacing === 0
+      ? element.width : Math.max(0, element.width - 4);
+    const lines = wrapText(element.text, wrapWidth, fontSize, measureText, style, layout);
+    const advance = lineAdvance(fontSize, layout);
+    const anchor = attrs.textAnchor === "start" ? "" : ` text-anchor="${attrs.textAnchor}"`;
+    const spacing = attrs.letterSpacing === 0 ? "" : ` letter-spacing="${attrs.letterSpacing}"`;
     // Omit normal attributes to preserve byte-for-byte legacy SVG output.
     const weight = style.font_weight === "bold" ? ' font-weight="bold"' : "";
     const italic = style.font_style === "italic" ? ' font-style="italic"' : "";
@@ -208,7 +244,7 @@ export function renderDesignSvg(
     // lines can paint over neighboring elements or outside the page.
     const clipId = `text-clip-${elementIndex}`;
     const clip = `<defs><clipPath id="${clipId}"><rect x="${element.x}" y="${element.y}" width="${element.width}" height="${element.height}"/></clipPath></defs>`;
-    const text = `<text clip-path="url(#${clipId})" x="${element.x + 2}" y="${element.y + fontSize}" fill="${escapeXml(element.color)}" font-family="${localFontStack(style.font_family)}" font-size="${fontSize}"${weight}${italic}>${lines.map((line, index) => `<tspan x="${element.x + 2}" dy="${index === 0 ? 0 : lineAdvance(fontSize)}">${escapeXml(line)}</tspan>`).join("")}</text>`;
+    const text = `<text clip-path="url(#${clipId})" x="${textX}" y="${element.y + fontSize}" fill="${escapeXml(element.color)}" font-family="${localFontStack(style.font_family)}" font-size="${fontSize}"${weight}${italic}${anchor}${spacing}>${lines.map((line, index) => `<tspan x="${textX}" dy="${index === 0 ? 0 : advance}">${escapeXml(line)}</tspan>`).join("")}</text>`;
     return clip + text;
   }).join("");
   const image = backgroundImage
@@ -225,6 +261,7 @@ export async function renderDesignPng(
   scale = 2,
   backgroundImage?: BackgroundImage,
   textStyles?: ReadonlyArray<TextStyleEntry>,
+  textLayouts?: ReadonlyArray<TextLayoutEntry>,
 ): Promise<Blob> {
   // Measure with the same font family used by the SVG. Character-count wrapping
   // is only an approximation: "WWW" and "iii" have very different rendered widths.
@@ -237,12 +274,13 @@ export async function renderDesignPng(
     height,
     background,
     scale,
-    (text, fontSize, style) => {
+    (text, fontSize, style, layout) => {
       context.font = localCanvasFont(fontSize, style.font_family, style.font_weight, style.font_style);
-      return context.measureText(text).width;
+      return measureNativeTextWidth(context, text, layout);
     },
     backgroundImage,
     textStyles,
+    textLayouts,
   );
   const url = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml;charset=utf-8" }));
   try {
