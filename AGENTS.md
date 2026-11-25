@@ -1,5 +1,7 @@
 # Engineering Constitution
 
+> **Current handoff (25 Nov 2026):** All authorized contributors resume live GitHub work across authors. Adopt existing PRs, count all opened PRs toward the stable feature cap, use a persistent branch for bounded commits, and verify exact-head gates before merging. The generated milestone snapshot supersedes older dated checkpoints. No security bypass or release authorization.
+
 > **Autopilot execution recovery (23 Nov 2026):** [outcome-first continuation contract](docs/engineering/autopilot-execution-recovery.md) records precise handoff fields, resume-first implementation, two-no-code escalation, and L1–L7/CISSP/CCIE/Linux/SRE/CA-MBA gates. This is **not** a scheduler or a substitute for current GitHub CI and the task run record.
 
 > **Owner autonomy directive (2026-11-23):** Eligible engineering PRs use documented agent self-review with **zero mandatory human approvals**, not a fake independent APPROVED review. Preserve required CI, branch rules, review-thread resolution, feature budgets and all security/release restrictions. [Current governance](docs/engineering/autopilot-zero-human-review.md) · [Importable main ruleset](.github/rulesets/autopilot-main-no-human-review.json) (not active until imported).
@@ -9,15 +11,15 @@
 
 <!-- milestone-sync:start -->
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
-### Milestone snapshot (generated: 2026-11-24)
+### Milestone snapshot (generated: 2026-11-25)
 
-**Reference main:** d898f8c49c33d274a522ad9161cf553c8e6f9950 (dated snapshot; re-check live GitHub before acting).
+**Reference main:** 88f860deab1c56ca2947fde4406c96d3ccc9dd88 (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M3-IMAGE-01 — Foreground image element authoring** [PR_OPEN]. [PR #172](https://github.com/Rofikali/design-platform/pull/172)
+**NOW:** **DP-M3-TYPO-01 — Advanced typography and multilingual font handling** [READY].
 
-**NEXT:** DP-M3-TYPO-01 [PLANNED]; DP-M3-VECTOR-01 [PLANNED]; DP-M3-PRECISION-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
+**NEXT:** DP-M3-VECTOR-01 [PLANNED]; DP-M3-PRECISION-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
-**Feature budget:** DP-M3-IMAGE — 5/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
+**Feature budget:** DP-M3-TYPO — 0/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
 
 **Review gate:** Owner-authorized autopilot may self-review and merge eligible PRs with zero mandatory human approvals after required exact-head/integration CI, security, branch rules and review-thread gates pass. Never present self-review as independent approval. No automatic publishing or deployment.
 

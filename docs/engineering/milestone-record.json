@@ -1,11 +1,10 @@
 {
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
-  "snapshot_date": "2026-11-24",
-  "reference_main_sha": "d898f8c49c33d274a522ad9161cf553c8e6f9950",
-  "now_id": "DP-M3-IMAGE-01",
+  "snapshot_date": "2026-11-25",
+  "reference_main_sha": "88f860deab1c56ca2947fde4406c96d3ccc9dd88",
+  "now_id": "DP-M3-TYPO-01",
   "next_ids": [
-    "DP-M3-TYPO-01",
     "DP-M3-VECTOR-01",
     "DP-M3-PRECISION-01",
     "DP-SEC-01",
@@ -220,16 +219,16 @@
       "id": "DP-M3-IMAGE-01",
       "feature_id": "DP-M3-IMAGE",
       "title": "Foreground image element authoring",
-      "status": "PR_OPEN",
-      "summary": "PR #172 OPEN, fifth/final attempt; staged raster/schema utilities only, not editor authoring/history/autosave/export. Prior CI failed Rust formatting and PR registration. Do not merge; security #118 and manual #82/#85/#158 outstanding.",
+      "status": "MERGED",
+      "summary": "PR #172 merged staged v6 raster utilities only. Feature CLOSED/PARTIAL (5/5); production editor, history/autosave and PNG/print parity incomplete. Exact-head and integrated CI not verified; no release approval.",
       "pr": 172,
-      "sha": "f4d77d24d6e67191f315a3a9189fec78d7bfe705"
+      "sha": "88f860deab1c56ca2947fde4406c96d3ccc9dd88"
     },
     {
       "id": "DP-M3-TYPO-01",
       "feature_id": "DP-M3-TYPO",
       "title": "Advanced typography and multilingual font handling",
-      "status": "PLANNED",
+      "status": "READY",
       "summary": "Add reviewed font family/weight/style, spacing, alignment and locale fallback; preserve current text defaults, schema, browser PNG and print. Requires closed Image feature and font/license tests."
     },
     {
@@ -320,7 +319,7 @@
   "feature_delivery": {
     "policy_start": "2026-11-21",
     "max_prs_per_feature": 5,
-    "active_feature_id": "DP-M3-IMAGE",
+    "active_feature_id": "DP-M3-TYPO",
     "features": [
       {
         "id": "DP-M2-TABLE",
@@ -358,7 +357,7 @@
       {
         "id": "DP-M3-IMAGE",
         "title": "Foreground image elements",
-        "state": "ACTIVE",
+        "state": "CLOSED",
         "prs": [
           165,
           167,
@@ -366,14 +365,15 @@
           169,
           172
         ],
-        "notes": "PR #172 OPEN, fifth/final attempt; staged v6 image validation is incomplete, not editor authoring. Prior exact-head CI failed Rust formatting and PR registration. No merge/release; #118/#82/#85/#158 outstanding."
+        "notes": "PR #172 merged at 88f860deab1c56ca2947fde4406c96d3ccc9dd88; 5/5 consumed. Staged raster utilities only; production editor/history/export incomplete. No sixth PR. CI and manual acceptance not verified.",
+        "outcome": "PARTIAL"
       },
       {
         "id": "DP-M3-TYPO",
         "title": "Advanced typography and multilingual font handling",
-        "state": "PLANNED",
+        "state": "ACTIVE",
         "prs": [],
-        "notes": "Candidate only; NOT STARTED, 0/5 opened feature PRs. Requires closure of current ACTIVE image feature, scoped acceptance, documented dependencies and live GitHub/owner review. See docs/product/advanced-feature-roadmap.md and docs/engineering/advanced-feature-acceptance.md."
+        "notes": "0/5 opened PRs. Scope independent typography acceptance and existing text model before implementation; retain v1-v5 compatibility and no remote font fetch."
       },
       {
         "id": "DP-M3-VECTOR",

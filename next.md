@@ -1,5 +1,7 @@
 # Design Platform — LIVE Work Board and Master Roadmap
 
+> **Current handoff (25 Nov 2026):** All authorized contributors resume live GitHub work across authors. Adopt existing PRs, count all opened PRs toward the stable feature cap, use a persistent branch for bounded commits, and verify exact-head gates before merging. The generated milestone snapshot supersedes older dated checkpoints. No security bypass or release authorization.
+
 > **Continuation checkpoint (23 Nov 2026):** [outcome-first autopilot recovery](docs/engineering/autopilot-execution-recovery.md) governs handoff and no-code fallback. GitHub PR #170 merged at `37fbe383b8f6df33c4c5c658d29ae659c2691d5c`; the image feature has 4/5 feature PRs, with authoring incomplete. The earlier autosave failure is a historical observation; a later reported passing main check does not prove the bug impossible. Always verify GitHub live state and do not edit the seven generator-owned blocks manually.
 
 > **Current owner policy:** [Autopilot no-human-review / main ruleset / docs reconciliation](docs/engineering/autopilot-zero-human-review.md). Snapshot 2026-11-23: [#169](https://github.com/Rofikali/design-platform/pull/169) merged into main `c99d1c5`; [integrated main CI](https://github.com/Rofikali/design-platform/actions/runs/45103673434) failed browser autosave restore. Repair/diagnose that regression before treating main as green; image feature remains IN_PROGRESS (4/5).
@@ -18,15 +20,15 @@
 
 <!-- milestone-sync:start -->
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
-### Milestone snapshot (generated: 2026-11-24)
+### Milestone snapshot (generated: 2026-11-25)
 
-**Reference main:** d898f8c49c33d274a522ad9161cf553c8e6f9950 (dated snapshot; re-check live GitHub before acting).
+**Reference main:** 88f860deab1c56ca2947fde4406c96d3ccc9dd88 (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M3-IMAGE-01 — Foreground image element authoring** [PR_OPEN]. [PR #172](https://github.com/Rofikali/design-platform/pull/172)
+**NOW:** **DP-M3-TYPO-01 — Advanced typography and multilingual font handling** [READY].
 
-**NEXT:** DP-M3-TYPO-01 [PLANNED]; DP-M3-VECTOR-01 [PLANNED]; DP-M3-PRECISION-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
+**NEXT:** DP-M3-VECTOR-01 [PLANNED]; DP-M3-PRECISION-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
-**Feature budget:** DP-M3-IMAGE — 5/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
+**Feature budget:** DP-M3-TYPO — 0/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
 
 **Review gate:** Owner-authorized autopilot may self-review and merge eligible PRs with zero mandatory human approvals after required exact-head/integration CI, security, branch rules and review-thread gates pass. Never present self-review as independent approval. No automatic publishing or deployment.
 
@@ -57,8 +59,8 @@
 | DP-M2-TBL-02N — Column deletion Unicode budget recovery history regression | MERGED | [PR #153](https://github.com/Rofikali/design-platform/pull/153) | PR #153 merged as 535cd059 on 2026-11-21. Column removal recovers Unicode aggregate budget; code/history regression integrated. Manual user, native Ubuntu Compose and physical print NOT RUN. |
 | DP-M3-LAYERS-01 — Accessible element layering and ordering | DEFERRED | [PR #159](https://github.com/Rofikali/design-platform/pull/159) [Issue #158](https://github.com/Rofikali/design-platform/issues/158) | Four Layers PRs merged with CI evidence; browser stacking, keyboard and export acceptance remains partial in issue #158. Manual #82/#85 and native Ubuntu Compose NOT RUN. |
 | DP-M3-ALIGN-01 — Basic alignment and optional snapping | DEFERRED | [PR #164](https://github.com/Rofikali/design-platform/pull/164) | PRs #160 #162 #163 #164 merged; keyboard alignment and opt-in pointer snapping implemented. Manual screen reader #82, physical print #85 and native Ubuntu Compose NOT RUN; security release #118 OPEN. Closed PARTIAL without a fifth PR. |
-| DP-M3-IMAGE-01 — Foreground image element authoring | PR_OPEN | [PR #172](https://github.com/Rofikali/design-platform/pull/172) | PR #172 OPEN, fifth/final attempt; staged raster/schema utilities only, not editor authoring/history/autosave/export. Prior CI failed Rust formatting and PR registration. Do not merge; security #118 and manual #82/#85/#158 outstanding. |
-| DP-M3-TYPO-01 — Advanced typography and multilingual font handling | PLANNED | — | Add reviewed font family/weight/style, spacing, alignment and locale fallback; preserve current text defaults, schema, browser PNG and print. Requires closed Image feature and font/license tests. |
+| DP-M3-IMAGE-01 — Foreground image element authoring | MERGED | [PR #172](https://github.com/Rofikali/design-platform/pull/172) | PR #172 merged staged v6 raster utilities only. Feature CLOSED/PARTIAL (5/5); production editor, history/autosave and PNG/print parity incomplete. Exact-head and integrated CI not verified; no release approval. |
+| DP-M3-TYPO-01 — Advanced typography and multilingual font handling | READY | — | Add reviewed font family/weight/style, spacing, alignment and locale fallback; preserve current text defaults, schema, browser PNG and print. Requires closed Image feature and font/license tests. |
 | DP-M3-VECTOR-01 — Bounded vector shape library | PLANNED | — | Add ellipses, lines, arrows, triangles, stars, rounded shapes and polygons as typed elements with bounded geometry, keyboard/history/PNG/print parity; never accept unsafe SVG. |
 | DP-M3-PRECISION-01 — Optional guides rulers and precision layout | PLANNED | — | Opt-in rulers, guide lines, margins, safe-area overlays and spacing measurement without changing established alignment/snapping or default exports. |
 | DP-M3-OBJECT-01 — Optional object grouping locking rotation and styles | PLANNED | — | Future grouped transforms, lock, flip, rotation, opacity and fills; require bounded schema, accessibility, selection/history and output parity; no bulk editor rewrite. |
