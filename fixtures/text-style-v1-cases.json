@@ -1,0 +1,183 @@
+[
+  {
+    "name": "sans-normal-normal",
+    "valid": true,
+    "input": {
+      "font_family": "sans",
+      "font_weight": "normal",
+      "font_style": "normal"
+    }
+  },
+  {
+    "name": "sans-normal-italic",
+    "valid": true,
+    "input": {
+      "font_family": "sans",
+      "font_weight": "normal",
+      "font_style": "italic"
+    }
+  },
+  {
+    "name": "sans-bold-normal",
+    "valid": true,
+    "input": {
+      "font_family": "sans",
+      "font_weight": "bold",
+      "font_style": "normal"
+    }
+  },
+  {
+    "name": "sans-bold-italic",
+    "valid": true,
+    "input": {
+      "font_family": "sans",
+      "font_weight": "bold",
+      "font_style": "italic"
+    }
+  },
+  {
+    "name": "serif-normal-normal",
+    "valid": true,
+    "input": {
+      "font_family": "serif",
+      "font_weight": "normal",
+      "font_style": "normal"
+    }
+  },
+  {
+    "name": "serif-normal-italic",
+    "valid": true,
+    "input": {
+      "font_family": "serif",
+      "font_weight": "normal",
+      "font_style": "italic"
+    }
+  },
+  {
+    "name": "serif-bold-normal",
+    "valid": true,
+    "input": {
+      "font_family": "serif",
+      "font_weight": "bold",
+      "font_style": "normal"
+    }
+  },
+  {
+    "name": "serif-bold-italic",
+    "valid": true,
+    "input": {
+      "font_family": "serif",
+      "font_weight": "bold",
+      "font_style": "italic"
+    }
+  },
+  {
+    "name": "monospace-normal-normal",
+    "valid": true,
+    "input": {
+      "font_family": "monospace",
+      "font_weight": "normal",
+      "font_style": "normal"
+    }
+  },
+  {
+    "name": "monospace-normal-italic",
+    "valid": true,
+    "input": {
+      "font_family": "monospace",
+      "font_weight": "normal",
+      "font_style": "italic"
+    }
+  },
+  {
+    "name": "monospace-bold-normal",
+    "valid": true,
+    "input": {
+      "font_family": "monospace",
+      "font_weight": "bold",
+      "font_style": "normal"
+    }
+  },
+  {
+    "name": "monospace-bold-italic",
+    "valid": true,
+    "input": {
+      "font_family": "monospace",
+      "font_weight": "bold",
+      "font_style": "italic"
+    }
+  },
+  {
+    "name": "null",
+    "valid": false,
+    "input": null
+  },
+  {
+    "name": "array",
+    "valid": false,
+    "input": []
+  },
+  {
+    "name": "missing",
+    "valid": false,
+    "input": {
+      "font_family": "sans",
+      "font_weight": "normal"
+    }
+  },
+  {
+    "name": "unknown",
+    "valid": false,
+    "input": {
+      "font_family": "sans",
+      "font_weight": "normal",
+      "font_style": "normal",
+      "src": "https://example.invalid/font"
+    }
+  },
+  {
+    "name": "css",
+    "valid": false,
+    "input": {
+      "font_family": "url(https://example.invalid/font)",
+      "font_weight": "normal",
+      "font_style": "normal"
+    }
+  },
+  {
+    "name": "numeric-weight",
+    "valid": false,
+    "input": {
+      "font_family": "sans",
+      "font_weight": 700,
+      "font_style": "normal"
+    }
+  },
+  {
+    "name": "wrong-case",
+    "valid": false,
+    "input": {
+      "font_family": "sans",
+      "font_weight": "normal",
+      "font_style": "Italic"
+    }
+  },
+  {
+    "name": "null-family",
+    "valid": false,
+    "input": {
+      "font_family": null,
+      "font_weight": "normal",
+      "font_style": "normal"
+    }
+  },
+  {
+    "name": "proto-name",
+    "valid": false,
+    "input": {
+      "font_family": "__proto__",
+      "font_weight": "normal",
+      "font_style": "normal"
+    }
+  }
+]

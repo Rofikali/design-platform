@@ -29,6 +29,17 @@ pub fn validate_foreground_raster_data_url_v6(input: &str) -> Result<(), JsValue
         .map_err(|error| JsValue::from_str(&format!("Invalid foreground raster: {error:?}")))
 }
 
+/// Staged text-style validator for parity testing; does not activate a new document schema.
+#[wasm_bindgen]
+pub fn validate_text_style_v1_json(input: &str) -> Result<String, JsValue> {
+    if input.len() > 512 {
+        return Err(JsValue::from_str("Text style JSON exceeds 512 bytes"));
+    }
+    let style: design_core::typography::TextStyleV1 = serde_json::from_str(input)
+        .map_err(|_| JsValue::from_str("Invalid text style"))?;
+    serde_json::to_string(&style).map_err(|_| JsValue::from_str("Could not serialize text style"))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
