@@ -1,5 +1,7 @@
+import type { TextStyleV1 } from "./text-style-v1";
+
 export type TextElement = {
-  id: string; type: "text"; text: string; x: number; y: number; width: number; height: number; fontSize: number; color: string;
+  id: string; type: "text"; text: string; x: number; y: number; width: number; height: number; fontSize: number; color: string; textStyle?: TextStyleV1;
 };
 export type RectElement = {
   id: string; type: "rect"; x: number; y: number; width: number; height: number; color: string;

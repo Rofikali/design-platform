@@ -76,3 +76,8 @@ Staged schema v7 adds a text_styles array keyed by existing text element IDs; sc
 ### Staged typography rendering checkpoint
 
 SVG and Canvas export now accept optional validated text-style bindings; existing callers omit them and retain byte-identical default SVG output. Only text elements accept typography bindings; table cells retain legacy defaults. SVG attributes and Canvas font shorthand derive from the same fixed tokens. Tests cover measured-style propagation, escaping, invalid bindings and default output equivalence. Actual browser and local tests NOT RUN. Production editor, print, persistence and multilingual glyph acceptance remain pending. No new dependency, remote font request, networking, SRE or finance impact (N/A).
+
+
+### Staged editor typography controls
+
+The feature branch now wires native family, weight and style selects into text element state. Default-only designs remain schema v5; nondefault styles serialize as proposed v7 and restore through the version-aware editor parser. Existing deep history/autosave snapshots include style changes, JSON validation uses a separate WASM migration boundary with TypeScript fallback, PNG uses matching style bindings, and print inherits canvas styling. No claim of browser acceptance until tests pass. Actual local tests NOT RUN. No new dependencies, remote fonts, network, infrastructure or spending. Main remains v5 until integration.
