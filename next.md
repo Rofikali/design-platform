@@ -24,13 +24,13 @@
 <!-- GENERATED from docs/engineering/milestone-record.json by scripts/sync-milestone-docs.mjs. DO NOT EDIT. -->
 ### Milestone snapshot (generated: 2026-11-25)
 
-**Reference main:** 3baa30ef4ed9488c2073f144900609e15f4b73da (dated snapshot; re-check live GitHub before acting).
+**Reference main:** 8646b64df0072ed518e9acbecba2b7dc530d0e5f (dated snapshot; re-check live GitHub before acting).
 
-**NOW:** **DP-M3-TYPO-01 — Advanced typography and multilingual font handling** [PR_OPEN]. [PR #175](https://github.com/Rofikali/design-platform/pull/175)
+**NOW:** **DP-M3-TYPO-01 — Advanced typography and multilingual font handling** [PR_OPEN]. [PR #176](https://github.com/Rofikali/design-platform/pull/176)
 
 **NEXT:** DP-M3-VECTOR-01 [PLANNED]; DP-M3-PRECISION-01 [PLANNED]; DP-SEC-01 [BLOCKED] [Issue #118](https://github.com/Rofikali/design-platform/issues/118); DP-M1-ACC-02 [BLOCKED] [Issue #82](https://github.com/Rofikali/design-platform/issues/82); DP-M1-BG-09 [PLANNED] [Issue #85](https://github.com/Rofikali/design-platform/issues/85)
 
-**Feature budget:** DP-M3-TYPO — 2/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
+**Feature budget:** DP-M3-TYPO — 3/5 PRs recorded since 2026-11-21. No sixth PR for the same feature; close it as done/partial with gaps, then advance. Historical table PRs are grandfathered.
 
 **Review gate:** Owner-authorized autopilot may self-review and merge eligible PRs with zero mandatory human approvals after required exact-head/integration CI, security, branch rules and review-thread gates pass. Never present self-review as independent approval. No automatic publishing or deployment.
 
@@ -62,7 +62,7 @@
 | DP-M3-LAYERS-01 — Accessible element layering and ordering | DEFERRED | [PR #159](https://github.com/Rofikali/design-platform/pull/159) [Issue #158](https://github.com/Rofikali/design-platform/issues/158) | Four Layers PRs merged with CI evidence; browser stacking, keyboard and export acceptance remains partial in issue #158. Manual #82/#85 and native Ubuntu Compose NOT RUN. |
 | DP-M3-ALIGN-01 — Basic alignment and optional snapping | DEFERRED | [PR #164](https://github.com/Rofikali/design-platform/pull/164) | PRs #160 #162 #163 #164 merged; keyboard alignment and opt-in pointer snapping implemented. Manual screen reader #82, physical print #85 and native Ubuntu Compose NOT RUN; security release #118 OPEN. Closed PARTIAL without a fifth PR. |
 | DP-M3-IMAGE-01 — Foreground image element authoring | MERGED | [PR #172](https://github.com/Rofikali/design-platform/pull/172) | PR #172 merged staged v6 raster utilities only. Feature CLOSED/PARTIAL (5/5); production editor, history/autosave and PNG/print parity incomplete. Exact-head and integrated CI not verified; no release approval. |
-| DP-M3-TYPO-01 — Advanced typography and multilingual font handling | PR_OPEN | [PR #175](https://github.com/Rofikali/design-platform/pull/175) | PR #175 editor typography, v7 migration and export. Previous-head Nuxt/browser/security passed; rustfmt failed. Log-based fixes and reuse-first roadmap staged; final-head CI pending. |
+| DP-M3-TYPO-01 — Advanced typography and multilingual font handling | PR_OPEN | [PR #176](https://github.com/Rofikali/design-platform/pull/176) | PR #176 staged v8 layout model and native renderer. Prior-head rustfmt failed; documentation, frontend tests and existing WASM smoke passed. Exact log corrections and direct v8 browser regression assertions added; latest CI pending. |
 | DP-M3-VECTOR-01 — Bounded vector shape library | PLANNED | — | Add ellipses, lines, arrows, triangles, stars, rounded shapes and polygons as typed elements with bounded geometry, keyboard/history/PNG/print parity; never accept unsafe SVG. |
 | DP-M3-PRECISION-01 — Optional guides rulers and precision layout | PLANNED | — | Opt-in rulers, guide lines, margins, safe-area overlays and spacing measurement without changing established alignment/snapping or default exports. |
 | DP-M3-OBJECT-01 — Optional object grouping locking rotation and styles | PLANNED | — | Future grouped transforms, lock, flip, rotation, opacity and fills; require bounded schema, accessibility, selection/history and output parity; no bulk editor rewrite. |

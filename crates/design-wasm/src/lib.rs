@@ -63,6 +63,28 @@ pub fn normalize_typography_document_json(input: &str) -> Result<String, JsValue
     Ok(json)
 }
 
+/// Staged v8 layout normalization. Not used by the live editor yet.
+#[wasm_bindgen]
+pub fn normalize_text_layout_document_json(input: &str) -> Result<String, JsValue> {
+    if input.len() > MAX_DOCUMENT_JSON_BYTES {
+        return Err(JsValue::from_str(
+            "Document JSON exceeds the 2,000,000-byte limit",
+        ));
+    }
+    let document: design_core::text_layout_document::TextLayoutDocument =
+        serde_json::from_str(input).map_err(|_| JsValue::from_str("Invalid layout document"))?;
+    let normalized = design_core::text_layout_document::normalize_text_layout_document(document)
+        .map_err(|_| JsValue::from_str("Invalid layout document"))?;
+    let json = serde_json::to_string(&normalized)
+        .map_err(|_| JsValue::from_str("Could not serialize layout document"))?;
+    if json.len() > MAX_DOCUMENT_JSON_BYTES {
+        return Err(JsValue::from_str(
+            "Document JSON exceeds the 2,000,000-byte limit",
+        ));
+    }
+    Ok(json)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

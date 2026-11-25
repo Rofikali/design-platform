@@ -2,7 +2,7 @@
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
   "snapshot_date": "2026-11-25",
-  "reference_main_sha": "3baa30ef4ed9488c2073f144900609e15f4b73da",
+  "reference_main_sha": "8646b64df0072ed518e9acbecba2b7dc530d0e5f",
   "now_id": "DP-M3-TYPO-01",
   "next_ids": [
     "DP-M3-VECTOR-01",
@@ -229,9 +229,9 @@
       "feature_id": "DP-M3-TYPO",
       "title": "Advanced typography and multilingual font handling",
       "status": "PR_OPEN",
-      "summary": "PR #175 editor typography, v7 migration and export. Previous-head Nuxt/browser/security passed; rustfmt failed. Log-based fixes and reuse-first roadmap staged; final-head CI pending.",
-      "pr": 175,
-      "sha": "78ed17c360e5f40c1a27f85bdcebaba7b0cb3c70"
+      "summary": "PR #176 staged v8 layout model and native renderer. Prior-head rustfmt failed; documentation, frontend tests and existing WASM smoke passed. Exact log corrections and direct v8 browser regression assertions added; latest CI pending.",
+      "pr": 176,
+      "sha": "d7bdb7191267545ca04bfc27e719613ae5ceae60"
     },
     {
       "id": "DP-M3-VECTOR-01",
@@ -376,9 +376,10 @@
         "state": "ACTIVE",
         "prs": [
           174,
-          175
+          175,
+          176
         ],
-        "notes": "PR #175 OPEN, 2/5. Previous head 78ed17c Nuxt/browser/security/cross-browser/dev container passed; rustfmt failed, Rust tests skipped. Applied exact log formatting fixes; new head pending. REUSE-01–10 in docs/engineering/reuse-first-policy.md."
+        "notes": "PRs #174/#175 merged; #176 OPEN, 3/5. Previous head d7bdb71 Rust fmt failed; docs, frontend tests and existing WASM smoke passed. Log-based fixes and direct v8 browser fixtures added; final-head gates pending. Local tests NOT RUN, editor v5/v7."
       },
       {
         "id": "DP-M3-VECTOR",

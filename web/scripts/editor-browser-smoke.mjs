@@ -268,6 +268,46 @@ async function main() {
     // SSR text, which can exist before the event handlers are active.
     await waitForPage("Vue app mount", "Boolean(document.querySelector('#__nuxt')?.__vue_app__)");
 
+    // REUSE-02: measure native capabilities before introducing a new layout schema.
+    const nativeLayout = await evaluate(`(() => {
+      const box = document.createElement('div');
+      Object.assign(box.style, { position: 'absolute', visibility: 'hidden',
+        font: '20px Arial, Helvetica, sans-serif', whiteSpace: 'pre', width: 'max-content',
+        padding: '0', border: '0', lineHeight: '1.25' });
+      box.textContent = 'ABCD';
+      document.body.append(box);
+      try {
+        const context = document.createElement('canvas').getContext('2d');
+        if (!context) throw new Error('Canvas unavailable');
+        context.font = '20px Arial, Helvetica, sans-serif';
+        const domDefault = box.getBoundingClientRect().width;
+        const canvasDefault = context.measureText('ABCD').width;
+        box.style.letterSpacing = '3px';
+        const domSpaced = box.getBoundingClientRect().width;
+        const canvasSpacing = 'letterSpacing' in context;
+        let canvasSpaced = null;
+        if (canvasSpacing) {
+          context.letterSpacing = '3px';
+          canvasSpaced = context.measureText('ABCD').width;
+        }
+        box.textContent = 'ABCD\\nEFGH';
+        const oldHeight = box.getBoundingClientRect().height;
+        box.style.lineHeight = '2';
+        const newHeight = box.getBoundingClientRect().height;
+        box.style.textAlign = 'center';
+        return { domDefault, canvasDefault, domSpaced, canvasSpacing, canvasSpaced,
+          oldHeight, newHeight, alignment: getComputedStyle(box).textAlign };
+      } finally { box.remove(); }
+    })()`);
+    if (!(nativeLayout.domSpaced > nativeLayout.domDefault &&
+          Math.abs(nativeLayout.oldHeight - 50) < 1 &&
+          Math.abs(nativeLayout.newHeight - 80) < 1 &&
+          nativeLayout.alignment === 'center' &&
+          (!nativeLayout.canvasSpacing || nativeLayout.canvasSpaced > nativeLayout.canvasDefault))) {
+      throw new Error("Native typography baseline failed: " + JSON.stringify(nativeLayout));
+    }
+    process.stdout.write("NATIVE_TEXT_LAYOUT: " + JSON.stringify(nativeLayout) + "\\n");
+
     // Malformed autosaves must not be silently overwritten by later edits.
     const malformedAutosave = "{ this is not valid JSON";
     await evaluate(`localStorage.setItem('design-platform:document:v1', ${JSON.stringify(malformedAutosave)}); location.reload(); true`);

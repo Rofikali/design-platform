@@ -34,3 +34,15 @@ describe("legacy typography safety", () => {
     await expect(validateEditorDocumentJson(legacy)).rejects.toThrow("Typography styles require schema version 7");
   });
 });
+
+describe("staged layout downgrade protection", () => {
+  it("rejects layout fields in v5 and v7 rather than losing formatting", async () => {
+    const styled = { ...v1, schema_version: 7, text_styles: [{ element_id: "title-1",
+      style: { font_family: "sans", font_weight: "normal", font_style: "normal" } }] };
+    for (const doc of [{ ...v1, schema_version: 5 }, styled, { ...styled, schema_version: 8 }]) {
+      const input = JSON.stringify({ ...doc, text_layouts: [] });
+      expect(() => parseEditorDocumentJson(input)).toThrow("Advanced text layout");
+      await expect(validateEditorDocumentJson(input)).rejects.toThrow("Advanced text layout");
+    }
+  });
+});
