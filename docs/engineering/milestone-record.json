@@ -2,7 +2,7 @@
   "schema_version": 1,
   "repository": "Rofikali/design-platform",
   "snapshot_date": "2026-11-25",
-  "reference_main_sha": "88f860deab1c56ca2947fde4406c96d3ccc9dd88",
+  "reference_main_sha": "dd1a63ccbe1d6cf586b5776e9a1fc8ad9547475a",
   "now_id": "DP-M3-TYPO-01",
   "next_ids": [
     "DP-M3-VECTOR-01",
@@ -228,8 +228,10 @@
       "id": "DP-M3-TYPO-01",
       "feature_id": "DP-M3-TYPO",
       "title": "Advanced typography and multilingual font handling",
-      "status": "READY",
-      "summary": "Add reviewed font family/weight/style, spacing, alignment and locale fallback; preserve current text defaults, schema, browser PNG and print. Requires closed Image feature and font/license tests."
+      "status": "PR_OPEN",
+      "summary": "PR #174: local font token foundation and shared SVG/Canvas legacy default; source head observed 3da194a before registration. Local tests NOT RUN; final-head CI pending. Editor controls and model parity remain unimplemented.",
+      "pr": 174,
+      "sha": "3da194a4e953731deceb48d35f3d8047be1cf8e5"
     },
     {
       "id": "DP-M3-VECTOR-01",
@@ -372,8 +374,10 @@
         "id": "DP-M3-TYPO",
         "title": "Advanced typography and multilingual font handling",
         "state": "ACTIVE",
-        "prs": [],
-        "notes": "0/5 opened PRs. Scope independent typography acceptance and existing text model before implementation; retain v1-v5 compatibility and no remote font fetch."
+        "prs": [
+          174
+        ],
+        "notes": "PR #174 OPEN, 1/5 attempts. Bounded local font tokens and shared legacy export defaults; no editor font selection, schema or multilingual acceptance yet. Local tests NOT RUN; final-head CI pending. Continue same PR if corrections needed."
       },
       {
         "id": "DP-M3-VECTOR",
