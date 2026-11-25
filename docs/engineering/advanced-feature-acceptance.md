@@ -95,3 +95,8 @@ Consult the [reuse-first policy](reuse-first-policy.md) for prioritized typograp
 ### REUSE-02 native layout foundation
 
 PR #175 merged (exact-head four workflow families passed). Native bounded layout candidate uses CSS/SVG alignment and letter-spacing attributes, line-height ratio and shared line advance for existing export defaults. A browser smoke probe measures DOM/Canvas letter-spacing support and line heights; unsupported Canvas spacing is recorded, not silently approximated. Unit and browser assertions added; NOT RUN locally. No new persisted fields, editor controls, font files, dependencies or new spending; further schema ADR and actual cross-browser/print parity needed before activation.
+
+
+### REUSE-02 staged v8 document contract
+
+Use a separate v8 layout envelope rather than mutating merged v7 semantics. Exactly one bounded layout binding per text element, deterministic z-order, v1–v5/v7 migration, no v6 acceptance, explicit null/invalid/missing/duplicate/unknown binding rejection; existing v7 font styles and page metadata preserved through the established validator. Rust, TypeScript, WASM normalization and shared fixtures staged. Live editor remains v5/v7; no v8 activation until ADR, anti-downgrade checks, native renderer/browser/print parity, undo/autosave/import/export tests and CI. Local tests NOT RUN. No new dependencies, fonts, network or financial commitments.
