@@ -14,6 +14,7 @@ describe("design export renderer", () => {
     expect(svg).toContain('fill="#ffffff"');
     expect(svg).toContain('fill="#ff6600"');
     expect(svg).toContain("Shop &amp; &lt;Save&gt;");
+    expect(svg).toContain('font-family="Arial, Helvetica, sans-serif"');
   });
 
   it("renders frame and grid primitives as deterministic SVG geometry", () => {
