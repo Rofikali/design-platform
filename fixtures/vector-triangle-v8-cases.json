@@ -1,0 +1,184 @@
+[
+  {
+    "name": "valid",
+    "valid": true,
+    "element": {
+      "id": "triangle-1",
+      "x": 0,
+      "y": -10,
+      "width": 100,
+      "height": 50,
+      "kind": {
+        "type": "triangle",
+        "color": "#abc"
+      }
+    }
+  },
+  {
+    "name": "fractional positive",
+    "valid": true,
+    "element": {
+      "id": "triangle-1",
+      "x": 0,
+      "y": -10,
+      "width": 0.5,
+      "height": 50,
+      "kind": {
+        "type": "triangle",
+        "color": "#abc"
+      }
+    }
+  },
+  {
+    "name": "zero width",
+    "valid": false,
+    "element": {
+      "id": "triangle-1",
+      "x": 0,
+      "y": -10,
+      "width": 0,
+      "height": 50,
+      "kind": {
+        "type": "triangle",
+        "color": "#abc"
+      }
+    }
+  },
+  {
+    "name": "coordinate overflow",
+    "valid": false,
+    "element": {
+      "id": "triangle-1",
+      "x": 100001,
+      "y": -10,
+      "width": 100,
+      "height": 50,
+      "kind": {
+        "type": "triangle",
+        "color": "#abc"
+      }
+    }
+  },
+  {
+    "name": "numeric string",
+    "valid": false,
+    "element": {
+      "id": "triangle-1",
+      "x": 0,
+      "y": -10,
+      "width": 100,
+      "height": "50",
+      "kind": {
+        "type": "triangle",
+        "color": "#abc"
+      }
+    }
+  },
+  {
+    "name": "empty id",
+    "valid": false,
+    "element": {
+      "id": "",
+      "x": 0,
+      "y": -10,
+      "width": 100,
+      "height": 50,
+      "kind": {
+        "type": "triangle",
+        "color": "#abc"
+      }
+    }
+  },
+  {
+    "name": "UTF8 overflow",
+    "valid": false,
+    "element": {
+      "id": "ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé",
+      "x": 0,
+      "y": -10,
+      "width": 100,
+      "height": 50,
+      "kind": {
+        "type": "triangle",
+        "color": "#abc"
+      }
+    }
+  },
+  {
+    "name": "control id",
+    "valid": false,
+    "element": {
+      "id": "a\n",
+      "x": 0,
+      "y": -10,
+      "width": 100,
+      "height": 50,
+      "kind": {
+        "type": "triangle",
+        "color": "#abc"
+      }
+    }
+  },
+  {
+    "name": "CSS injection",
+    "valid": false,
+    "element": {
+      "id": "triangle-1",
+      "x": 0,
+      "y": -10,
+      "width": 100,
+      "height": 50,
+      "kind": {
+        "type": "triangle",
+        "color": "url(x)"
+      }
+    }
+  },
+  {
+    "name": "unknown field",
+    "valid": false,
+    "element": {
+      "id": "triangle-1",
+      "x": 0,
+      "y": -10,
+      "width": 100,
+      "height": 50,
+      "kind": {
+        "type": "triangle",
+        "color": "#abc"
+      },
+      "extra": 1
+    }
+  },
+  {
+    "name": "unknown kind field",
+    "valid": false,
+    "element": {
+      "id": "triangle-1",
+      "x": 0,
+      "y": -10,
+      "width": 100,
+      "height": 50,
+      "kind": {
+        "type": "triangle",
+        "color": "#abc",
+        "extra": 1
+      }
+    }
+  },
+  {
+    "name": "wrong kind",
+    "valid": false,
+    "element": {
+      "id": "triangle-1",
+      "x": 0,
+      "y": -10,
+      "width": 100,
+      "height": 50,
+      "kind": {
+        "type": "rect",
+        "color": "#abc"
+      }
+    }
+  }
+]

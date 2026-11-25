@@ -138,3 +138,7 @@ Pure normalized polygon points for triangle, regular polygon (3–32 sides) and 
 ### Vector staged primitive geometry
 
 Added bounded normalized line, arrow, 32-point ellipse approximation and rounded-rectangle outlines (maximum 36 points). Reject nonfinite and out-of-range parameters before allocation. No SVG parsing, schema or runtime integration, dependencies, network or spend. Local tests NOT RUN; CI pending PR. Next: versioned Rust/TS schema and migration parity. Existing security and manual acceptance gates unchanged.
+
+### Staged triangle element contract
+
+Proposed v8 reserves v6 raster and v7 typography; production v5 remains unchanged. Rust and TypeScript triangle element guards share JSON boundary fixtures for geometry, UTF-8 ID bounds, strict fields and hex color. This is element-only staging, not a document migration or WASM/editor integration. Tests NOT RUN. No dependency, network, infrastructure or finance change. Next: whole-document migration and duplicate-ID validation.

@@ -7,6 +7,7 @@ pub mod foreground_image_v6;
 pub mod text_layout_document;
 pub mod typography;
 pub mod typography_document;
+pub mod vector_document_v8;
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
