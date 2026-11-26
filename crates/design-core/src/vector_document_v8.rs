@@ -45,9 +45,54 @@ pub fn validate_triangle_collection_v8(elements: &[TriangleElementV8]) -> bool {
     elements.iter().all(|element| element.validate() && ids.insert(element.id.as_str()))
 }
 
+/// Validate the staged vector extension against the production base document.
+pub fn validate_vector_extension_v8(
+    base: &super::DesignDocument,
+    triangles: &[TriangleElementV8],
+) -> bool {
+    if base.elements.len().saturating_add(triangles.len()) > super::MAX_ELEMENTS
+        || base.validate().is_err()
+    {
+        return false;
+    }
+    let mut ids: std::collections::HashSet<&str> =
+        base.elements.iter().map(|element| element.id.as_str()).collect();
+    triangles.iter().all(|element| element.validate() && ids.insert(element.id.as_str()))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn extension_shares_capacity_and_identity_with_base() {
+        let mut base = super::super::DesignDocument {
+            schema_version: super::super::CURRENT_SCHEMA_VERSION,
+            page: super::super::Page {
+                width: 800.0, height: 600.0, background: "#fff".into(),
+                background_image: None,
+            },
+            elements: vec![super::super::Element {
+                id: "base".into(), x: 0.0, y: 0.0, width: 1.0, height: 1.0,
+                kind: super::super::ElementKind::Rect { color: "#fff".into() },
+            }],
+            output_size_mm: None, template: None,
+        };
+        let mut triangles: Vec<_> = (0..super::super::MAX_ELEMENTS).map(|i| TriangleElementV8 {
+            id: i.to_string(), x: 0.0, y: 0.0, width: 1.0, height: 1.0,
+            kind: TriangleKind::Triangle { color: "#fff".into() },
+        }).collect();
+        assert!(!validate_vector_extension_v8(&base, &triangles));
+        triangles.pop();
+        assert!(validate_vector_extension_v8(&base, &triangles));
+        triangles[0].id = "base".into();
+        assert!(!validate_vector_extension_v8(&base, &triangles));
+        triangles[0].id = "0".into();
+        triangles[1].id = "0".into();
+        assert!(!validate_vector_extension_v8(&base, &triangles));
+        base.page.width = f64::NAN;
+        assert!(!validate_vector_extension_v8(&base, &[]));
+    }
 
     #[test]
     fn collection_bounds_and_identity() {
