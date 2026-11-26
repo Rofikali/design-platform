@@ -1,3 +1,5 @@
+import { MAX_ELEMENTS, parseDocument } from "./document";
+
 /** Staged schema-v8 triangle element; not enabled in the production v5 editor. */
 export const VECTOR_SCHEMA_VERSION = 8;
 export type TriangleElementV8 = Readonly<{
@@ -50,4 +52,19 @@ export function parseTriangleCollectionV8(value: unknown): readonly TriangleElem
     elements.push(element);
   }
   return Object.freeze(elements);
+}
+
+/** Validate a staged extension against the existing production parser; no schema activation. */
+export function parseVectorExtensionV8(base: unknown, value: unknown): readonly TriangleElementV8[] {
+  const parsed = parseDocument(base);
+  if (!Array.isArray(value) || value.length > MAX_ELEMENTS - parsed.elements.length) {
+    throw new TypeError("Combined element limit exceeded");
+  }
+  const triangles = parseTriangleCollectionV8(value);
+  const ids = new Set(parsed.elements.map(element => element.id));
+  for (const triangle of triangles) {
+    if (ids.has(triangle.id)) throw new TypeError("Duplicate document element id");
+    ids.add(triangle.id);
+  }
+  return triangles;
 }
