@@ -180,5 +180,95 @@
         "color": "#abc"
       }
     }
+  },
+  {
+    "name": "UTF8 exact boundary",
+    "valid": true,
+    "element": {
+      "id": "éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé",
+      "x": 0,
+      "y": -10,
+      "width": 100,
+      "height": 50,
+      "kind": {
+        "type": "triangle",
+        "color": "#abc"
+      }
+    }
+  },
+  {
+    "name": "negative coordinate boundary",
+    "valid": true,
+    "element": {
+      "id": "triangle-1",
+      "x": -100000,
+      "y": -10,
+      "width": 100,
+      "height": 50,
+      "kind": {
+        "type": "triangle",
+        "color": "#abc"
+      }
+    }
+  },
+  {
+    "name": "negative coordinate overflow",
+    "valid": false,
+    "element": {
+      "id": "triangle-1",
+      "x": -100001,
+      "y": -10,
+      "width": 100,
+      "height": 50,
+      "kind": {
+        "type": "triangle",
+        "color": "#abc"
+      }
+    }
+  },
+  {
+    "name": "dimension boundary",
+    "valid": true,
+    "element": {
+      "id": "triangle-1",
+      "x": 0,
+      "y": -10,
+      "width": 10000,
+      "height": 10000,
+      "kind": {
+        "type": "triangle",
+        "color": "#abc"
+      }
+    }
+  },
+  {
+    "name": "dimension overflow",
+    "valid": false,
+    "element": {
+      "id": "triangle-1",
+      "x": 0,
+      "y": -10,
+      "width": 100,
+      "height": 10001,
+      "kind": {
+        "type": "triangle",
+        "color": "#abc"
+      }
+    }
+  },
+  {
+    "name": "DEL identifier",
+    "valid": false,
+    "element": {
+      "id": "a",
+      "x": 0,
+      "y": -10,
+      "width": 100,
+      "height": 50,
+      "kind": {
+        "type": "triangle",
+        "color": "#abc"
+      }
+    }
   }
 ]
