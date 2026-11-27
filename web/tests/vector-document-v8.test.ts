@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import cases from "../../fixtures/vector-triangle-v8-cases.json";
-import { MAX_VECTOR_TRIANGLES, parseTriangleCollectionV8, parseTriangleElementV8 } from "../utils/vector-document-v8";
+import { MAX_ELEMENTS, toDocument } from "../utils/document";
+import { parseVectorExtensionV8, MAX_VECTOR_TRIANGLES, parseTriangleCollectionV8, parseTriangleElementV8 } from "../utils/vector-document-v8";
 
 describe("staged triangle element contract", () => {
   for (const entry of cases) {
@@ -34,5 +35,33 @@ describe("staged triangle collection contract", () => {
     expect(Object.isFrozen(result)).toBe(true);
     expect(Object.isFrozen(result[0])).toBe(true);
     expect(Object.isFrozen(result[0]!.kind)).toBe(true);
+  });
+});
+
+describe("staged whole-document vector extension", () => {
+  const triangle = (id: string) => ({ ...cases[0]!.element, id });
+  const base = () => toDocument([{ id: "base", type: "rect", x: 0, y: 0, width: 10, height: 10, color: "#fff" }]);
+  it("accepts exactly the combined limit and rejects one extra", () => {
+    const triangles = Array.from({ length: MAX_ELEMENTS - 1 }, (_, i) => triangle(String(i)));
+    expect(parseVectorExtensionV8(base(), triangles)).toHaveLength(MAX_ELEMENTS - 1);
+    expect(() => parseVectorExtensionV8(base(), [...triangles, triangle("extra")])).toThrow(TypeError);
+  });
+  it("rejects cross-type and intra-vector identifier collisions", () => {
+    expect(() => parseVectorExtensionV8(base(), [triangle("base")])).toThrow(TypeError);
+    expect(() => parseVectorExtensionV8(base(), [triangle("a"), triangle("a")])).toThrow(TypeError);
+  });
+  it("rejects invalid base geometry even with an empty extension", () => {
+    const doc = base();
+    doc.elements[0]!.width = 0;
+    expect(() => parseVectorExtensionV8(doc, [])).toThrow();
+  });
+  it("preserves input documents and returns frozen validated triangles", () => {
+    const doc = base();
+    const triangles = [triangle("a")];
+    const before = JSON.stringify({ doc, triangles });
+    const result = parseVectorExtensionV8(doc, triangles);
+    expect(result).toEqual(triangles);
+    expect(Object.isFrozen(result)).toBe(true);
+    expect(JSON.stringify({ doc, triangles })).toBe(before);
   });
 });
